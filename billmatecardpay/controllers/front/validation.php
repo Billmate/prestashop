@@ -106,7 +106,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		    'accept_url' => $accept_url,
 			'callback_url'=> $callback_url,
 			'return_method'=> $return_method,
-			'capture_now' => Configuration::get('BCARDPAY_AUTHMOD') == 'sale'? 'NO': 'YES',
+			'capture_now' => Configuration::get('BCARDPAY_AUTHMOD') == 'sale'? 'YES': 'NO',
 			'do_3d_secure' => $do_3d_secure,
 			'prompt_name_entry' => $prompt_name_entry,
 		    'cancel_url' => $cancel_url,
