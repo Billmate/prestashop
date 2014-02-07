@@ -87,7 +87,7 @@ class BillmateInvoice extends PaymentModule
         $this->name = 'billmateinvoice';
         $this->moduleName='billmateinvoice';
         $this->tab = 'payments_gateways';
-        $this->version = '1.24';
+        $this->version = '1.25';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;

@@ -58,7 +58,7 @@ class BillmateCardpay extends PaymentModule
         $this->name = 'billmatecardpay';
         $this->moduleName='billmatecardpay';
         $this->tab = 'payments_gateways';
-        $this->version = '1.24';
+        $this->version = '1.25';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;

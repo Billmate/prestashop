@@ -35,7 +35,7 @@ class BillmateInvoiceGetInfoModuleFrontController extends ModuleFrontController
 	public $ajax = true;
     public function init(){
         parent::init();
-		echo '<h1>Billmate version 1.24</h1>';
+		echo '<h1>Billmate version 1.25</h1>';
 		phpinfo();
   }
 }

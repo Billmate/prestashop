@@ -30,7 +30,7 @@
  *      from {@link http://phpxmlrpc.sourceforge.net/}
  *
  */
- //define('BILLMATE_VERSION',  "PHP:Prestashop:1.24" );
+ //define('BILLMATE_VERSION',  "PHP:Prestashop:1.25" );
  
  require_once dirname(__FILE__).'/commonfunctions.php';
  

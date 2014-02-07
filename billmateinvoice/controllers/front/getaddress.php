@@ -85,13 +85,6 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
         $eid = (int)Configuration::get('BM_INV_STORE_ID_'.$countryname);
         $secret = (float)Configuration::get('BM_INV_SECRET_'.$countryname);
 		define('BILLMATE_INVOICE_EID', $eid);
-
-
-		if( $this->context->cart->containsProduct( $id_product)){}
-		else{
-			$this->context->cart->updateQty(1, $id_product);
-		}
-
 		
         $ssl = true;
         $debug = false;
@@ -302,16 +295,19 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 //				var_dump($this->context->cart->getOrderTotal(true, Cart::BOTH));
 				//var_dump($this->context->cart->getOrderTotal());
 				//die("-adfda");
+/*				if( $this->context->cart->containsProduct( $id_product)){}
+				else{
+					$this->context->cart->updateQty(1, $id_product);
+				}*/
+                $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
+//				$measurements['deleteproduct'] = microtime(true) - $timestart;
+				
+				//$timestart = microtime(true);
+			    $this->context->cart->updateQty(1, (int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
+				//$measurements['updateqty'] = microtime(true) - $timestart;
 
             	$invoiceid = $this->processReserveInvoice( strtoupper(BillmateCountry::getCode($addr[0][5])));
 				$timetotalstart = $timestart = microtime(true);
-
-                $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
-				$measurements['deleteproduct'] = microtime(true) - $timestart;
-				
-				$timestart = microtime(true);
-			    $this->context->cart->updateQty(1, (int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
-				$measurements['updateqty'] = microtime(true) - $timestart;
 				
 				$timestart = microtime(true);
 			    $customer = new Customer((int)$this->context->cart->id_customer);

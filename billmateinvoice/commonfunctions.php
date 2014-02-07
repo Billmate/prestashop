@@ -2,7 +2,7 @@
 @session_start();
 
 if(!function_exists('billmate_log_data')){
-	define('BILLMATE_VERSION',  "PHP:Prestashop:1.24" );
+	define('BILLMATE_VERSION',  "PHP:Prestashop:1.25" );
 
 	function getCountryID(){
 		return 209;
