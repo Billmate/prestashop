@@ -85,7 +85,8 @@
 	<tr>
 		<th>{l s='Id' mod='billmatepartpayment'}</th><th>{l s='Eid' mod='billmatepartpayment'}</th>
 		<th>{l s='Country' mod='billmatepartpayment'}</th><th>{l s='Description' mod='billmatepartpayment'}</th>
-		<th>{l s='Start fee' mod='billmatepartpayment'}</th><th>{l s='Invoice fee' mod='billmatepartpayment'}</th>
+		<th>{l s='Start fee' mod='billmatepartpayment'}</th><th>{l s='Expire' mod='billmatepartpayment'}</th>
+		<th>{l s='Invoice fee' mod='billmatepartpayment'}</th>
 		<th>{l s='Interest' mod='billmatepartpayment'}</th><th>{l s='Minimum amount' mod='billmatepartpayment'}</th>
 	</tr>
 {foreach from=$billmate_pclass item=pclass key=k}
@@ -95,6 +96,7 @@
 		<td>{$countryCodes[$pclass.country]}</td>
 		<td>{$pclass.description}</td>
 		<td>{$pclass.startfee}</td>
+		<td>{$pclass.expire}</td>
 		<td>{$pclass.invoicefee}</td>
 		<td>{$pclass.interestrate}</td>
 		<td>{$pclass.minamount}</td>

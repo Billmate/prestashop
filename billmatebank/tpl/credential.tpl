@@ -3,7 +3,6 @@
 	height:143.625px!important;
 }
 </style>
-
 <form action="{$billmatecardpayFormCredential}" method="POST">
 	<fieldset class="billmate-blockSmall L">
 		<legend><img src="{$module_dir}img/icon-mode.gif" alt="" /> {l s='Activation Settings' mod='billmatebank'}</legend>

@@ -45,11 +45,10 @@ if(!function_exists('my_dump')){
 		}
 	}
 }
-require_once BILLMATE_BASE. '/BillMateModel.php';
-require_once BILLMATE_BASE. '/utf8.php';
-include_once(BILLMATE_BASE."/xmlrpc-2.2.2/lib/xmlrpc.inc");
-include_once(BILLMATE_BASE."/xmlrpc-2.2.2/lib/xmlrpcs.inc");
 
+include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
+require_once BILLMATE_BASE. '/Billmate.php';
+error_reporting(E_ERROR);
 class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
@@ -104,7 +103,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				$this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
 				$message = '{success:false, content: "'.utf8_encode('Betalning med Billmate misslyckades. Felkod 1001. Välj ett annat betalningssätt eller ange ett annat person/organisationsnummer.').'"}';
 				
-				$k->stat('client_address_error', $message, $eid);
+//				$k->stat('client_address_error', $message, $eid);
 				die($message);
 			}
 			foreach( $addr[0] as $key => $adr ){
@@ -116,7 +115,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 			
 			$message = '{success:false, content: "'.utf8_encode('Betalning med Billmate misslyckades. Felkod 1001. Välj ett annat betalningssätt eller ange ett annat person/organisationsnummer.').'"}';
 			
-			$k->stat('client_address_error', $message );
+//			$k->stat('client_address_error', $message );
 			die($message);
         }
 		
@@ -193,7 +192,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
                 $addressnew->postcode = $addr[0][3];
                 $addressnew->city = $addr[0][4];
                 $addressnew->country = BillmateCountry::getContryByNumber($addr[0][5]);
-                $addressnew->alias   = substr('Billmate Imported '.$addr[0][0].' '.$addr[0][1].' '.$addr[0][2],0,32);
+                $addressnew->alias   = 'Bimport-'.time().ip2long($_SERVER['REMOTE_ADDR']);
                 
                 $addressnew->id_country = Country::getByIso(BillmateCountry::getCode($addr[0][5]));
                 $addressnew->save();
@@ -326,7 +325,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				
 				//billmate_log_data(array(array('order_id'=>$order_id,'measurements'=>$measurements)), $eid );
 				$duration = ( microtime(true)-$timetotalstart ) * 1000;
-				$k->stat("client_order_measurements",json_encode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
+//				$k->stat("client_order_measurements",json_encode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
 				
 				$k->UpdateOrderNo($invoiceid, $this->module->currentOrderReference.','.$order_id); 
 				unset($_SESSION["uniqueId"]);
@@ -339,7 +338,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
         		$return['success'] = false;
         		unset($return['redirect']);
 				
-				$k->stat('client_error' ,array($ex->getMessage()), $eid );
+//				$k->stat('client_error' ,array($ex->getMessage()), $eid );
         		$return['content'] = Tools::safeOutput(utf8_encode($ex->getMessage()));
         	}
         }

@@ -12,8 +12,9 @@
 if (!defined('_CAN_LOAD_FILES_'))
 	exit;
 
-define('BCARDPAY_BASE', dirname(__FILE__));
-include_once(BCARDPAY_BASE . '/billmate.php');
+define('BCARDPAY_BASE', dirname(dirname(__FILE__)).'/billmateinvoice');
+include_once(BCARDPAY_BASE . '/Billmate.php');
+include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
 
 /**
  * BillmateCardpay class
@@ -25,6 +26,8 @@ include_once(BCARDPAY_BASE . '/billmate.php');
  */
 define('CARDPAY_TESTURL', 'https://cardpay.billmate.se/pay/test');
 define('CARDPAY_LIVEURL', 'https://cardpay.billmate.se/pay');;
+error_reporting(E_ERROR);
+ini_set('display_errors', 1);
 
 class BillmateCardpay extends PaymentModule
 {
@@ -82,12 +85,6 @@ class BillmateCardpay extends PaymentModule
         $this->billmate_countries = unserialize( Configuration::get('BILLMATE_ENABLED_COUNTRIES_LIST'));
 		require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
     }
-    private function _displayBillmate()
-    {
-	    $this->_html .= '<img src="../modules/bankwire/bankwire.jpg" style="float:left; margin-right:15px;"><b>'.$this->l('This module allows you to accept secure payments by bank wire.').'</b><br /><br />
-	    '.$this->l('If the client chooses to pay by bank wire, the order\'s status will change to "Waiting for Payment."').'<br />
-	    '.$this->l('That said, you must manually confirm the order upon receiving the bank wire. ').'<br /><br /><br />';
-    }
 
 	private function _displayForm()
 	{
@@ -133,6 +130,15 @@ class BillmateCardpay extends PaymentModule
 		$html .= $this->_displayAdminTpl();
 		return $html;
 	}
+    public function enable(){
+		parent::enable();
+		Configuration::updateValue('BCARDPAY_ACTIVE_CARDPAY', true );
+	}	
+    public function disable(){
+		parent::disable();
+		Configuration::updateValue('BCARDPAY_ACTIVE_CARDPAY', false );
+	}	
+
 	/**
 	 * @brief Method that will displayed all the tabs in the configurations forms
 	 *
@@ -271,13 +277,13 @@ class BillmateCardpay extends PaymentModule
 		if (isset($_POST['billmate_active_cardpay']) && $_POST['billmate_active_cardpay'])
 			Configuration::updateValue('BCARDPAY_ACTIVE_CARDPAY', true);
 		else
-			Configuration::deleteByName('BCARDPAY_ACTIVE_CARDPAY');
+			billmate_deleteConfig('BCARDPAY_ACTIVE_CARDPAY');
 		
 
 		foreach ($this->countries as $country)
 		{
-			Configuration::deleteByName('BCARDPAY_STORE_ID_'.$country['name']);
-			Configuration::deleteByName('BCARDPAY_SECRET_'.$country['name']);
+			billmate_deleteConfig('BCARDPAY_STORE_ID_'.$country['name']);
+			billmate_deleteConfig('BCARDPAY_SECRET_'.$country['name']);
 		}
 
 		foreach ($this->countries as $key => $country)
@@ -288,18 +294,12 @@ class BillmateCardpay extends PaymentModule
 				$storeId = (int)Tools::getValue('billmateStoreId'.$country['name']);
 				$secret = pSQL(Tools::getValue('billmateSecret'.$country['name']));
 
-				if (($storeId > 0 && $secret == '') || ($storeId <= 0 && $secret != ''))
-					$this->_postErrors[] = $this->l('your credentials are incorrect and can\'t be used in ').$country['name'];
-				elseif ($storeId >= 0 && $secret != '')
-				{
-					Configuration::updateValue('BCARDPAY_STORE_ID_'.$country['name'], $storeId);
-					Configuration::updateValue('BCARDPAY_SECRET_'.$country['name'], $secret);
-					Configuration::updateValue('BCARDPAY_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
-					Configuration::updateValue('BCARDPAY_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
+				Configuration::updateValue('BCARDPAY_STORE_ID_'.$country['name'], $storeId);
+				Configuration::updateValue('BCARDPAY_SECRET_'.$country['name'], $secret);
+				Configuration::updateValue('BCARDPAY_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
+				Configuration::updateValue('BCARDPAY_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
 
-					$this->_postValidations[] = $this->l('Your account has been updated to be used in ').$country['name'];
-
-				}
+				$this->_postValidations[] = $this->l('Your account has been updated to be used in ').$country['name'];
 			}
 		} 
 	}

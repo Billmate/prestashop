@@ -1,10 +1,8 @@
 <?php
 
 
-require_once BBANK_BASE. '/BillMateModel.php';
-require_once BBANK_BASE. '/utf8.php';
-include_once(BBANK_BASE."/xmlrpc-2.2.2/lib/xmlrpc.inc");
-include_once(BBANK_BASE."/xmlrpc-2.2.2/lib/xmlrpcs.inc");
+require_once BBANK_BASE. '/Billmate.php';
+error_reporting(E_ERROR);
 class BillmateBankValidationModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
@@ -35,7 +33,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 	    if (isset($_REQUEST['status']) && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']))
 		{
 			$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-			billmate_log_data(array($_REQUEST), $eid, 'client_data_return_bank_cardpay.billmate.se');
+
 		    if( $_REQUEST['status'] == 0 ){
 		        try{
                 	$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code));
@@ -59,7 +57,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$len = strlen( $_REQUEST['error_message']) > 0;
 		$this->context->smarty->assign('posted', $len) ;
 	}
-	public function logData($merchant_id){
+	public function logData($merchant_id, $order_id){
 
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
         $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
@@ -199,6 +197,8 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$transaction = array(
 			"order1"=>(string)$order_id,
 			"comment"=>'',
+			'gender'=>'1',
+			'order2' =>'',
 			"flags"=>0,
 			"reference"=>"",
 			"reference_code"=>"",
@@ -241,11 +241,12 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$cancel_url = $this->context->link->getPageLink('order.php', true);
 		$amount     = round($this->context->cart->getOrderTotal(true, Cart::BOTH),2)*100;
 		$order_id   = time();
-		$currency   = $this->context->currency->iso_code;
+		$currency   = 'SEK';//$this->context->currency->iso_code;
 		$return_method  = 'GET';
 		$merchant_id = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
 		$secret = (float)substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
 		$callback_url = 'http://api.billmate.se/callback.php';
+		unset($_SESSION['INVOICE_CREATED_BANK']);
         $data = array(
 		    'gatewayurl' => Configuration::get('BBANK_MOD') == 0 ?BANKPAY_LIVEURL : BANKPAY_TESTURL,
 		    'order_id'   => $order_id,
@@ -264,9 +265,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		);
 		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency. $merchant_id . $order_id . 'BANK' . $return_method . $secret;
 
-		
-		billmate_log_data(array($data), $merchant_id,  'client_hidden_form_bank');
-		$this->logData($merchant_id);
+		$this->logData($merchant_id,$order_id);
 		
 		$data['mac'] = hash('sha256', $mac_str);
 		$this->context->smarty->assign($data);
@@ -442,11 +441,16 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 
 		if( empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
 		
-		$result1 = $k->AddInvoice('',$bill_address,$ship_address,$goods_list,$transaction);  
-
+		if( isset($_SESSION['INVOICE_CREATED_BANK']) ){
+			$result1 = array($_SESSION['INVOICE_CREATED_BANK']);
+		} else {
+			$result1 = $k->AddInvoice('',$bill_address,$ship_address,$goods_list,$transaction);  
+		}
 		if(is_string($result1))
 		{
 			throw new Exception(utf8_encode($result1), 122);
+		}else{
+			$_SESSION['INVOICE_CREATED_BANK'] = $result1[0];
 		}
 		return array('invoiceid' => $result1[0], 'api' => $k,'eid' => $eid );
     }

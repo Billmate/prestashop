@@ -1,11 +1,7 @@
 <?php
 
-require_once BCARDPAY_BASE. '/BillMateModel.php';
-require_once BCARDPAY_BASE. '/utf8.php';
-include_once(BCARDPAY_BASE."/xmlrpc-2.2.2/lib/xmlrpc.inc");
-include_once(BCARDPAY_BASE."/xmlrpc-2.2.2/lib/xmlrpcs.inc");
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
+require_once BCARDPAY_BASE. '/Billmate.php';
+error_reporting(E_ERROR);
 class BillmateCardpayValidationModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
@@ -43,7 +39,6 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		{
 		
 			$eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
-			billmate_log_data(array($post), $eid, 'client_data_return_cardpay.billmate.se');
 		    if( $post['status'] == 0 ){
 		        try{
                 	$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code));
@@ -73,7 +68,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 	 */
 	public function initContent()
 	{
-	    
+		$this->context->smarty->assign('priceDisplayPrecision', 0);
 		$this->display_column_left = false;
 		parent::initContent();
 		$accept_url = $this->context->link->getModuleLink('billmatecardpay', 'validation', array(), true);
@@ -94,7 +89,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		$prompt_name_entry = Configuration::get('BILL_PRNAME') == 'YES'? 'YES': 'NO';
 		$return_method = strlen(Configuration::get('BCARDPAY_METHOD')) ? 'GET' : 'GET';
 		
-		
+		unset($_SESSION['INVOICE_CREATED_CARD']);
         $data = array(
 		    'gatewayurl' => Configuration::get('BCARDPAY_MOD') == 0 ? CARDPAY_LIVEURL : CARDPAY_TESTURL,
 		    'order_id'   => $order_id,
@@ -117,7 +112,6 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency. $do_3d_secure . $languageCode . $merchant_id . $order_id . 'CARD' . $prompt_name_entry . $return_method. $secret;
 		
 		$data['mac'] = hash('sha256', $mac_str);
-		billmate_log_data(array($data), $merchant_id, 'client_hidden_form_cardpay');
 		$this->logData($merchant_id);
 		$this->context->smarty->assign($data);
 		$this->setTemplate('validation.tpl');
@@ -448,11 +442,17 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		if(Configuration::get('BCARDPAY_AUTHMOD') == 'sale' ) $transaction["extraInfo"][0]["status"] = 'Paid';
 		if( empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
 
-		$result1 = $k->AddInvoice('',$bill_address,$ship_address,$goods_list,$transaction);  
+		if( isset($_SESSION['INVOICE_CREATED_CARD']) ){
+			$result1 = array($_SESSION['INVOICE_CREATED_CARD']);
+		} else {
+			$result1 = $k->AddInvoice('',$bill_address,$ship_address,$goods_list,$transaction);  
+		}
 
 		if(is_string($result1))
 		{
 			throw new Exception(utf8_encode($result1), 122);
+		}else{
+			$_SESSION['INVOICE_CREATED_CARD'] = $result1[0];
 		}
 		return array('invoiceid' => $result1[0], 'api' => $k );
     }

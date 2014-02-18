@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
         <module>
             <name>billmatepartpayment</name>
-            <displayName><![CDATA[Billmate Delbetalning]]></displayName>
-            <version><![CDATA[1.24]]></version>
-            <description><![CDATA[Billmate erbjuder en komplett betall&ouml;sning f&ouml;r webbutiker]]></description>
+            <displayName><![CDATA[Billmate Part Payment]]></displayName>
+            <version><![CDATA[1.25]]></version>
+            <description><![CDATA[Billmate provides a revolutionary payment solution for online merchants.]]></description>
             <author><![CDATA[eFinance Nordic AB]]></author>
             <tab><![CDATA[payments_gateways]]></tab>
+	<confirmUninstall>Are you sure you want to delete your settings?</confirmUninstall>
             <is_configurable>1</is_configurable>
             <need_instance>1</need_instance>
 	<limited_countries></limited_countries>

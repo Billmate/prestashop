@@ -3,7 +3,7 @@
 /**
  * @since 1.5.0
  */
-class BillmateInvoiceValidationModuleFrontController extends ModuleFrontController
+class BillmatePartpaymentValidationModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
 	public $ajax = true;
@@ -44,22 +44,27 @@ class BillmateInvoiceValidationModuleFrontController extends ModuleFrontControll
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
         
-		$id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
-		$product = new Product($id_product);
-		$price   = $product->price;
-		$price_wt = $price * (1 + (($product->getTaxesRate($adrsDelivery)) * 0.01));		
 		$customer = new Customer($this->context->cart->id_customer);
 		
 		if(version_compare(_PS_VERSION_,'1.5','>=')){
-			$previouslink = $link->getModuleLink('billmateinvoice', 'getaddress', array('ajax'=> 0,'clearFee' => true), true);
+			$previouslink = $link->getModuleLink('billmatepartpayment', 'getaddress', array('ajax'=> 0,'clearFee' => true), true);
 		} else {
 			$previouslink = $link->getPageLink("order.php", true).'?step=3';
 		}
 		$this->context->smarty->assign('previouslink', $previouslink);
 
+		$total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
+		$this->context->smarty->assign(
+			array('total_fee' => $total)
+		);
+		$countries = $this->context->controller->module->countries;
+		
+		$monthlycost = $this->getMonthlyCoast($this->context->cart, $countries, $country);
+		
+		$this->context->smarty->assign('accountPrice', $monthlycost);		
+		
 		$this->context->smarty->assign(array(
-			'total' => $this->context->cart->getOrderTotal(true, Cart::BOTH) + (float)$price_wt,
-			'fee' =>(float)$price_wt,
+			'total' => $this->context->cart->getOrderTotal(true, Cart::BOTH),
 			'customer_email' => $customer->email,
 			'opc'=> (bool)Configuration::get('PS_ORDER_PROCESS_TYPE'),
 			'this_path' => $this->module->getPathUri(),
@@ -71,5 +76,33 @@ class BillmateInvoiceValidationModuleFrontController extends ModuleFrontControll
 
 		$this->setTemplate('validation'.$extra);
 //		$this->setTemplate('validation.tpl');
+	}
+	public function getMonthlyCoast($cart, $countries, $country)
+	{
+
+		$countryString  = $countries[$country->iso_code]['code'];
+		$language = $countries[$country->iso_code]['langue'];
+		$currency = $countries[$country->iso_code]['currency'];
+        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+        $countryname = Tools::strtoupper($countryname);
+
+		$eid    = Configuration::get('BILLMATE_STORE_ID_'.$countryname);
+		$secret = Configuration::get('BILLMATE_SECRET_'.$countryname);
+		$mode   = Configuration::get('BILLMATE_MOD');
+		$this->context->smarty->assign(array(
+			'eid' => $eid
+		));
+		$billmate = new pClasses($eid, $secret,$countryString, $language, $currency, $mode);
+
+		$accountPrice = array();
+		$pclasses = $billmate->getPClasses();
+
+		$total = (float)$cart->getOrderTotal();
+
+		foreach ($pclasses as $val)
+			if ($val['minamount'] < $total)
+				$accountPrice[$val['id']] = array('price' => BillmateCalc::calc_monthly_cost($total, $val, BillmateFlags::CHECKOUT_PAGE), 'month' => (int)$val['months'], 'description' => htmlspecialchars_decode(Tools::safeOutput($val['description'])));
+
+		return $accountPrice;
 	}
 }

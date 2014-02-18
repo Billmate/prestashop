@@ -28,6 +28,7 @@
  * @since 1.5.0
  */
  
+include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
 
 class BillmateInvoiceGetInfoModuleFrontController extends ModuleFrontController
 {
@@ -35,7 +36,7 @@ class BillmateInvoiceGetInfoModuleFrontController extends ModuleFrontController
 	public $ajax = true;
     public function init(){
         parent::init();
-		echo '<h1>Billmate version 1.25</h1>';
+		echo '<h1>Billmate version '.BILLPLUGIN_VERSION.'</h1>';
 		phpinfo();
   }
 }

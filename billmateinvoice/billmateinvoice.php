@@ -18,7 +18,8 @@ if (!defined('_CAN_LOAD_FILES_'))
 if(!defined('BILLMATE_BASE')){
 	define('BILLMATE_BASE', dirname(__FILE__));
 }
-include_once(BILLMATE_BASE . '/billmate.php');
+include_once(BILLMATE_BASE . '/Billmate.php');
+include_once(BILLMATE_BASE . '/commonfunctions.php');
 
 /**
  * BillmateInvoice class
@@ -110,7 +111,7 @@ class BillmateInvoice extends PaymentModule
         $this->billmate_secret = Configuration::get('BILLMATE_SECRET');
         $this->billmate_countries = unserialize( Configuration::get('BILLMATE_ENABLED_COUNTRIES_LIST'));
         $this->billmate_fee = Configuration::get('BILLMATE_FEE');
-		require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
+		//require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
 		$this->context->smarty->assign('base_dir', __PS_BASE_URI__);
       }
     
@@ -121,6 +122,14 @@ class BillmateInvoice extends PaymentModule
      *
      * @return string
      */
+    public function enable(){
+		parent::enable();
+		Configuration::updateValue('BILLMATEINV_ACTIVE_INVOICE', true );
+	}	
+    public function disable(){
+		parent::disable();
+		Configuration::updateValue('BILLMATEINV_ACTIVE_INVOICE', false );
+	}	
 	public function getContent()
 	{
 		$html = '';
@@ -269,13 +278,13 @@ class BillmateInvoice extends PaymentModule
 		if (isset($_POST['billmate_active_invoice']) && $_POST['billmate_active_invoice'])
 			Configuration::updateValue('BILLMATEINV_ACTIVE_INVOICE', true);
 		else
-			Configuration::deleteByName('BILLMATEINV_ACTIVE_INVOICE');
+			billmate_deleteConfig('BILLMATEINV_ACTIVE_INVOICE');
 		
 
 		foreach ($this->countries as $country)
 		{
-			Configuration::deleteByName('BM_INV_STORE_ID_'.$country['name']);
-			Configuration::deleteByName('BM_INV_SECRET_'.$country['name']);
+			billmate_deleteConfig('BM_INV_STORE_ID_'.$country['name']);
+			billmate_deleteConfig('BM_INV_SECRET_'.$country['name']);
 		}
 
 		$category_id = Configuration::get('BM_INV_CATEID');
@@ -315,75 +324,70 @@ class BillmateInvoice extends PaymentModule
 				$storeId = (int)Tools::getValue('billmateStoreId'.$country['name']);
 				$secret = pSQL(Tools::getValue('billmateSecret'.$country['name']));
 
-				if (($storeId > 0 && $secret == '') || ($storeId <= 0 && $secret != ''))
-					$this->_postErrors[] = $this->l('your credentials are incorrect and can\'t be used in ').$country['name'];
-				elseif ($storeId >= 0 && $secret != '')
+				Configuration::updateValue('BM_INV_STORE_ID_'.$country['name'], $storeId);
+				Configuration::updateValue('BM_INV_SECRET_'.$country['name'], $secret);
+				Configuration::updateValue('BM_INV_FEE_'.$country['name'], (float)Tools::getValue('billmateInvoiceFee'.$country['name']));
+				Configuration::updateValue('BM_INV_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
+				Configuration::updateValue('BM_INV_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
+				$id_product = Db::getInstance()->getValue('SELECT `id_product` FROM `'._DB_PREFIX_.'product_lang` WHERE `name` = \''.$this->getFeeLabel($country['name']).'\'');
+
+				$taxeRules = TaxRulesGroup::getAssociatedTaxRatesByIdCountry(Country::getByIso($key));
+				$maxiPrice = 0;
+				$idTaxe = 0;
+				foreach ($taxeRules as $key => $val)
+					if ((int)$val > $maxiPrice)
+					{
+						$maxiPrice = (int)$val;
+						$idTaxe = $key;
+					}
+
+
+				if ($id_product != null)
 				{
-					
-					Configuration::updateValue('BM_INV_STORE_ID_'.$country['name'], $storeId);
-					Configuration::updateValue('BM_INV_SECRET_'.$country['name'], $secret);
-					Configuration::updateValue('BM_INV_FEE_'.$country['name'], (float)Tools::getValue('billmateInvoiceFee'.$country['name']));
-					Configuration::updateValue('BM_INV_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
-					Configuration::updateValue('BM_INV_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
-					$id_product = Db::getInstance()->getValue('SELECT `id_product` FROM `'._DB_PREFIX_.'product_lang` WHERE `name` = \''.$this->getFeeLabel($country['name']).'\'');
-
-					$taxeRules = TaxRulesGroup::getAssociatedTaxRatesByIdCountry(Country::getByIso($key));
-					$maxiPrice = 0;
-					$idTaxe = 0;
-					foreach ($taxeRules as $key => $val)
-						if ((int)$val > $maxiPrice)
-						{
-							$maxiPrice = (int)$val;
-							$idTaxe = $key;
-						}
-
-
-					if ($id_product != null)
-					{
-						$productInvoicefee = new Product((int)$id_product);
-						$productInvoicefee->id_category_default = $productInvoicefee->default_category = $category_id;
-						//$productInvoicefee->addToCategories((int)$category_id);
-						$productInvoicefee->price = (float)Tools::getValue('billmateInvoiceFee'.$country['name']);
-						if (_PS_VERSION_ >= 1.5)
-							StockAvailable::setProductOutOfStock((int)$productInvoicefee->id, true, null, 0);
-						if ($idTaxe != 0)
-							$productInvoicefee->id_tax_rules_group = (int)$idTaxe;
-						$productInvoicefee->update();
-					}
-					else
-					{
-						$productInvoicefee = new Product();
-						$productInvoicefee->out_of_stock = 1;
-						$productInvoicefee->available_for_order = true;
-						$productInvoicefee->id_category_default = $productInvoicefee->default_category = $category_id;
-						//$productInvoicefee->addToCategories($category_id);
-						$productInvoicefee->id_tax_rules_group = 0;
-						$languages = Language::getLanguages(false);
-						foreach ($languages as $language)
-						{
-							$productInvoicefee->name[$language['id_lang']] = $this->getFeeLabel($country['name']);
-							$productInvoicefee->link_rewrite[$language['id_lang']] = 'invoiceFee'.$country['name'];
-						}
-						$productInvoicefee->price = (float)Tools::getValue('billmateInvoiceFee'.$country['name']);
-						if (_PS_VERSION_ >= 1.5)
-							$productInvoicefee->active = false;
-						$productInvoicefee->add();
-						if (_PS_VERSION_ >= 1.5)
-							StockAvailable::setProductOutOfStock((int)$productInvoicefee->id, true, null, 0);
-					}
-					Db::getInstance()->delete('category_product', 'id_product = '.(int)$productInvoicefee->id);
-					$product_cats = array(
-						'id_category' => (int)$category_id,
-						'id_product' => (int)$productInvoicefee->id,
-						'position' => (int)1,
-					);
-			  
-					Db::getInstance()->insert('category_product', $product_cats,false,true,Db::INSERT_IGNORE);
-					
-					Configuration::updateValue('BM_INV_FEE_ID_'.$country['name'], $productInvoicefee->id);
-					$this->_postValidations[] = $this->l('Your account has been updated to be used in ').$country['name'];
-
+					$productInvoicefee = new Product((int)$id_product);
+					$productInvoicefee->id_category_default = $productInvoicefee->default_category = $category_id;
+					//$productInvoicefee->addToCategories((int)$category_id);
+					$productInvoicefee->price = (float)Tools::getValue('billmateInvoiceFee'.$country['name']);
+					if (_PS_VERSION_ >= 1.5)
+						StockAvailable::setProductOutOfStock((int)$productInvoicefee->id, true, null, 0);
+					if ($idTaxe != 0)
+						$productInvoicefee->id_tax_rules_group = (int)$idTaxe;
+					$productInvoicefee->update();
 				}
+				else
+				{
+					$productInvoicefee = new Product();
+					$productInvoicefee->out_of_stock = 1;
+					$productInvoicefee->available_for_order = true;
+					$productInvoicefee->id_category_default = $productInvoicefee->default_category = $category_id;
+					//$productInvoicefee->addToCategories($category_id);
+					$productInvoicefee->id_tax_rules_group = 0;
+					$languages = Language::getLanguages(false);
+					foreach ($languages as $language)
+					{
+						$productInvoicefee->name[$language['id_lang']] = $this->getFeeLabel($country['name']);
+						$productInvoicefee->link_rewrite[$language['id_lang']] = 'invoiceFee'.$country['name'];
+					}
+					$productInvoicefee->price = (float)Tools::getValue('billmateInvoiceFee'.$country['name']);
+					if (_PS_VERSION_ >= 1.5)
+						$productInvoicefee->active = false;
+					$productInvoicefee->add();
+					if (_PS_VERSION_ >= 1.5)
+						StockAvailable::setProductOutOfStock((int)$productInvoicefee->id, true, null, 0);
+				}
+				Db::getInstance()->delete('category_product', 'id_product = '.(int)$productInvoicefee->id);
+				$product_cats = array(
+					'id_category' => (int)$category_id,
+					'id_product' => (int)$productInvoicefee->id,
+					'position' => (int)1,
+				);
+		  
+				Db::getInstance()->insert('category_product', $product_cats,false,true,Db::INSERT_IGNORE);
+				
+				Configuration::updateValue('BM_INV_FEE_ID_'.$country['name'], $productInvoicefee->id);
+				$this->_postValidations[] = $this->l('Your account has been updated to be used in ').$country['name'];
+
+			
 			}
 		} 
 	}

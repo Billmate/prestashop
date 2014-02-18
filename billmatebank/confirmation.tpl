@@ -1,4 +1,4 @@
-<p>{l s='Your order on' mod='billmatebank'} <span class="bold">{$shop_name}</span> {l s='is complete.' mod='billmatebank'}
+<p style="padding: 0px 12px;">{l s='Your order on' mod='billmatebank'} <span class="bold">{$shop_name}</span> {l s='is complete.' mod='billmatebank'}
 	<br /><br />
         {l s='Thank you!' mod='billmatebank'}<br/><br/>
 	{l s='You have chosen the Billmate Bank.' mod='billmatebank'}

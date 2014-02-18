@@ -12,8 +12,9 @@
 if (!defined('_CAN_LOAD_FILES_'))
 	exit;
 
-define('BBANK_BASE', dirname(dirname(__FILE__)).'/billmatecardpay');
-include_once(BBANK_BASE . '/billmate.php');
+define('BBANK_BASE', dirname(dirname(__FILE__)).'/billmateinvoice');
+include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
+require_once(BBANK_BASE . '/Billmate.php');
 
 /**
  * BillmateBank class
@@ -113,6 +114,14 @@ class BillmateBank extends PaymentModule
 		$html .= $this->_displayAdminTpl();
 		return $html;
 	}
+    public function enable(){
+		parent::enable();
+		Configuration::updateValue('BBANK_ACTIVE', true );
+	}	
+    public function disable(){
+		parent::disable();
+		Configuration::updateValue('BBANK_ACTIVE', false );
+	}	
 	/**
 	 * @brief Method that will displayed all the tabs in the configurations forms
 	 *
@@ -240,13 +249,13 @@ class BillmateBank extends PaymentModule
 		if (isset($_POST['billmate_active_cardpay']) && $_POST['billmate_active_cardpay'])
 			Configuration::updateValue('BBANK_ACTIVE', true);
 		else
-			Configuration::deleteByName('BBANK_ACTIVE');
+			billmate_deleteConfig('BBANK_ACTIVE');
 		
 
 		foreach ($this->countries as $country)
 		{
-			Configuration::deleteByName('BBANK_STORE_ID_'.$country['name']);
-			Configuration::deleteByName('BBANK_SECRET_'.$country['name']);
+			billmate_deleteConfig('BBANK_STORE_ID_'.$country['name']);
+			billmate_deleteConfig('BBANK_SECRET_'.$country['name']);
 		}
 
 		foreach ($this->countries as $key => $country)
@@ -257,18 +266,12 @@ class BillmateBank extends PaymentModule
 				$storeId = (int)Tools::getValue('billmateStoreId'.$country['name']);
 				$secret = pSQL(Tools::getValue('billmateSecret'.$country['name']));
 
-				if (($storeId > 0 && $secret == '') || ($storeId <= 0 && $secret != ''))
-					$this->_postErrors[] = $this->l('your credentials are incorrect and can\'t be used in ').$country['name'];
-				elseif ($storeId >= 0 && $secret != '')
-				{
-					Configuration::updateValue('BBANK_STORE_ID_'.$country['name'], $storeId);
-					Configuration::updateValue('BBANK_SECRET_'.$country['name'], $secret);
-					Configuration::updateValue('BBANK_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
-					Configuration::updateValue('BBANK_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
-		
-					$this->_postValidations[] = $this->l('Your account has been updated to be used in ').$country['name'];
-
-				}
+				Configuration::updateValue('BBANK_STORE_ID_'.$country['name'], $storeId);
+				Configuration::updateValue('BBANK_SECRET_'.$country['name'], $secret);
+				Configuration::updateValue('BBANK_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
+				Configuration::updateValue('BBANK_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
+	
+				$this->_postValidations[] = $this->l('Your account has been updated to be used in ').$country['name'];
 			}
 		} 
 	}

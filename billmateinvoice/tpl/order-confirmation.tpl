@@ -1,4 +1,4 @@
-<p>{l s='Your order on' mod='billmatepartpayment'} <span class="bold">{$shop_name}</span> {l s='is complete.' mod='billmatepartpayment'}
+<p style="padding: 0px 12px;">{l s='Your order on' mod='billmatepartpayment'} <span class="bold">{$shop_name}</span> {l s='is complete.' mod='billmatepartpayment'}
 	<br /><br />
         {l s='Thank you!' mod='billmatepartpayment'}<br/><br/>
 	{l s='You have chosen the Billmate method.' mod='billmatepartpayment'}
