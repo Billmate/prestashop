@@ -33,7 +33,7 @@ include_once(_PS_MODULE_DIR_.'/billmatecardpay/billmatecardpay.php');
 require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
 
 //define('BCARDPAY_BASE', dirname(__FILE__));
-require_once BCARDPAY_BASE. '/billmate.php';
+require_once BCARDPAY_BASE. '/Billmate.php';
 require_once BCARDPAY_BASE. '/utf8.php';
 include_once(BCARDPAY_BASE."/xmlrpc-2.2.2/lib/xmlrpc.inc");
 include_once(BCARDPAY_BASE."/xmlrpc-2.2.2/lib/xmlrpcs.inc");

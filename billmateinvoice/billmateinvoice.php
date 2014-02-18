@@ -122,12 +122,12 @@ class BillmateInvoice extends PaymentModule
      *
      * @return string
      */
-    public function enable(){
-		parent::enable();
+    public function enable($forceAll = false){
+		parent::enable($forceAll);
 		Configuration::updateValue('BILLMATEINV_ACTIVE_INVOICE', true );
 	}	
-    public function disable(){
-		parent::disable();
+    public function disable($forceAll = false){
+		parent::disable($forceAll);
 		Configuration::updateValue('BILLMATEINV_ACTIVE_INVOICE', false );
 	}	
 	public function getContent()

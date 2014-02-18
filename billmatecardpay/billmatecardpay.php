@@ -130,12 +130,12 @@ class BillmateCardpay extends PaymentModule
 		$html .= $this->_displayAdminTpl();
 		return $html;
 	}
-    public function enable(){
-		parent::enable();
+    public function enable($forceAll=false){
+		parent::enable($forceAll);
 		Configuration::updateValue('BCARDPAY_ACTIVE_CARDPAY', true );
 	}	
-    public function disable(){
-		parent::disable();
+    public function disable($forceAll=false){
+		parent::disable($forceAll);
 		Configuration::updateValue('BCARDPAY_ACTIVE_CARDPAY', false );
 	}	
 
