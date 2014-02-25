@@ -448,7 +448,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			$result1 = $k->AddInvoice('',$bill_address,$ship_address,$goods_list,$transaction);  
 		}
 
-		if(is_string($result1))
+		if(is_string($result1) || isset($result1['error']) || !is_array($result1))
 		{
 			throw new Exception(utf8_encode($result1), 122);
 		}else{

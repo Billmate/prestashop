@@ -103,7 +103,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				$addr = $cache_addr = $_SESSION['partpayment_person_nummber_data'];
 			}
 
-			if( empty($addr) || !is_array($addr)){
+			if(isset($addr['error']) || empty($addr) || !is_array($addr)){
 				$this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
 				$message = '{success:false, content: "'.utf8_encode('Betalning med Billmate misslyckades. Felkod 1001. Välj ett annat betalningssätt eller ange ett annat person/organisationsnummer.'.$person).'"}';
 				
@@ -567,7 +567,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 
 		$result1 = $k->AddInvoice($personalnumber,$bill_address,$ship_address,$goods_list,$transaction);  
 		
-		if(is_string($result1))
+		if(is_string($result1) || isset($result1['error']) || !is_array($result1))
 		{
 			throw new Exception($result1.$personalnumber);
 		}

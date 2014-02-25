@@ -63,7 +63,7 @@ class BillmateBank extends PaymentModule
         $this->name = 'billmatebank';
         $this->moduleName='billmatebank';
         $this->tab = 'payments_gateways';
-        $this->version = '1.25';
+        $this->version = '1.26';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;
