@@ -50,8 +50,6 @@ if(!function_exists('my_dump')){
 include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
 require_once BILLMATE_BASE. '/Billmate.php';
 
-error_reporting(E_ERROR);
-ini_set('display_errors', 1);
 class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
@@ -84,18 +82,20 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
         $countryname = Tools::strtoupper($countryname);
 		
 		$id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
-        $eid = (int)Configuration::get('BM_INV_STORE_ID_'.$countryname);
-        $secret = (float)Configuration::get('BM_INV_SECRET_'.$countryname);
+        $eid = (int)Configuration::get('BILLMATE_STORE_ID_'.$countryname);
+        $secret = Configuration::get('BILLMATE_SECRET_'.$countryname);
 		define('BILLMATE_INVOICE_EID', $eid);
 		
         $ssl = true;
         $debug = false;
         
 		try{
-			$k = new BillMate($eid,$secret,$ssl,$debug, Configuration::get('BILLMATEINV_MOD'));
+			$k = new BillMate($eid,$secret,$ssl,$debug, Configuration::get('BILLMATE_MOD'));
 			
 			$person = trim(Tools::getValue('billmate_pno'));
-			if(!isset($_SESSION['partpayment_person_nummber']) || $person != $_SESSION['partpayment_person_nummber']){
+			$md5 = md5('partpayment_'.$eid.$secret.$person);
+			
+			if(!isset($_SESSION[$md5]) || $person != $_SESSION[$md5]){
 			
 				$addr = $cache_addr = $k->GetAddress($person);
 
@@ -126,7 +126,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
        // echo BillmateCountry::getContryByNumber($addr[0][5]);
         $fullname = $adrsDelivery->firstname.' '.$adrsDelivery->lastname.' '.$adrsDelivery->company;
 
-		$_SESSION['partpayment_person_nummber'] = $person;
+		$_SESSION[$md5] = $person;
 		$_SESSION['partpayment_person_nummber_data'] = $cache_addr;
 
         if(strlen($addr[0][0]) <= 0 ){
@@ -304,10 +304,6 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				}*/
                 $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
 //				$measurements['deleteproduct'] = microtime(true) - $timestart;
-				
-				//$timestart = microtime(true);
-			    $this->context->cart->updateQty(1, (int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
-				//$measurements['updateqty'] = microtime(true) - $timestart;
 
             	$invoiceid = $this->processReserveInvoice( strtoupper(BillmateCountry::getCode($addr[0][5])));
 				$timetotalstart = $timestart = microtime(true);
@@ -361,13 +357,13 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($isocode)  );
         $countryname = Tools::strtoupper($countryname);
 
-        $eid = (int)Configuration::get('BM_INV_STORE_ID_'.$countryname);
-        $secret = (float)Configuration::get('BM_INV_SECRET_'.$countryname);
+        $eid = (int)Configuration::get('BILLMATE_STORE_ID_'.$countryname);
+        $secret = Configuration::get('BILLMATE_SECRET_'.$countryname);
 
 		$ssl = true;
 		$debug = false;
         
-        $k = new BillMate($eid,$secret,$ssl,$debug,Configuration::get('BILLMATEINV_MOD'));
+        $k = new BillMate($eid,$secret,$ssl,$debug,Configuration::get('BILLMATE_MOD'));
 
         $personalnumber = trim(Tools::getValue('billmate_pno'));
         $country_to_currency = array(
@@ -542,7 +538,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 
 		$label =  array();
 
-		$pclass = -1;
+		$pclass = (int)Tools::getValue('paymentAccount');
 		
 		$transaction = array(
 			"order1"=>(string)$order_id,
@@ -564,14 +560,13 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 			"extraInfo"=>array(array("cust_no"=>(int)$this->context->cart->id_customer))
 		);
 		if(empty($personalnumber) || empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
-
+		$md5 = md5('partpayment_'.$eid.$secret.$personalnumber);
 		$result1 = $k->AddInvoice($personalnumber,$bill_address,$ship_address,$goods_list,$transaction);  
-		
 		if(is_string($result1) || isset($result1['error']) || !is_array($result1))
 		{
 			throw new Exception($result1.$personalnumber);
 		}
-		unset( $_SESSION['partpayment_person_nummber'] );
+		unset( $_SESSION[$md5] );
 		return $result1[0];
     }
 	public function logData($k, $comment){

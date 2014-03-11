@@ -272,6 +272,8 @@ class BillmatePartpayment extends PaymentModule
 		{
 			billmate_deleteConfig('BILLMATE_STORE_ID_'.$country['name']);
 			billmate_deleteConfig('BILLMATE_SECRET_'.$country['name']);
+			//$key = 'BILLMATE_SECRET_'.$country['name'];
+			//var_dump(Configuration::hasKey($key, $lang, $id_shop_group, $id_shop))
 		}
 
 		$category_id = Configuration::get('BILLMATE_CATEID');
@@ -291,7 +293,7 @@ class BillmatePartpayment extends PaymentModule
 			if (isset($_POST['activate'.$country['name']]))
 			{
 				$storeId = (int)Tools::getValue('billmateStoreId'.$country['name']);
-				$secret = pSQL(Tools::getValue('billmateSecret'.$country['name']));
+				$secret = Tools::getValue('billmateSecret'.$country['name']);
 					
 				$mode   = Configuration::get('BILLMATE_MOD');
 
@@ -300,10 +302,14 @@ class BillmatePartpayment extends PaymentModule
 				$currency = $country['currency'];
 				try{
 					$pclassesObj->Save($storeId, $secret,$countryString, $language, $currency, $mode);
+					if($_SERVER['REMOTE_ADDR'] == '122.173.227.3'){
+						
+					}
 				}catch(Exception $ex){
 					$this->_postErrors[] = $ex->getMessage().' - '.$country['name'];
 				}
 				Configuration::updateValue('BILLMATE_STORE_ID_'.$country['name'], $storeId);
+				
 				Configuration::updateValue('BILLMATE_SECRET_'.$country['name'], $secret);
 				Configuration::updateValue('BILLMATE_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
 				Configuration::updateValue('BILLMATE_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
@@ -328,6 +334,11 @@ class BillmatePartpayment extends PaymentModule
      */
     public function install()
     {
+		include(dirname(__FILE__).'/sql-install.php');
+		foreach ($sql as $s)
+		  if (!Db::getInstance()->Execute($s))
+		    return false;
+
 		if (!parent::install() || !$this->registerHook('payment') || !$this->registerHook('adminOrder') || !$this->registerHook('paymentReturn') || !$this->registerHook('orderConfirmation'))
 			return false;
 
@@ -385,10 +396,6 @@ class BillmatePartpayment extends PaymentModule
 			$country->update();
 		}
 		/* The hook "displayMobileHeader" has been introduced in v1.5.x - Called separately to fail silently if the hook does not exist */
-
-      if ($ret) {
-            return false;
-        }
         return true;
     }
     
@@ -437,8 +444,12 @@ class BillmatePartpayment extends PaymentModule
 		
 		$billmate = new pClasses($eid, $secret,$countryString, $language, $currency, $mode);
 		$pclass = $billmate->getCheapestPClass((float)$this->context->cart->getOrderTotal(), BillmateFlags::CHECKOUT_PAGE);
-		
-		if ($pclass && $pclass['minamount'] < $this->context->cart->getOrderTotal())
+		if($_SERVER['REMOTE_ADDR'] == '122.173.227.3'){
+			;
+			// var_dump($total , $minVal , $total , $maxVal);
+			//return true;
+		}
+		if ($pclass && $pclass['minamount'] <= $this->context->cart->getOrderTotal())
 		{
 			$value = BillmateCalc::calc_monthly_cost((float)$this->context->cart->getOrderTotal(), $pclass, BillmateFlags::CHECKOUT_PAGE);
 		} else{

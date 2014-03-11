@@ -1,7 +1,7 @@
 <?php
 
 require_once BCARDPAY_BASE. '/Billmate.php';
-error_reporting(E_ERROR);
+//error_reporting(E_ERROR);
 class BillmateCardpayValidationModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
@@ -275,7 +275,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 	function getBillmate(){
 
         $eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
-        $secret = (float)Configuration::get('BCARDPAY_SECRET_SETTINGS');
+        $secret = Configuration::get('BCARDPAY_SECRET_SETTINGS');
 
 		$ssl = true;
 		$debug = false;

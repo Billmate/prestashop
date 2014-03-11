@@ -163,6 +163,11 @@ function reviewstep(){
 }
 
 function ShowMessage(content,wtitle){
+	
+	if( typeof modalWin == 'undefined' ){
+		modalWin = new CreateModalPopUpObject();
+	}
+	
 	if( navigator.appName != 'Microsoft Internet Explorer' ) {	
 		if(matchMedia('(max-width: 800px)').matches){
 			modalWin.ShowMessage(content,390,250,wtitle);

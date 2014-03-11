@@ -6,7 +6,7 @@ if(!function_exists('getCountryID')){
 	require dirname(__FILE__).'/xmlrpc-2.2.2/lib/xmlrpc.inc';
 	require dirname(__FILE__).'/xmlrpc-2.2.2/lib/xmlrpcs.inc';
 
-	define('BILLPLUGIN_VERSION', '1.26');
+	define('BILLPLUGIN_VERSION', '1.27');
 	
 	define('BILLMATE_VERSION',  "PHP:Prestashop:".BILLPLUGIN_VERSION );
 
@@ -34,23 +34,18 @@ if(!function_exists('getCountryID')){
 			return ' AND (id_shop_group IS NULL OR id_shop_group = 0) AND (id_shop IS NULL OR id_shop = 0)';
 	}
 	function billmate_deleteConfig($key){
-
+		
 		$id_shop = Shop::getContextShopID(true);
 		$id_shop_group = Shop::getContextShopGroupID(true);
 		$condition = bill_sqlRestrict($id_shop_group, $id_shop);
-		
-		$sql = '
-		DELETE FROM `'._DB_PREFIX_.'configuration_lang`
-		WHERE `id_configuration` IN (
-			SELECT `id_configuration`
-			FROM `'._DB_PREFIX_.'configuration`
-			WHERE `name` = "'.pSQL($key).'" '.$condition.'
-		)';
-		$result = Db::getInstance()->execute($sql);
+			
+		$sql = 'DELETE FROM `'._DB_PREFIX_.'configuration_lang`	WHERE `id_configuration` IN ( SELECT `id_configuration`	FROM `'._DB_PREFIX_.'configuration`	WHERE `name` = "'.pSQL($key).'" '.$condition.')';
 
-		$result2 = Db::getInstance()->execute('
-		DELETE FROM `'._DB_PREFIX_.'configuration`
-		WHERE `name` = "'.pSQL($key).'" '.$condition);
+		$result = Db::getInstance()->execute($sql);
+	 	$sql = 'DELETE FROM `'._DB_PREFIX_.'configuration` WHERE `name` = "'.pSQL($key).'" '.$condition;
+	 
+		$result2 = Db::getInstance()->execute($sql);
+		Configuration::loadConfiguration();
 	}
 }
 

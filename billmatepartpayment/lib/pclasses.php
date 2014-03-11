@@ -77,6 +77,7 @@ class pClasses{
 	        "language"=>$language,//Swedish
         );
         $data = $billmate->FetchCampaigns($additionalinfo);
+		
 		if( !is_array($data)){
 			throw new Exception(strip_tags($data));
 		} else {
@@ -84,6 +85,7 @@ class pClasses{
 			foreach($data as $_row){
 				$_row['eid'] = $eid;
 				$_row['country'] = $country;
+				
 				Db::getInstance()->insert('billmate_payment_pclasses',$_row);
 			}
 		}
@@ -122,10 +124,15 @@ class pClasses{
         return $lowest;	
 	}
 	public function getPClasses($eid = ''){
-		if(!empty($eid) && $eid != $this->_eid){
+		if(!empty($eid) && $eid != $this->_eid || !is_array($this->data)){
 			$this->_eid = $eid;
+			if($_SERVER['REMOTE_ADDR'] == '122.173.227.3'){
+			//echo 'SELECT * FROM `'._DB_PREFIX_.'billmate_payment_pclasses` where eid="'.$this->_eid.'"';
+			}
 			$this->data = Db::getInstance()->ExecuteS('SELECT * FROM `'._DB_PREFIX_.'billmate_payment_pclasses` where eid="'.$this->_eid.'"');
 		}
+		
+		if( !is_array($this->data) ) $this->data = array();
 		return $this->data;
 	}
 	public function __set($key, $val){

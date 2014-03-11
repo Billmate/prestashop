@@ -2,7 +2,7 @@
 
 
 require_once BBANK_BASE. '/Billmate.php';
-error_reporting(E_ERROR);
+//error_reporting(E_ERROR);
 class BillmateBankValidationModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
@@ -283,7 +283,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
         $countryname = Tools::strtoupper($countryname);
         
         $eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-        $secret = (float)Configuration::get('BBANK_SECRET_SWEDEN');
+        $secret = Configuration::get('BBANK_SECRET_SWEDEN');
 
 		$ssl = true;
 		$debug = false;

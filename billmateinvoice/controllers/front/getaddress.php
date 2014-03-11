@@ -48,7 +48,7 @@ if(!function_exists('my_dump')){
 
 include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
 require_once BILLMATE_BASE. '/Billmate.php';
-error_reporting(E_ERROR);
+
 class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
@@ -82,7 +82,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 		
 		$id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
         $eid = (int)Configuration::get('BM_INV_STORE_ID_'.$countryname);
-        $secret = (float)Configuration::get('BM_INV_SECRET_'.$countryname);
+        $secret = Configuration::get('BM_INV_SECRET_'.$countryname);
 		define('BILLMATE_INVOICE_EID', $eid);
 		
         $ssl = true;
@@ -90,9 +90,11 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
         
 		try{
 			$k = new BillMate($eid,$secret,$ssl,$debug, Configuration::get('BILLMATEINV_MOD'));
-			
+					
 			$person = trim(Tools::getValue('pno'));
-			if(!isset($_SESSION['invoice_person_nummber']) || $person != $_SESSION['invoice_person_nummber']){
+			$md5 = md5('invoice_'.$eid.$secret.$person);
+
+			if(!isset($_SESSION[$md5]) || $person != $_SESSION[$md5]){
 			
 				$addr = $cache_addr = $k->GetAddress($person);
 			}else{
@@ -122,7 +124,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
        // echo BillmateCountry::getContryByNumber($addr[0][5]);
         $fullname = $adrsDelivery->firstname.' '.$adrsDelivery->lastname.' '.$adrsDelivery->company;
 
-		$_SESSION['invoice_person_nummber'] = $person;
+		$_SESSION[$md5] = $person;
 		$_SESSION['invoice_person_nummber_data'] = $cache_addr;
 
         if(strlen($addr[0][0]) <= 0 ){
@@ -358,7 +360,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
         $countryname = Tools::strtoupper($countryname);
 
         $eid = (int)Configuration::get('BM_INV_STORE_ID_'.$countryname);
-        $secret = (float)Configuration::get('BM_INV_SECRET_'.$countryname);
+        $secret = Configuration::get('BM_INV_SECRET_'.$countryname);
 
 		$ssl = true;
 		$debug = false;
@@ -560,14 +562,14 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 			"extraInfo"=>array(array("cust_no"=>(int)$this->context->cart->id_customer))
 		);
 		if(empty($personalnumber) || empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
-
+		$md5 = md5('invoice_'.$eid.$secret.$personalnumber);
 		$result1 = $k->AddInvoice($personalnumber,$bill_address,$ship_address,$goods_list,$transaction);  
 		
 		if(is_string($result1) || isset($result1['error']) || !is_array($result1))
 		{
 			throw new Exception($result1.$personalnumber);
 		}
-		unset( $_SESSION['invoice_person_nummber'] );
+		unset( $_SESSION[$md5] );
 		return $result1[0];
     }
 	public function logData($k, $comment){

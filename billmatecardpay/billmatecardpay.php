@@ -26,8 +26,8 @@ include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
  */
 define('CARDPAY_TESTURL', 'https://cardpay.billmate.se/pay/test');
 define('CARDPAY_LIVEURL', 'https://cardpay.billmate.se/pay');;
-error_reporting(E_ERROR);
-ini_set('display_errors', 1);
+//error_reporting(E_ERROR);
+ini_set('display_errors', 0);
 
 class BillmateCardpay extends PaymentModule
 {
