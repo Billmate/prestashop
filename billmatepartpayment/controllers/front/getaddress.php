@@ -104,8 +104,9 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 			}
 
 			if(isset($addr['error']) || empty($addr) || !is_array($addr)){
+				$error = isset($addr['error']) && is_array($addr) ? $addr['error'] : $addr;
 				$this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
-				$message = '{success:false, content: "'.utf8_encode('Betalning med Billmate misslyckades. Felkod 1001. Välj ett annat betalningssätt eller ange ett annat person/organisationsnummer.'.$person).'"}';
+				$message = '{success:false, content: "'.utf8_encode($error).'"}';
 				
 //				$k->stat('client_address_error', $message, $eid);
 				die($message);
@@ -117,7 +118,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
             $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));        
         	$return = array('success' => false, 'content' =>utf8_encode( $ex->getMessage() ));
 			
-			$message = '{success:false, content: "'.utf8_encode('Betalning med Billmate misslyckades. Felkod 1001. Välj ett annat betalningssätt eller ange ett annat person/organisationsnummer.').'"}';
+			$message = '{success:false, content: "'.utf8_encode($ex->getMessage()).'"}';
 			
 			//$k->stat('client_address_error', $message );
 			die($message);
