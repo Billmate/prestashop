@@ -73,9 +73,10 @@ class BillmateInvoice extends PaymentModule
 		if (!isset($this->countries[$country->iso_code]))
 			return false;
 		$currency_code = BillmateCurrency::fromCode($currency->iso_code);
-		
+
 		if ($currency_code === null)
 			return false;
+		//var_dump($this->countries[$country->iso_code]['currency'] , $currency_code);
 		if ($this->countries[$country->iso_code]['currency'] != $currency_code)
 			return false;
 		if (Configuration::get('BM_INV_STORE_ID_'.$this->countries[$country->iso_code]['name']) > 0
@@ -88,7 +89,7 @@ class BillmateInvoice extends PaymentModule
         $this->name = 'billmateinvoice';
         $this->moduleName='billmateinvoice';
         $this->tab = 'payments_gateways';
-        $this->version = '1.27';
+        $this->version = '1.28';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;
@@ -111,7 +112,7 @@ class BillmateInvoice extends PaymentModule
         $this->billmate_secret = Configuration::get('BILLMATE_SECRET');
         $this->billmate_countries = unserialize( Configuration::get('BILLMATE_ENABLED_COUNTRIES_LIST'));
         $this->billmate_fee = Configuration::get('BILLMATE_FEE');
-		//require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
+		require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
 		$this->context->smarty->assign('base_dir', __PS_BASE_URI__);
       }
     
@@ -381,8 +382,16 @@ class BillmateInvoice extends PaymentModule
 					'id_product' => (int)$productInvoicefee->id,
 					'position' => (int)1,
 				);
-		  
-				Db::getInstance()->insert('category_product', $product_cats,false,true,Db::INSERT_IGNORE);
+				
+				$db = Db::getInstance();
+				if((version_compare(_PS_VERSION_,'1.5','>'))){
+					Db::getInstance()->insert('category_product', $product_cats,false,true,Db::INSERT_IGNORE);
+				} else {
+					$row = $db->getRow('select id_category from `'._DB_PREFIX_.'category_product` where id_product="'.$productInvoicefee->id.'"');
+					if(!is_array( $row ) || !isset($row['id_category'])){
+						$result &= $db->Execute('insert into `'._DB_PREFIX_.'category_product` SET id_category="'.$category_id.'", id_product="'.$productInvoicefee->id.'",position="1"');
+					}
+				}
 				
 				Configuration::updateValue('BM_INV_FEE_ID_'.$country['name'], $productInvoicefee->id);
 				$this->_postValidations[] = $this->l('Your account has been updated to be used in ').$country['name'];
@@ -502,7 +511,7 @@ class BillmateInvoice extends PaymentModule
         global $smarty, $link;
 		if ( !Configuration::get('BILLMATEINV_ACTIVE_INVOICE'))
 			return false;
-
+		$_SESSION['billmate'] = array();
         $total = $this->context->cart->getOrderTotal();
 
         $cart = $params['cart'];

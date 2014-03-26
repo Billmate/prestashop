@@ -1,5 +1,4 @@
-{capture name=path}{l s='Shipping' mod='billmateinvoice'}{/capture}
-{include file="$tpl_dir./breadcrumb.tpl"}
+{capture name=path}{l s='Billmate Invoice' mod='billmateinvoice'}{/capture}
 <div id="order_area">
 <h2>{l s='Order summation' mod='billmateinvoice'}</h2>
 {assign var='current_step' value='payment'}
@@ -123,7 +122,7 @@ $('#right_column').remove();
 					ShowMessage(response.content,windowtitlebillmate);
 				}else{
 					modalWin.HideModalPopUp();
-					$('<div class="error">'+response.content+'</div>').insertAfter('.breadcrumb');
+					$('<div class="error">'+response.content+'</div>').insertAfter($('.breadcrumb').first());
 				}
             }
         });

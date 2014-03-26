@@ -77,8 +77,8 @@ class BillmateInvoiceController extends FrontController
 		$countries = $this->billmate->getCountries();
 		$type = Tools::getValue('type');
 
-		if ($this->billmate->verifCountryAndCurrency($country, $currency) )
-		{
+//		if ($this->billmate->verifCountryAndCurrency($country, $currency) )
+		//{
 			$pno = array('SE' => 'yymmdd-nnnn', 'FI' => 'ddmmyy-nnnn', 'DK' => 'ddmmyynnnn', 'NO' => 'ddmmyynnnn', 'DE' => 'ddmmyy', 'NE' => 'ddmmyynnnn');
 			self::$smarty->assign('country', $country);
 			self::$smarty->assign('pnoValue', $pno[$country->iso_code]);
@@ -122,7 +122,7 @@ class BillmateInvoiceController extends FrontController
 			//self::$smarty->assign()
 			
 			self::$smarty->display(_PS_MODULE_DIR_.'billmateinvoice/tpl/form.tpl');
-		}
+//		}
 	}
 }
 

@@ -6,7 +6,7 @@ if(!function_exists('getCountryID')){
 	require dirname(__FILE__).'/xmlrpc-2.2.2/lib/xmlrpc.inc';
 	require dirname(__FILE__).'/xmlrpc-2.2.2/lib/xmlrpcs.inc';
 
-	define('BILLPLUGIN_VERSION', '1.27');
+	define('BILLPLUGIN_VERSION', '1.28');
 	
 	define('BILLMATE_VERSION',  "PHP:Prestashop:".BILLPLUGIN_VERSION );
 
@@ -34,11 +34,14 @@ if(!function_exists('getCountryID')){
 			return ' AND (id_shop_group IS NULL OR id_shop_group = 0) AND (id_shop IS NULL OR id_shop = 0)';
 	}
 	function billmate_deleteConfig($key){
+		$condition = '';
 		
-		$id_shop = Shop::getContextShopID(true);
-		$id_shop_group = Shop::getContextShopGroupID(true);
-		$condition = bill_sqlRestrict($id_shop_group, $id_shop);
-			
+		if((version_compare(_PS_VERSION_,'1.5','>'))){
+			$id_shop = Shop::getContextShopID(true);
+			$id_shop_group = Shop::getContextShopGroupID(true);
+			$condition = bill_sqlRestrict($id_shop_group, $id_shop);
+		}
+		
 		$sql = 'DELETE FROM `'._DB_PREFIX_.'configuration_lang`	WHERE `id_configuration` IN ( SELECT `id_configuration`	FROM `'._DB_PREFIX_.'configuration`	WHERE `name` = "'.pSQL($key).'" '.$condition.')';
 
 		$result = Db::getInstance()->execute($sql);
@@ -50,11 +53,11 @@ if(!function_exists('getCountryID')){
 }
 
 if( defined('BILLMATE_DEBUG')){
-	error_reporting(E_ALL);
-	ini_set('display_errors', 1	);
+	@error_reporting(E_ALL);
+	@ini_set('display_errors', 1);
 }else{
-	error_reporting(NULL);
-	ini_set('display_errors', 0	);
+	@error_reporting(NULL);
+	@ini_set('display_errors', 0);
 }
 
 if(!class_exists('BillmateLanguage', false) ){

@@ -82,7 +82,7 @@ var windowtitlebillmate= "{l s='You have entered the wrong address' mod='billmat
 					modalWin.ShowMessage(response.content,310,500,windowtitlebillmate);
 				}else{
 					modalWin.HideModalPopUp();
-					$('<div class="error">'+response.content+'</div>').insertAfter('.breadcrumb');
+					$('<div class="error">'+response.content+'</div>').insertAfter($('.breadcrumb').first());
 				}
             }
         });
