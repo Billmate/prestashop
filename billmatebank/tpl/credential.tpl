@@ -21,7 +21,7 @@
 	<fieldset>
 	<legend><img src="{$module_dir}img/icon-countries.gif" alt="" /> {$billmatebankCredentialTitle}</legend>
 		<h4>{$billmatebankCredentialText}</h4>
-		<ul class="billmate_list_click_country">
+		<ul class="billmate_list_click_country" style="margin-bottom:0px">
 			{foreach from=$credentialInputVar key=name item=c}
 			<li class="billmate_flag_{$name}"><img src="{$countryNames[$name].flag}" alt=""/>{$name|lower|capitalize}</li>
 			{/foreach}

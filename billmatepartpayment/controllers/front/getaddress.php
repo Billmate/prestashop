@@ -49,6 +49,7 @@ if(!function_exists('my_dump')){
 
 include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
 require_once BILLMATE_BASE. '/Billmate.php';
+require_once(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
 
 class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontController
 {
@@ -95,12 +96,12 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 			$person = trim(Tools::getValue('billmate_pno'));
 			$md5 = md5('partpayment_'.$eid.$secret.$person);
 			
-			if(!isset($_SESSION[$md5]) || $person != $_SESSION[$md5]){
+			if(!isset($_SESSION['billmate'][$md5]) || $person != $_SESSION['billmate'][$md5]){
 			
 				$addr = $cache_addr = $k->GetAddress($person);
 
 			}else{
-				$addr = $cache_addr = $_SESSION['partpayment_person_nummber_data'];
+				$addr = $cache_addr = $_SESSION['billmate']['partpayment_person_nummber_data'];
 			}
 
 			if(isset($addr['error']) || empty($addr) || !is_array($addr)){
@@ -127,8 +128,8 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
        // echo BillmateCountry::getContryByNumber($addr[0][5]);
         $fullname = $adrsDelivery->firstname.' '.$adrsDelivery->lastname.' '.$adrsDelivery->company;
 
-		$_SESSION[$md5] = $person;
-		$_SESSION['partpayment_person_nummber_data'] = $cache_addr;
+		$_SESSION['billmate'][$md5] = $person;
+		$_SESSION['billmate']['partpayment_person_nummber_data'] = $cache_addr;
 
         if(strlen($addr[0][0]) <= 0 ){
             $apiName = $adrsDelivery->firstname.' '.$adrsDelivery->lastname.' '.$adrsDelivery->company;
@@ -283,6 +284,9 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 
                 //$this->logData( $k ,'Customer clicked confirm trying to open addresschange popup' );
 
+				if((version_compare(_PS_VERSION_,'1.5','<'))){
+					$this->context = Context::getContext();
+				}
 				if( $this->context->getMobileDevice() ) $extra = '-mobile.tpl';
                 $html = $this->context->smarty->fetch(BILLMATE_BASE.'/views/templates/front/wrongaddress.tpl');
                 $return  = array( 'success'=> false, 'content'=> $html , 'popup' => true );
@@ -296,13 +300,6 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
         	try{
 				$data = $measurements = array();
 				$api = null;
-//				var_dump($this->context->cart->getOrderTotal(true, Cart::BOTH));
-				//var_dump($this->context->cart->getOrderTotal());
-				//die("-adfda");
-/*				if( $this->context->cart->containsProduct( $id_product)){}
-				else{
-					$this->context->cart->updateQty(1, $id_product);
-				}*/
                 $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
 //				$measurements['deleteproduct'] = microtime(true) - $timestart;
 
@@ -320,6 +317,10 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				
 				$timestart = microtime(true);
 				$extra = array('transaction_id'=>$invoiceid);
+				
+				if((version_compare(_PS_VERSION_,'1.5','<'))){
+					$this->module = new BillmatePartpayment();
+				}
 			    $this->module->validateOrder((int)$this->context->cart->id, Configuration::get('PS_OS_PREPARATION'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 			    $order_id = $this->module->currentOrder;
 				$measurements['validateorder'] = microtime(true) - $timestart;
@@ -330,9 +331,10 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				
 				$k->UpdateOrderNo($invoiceid, $this->module->currentOrderReference.','.$order_id); 
 				unset($_SESSION["uniqueId"]);
-				$return['redirect'] = __PS_BASE_URI__.'order-confirmation.php?id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
+//				$return['redirect'] = __PS_BASE_URI__.'order-confirmation.php?id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
 
-            	/*$return['redirect'] = 'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.$order_id;*/
+				$url = 'order-confirmation&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
+				$return['redirect'] = Context::getContext()->link->getPageLink($url);
 
         	}catch(Exception $ex ){
                 $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
@@ -494,7 +496,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 					'qty'   => (int)1,
 					'goods' => array(
 						'artno'    => '',
-						'title'    => $this->context->controller->module->l('Rebate'),
+						'title'    => $this->context->controller->module->l('Rabatt'),
 						'price'    => 0 - abs($discountamount*100),
 						'vat'      => $taxrate,
 						'discount' => 0.0,
@@ -519,8 +521,11 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 					$shippingPrice = $cart->getOrderShippingCost();
 				else
 					$shippingPrice = $cart->getTotalShippingCost();
+					
+			
 			
 			if( !empty( $shippingPrice ) ){
+				$shippingPrice = $shippingPrice / (1+$taxrate/100);
 				$goods_list[] = array(
 					'qty'   => 1,
 					'goods' => array(
@@ -529,7 +534,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 						'price'    => (int)($shippingPrice*100),
 						'vat'      => (float)$taxrate,
 						'discount' => 0.0,
-						'flags'    => 40, //16|32
+						'flags'    => 16, //16|32
 					)
 				);
 			}
@@ -562,12 +567,15 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		);
 		if(empty($personalnumber) || empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
 		$md5 = md5('partpayment_'.$eid.$secret.$personalnumber);
+
 		$result1 = $k->AddInvoice($personalnumber,$bill_address,$ship_address,$goods_list,$transaction);  
+
 		if(is_string($result1) || isset($result1['error']) || !is_array($result1))
 		{
 			throw new Exception($result1.$personalnumber);
 		}
-		unset( $_SESSION[$md5] );
+		$_SESSION['billmate'] = array();
+		unset( $_SESSION['billmate'] );
 		return $result1[0];
     }
 	public function logData($k, $comment){
@@ -672,7 +680,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 					'qty'   => 1,
 					'goods' => array(
 						'artno'    => '',
-						'title'    => $this->context->controller->module->l('Rebate'),
+						'title'    => $this->context->controller->module->l('Rabatt'),
 						'price'    => 0 - round(abs($discountamount*100),0),
 						'vat'      => $vatrate,
 						'discount' => 0.0,

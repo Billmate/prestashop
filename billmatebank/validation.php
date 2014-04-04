@@ -33,7 +33,8 @@ include_once(_PS_MODULE_DIR_.'/billmatebank/billmatebank.php');
 require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
 
 //define('BBANK_BASE', dirname(__FILE__));
-require_once BBANK_BASE. '/BillMateModel.php';
+
+require_once BBANK_BASE. '/BillMate.php';
 require_once BBANK_BASE. '/utf8.php';
 include_once(BBANK_BASE."/xmlrpc-2.2.2/lib/xmlrpc.inc");
 include_once(BBANK_BASE."/xmlrpc-2.2.2/lib/xmlrpcs.inc");
@@ -84,6 +85,7 @@ class BillmateBankController extends FrontController
 
 	public function displayContent()
 	{
+		
 		global $link,$currency;
 		parent::displayContent();
 		$customer = new Customer((int)self::$cart->id_customer);
@@ -96,10 +98,10 @@ class BillmateBankController extends FrontController
 		
 		$amount     = round(self::$cart->getOrderTotal(),2)*100;
 		$order_id   = time();
-		$currency   = $currency->iso_code;
+		$currency   = 'SEK';
 		
 		$merchant_id = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-		$secret = (float)Configuration::get('BBANK_SECRET_SWEDEN');
+		$secret = substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
 		$callback_url = 'http://api.billmate.se/callback.php';
 		$return_method = 'GET';
 		
@@ -236,7 +238,7 @@ class BillmateBankController extends FrontController
 				'qty'   => 1,
 				'goods' => array(
 					'artno'    => '',
-					'title'    => $this->context->controller->module->l('Rebate'),
+					'title'    => $this->context->controller->module->l('Rabatt'),
 					'price'    => 0 - round(abs($discountamount*100),0),
 					'vat'      => $vatrate,
 					'discount' => 0.0,

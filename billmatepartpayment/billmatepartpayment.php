@@ -91,7 +91,7 @@ class BillmatePartpayment extends PaymentModule
         $this->name = 'billmatepartpayment';
         $this->moduleName='billmatepartpayment';
         $this->tab = 'payments_gateways';
-        $this->version = '1.27';
+        $this->version = '1.29';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;
@@ -423,7 +423,7 @@ class BillmatePartpayment extends PaymentModule
 			return false;
 
         $total = $this->context->cart->getOrderTotal();
-
+		$_SESSION['billmate'] = array();
         $cart = $params['cart'];
         $address = new Address(intval($cart->id_address_delivery));
         $country = new Country(intval($address->id_country));
@@ -459,7 +459,7 @@ class BillmatePartpayment extends PaymentModule
 		if( version_compare(_PS_VERSION_, '1.5', '>=') ){
 			$moduleurl = $link->getModuleLink('billmatepartpayment', 'validation', array(), true);
 		}else{
-			$moduleurl = __PS_BASE_URI__.'modules/billmatepartpayment/validation.php';
+			$moduleurl = __PS_BASE_URI__.'modules/billmatepartpayment/payment.php';
 		}
 		
         $smarty->assign('moduleurl', $moduleurl);

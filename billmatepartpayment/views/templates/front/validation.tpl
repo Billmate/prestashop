@@ -25,7 +25,7 @@
 *}
 
 {capture name=path}{l s='Billmate Partpayment' mod='billmatepartpayment'}{/capture}
-{include file="$tpl_dir./breadcrumb.tpl"}
+
 <h2>{l s='Order summary' mod='billmatepartpayment'}</h2>
 <style type="text/css">
 #right_column{
@@ -74,6 +74,7 @@ padding-top: 13px!important;
 {assign var='current_step' value='payment'}
 {include file="$tpl_dir./order-steps.tpl"}
 {if isset($error)}<div style="background-color: #FAE2E3;border: 1px solid #EC9B9B;line-height: 20px;margin: 0 0 10px;padding: 10px 15px;">{$error}</div>{/if}
+<div id="order_area">
 {if isset($nbProducts) && $nbProducts <= 0}
     					 <p class="warning">{l s='Your shopping cart is empty.'}</p>
 					 {else}
@@ -179,7 +180,7 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
 					//modalWin.ShowMessage(response.content,310,500,windowtitlebillmate);
 				}else{
 					modalWin.HideModalPopUp();
-					$('<div class="error">'+response.content+'</div>').insertAfter('.breadcrumb');
+					$('<div class="error">'+response.content+'</div>').insertBefore($('#order_area'));
 				}
             }
         });
@@ -190,7 +191,7 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
                 alert(emptypersonerror);
                 return;
             }
-			if($('#confirm_my_age').prop('checked') == true){
+			if(document.getElementById('confirm_my_age').checked){
 				
 				getData( '' );
 			}else{

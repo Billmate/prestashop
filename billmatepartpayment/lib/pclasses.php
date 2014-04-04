@@ -78,6 +78,8 @@ class pClasses{
         );
         $data = $billmate->FetchCampaigns($additionalinfo);
 		
+		$db = Db::getInstance();
+		$db->Execute('TRUNCATE TABLE `'._DB_PREFIX_.'billmate_payment_pclasses`');
 		if( !is_array($data)){
 			throw new Exception(strip_tags($data));
 		} else {
@@ -86,7 +88,14 @@ class pClasses{
 				$_row['eid'] = $eid;
 				$_row['country'] = $country;
 				
-				Db::getInstance()->insert('billmate_payment_pclasses',$_row);
+				if((version_compare(_PS_VERSION_,'1.5','>='))){
+					Db::getInstance()->insert('billmate_payment_pclasses',$_row);
+				} else {
+					$data = $_row;
+					array_walk($data,create_function('&$value, $idx','$value = "`".$idx."`=\'$value\'";'));
+				
+					$result &= $db->Execute('insert into `'._DB_PREFIX_.'billmate_payment_pclasses` SET '.implode(',',$data));
+				}
 			}
 		}
 	}

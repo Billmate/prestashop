@@ -167,7 +167,7 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
 					$( "input[type='button']" ).button();
 				}else{
 					modalWin.HideModalPopUp();
-					$('<div class="error">'+response.content+'</div>').insertAfter('.breadcrumb');
+					$('<div class="error">'+response.content+'</div>').insertAfter($('.breadcrumb').first());
 				}
             }
         });

@@ -14,7 +14,6 @@ $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_c983f9ce866ed476e
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_553e273389202dfdbbda58bdfde8bd7f'] = 'qObs: Det valda landet måste matcha kundens land ';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_ff1b19ce6d095426e2d9ae7faa391967'] = 'D.v.s. svensk kund, SEK, Sverige och svenska';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_dd06c3a7cdedb70e392c134e37b74b61'] = 'För att dina kunder ska kunna använda Billmate Delbetalning, måste de vara folkbokförda i samma land som din webbutik är registrerad';
-$_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_e3832826654dc156f8ee83144afb363c'] = 'Dina kontouppgifter är felaktiga och kan inte användas i ';
 $_MODULE['<{billmatepartpayment}prestashop>getaddress_4be1b2e845bd0865236ac23d0d7f9740'] = 'Rabatt';
 $_MODULE['<{billmatepartpayment}prestashop>credential_a892b3c019c81f51e51245603b3a9786'] = 'Aktiveringsinställningar';
 $_MODULE['<{billmatepartpayment}prestashop>credential_e690a3d3da27111ea8831cce5a1048c6'] = 'Modulens läge';
@@ -96,3 +95,8 @@ $_MODULE['<{billmatepartpayment}prestashop>validation_e580a2735b1cf3339f84cf1028
 $_MODULE['<{billmatepartpayment}prestashop>validation_68dff7ceb4dcf8b754c6b51324a86173'] = 'Vänligen kryssa i rutan för att bekräfta att er e-postadress är giltig.';
 $_MODULE['<{billmatepartpayment}prestashop>validation_edc82d9ccafac930ac7a30bd065c1fa8'] = 'Bearbetar....';
 $_MODULE['<{billmatepartpayment}prestashop>validation_dfce60a0fa215d591011261d1721db42'] = 'Köp mot faktura kan bara göras till den adress som är angiven i folkbokföringen. Vill du genomföra köpet med adressen:';
+$_MODULE['<{billmatepartpayment}prestashop>confirmation_2e2117b7c81aa9ea6931641ea2c6499f'] = 'Din beställning hos';
+$_MODULE['<{billmatepartpayment}prestashop>confirmation_75fbf512d744977d62599cc3f0ae2bb4'] = 'är mottagen.';
+$_MODULE['<{billmatepartpayment}prestashop>confirmation_498cd895eb5a102c5aeb977e2b928dee'] = 'Tack!';
+$_MODULE['<{billmatepartpayment}prestashop>confirmation_f81bd8d8ec813f05125b09327859ccd0'] = 'Du har valt att betala med Billmate delbetalning.';
+$_MODULE['<{billmatepartpayment}prestashop>confirmation_e6dc7945b557a1cd949bea92dd58963e'] = 'Dina varor kommer att skickas inom kort.';

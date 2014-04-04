@@ -110,7 +110,7 @@ class BillmateCardpayController extends FrontController
 		$currency   = $currency->iso_code;
 		
 		$merchant_id = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
-		$secret = (float)Configuration::get('BCARDPAY_SECRET_SETTINGS');
+		$secret = substr(Configuration::get('BCARDPAY_SECRET_SETTINGS'),0,12);
 		$callback_url = 'http://api.billmate.se/callback.php';
 		$do_3d_secure = Configuration::get('BILL_3DSECURE') == 'YES'? 'YES': 'NO';
 		$prompt_name_entry = Configuration::get('BILL_PRNAME') == 'YES'? 'YES': 'NO';
@@ -251,7 +251,7 @@ class BillmateCardpayController extends FrontController
 				'qty'   => 1,
 				'goods' => array(
 					'artno'    => '',
-					'title'    => $this->context->controller->module->l('Rebate'),
+					'title'    => $this->context->controller->module->l('Rabatt'),
 					'price'    => 0 - round(abs($discountamount*100),0),
 					'vat'      => $vatrate,
 					'discount' => 0.0,

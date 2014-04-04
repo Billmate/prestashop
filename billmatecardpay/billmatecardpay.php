@@ -26,8 +26,6 @@ include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
  */
 define('CARDPAY_TESTURL', 'https://cardpay.billmate.se/pay/test');
 define('CARDPAY_LIVEURL', 'https://cardpay.billmate.se/pay');;
-//error_reporting(E_ERROR);
-ini_set('display_errors', 0);
 
 class BillmateCardpay extends PaymentModule
 {
@@ -61,7 +59,7 @@ class BillmateCardpay extends PaymentModule
         $this->name = 'billmatecardpay';
         $this->moduleName='billmatecardpay';
         $this->tab = 'payments_gateways';
-        $this->version = '1.27';
+        $this->version = '1.29';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;
@@ -405,14 +403,20 @@ class BillmateCardpay extends PaymentModule
      *
      * @return string
      */
+	public function hookdisplayPayment($params)
+	{
+		return $this->hookPayment($params);
+	}
+	
     public function hookPayment($params)
     {
         global $smarty, $link;
 
 		if ( !Configuration::get('BCARDPAY_ACTIVE_CARDPAY') || !Configuration::get('PS_SHOP_COUNTRY'))
 			return false;
-		//var_dump($this->context->language);
+		//Rabatt($this->context->language);
 		//die;
+			
         $total = $this->context->cart->getOrderTotal();
 
         $cart = $params['cart'];

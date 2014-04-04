@@ -80,6 +80,7 @@ padding-top: 13px!important;
 					 {if $country->iso_code == 'NL' && $payment_type == 'account'}
   <img src="./img/warning.jpg" style="width:100%" alt="{l s='Warning' mod='billmatepartpayment'}"/>
   {/if}
+<div id="order_area">
   <h3>{l s='Billmate Partpayment' mod='billmatepartpayment'}</h3>
   {* $link->getModuleLink('billmatepartpayment', 'getaddress', [], true) *}
   <form action="javascript://" method="post" class="billmate">
@@ -139,7 +140,7 @@ function closeIframe(id)
 
 <script type="text/javascript">
 var success = "{$ajaxurl.this_path_ssl}payment.php?type={$payment_type}";
-var ajaxurl = "{$ajaxurl.this_path_ssl}";
+var ajaxurl = "{$ajaxurl.this_path_ssl}payment.php?type={$payment_type}";
 
 {if $opc|default:FALSE}
 var carrierurl = "{$link->getPageLink("order-opc", true)}";
@@ -182,7 +183,7 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
 					//modalWin.ShowMessage(response.content,310,500,windowtitlebillmate);
 				}else{
 					modalWin.HideModalPopUp();
-					$('<div class="error">'+response.content+'</div>').insertAfter('.breadcrumb');
+					$('<div class="error">'+response.content+'</div>').insertAfter($('.breadcrumb').first());
 				}
             }
         });
@@ -193,7 +194,7 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
                 alert(emptypersonerror);
                 return;
             }
-			if($('#confirm_my_age').prop('checked') == true){
+			if(document.getElementById('confirm_my_age').checked){
 				
 				getData( '' );
 			}else{
@@ -203,3 +204,4 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
     });
     {/literal}
 </script>
+</div>

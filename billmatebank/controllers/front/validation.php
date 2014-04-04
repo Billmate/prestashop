@@ -159,7 +159,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 					'qty'   => 1,
 					'goods' => array(
 						'artno'    => '',
-						'title'    => $this->context->controller->module->l('Rebate'),
+						'title'    => $this->context->controller->module->l('Rabatt'),
 						'price'    => 0 - round(abs($discountamount*100),0),
 						'vat'      => $vatrate,
 						'discount' => 0.0,
@@ -384,7 +384,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 					'qty'   => 1,
 					'goods' => array(
 						'artno'    => '',
-						'title'    => $this->context->controller->module->l('Rebate'),
+						'title'    => $this->context->controller->module->l('Rabatt'),
 						'price'    => 0 - round(abs($discountamount*100),0),
 						'vat'      => $vatrate,
 						'discount' => 0.0,

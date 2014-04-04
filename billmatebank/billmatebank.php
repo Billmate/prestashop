@@ -63,7 +63,7 @@ class BillmateBank extends PaymentModule
         $this->name = 'billmatebank';
         $this->moduleName='billmatebank';
         $this->tab = 'payments_gateways';
-        $this->version = '1.27';
+        $this->version = '1.29';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;
@@ -369,7 +369,11 @@ class BillmateBank extends PaymentModule
         global $smarty;
     	
     }
-
+	
+	public function hookdisplayPayment($params)
+	{
+		return $this->hookPayment($params);
+	}
     /**
      * Hook the payment module to be shown in the payment selection page
      *
@@ -432,22 +436,5 @@ class BillmateBank extends PaymentModule
             return;
         }
         return $this->display(__FILE__, 'confirmation.tpl');
-    }
-
-    /**
-     * Forwards the cart and process the purchase in the Core module
-     *
-     * @param Cart $cart The customers cart
-     *
-     * @return mixed
-     */
-    public function process($cart)
-    {
-        $this->_requireCore();
-        $this->configureKiTT();
-        $this->core->process(
-            new BillmateCardpayOrderHelper(BillmateCore::getCardpayFee(), $this),
-            $cart
-        );
     }
 }
