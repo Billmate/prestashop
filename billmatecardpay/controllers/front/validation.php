@@ -41,15 +41,33 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			$eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
 		    if( $post['status'] == 0 ){
 		        try{
+					$data = $measurements = array();
+					
+					$timestart = $timetotalstart = microtime(true);
                 	$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code));
+					$measurements['after_add_invoice'] =  microtime(true) - $timestart;
 					extract($data_return);
 					
+					$timestart = microtime(true);
 			        $customer = new Customer((int)$this->context->cart->id_customer);
+					$measurements['after_customer'] =  microtime(true) - $timestart;
+					
+					$timestart = microtime(true);
 			        $total = $this->context->cart->getOrderTotal(true, Cart::BOTH); 
+					$measurements['calculatetotal'] = microtime(true) - $timestart;
+					
+					$timestart = microtime(true);
 					$extra = array('transaction_id'=>$invoiceid);
 			        $this->module->validateOrder((int)$this->context->cart->id, Configuration::get('PS_OS_PREPARATION'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+					$measurements['validateorder'] = microtime(true) - $timestart;
+					
+					$timestart = microtime(true);
 					$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrderReference.','.$this->module->currentOrder);
 					unset($_SESSION["uniqueId"]);
+					$measurements['update_order_no'] = microtime(true) - $timestart;
+					$duration = ( microtime(true)-$timetotalstart ) * 1000;
+					$api->stat("client_card_order_measurements", json_encode(array('order_id'=>$this->module->currentOrder, 'measurements'=>$measurements)), '', $duration);
+					
 			        Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);
 					
 		        }catch(Exception $ex){
@@ -118,6 +136,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 	}
 	public function logData($merchant_id){
 
+		$timetotalstart = microtime(true);
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
         $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
 
@@ -268,8 +287,15 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
 		if(Configuration::get('BCARDPAY_AUTHMOD') == 'sale' ) $transaction["extraInfo"][0]["status"] = 'Paid';
 
+		$timestart = microtime(true);
+		$measurements = array();
+
 		$k = $this->getBillmate();
-		$result1 = $k->AddOrder('',$bill_address,$ship_address,$goods_list,$transaction);  
+		$result1 = $k->AddOrder('',$bill_address,$ship_address,$goods_list,$transaction);
+		
+		$measurements['add_order'] =  microtime(true) - $timestart;
+		$duration = ( microtime(true)-$timetotalstart ) * 1000;
+		$k->stat("client_card_add_order_measurements",json_encode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
 	}
 
 	function getBillmate(){

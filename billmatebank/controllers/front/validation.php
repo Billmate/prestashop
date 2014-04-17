@@ -36,16 +36,33 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 
 		    if( $_REQUEST['status'] == 0 ){
 		        try{
-                	$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code));
+					$data = $measurements = array();
+					
+                	$timestart = $timetotalstart = microtime(true);
+					$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code));
+					$measurements['after_add_invoice'] =  microtime(true) - $timestart;
 					extract($data_return);
 					
+					$timestart = microtime(true);
 			        $customer = new Customer((int)$this->context->cart->id_customer);
+					$measurements['after_customer'] =  microtime(true) - $timestart;
+
+					$timestart = microtime(true);
 			        $total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
+					$measurements['calculatetotal'] = microtime(true) - $timestart;
+					
+					$timestart = microtime(true);
 					$extra = array('transaction_id'=>$invoiceid);
 			        $this->module->validateOrder((int)$this->context->cart->id, Configuration::get('PS_OS_PREPARATION'), $total, $this->module->displayName, null, $extra , null, false, $customer->secure_key);
+					$measurements['validateorder'] = microtime(true) - $timestart;
 					
+					$timestart = microtime(true);
 					$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrderReference.','.$this->module->currentOrder);
 					unset($_SESSION["uniqueId"]);
+					$measurements['update_order_no'] = microtime(true) - $timestart;
+					$duration = ( microtime(true)-$timetotalstart ) * 1000;
+					$api->stat("client_order_measurements", json_encode(array('order_id'=>$this->module->currentOrder, 'measurements'=>$measurements)), '', $duration);
+					
 			        Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);
 		        }catch(Exception $ex){
     		       $this->context->smarty->assign('error_message', utf8_encode($ex->getMessage())) ;
@@ -58,7 +75,8 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$this->context->smarty->assign('posted', $len) ;
 	}
 	public function logData($merchant_id, $order_id){
-
+		
+		$timetotalstart = microtime(true);
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
         $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
         $country = strtoupper($adrsDelivery->country);
@@ -214,8 +232,13 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			"extraInfo"=>array(array("cust_no"=>"0" ,"creditcard_data"=> $_REQUEST))
 		);
 
+		$timestart = microtime(true);
+		$measurements = array();
 		$k = $this->getBillmate();
-		$result1 = $k->AddOrder('',$bill_address,$ship_address,$goods_list,$transaction);  
+		$result1 = $k->AddOrder('',$bill_address,$ship_address,$goods_list,$transaction);
+		$measurements['add_order'] =  microtime(true) - $timestart;
+		$duration = ( microtime(true)-$timetotalstart ) * 1000;
+		$k->stat("client_bank_add_order_measurements",json_encode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
 
 	}
 

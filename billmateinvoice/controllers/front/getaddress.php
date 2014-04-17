@@ -299,15 +299,18 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				$data = $measurements = array();
 				$api = null;
 
-                $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
-//				$measurements['deleteproduct'] = microtime(true) - $timestart;
-				
-				//$timestart = microtime(true);
-			    $this->context->cart->updateQty(1, (int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
-				//$measurements['updateqty'] = microtime(true) - $timestart;
-
-            	$invoiceid = $this->processReserveInvoice( strtoupper(BillmateCountry::getCode($addr[0][5])));
 				$timetotalstart = $timestart = microtime(true);
+				$timestart = microtime(true);
+                $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
+				$measurements['deleteproduct'] = microtime(true) - $timestart;
+				
+				$timestart = microtime(true);
+			    $this->context->cart->updateQty(1, (int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
+				$measurements['updateqty'] = microtime(true) - $timestart;
+
+				$timestart = microtime(true);
+            	$invoiceid = $this->processReserveInvoice( strtoupper(BillmateCountry::getCode($addr[0][5])));
+				$measurements['add_invoice'] = microtime(true) - $timestart;
 				
 				$timestart = microtime(true);
 			    $customer = new Customer((int)$this->context->cart->id_customer);
@@ -325,12 +328,14 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				$measurements['validateorder'] = microtime(true) - $timestart;
 				
 				//billmate_log_data(array(array('order_id'=>$order_id,'measurements'=>$measurements)), $eid );
-				$duration = ( microtime(true)-$timetotalstart ) * 1000;
-//				$k->stat("client_order_measurements",json_encode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
-				
+				$timestart = microtime(true);
 				$k->UpdateOrderNo($invoiceid, $this->module->currentOrderReference.','.$order_id); 
 				unset($_SESSION["uniqueId"]);
+				$measurements['update_order_no'] = microtime(true) - $timestart;
 
+				$duration = ( microtime(true)-$timetotalstart ) * 1000;
+				$k->stat("client_order_measurements",json_encode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
+				
 				$url = 'order-confirmation&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
 				$return['redirect'] = Context::getContext()->link->getPageLink($url);
            

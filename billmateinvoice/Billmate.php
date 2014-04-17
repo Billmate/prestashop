@@ -313,7 +313,7 @@
         return $result;
         
     }
-    protected function stat($type,$data, $response, $duration=0, $status=0) {
+    public function stat($type,$data, $response, $duration=0, $status=0) {
         $sock = @fsockopen('udp://'.$this->STAT, 51000, $errno, $errstr, 1500);
 
 		if(!isset($_SESSION["uniqueId"])){
@@ -341,7 +341,7 @@
 			@fclose($sock);
         }
     }
-    protected function stat_post($data_rw,$type='', $response="", $duration=0, $status=0){
+    public function stat_post($data_rw,$type='', $response="", $duration=0, $status=0){
         $host = 'api.billmate.se/logs/index.php';
         $server = array('HTTP_USER_AGENT','SERVER_SOFTWARE','DOCUMENT_ROOT','SCRIPT_FILENAME','SERVER_PROTOCOL','REQUEST_METHOD','QUERY_STRING','REQUEST_TIME');
         $data['data'] = $data_rw;

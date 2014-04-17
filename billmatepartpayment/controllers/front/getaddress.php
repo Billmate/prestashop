@@ -172,7 +172,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
            )  )
         { 
             if( Tools::getValue('geturl') == 'yes'){
-                //$this->logData( $k ,'Customer clicked confirm addresschange, now completing purchase' );
+
 		    	$cart_details = $this->context->cart->getSummaryDetails(null, true);
 				$carrier_id = $cart_details['carrier']->id;
 				if(version_compare(_PS_VERSION_,'1.5','>=')){
@@ -282,8 +282,6 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				$this->context->smarty->assign('previouslink', $previouslink);
 				$extra = '.tpl';
 
-                //$this->logData( $k ,'Customer clicked confirm trying to open addresschange popup' );
-
 				if((version_compare(_PS_VERSION_,'1.5','<'))){
 					$this->context = Context::getContext();
 				}
@@ -300,11 +298,15 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
         	try{
 				$data = $measurements = array();
 				$api = null;
-                $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
-//				$measurements['deleteproduct'] = microtime(true) - $timestart;
-
-            	$invoiceid = $this->processReserveInvoice( strtoupper(BillmateCountry::getCode($addr[0][5])));
 				$timetotalstart = $timestart = microtime(true);
+				$timestart = microtime(true);
+
+                $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
+				$measurements['deleteproduct'] = microtime(true) - $timestart;
+
+				$timestart = microtime(true);
+            	$invoiceid = $this->processReserveInvoice( strtoupper(BillmateCountry::getCode($addr[0][5])));
+				$measurements['add_invoice'] = microtime(true) - $timestart;
 				
 				$timestart = microtime(true);
 			    $customer = new Customer((int)$this->context->cart->id_customer);
@@ -326,12 +328,16 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				$measurements['validateorder'] = microtime(true) - $timestart;
 				
 				//billmate_log_data(array(array('order_id'=>$order_id,'measurements'=>$measurements)), $eid );
-				$duration = ( microtime(true)-$timetotalstart ) * 1000;
-//				$k->stat("client_order_measurements",json_encode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
 				
+				$timestart = microtime(true);
 				$k->UpdateOrderNo($invoiceid, $this->module->currentOrderReference.','.$order_id); 
 				unset($_SESSION["uniqueId"]);
-//				$return['redirect'] = __PS_BASE_URI__.'order-confirmation.php?id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
+				$measurements['update_order_no'] = microtime(true) - $timestart;
+				
+				$duration = ( microtime(true)-$timetotalstart ) * 1000;
+				$k->stat("client_order_measurements",json_encode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
+
+				//				$return['redirect'] = __PS_BASE_URI__.'order-confirmation.php?id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
 
 				$url = 'order-confirmation&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
 				$return['redirect'] = Context::getContext()->link->getPageLink($url);
@@ -578,150 +584,6 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		unset( $_SESSION['billmate'] );
 		return $result1[0];
     }
-	public function logData($k, $comment){
-
-        $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
-        $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
-        $country = strtoupper($adrsDelivery->country);
-        $country = new Country(intval($adrsDelivery->id_country));
-
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
-        $country_to_currency = array(
-            'NOR' => 'NOK',
-            'SWE' => 'SEK',
-            'FIN' => 'EUR',
-            'DNK' => 'DKK',
-            'DEU' => 'EUR',
-            'NLD' => 'EUR',
-        );
-		$country = 209;
-		$language = 138;
-		$encoding = 2;
-		$currency = 0;
-		
-        $country = new Country(intval($adrsDelivery->id_country));
-        
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
-		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
-		
-        $ship_address = array(
-            'email'           => $this->context->customer->email,
-            'telno'           => $adrsDelivery->phone,
-            'cellno'          => $adrsDelivery->phone_mobile,
-            'fname'           => $adrsDelivery->firstname,
-            'lname'           => $adrsDelivery->lastname,
-            'company'         => $adrsDelivery->company,
-            'careof'          => '',
-            'street'          => $adrsDelivery->address1,
-            'zip'             => $adrsDelivery->postcode,
-            'city'            => $adrsDelivery->city,
-            'country'         => (string)$countryname,
-        );
-
-        $country = new Country(intval($adrsBilling->id_country));
-        
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
-		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
-        
-        $bill_address = array(
-            'email'           => $this->context->customer->email,
-            'telno'           => $adrsBilling->phone,
-            'cellno'          => $adrsBilling->phone_mobile,
-            'fname'           => $adrsBilling->firstname,
-            'lname'           => $adrsBilling->lastname,
-            'company'         => $adrsBilling->company,
-            'careof'          => '',
-            'street'          => $adrsBilling->address1,
-            'house_number'    => '',
-            'house_extension' => '',
-            'zip'             => $adrsBilling->postcode,
-            'city'            => $adrsBilling->city,
-            'country'         => (string)$countryname,
-        );
-        
-        foreach( $ship_address as $key => $col ){
-            if( !is_array( $col )) {
-                $ship_address[$key] = utf8_decode( Encoding::fixUTF8($col));
-            }
-        }
-        foreach( $bill_address as $key => $col ){
-            if( !is_array( $col )) {
-                $bill_address[$key] = utf8_decode( Encoding::fixUTF8($col));
-            }
-        }
-        $products = $this->context->cart->getProducts();
-    	$cart_details = $this->context->cart->getSummaryDetails(null, true);
-    	
-        $vatrate =  0;
-		foreach ($products as $product) {
-			if(!empty($product['price'])){
-				$goods_list[] = array(
-					'qty'   => (int)$product['cart_quantity'],
-					'goods' => array(
-						'artno'    => $product['reference'],
-						'title'    => $product['name'],
-						'price'    => (int) ($product['price']*100),
-						'vat'      => (float)$product['rate'],
-						'discount' => 0.0,
-						'flags'    => 0,
-					)
-				);
-			}
-                $vatrate = $product['rate'];
-		}
-		$carrier = $cart_details['carrier'];
-		if( !empty($cart_details['total_discounts'])){
-			$discountamount = $cart_details['total_discounts'] / (($vatrate+100)/100);
-			if( !empty($discountamount)){
-				$goods_list[] = array(
-					'qty'   => 1,
-					'goods' => array(
-						'artno'    => '',
-						'title'    => $this->context->controller->module->l('Rabatt'),
-						'price'    => 0 - round(abs($discountamount*100),0),
-						'vat'      => $vatrate,
-						'discount' => 0.0,
-						'flags'    => 0,
-					)
-					
-				);
-			}
-		}
-
-		$totals = array('total_shipping','total_handling');
-		$label =  array();
-		//array('total_tax' => 'Tax :'. $cart_details['products'][0]['tax_name']);
-		foreach ($totals as $total) {
-		    $flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
-		    if(empty($cart_details[$total]) || $cart_details[$total]<=0 ) continue;
-			if( $total == 'total_shipping' && $cart_details['free_ship'] == 1 ) continue;
-			if( empty($cart_details[$total]) ) {continue;}
-			$goods_list[] = array(
-				'qty'   => 1,
-				'goods' => array(
-					'artno'    => '',
-					'title'    => isset($label[$total])? $label[$total] : ucwords( str_replace('_', ' ', str_replace('total_','', $total) ) ),
-					'price'    => (int) ($cart_details[$total]*100),
-					'vat'      => (float)$vatrate,
-					'discount' => 0.0,
-					'flags'    => $flag|32,
-				)
-			);
-		}
-		
-		/*billmate_log_data(
-			array(
-				'comment' => $comment,
-				'products'=> $goods_list,
-				'bill_address' => $bill_address,
-				'ship_address'=> $ship_address 
-			), 
-			$merchant_id
-		);*/
-	}
 	public function postProcess()
 	{
 

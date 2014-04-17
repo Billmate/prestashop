@@ -59,7 +59,7 @@ class BillmateCardpay extends PaymentModule
         $this->name = 'billmatecardpay';
         $this->moduleName='billmatecardpay';
         $this->tab = 'payments_gateways';
-        $this->version = '1.29';
+        $this->version = '1.30';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;
@@ -405,18 +405,19 @@ class BillmateCardpay extends PaymentModule
      */
 	public function hookdisplayPayment($params)
 	{
+	
 		return $this->hookPayment($params);
 	}
 	
     public function hookPayment($params)
     {
         global $smarty, $link;
-
+		
 		if ( !Configuration::get('BCARDPAY_ACTIVE_CARDPAY') || !Configuration::get('PS_SHOP_COUNTRY'))
 			return false;
 		//Rabatt($this->context->language);
 		//die;
-			
+		
         $total = $this->context->cart->getOrderTotal();
 
         $cart = $params['cart'];
