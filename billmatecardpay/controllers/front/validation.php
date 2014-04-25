@@ -249,6 +249,12 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		    if(empty($cart_details[$total]) || $cart_details[$total]<=0 ) continue;
 			if( $total == 'total_shipping' && $cart_details['free_ship'] == 1 ) continue;
 			if( empty($cart_details[$total]) ) {continue;}
+			
+			if($total == 'total_shipping'){
+				$carrier = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
+				$vatrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
+			}
+
 			$goods_list[] = array(
 				'qty'   => 1,
 				'goods' => array(
@@ -429,6 +435,12 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		    if(empty($cart_details[$total]) || $cart_details[$total]<=0 ) continue;
 			if( $total == 'total_shipping' && $cart_details['free_ship'] == 1 ) continue;
 			if( empty($cart_details[$total]) ) {continue;}
+
+			if($total == 'total_shipping'){
+				$carrier = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
+				$vatrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
+			}
+
 			$goods_list[] = array(
 				'qty'   => 1,
 				'goods' => array(

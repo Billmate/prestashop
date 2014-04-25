@@ -528,6 +528,8 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				else
 					$shippingPrice = $cart->getTotalShippingCost();
 					
+			$carrier = new Carrier($cart->id_carrier, $this->context->cart->id_lang);
+			$taxrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
 			
 			
 			if( !empty( $shippingPrice ) ){

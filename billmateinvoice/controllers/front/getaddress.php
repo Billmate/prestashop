@@ -513,18 +513,15 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 		
 		if ($carrier->active && $notfree)
 		{
-			
-			if ($order_id2)
-			{
-				$order = new Order((int)$order_id2);
-				$shippingPrice = $order->total_shipping_tax_incl;
-			}
+		
+			if(version_compare(_PS_VERSION_,'1.5','<'))
+				$shippingPrice = $cart->getOrderShippingCost();
 			else
-				if(version_compare(_PS_VERSION_,'1.5','<'))
-					$shippingPrice = $cart->getOrderShippingCost();
-				else
-					$shippingPrice = $cart->getTotalShippingCost();
-			
+				$shippingPrice = $cart->getTotalShippingCost();
+		
+			$carrier = new Carrier($cart->id_carrier, $this->context->cart->id_lang);
+			$taxrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
+
 			if( !empty( $shippingPrice ) ){
 				$shippingPrice = $shippingPrice / (1+$taxrate/100);
 				$goods_list[] = array(
@@ -540,8 +537,6 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				);
 			}
 		}
-		
-		  
 
 		$label =  array();
 

@@ -210,7 +210,7 @@ class BillmateBank extends PaymentModule
 
 		$smarty->assign(array(
 				'billmate_mod' => Configuration::get('BBANK_MOD'),
-				'billmate_active_cardpay' => Configuration::get('BBANK_ACTIVE'),
+				'billmate_active_bank' => Configuration::get('BBANK_ACTIVE'),
 				'credentialInputVar' => $input_country,
 				'countryNames' => $countryNames,
 				'billmatebankCredentialTitle' => $this->l('Location'),
@@ -246,7 +246,7 @@ class BillmateBank extends PaymentModule
 		else
 			Configuration::updateValue('BBANK_MOD', 1);
 		
-		if (isset($_POST['billmate_active_cardpay']) && $_POST['billmate_active_cardpay'])
+		if (isset($_POST['billmate_active_bank']) && $_POST['billmate_active_bank'])
 			Configuration::updateValue('BBANK_ACTIVE', true);
 		else
 			billmate_deleteConfig('BBANK_ACTIVE');

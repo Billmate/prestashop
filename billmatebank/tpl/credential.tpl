@@ -3,7 +3,7 @@
 	height:143.625px!important;
 }
 </style>
-<form action="{$billmatecardpayFormCredential}" method="POST">
+<form action="{$billmatebankFormCredential}" method="POST">
 	<fieldset class="billmate-blockSmall L">
 		<legend><img src="{$module_dir}img/icon-mode.gif" alt="" /> {l s='Activation Settings' mod='billmatebank'}</legend>
 		<h4>{l s='Set the mode of your module' mod='billmatebank'}</h4>
@@ -13,7 +13,7 @@
 	<fieldset class="billmate-blockSmall R">
 		<legend><img src="{$module_dir}img/icon-modules.gif" alt="" /> {l s='Payment Options' mod='billmatebank'}</legend>
 		<input type="hidden" name="submitBillmate" value="1"/>
-		<p><input type="checkbox" id="billmate_active_cardpay" name="billmate_active_cardpay" {if $billmate_active_cardpay == 1}checked='checked'{/if} value="1" /> <label for="billmate_active_cardpay">{l s='Billmate Bank' mod='billmatebank'}</label><br>
+		<p><input type="checkbox" id="billmate_active_bank" name="billmate_active_bank" {if $billmate_active_bank == 1}checked='checked'{/if} value="1" /> <label for="billmate_active_bank">{l s='Billmate Bank' mod='billmatebank'}</label><br>
 		<small><img src="{$smarty.const._MODULE_DIR_}billmatebank/billmate_bank_l.png"/></small></p>
 
 		</fieldset>
@@ -57,7 +57,7 @@
 			</li>
 			{/foreach}
 		</ul>
-		<small class="footnote">{$billmatecardpayCredentialFootText}</small>
+		<small class="footnote">{$billmatebankCredentialFootText}</small>
 	</fieldset>
 	<div class="center pspace"><input type="submit" class="button" value="{l s='Save | Update' mod='billmatebank'}" /></div>
 </form>
