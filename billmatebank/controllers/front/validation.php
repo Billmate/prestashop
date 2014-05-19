@@ -248,7 +248,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 
 	function getBillmate(){
         $eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-        $secret = (float)Configuration::get('BBANK_SECRET_SWEDEN');
+        $secret = Configuration::get('BBANK_SECRET_SWEDEN');
 
 		$ssl = true;
 		$debug = false;
@@ -271,7 +271,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$currency   = 'SEK';//$this->context->currency->iso_code;
 		$return_method  = 'GET';
 		$merchant_id = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-		$secret = (float)substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
+		$secret = substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
 		$callback_url = 'http://api.billmate.se/callback.php';
 		unset($_SESSION['INVOICE_CREATED_BANK']);
         $data = array(

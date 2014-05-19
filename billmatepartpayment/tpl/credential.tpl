@@ -88,6 +88,7 @@
 		<th>{l s='Start fee' mod='billmatepartpayment'}</th><th>{l s='Expire' mod='billmatepartpayment'}</th>
 		<th>{l s='Invoice fee' mod='billmatepartpayment'}</th>
 		<th>{l s='Interest' mod='billmatepartpayment'}</th><th>{l s='Minimum amount' mod='billmatepartpayment'}</th>
+        <th>{l s='Maximum amount' mod='billmatepartpayment'}</th>
 	</tr>
 {foreach from=$billmate_pclass item=pclass key=k}
 	<tr {if $k % 2 == 0}class="alt_row"{/if}>
@@ -100,6 +101,7 @@
 		<td>{$pclass.invoicefee}</td>
 		<td>{$pclass.interestrate}</td>
 		<td>{$pclass.minamount}</td>
+		<td>{$pclass.maxamount}</td>
 	</tr>
 {/foreach}
 </table>

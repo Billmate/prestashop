@@ -449,7 +449,8 @@ class BillmatePartpayment extends PaymentModule
 			// var_dump($total , $minVal , $total , $maxVal);
 			//return true;
 		}
-		if ($pclass && $pclass['minamount'] <= $this->context->cart->getOrderTotal())
+		if ($pclass && $pclass['minamount'] <= $this->context->cart->getOrderTotal() && 
+			($this->context->cart->getOrderTotal() <= $pclass['maxamount'] || $pclass['maxamount'] == 0 ))
 		{
 			$value = BillmateCalc::calc_monthly_cost((float)$this->context->cart->getOrderTotal(), $pclass, BillmateFlags::CHECKOUT_PAGE);
 		} else{

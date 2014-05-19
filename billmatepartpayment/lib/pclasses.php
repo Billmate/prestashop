@@ -101,13 +101,14 @@ class pClasses{
 	}
 	
     function correct_lang_billmate(&$item, $index){
-        $keys = array('id', 'description','months', 'startfee','invoicefee','interestrate', 'minamount', 'country', 'type', 'expire' );
+        $keys = array('id', 'description','months', 'startfee','invoicefee','interestrate', 'minamount', 'country', 'type', 'expire', 'maxamount' );
         $item[1] = utf8_encode($item[1]);
         $item = array_combine( $keys, $item );
         $item['startfee'] = $item['startfee'] / 100;
         $item['invoicefee'] = $item['invoicefee'] / 100;
         $item['interestrate'] = $item['interestrate'] / 100;
         $item['minamount'] = $item['minamount'] / 100;
+        $item['maxamount'] = $item['maxamount'] / 100;
     }
 	
 	public function getCheapestPClass($sum, $flags){
@@ -117,7 +118,7 @@ class pClasses{
         foreach ( $pclasses as $pclass) {
 			if( $pclass !== false ){
 				$lowest_payment = BillmateCalc::get_lowest_payment_for_account( $pclass['country'] );
-				if ($pclass['type'] < 2 && $sum >= $pclass['minamount']) {
+				if ($pclass['type'] < 2 && $sum >= $pclass['minamount'] && ($sum <= $pclass['maxamount'] || $pclass['maxamount'] == 0) ) {
 					$minpay = BillmateCalc::calc_monthly_cost( $sum, $pclass, $flags );
 
 					if ($minpay < $lowest_pp || $lowest_pp === false) {

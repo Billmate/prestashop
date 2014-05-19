@@ -100,7 +100,7 @@ class BillmatePartpaymentValidationModuleFrontController extends ModuleFrontCont
 		$total = (float)$cart->getOrderTotal();
 
 		foreach ($pclasses as $val)
-			if ($val['minamount'] < $total)
+			if ($val['minamount'] < $total && ($total <= $val['maxamount'] || $val['maxamount'] == 0))
 				$accountPrice[$val['id']] = array('price' => BillmateCalc::calc_monthly_cost($total, $val, BillmateFlags::CHECKOUT_PAGE), 'month' => (int)$val['months'], 'description' => htmlspecialchars_decode(Tools::safeOutput($val['description'])));
 
 		return $accountPrice;
