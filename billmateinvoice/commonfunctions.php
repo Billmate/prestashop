@@ -6,7 +6,7 @@ if(!function_exists('getCountryID')){
 	require dirname(__FILE__).'/xmlrpc-2.2.2/lib/xmlrpc.inc';
 	require dirname(__FILE__).'/xmlrpc-2.2.2/lib/xmlrpcs.inc';
 
-	define('BILLPLUGIN_VERSION', '1.30');
+	define('BILLPLUGIN_VERSION', '1.31');
 	
 	define('BILLMATE_VERSION',  "PHP:Prestashop:".BILLPLUGIN_VERSION );
 

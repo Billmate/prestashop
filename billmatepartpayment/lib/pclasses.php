@@ -145,10 +145,4 @@ class pClasses{
 		if( !is_array($this->data) ) $this->data = array();
 		return $this->data;
 	}
-	public function __set($key, $val){
-	}
-	public function __sleep(){
-	}
-	public function __wake(){
-	}
 }
