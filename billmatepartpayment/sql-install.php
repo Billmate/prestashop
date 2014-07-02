@@ -41,7 +41,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'billmate_rno` (
 			  PRIMARY KEY  (`id_cart`)
 		) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
-$sql[] = 'DROP TABLE `'._DB_PREFIX_.'billmate_payment_pclasses`';
+$sql[] = 'DROP TABLE IF EXISTS `'._DB_PREFIX_.'billmate_payment_pclasses`';
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'billmate_payment_pclasses` (
                 `eid` int(10) unsigned NOT NULL,
                 `id` int(10) unsigned NOT NULL,

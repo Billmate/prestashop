@@ -38,6 +38,9 @@ color: #7a7a7a!important;
 .blarge{
 font-size:1.5em;
 }
+#billmate_submit {
+	text-align: center;
+}
 .bsmall{
 	font-size:1.1em;
 }
@@ -186,6 +189,10 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
         });
     }
     jQuery(document).ready(function(){
+		setTimeout(function(){
+			if(typeof $.uniform == 'object')	$.uniform.restore();
+		},5000);
+		
         jQuery('#billmate_submit').click(function(){
             if( $.trim( $('#billmate_pno').val()) == '' ){
                 alert(emptypersonerror);

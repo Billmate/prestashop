@@ -32,9 +32,13 @@ border-top: 1px solid grey!important;
 padding-top: 13px!important;
 }
 #pno{ margin:auto!important;display:block!important;text-align:center!important;	 }
-
+#billmate_submit{ width:26em!important; }
 @media only screen and (min-width: 500px){
 	#pno{ width:330px!important; }
+	#billmate_submit{ width:26em!important; }
+}
+#billmate_submit {
+	text-align: center;
 }
 </style>
 <h3>{l s='Billmate Invoice Payment' mod='billmateinvoice'}</h3>
@@ -65,7 +69,7 @@ padding-top: 13px!important;
 	    <label for="phone">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmateinvoice'}</label>
 	</p>
 	<p>
-		<input type="button" name="submit" style="width:26em!important" value="{l s='I confirm my order' mod='billmateinvoice'}" class="exclusive_large blarge" id="billmate_submit"/>
+		<input type="button" name="submit" value="{l s='I confirm my order' mod='billmateinvoice'}" class="exclusive_large blarge" id="billmate_submit"/>
 	</p>
 	<p class="cart_navigation billfooter">
 		<a href="{$previouslink}" class="billbutton blarge" style="float:left;line-height:1em;">{l s='Other payment methods' mod='billmateinvoice'}</a>
@@ -131,6 +135,9 @@ $('#right_column').remove();
 			
     }
     jQuery(document).ready(function(){
+		setTimeout(function(){
+			if(typeof $.uniform == 'object')	$.uniform.restore();
+		},5000);
         jQuery('#billmate_submit').click(function(){
             if($.trim( $('#pno').val()) == '' ){
                 alert(emptypersonerror);
