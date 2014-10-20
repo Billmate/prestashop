@@ -542,7 +542,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 						'price'    => (int)($shippingPrice*100),
 						'vat'      => (float)$taxrate,
 						'discount' => 0.0,
-						'flags'    => 16, //16|32
+						'flags'    => 8,
 					)
 				);
 			}
