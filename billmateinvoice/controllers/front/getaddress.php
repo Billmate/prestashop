@@ -329,12 +329,20 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				
 				//billmate_log_data(array(array('order_id'=>$order_id,'measurements'=>$measurements)), $eid );
 				$timestart = microtime(true);
-				$k->UpdateOrderNo($invoiceid, $this->module->currentOrderReference.','.$order_id); 
+				//$k->UpdateOrderNo($invoiceid, $this->module->currentOrderReference.','.$order_id); 
+				$k->UpdateOrderNo($invoiceid, (string)$order_id); 
 				unset($_SESSION["uniqueId"]);
 				$measurements['update_order_no'] = microtime(true) - $timestart;
 
 				$duration = ( microtime(true)-$timetotalstart ) * 1000;
 				$k->stat("client_order_measurements",json_encode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
+
+				//set order status
+				$order = new Order($order_id);
+				$new_history = new OrderHistory();
+				$new_history->id_order = (int)$order_id;
+				//$new_history->changeIdOrderState((int)Configuration::get('BILLMATE_PAYMENT_ACCEPTED'), $order, true);
+				$new_history->changeIdOrderState((int)Configuration::get('BM_INV_ORDER_STATUS_SWEDEN'), $order, true);
 				
 				$url = 'order-confirmation&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
 				$return['redirect'] = Context::getContext()->link->getPageLink($url);

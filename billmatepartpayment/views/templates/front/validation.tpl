@@ -41,6 +41,13 @@ font-size:1.5em;
 #billmate_submit {
 	text-align: center;
 }
+.error {
+font-size: 1.6em;
+color: #000;
+background-color: #FAD7D7;
+padding: 1px 16px 23px;
+border-radius: 6px;
+}
 .bsmall{
 	font-size:1.1em;
 }

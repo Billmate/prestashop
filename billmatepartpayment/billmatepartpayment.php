@@ -91,7 +91,7 @@ class BillmatePartpayment extends PaymentModule
         $this->name = 'billmatepartpayment';
         $this->moduleName='billmatepartpayment';
         $this->tab = 'payments_gateways';
-        $this->version = '1.31';
+        $this->version = '1.32';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;
@@ -176,6 +176,9 @@ class BillmatePartpayment extends PaymentModule
 		$smarty = $this->context->smarty;
 		$activateCountry = array();
 		$currency = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
+		$statuses = OrderState::getOrderStates((int)$this->context->language->id);
+		foreach ($statuses as $status)
+			$statuses_array[$status['id_order_state']] = $status['name'];
 		foreach ($this->countries as $country)
 		{
 			$countryNames[$country['name']] = array('flag' => '../modules/'.$this->moduleName.'/img/flag_'.$country['name'].'.png',	'country_name' => $country['name']);
@@ -196,6 +199,15 @@ class BillmatePartpayment extends PaymentModule
 				'type' => 'text',
 				'label' => $this->l('Secret'),
 				'desc' => $this->l(''),
+			);
+			$input_country[$country['name']]['order_status_'.$country['name']] = array(
+				'name' => 'billmateOrderStatus'.$country['name'],
+				'required' => true,
+				'type' => 'select',
+				'label' => $this->l('Set Order Status'),
+				'desc' => $this->l(''),
+				'value'=> Tools::safeOutput(Configuration::get('BILLMATE_ORDER_STATUS_'.$country['name'])),
+			    'options' => $statuses_array
 			);
 			$input_country[$country['name']]['minimum_value_'.$country['name']] = array(
 				'name' => 'billmateMinimumValue'.$country['name'],
@@ -308,9 +320,9 @@ class BillmatePartpayment extends PaymentModule
 				}catch(Exception $ex){
 					$this->_postErrors[] = $ex->getMessage().' - '.$country['name'];
 				}
-				Configuration::updateValue('BILLMATE_STORE_ID_'.$country['name'], $storeId);
-				
+				Configuration::updateValue('BILLMATE_STORE_ID_'.$country['name'], $storeId);				
 				Configuration::updateValue('BILLMATE_SECRET_'.$country['name'], $secret);
+				Configuration::updateValue('BILLMATE_ORDER_STATUS_'.$country['name'], (int)(Tools::getValue('billmateOrderStatus'.$country['name'])));				
 				Configuration::updateValue('BILLMATE_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
 				Configuration::updateValue('BILLMATE_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
 			}
@@ -325,6 +337,24 @@ class BillmatePartpayment extends PaymentModule
 	{
 		$this->context->smarty->assign('billmateValidation', $this->_postValidations);
 		return $this->display(__FILE__, 'tpl/validation.tpl');
+	}
+	/******************************************************************/
+	/** add payment state ***********************************/
+	/******************************************************************/
+	private function addState($en, $color)
+	{
+		$orderState = new OrderState();
+		$orderState->name = array();
+		foreach (Language::getLanguages() as $language)
+			$orderState->name[$language['id_lang']] = $en;
+		$orderState->send_email = false;
+		$orderState->color = $color;
+		$orderState->hidden = false;
+		$orderState->delivery = false;
+		$orderState->logable = true;
+		if ($orderState->add())
+			copy(dirname(__FILE__).'/logo.gif', dirname(__FILE__).'/../../img/os/'.(int)$orderState->id.'.gif');
+		return $orderState->id;
 	}
 
     /**
@@ -344,6 +374,10 @@ class BillmatePartpayment extends PaymentModule
 
 
 		$this->registerHook('displayPayment');
+		if (!Configuration::get('BILLMATE_PAYMENT_ACCEPTED'))
+			Configuration::updateValue('BILLMATE_PAYMENT_ACCEPTED', $this->addState('Billmate : Payment accepted', '#DDEEFF'));
+		if (!Configuration::get('BILLMATE_PAYMENT_PENDING'))
+			Configuration::updateValue('BILLMATE_PAYMENT_PENDING', $this->addState('Billmate : payment in pending verification', '#DDEEFF'));
 
 		/*auto install currencies*/
 		$currencies = array(

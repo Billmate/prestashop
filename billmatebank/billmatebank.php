@@ -41,6 +41,7 @@ class BillmateBank extends PaymentModule
     public $billmate_pending_status;
     public $billmate_accepted_status;
     public $billmate_countries;
+	public $allowed_currencies = array('SEK');
     
 	private $_postValidations = array();
 	
@@ -63,7 +64,7 @@ class BillmateBank extends PaymentModule
         $this->name = 'billmatebank';
         $this->moduleName='billmatebank';
         $this->tab = 'payments_gateways';
-        $this->version = '1.31';
+        $this->version = '1.32';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;
@@ -78,8 +79,8 @@ class BillmateBank extends PaymentModule
 
         /* The parent construct is required for translations */
         $this->page = basename(__FILE__, '.php');
-        $this->displayName = $this->l('BillMate Bank');
-        $this->description = $this->l('Accepts bank payments by BillMate');
+        $this->displayName = $this->l('Billmate Bank');
+        $this->description = $this->l('Accepts bank payments by Billmate');
         $this->confirmUninstall = $this->l(
             'Are you sure you want to delete your settings?'
         );
@@ -159,6 +160,9 @@ class BillmateBank extends PaymentModule
 		$smarty = $this->context->smarty;
 		$activateCountry = array();
 		$currency = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
+		$statuses = OrderState::getOrderStates((int)$this->context->language->id);
+		foreach ($statuses as $status)
+			$statuses_array[$status['id_order_state']] = $status['name'];
 		foreach ($this->countries as $country)
 		{
 			$countryNames[$country['name']] = array('flag' => '../modules/'.$this->moduleName.'/img/flag_SWEDEN.png', 'country_name' => $country['name']);
@@ -179,6 +183,15 @@ class BillmateBank extends PaymentModule
 				'type' => 'text',
 				'label' => $this->l('Secret'),
 				'desc' => $this->l(''),
+			);
+			$input_country[$country['name']]['order_status_'.$country['name']] = array(
+				'name' => 'billmateOrderStatus'.$country['name'],
+				'required' => true,
+				'type' => 'select',
+				'label' => $this->l('Set Order Status'),
+				'desc' => $this->l(''),
+				'value'=> Tools::safeOutput(Configuration::get('BBANK_ORDER_STATUS_'.$country['name'])),
+			    'options' => $statuses_array
 			);
 			$input_country[$country['name']]['minimum_value_'.$country['name']] = array(
 				'name' => 'billmateMinimumValue'.$country['name'],
@@ -268,6 +281,7 @@ class BillmateBank extends PaymentModule
 
 				Configuration::updateValue('BBANK_STORE_ID_'.$country['name'], $storeId);
 				Configuration::updateValue('BBANK_SECRET_'.$country['name'], $secret);
+				Configuration::updateValue('BBANK_ORDER_STATUS_'.$country['name'], (int)(Tools::getValue('billmateOrderStatus'.$country['name'])));
 				Configuration::updateValue('BBANK_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
 				Configuration::updateValue('BBANK_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
 	
@@ -298,6 +312,24 @@ class BillmateBank extends PaymentModule
 		}
 		$this->_html .= '<div class="conf confirm"> '.$this->l('Settings updated').'</div>';
 	}
+	/******************************************************************/
+	/** add payment state ***********************************/
+	/******************************************************************/
+	private function addState($en, $color)
+	{
+		$orderState = new OrderState();
+		$orderState->name = array();
+		foreach (Language::getLanguages() as $language)
+			$orderState->name[$language['id_lang']] = $en;
+		$orderState->send_email = false;
+		$orderState->color = $color;
+		$orderState->hidden = false;
+		$orderState->delivery = false;
+		$orderState->logable = true;
+		if ($orderState->add())
+			copy(dirname(__FILE__).'/logo.gif', dirname(__FILE__).'/../../img/os/'.(int)$orderState->id.'.gif');
+		return $orderState->id;
+	}
 
     /**
      * Install the Billmate Bank module
@@ -313,6 +345,10 @@ class BillmateBank extends PaymentModule
 		$this->registerHook('displayPayment');
 		$this->registerHook('header');
 
+		if (!Configuration::get('BILLMATE_PAYMENT_ACCEPTED'))
+			Configuration::updateValue('BILLMATE_PAYMENT_ACCEPTED', $this->addState('Billmate : Payment accepted', '#DDEEFF'));
+		if (!Configuration::get('BILLMATE_PAYMENT_PENDING'))
+			Configuration::updateValue('BILLMATE_PAYMENT_PENDING', $this->addState('Billmate : payment in pending verification', '#DDEEFF'));
 		/*auto install currencies*/
 		$currencies = array(
 			'Euro' => array('iso_code' => 'EUR', 'iso_code_num' => 978, 'symbole' => '€', 'format' => 2),
@@ -410,7 +446,13 @@ class BillmateBank extends PaymentModule
 		
         if( $total > $minVal && $total < $maxVal ){
             $customer = new Customer(intval($cart->id_customer));
-            $currency = $this->getCurrency(intval($cart->id_currency));
+            $currency = $this->getCurrency((int)$cart->id_currency);
+			
+			$current_currency_code = trim($this->context->currency->iso_code);
+			
+			if( !in_array($current_currency_code,$this->allowed_currencies)){
+				return false;
+			}
 
             return $this->display(__FILE__, 'tpl/billmatebank.tpl');
         }else{

@@ -1,6 +1,7 @@
 <?php
 
 require_once BCARDPAY_BASE. '/Billmate.php';
+require_once BCARDPAY_BASE .'/lib/billmateCart.php';
 //error_reporting(E_ERROR);
 class BillmateCardpayValidationModuleFrontController extends ModuleFrontController
 {
@@ -37,39 +38,69 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		$post = $_REQUEST;
 	    if (isset($post['status']) && !empty($post['trans_id']) && !empty($post['error_message']))
 		{
-		
+	
+			$ids = explode("-",$_REQUEST['order_id']);
+			if( sizeof($ids) < 2 ) return false;
+			$_REQUEST['order_id'] = $ids[0];
+			$_REQUEST['cart_id'] = $ids[1];
+			$post = $_REQUEST;
+			
+			$this->context->cart->id = (int)$_POST['cart_id'];
+			
 			$eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
+			
 		    if( $post['status'] == 0 ){
 		        try{
+					
 					$data = $measurements = array();
 					
-					$timestart = $timetotalstart = microtime(true);
-                	$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code));
-					$measurements['after_add_invoice'] =  microtime(true) - $timestart;
-					extract($data_return);
+					$order = new Order($_REQUEST['order_id']);
+					$orderhistory = OrderHistory::getLastOrderState((int)$_REQUEST['order_id']);
+
+					if( $orderhistory->id != Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS')){
+
+						$t = new billmateCart();
+						$t->id = $post['order_id'];
+						$timestart = $timetotalstart = microtime(true);
+						$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code));
+						$measurements['after_add_invoice'] =  microtime(true) - $timestart;
+						extract($data_return);
+						
+						
+					   // $customer = new Customer((int)$this->context->cart->id_customer);
+						$total = $this->context->cart->getOrderTotal(true, Cart::BOTH); 
+						$extra = array('transaction_id'=>$invoiceid);
+						$t->completeOrder($extra,$this->context->cart->id);
+						$this->module->currentOrder = $_REQUEST['order_id'];
+						$timestart = microtime(true);
+						$customer = new Customer((int)$this->context->cart->id_customer);
+						$measurements['after_customer'] =  microtime(true) - $timestart;
+						
+						$timestart = microtime(true);
+						$total = $this->context->cart->getOrderTotal(true, Cart::BOTH); 
+						$measurements['calculatetotal'] = microtime(true) - $timestart;
+						
+						$timestart = microtime(true);
+						$extra = array('transaction_id'=>$invoiceid);
+					   // $this->module->validateOrder((int)$this->context->cart->id, Configuration::get('PS_OS_PREPARATION'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+						$measurements['validateorder'] = microtime(true) - $timestart;
+						
+						$timestart = microtime(true);
+						//$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrderReference.','.$this->module->currentOrder);
+						//unset($_SESSION["uniqueId"]);
+						//$measurements['update_order_no'] = microtime(true) - $timestart;
+						//$duration = ( microtime(true)-$timetotalstart ) * 1000;
+						//$api->stat("client_card_order_measurements", json_encode(array('order_id'=>$this->module->currentOrder, 'measurements'=>$measurements)), '', $duration);
+					} else {
+						$customer = new Customer((int)$this->context->cart->id_customer);
+					}					
+					$this->module->currentOrder = $_REQUEST['order_id'];
+					if( isset($_SESSION['billmate_order_id'])){
+						unset($_SESSION['billmate_order_id']);
+					}
 					
-					$timestart = microtime(true);
-			        $customer = new Customer((int)$this->context->cart->id_customer);
-					$measurements['after_customer'] =  microtime(true) - $timestart;
-					
-					$timestart = microtime(true);
-			        $total = $this->context->cart->getOrderTotal(true, Cart::BOTH); 
-					$measurements['calculatetotal'] = microtime(true) - $timestart;
-					
-					$timestart = microtime(true);
-					$extra = array('transaction_id'=>$invoiceid);
-			        $this->module->validateOrder((int)$this->context->cart->id, Configuration::get('PS_OS_PREPARATION'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
-					$measurements['validateorder'] = microtime(true) - $timestart;
-					
-					$timestart = microtime(true);
-					$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrderReference.','.$this->module->currentOrder);
-					unset($_SESSION["uniqueId"]);
-					$measurements['update_order_no'] = microtime(true) - $timestart;
-					$duration = ( microtime(true)-$timetotalstart ) * 1000;
-					$api->stat("client_card_order_measurements", json_encode(array('order_id'=>$this->module->currentOrder, 'measurements'=>$measurements)), '', $duration);
-					
-			        Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);
-					
+					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);
+					die;
 		        }catch(Exception $ex){
     		       $this->context->smarty->assign('error_message', utf8_encode($ex->getMessage())) ;
 		        }
@@ -86,11 +117,11 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 	 */
 	public function initContent()
 	{
-		$this->context->smarty->assign('priceDisplayPrecision', 0);
+		//$this->context->smarty->assign('priceDisplayPrecision', 0);
 		$this->display_column_left = false;
 		parent::initContent();
 		$accept_url = $this->context->link->getModuleLink('billmatecardpay', 'validation', array(), true);
-		$cancel_url = $this->context->link->getPageLink('order.php', true);
+		$cancel_url = $this->context->link->getModuleLink('billmatecardpay', 'cancelorder', array(), true);
 		$amount     = round($this->context->cart->getOrderTotal(true, Cart::BOTH),2)*100;
 		$order_id   = time();
 		$currency   = $this->context->currency->iso_code;
@@ -102,15 +133,37 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		
 		$merchant_id = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
 		$secret = substr(Configuration::get('BCARDPAY_SECRET_SETTINGS'),0,12);
-		$callback_url = 'http://api.billmate.se/callback.php';
+		$callback_url = $this->context->link->getModuleLink('billmatecardpay', 'callback', array(), true);
+		
 		$do_3d_secure = Configuration::get('BILL_3DSECURE') == 'YES'? 'YES': 'NO';
 		$prompt_name_entry = Configuration::get('BILL_PRNAME') == 'YES'? 'YES': 'NO';
 		$return_method = strlen(Configuration::get('BCARDPAY_METHOD')) ? 'GET' : 'GET';
 		
+		$t = new billmateCart();
+		$t->name="billmatecardpay";
+		$extra = array('transaction_id'=>time());
+		$customer = new Customer((int)$this->context->cart->id_customer);
+
+		if( isset($_SESSION['billmate_order_id'])){
+			$t->cancelOrder($_SESSION['billmate_order_id']);
+			unset($_SESSION['billmate_order_id']);
+		}
+
+		$total =  $this->context->cart->getOrderTotal(true, Cart::BOTH);
+		try{
+			$t->validateOrder((int)$this->context->cart->id, Configuration::get('BILLMATE_PAYMENT_PENDING'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+		}catch(Exception $ex ){
+			echo $ex->getMessage();
+		}
+
+		
+		$order_id = $_SESSION['billmate_order_id'] = $t->currentOrder;
+		$sendtohtml = $order_id.'-'.$this->context->cart->id;
+		
 		unset($_SESSION['INVOICE_CREATED_CARD']);
         $data = array(
 		    'gatewayurl' => Configuration::get('BCARDPAY_MOD') == 0 ? CARDPAY_LIVEURL : CARDPAY_TESTURL,
-		    'order_id'   => $order_id,
+		    'order_id'   => $sendtohtml,
 		    'amount'     => $amount,
 		    'merchant_id'=> $merchant_id,
 		    'currency'   => $currency,
@@ -123,11 +176,11 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			'do_3d_secure' => $do_3d_secure,
 			'prompt_name_entry' => $prompt_name_entry,
 		    'cancel_url' => $cancel_url,
-			'total'      => $this->context->cart->getOrderTotal(true, Cart::BOTH),
+			'total'      => $total,
 			'this_path'  => $this->module->getPathUri(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		);
-		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency. $do_3d_secure . $languageCode . $merchant_id . $order_id . 'CARD' . $prompt_name_entry . $return_method. $secret;
+		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency. $do_3d_secure . $languageCode . $merchant_id . $sendtohtml . 'CARD' . $prompt_name_entry . $return_method. $secret;
 		
 		$data['mac'] = hash('sha256', $mac_str);
 		$this->logData($merchant_id);
@@ -136,6 +189,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 	}
 	public function logData($merchant_id){
 
+		if(isset( $_REQUEST['order_id'])) $order_id = $_REQUEST['order_id'];
 		$timetotalstart = microtime(true);
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
         $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);

@@ -63,10 +63,8 @@
 							<div class="input-row">
 								<span>{$input.label}</span>
 								<select {if isset($input.id)}id="{$input.id}"{/if} {if isset($input.name)}name="{$input.name}"{/if}>
-									<option>{l s='Choose' mod='billmateinvoice'}</option>
-									{foreach from=$input.option item=option}
-									<option value="{$option}">{$option}</option>
-									{/foreach}
+									<option>{l s='Choose' mod='billmatebank'}</option>
+									{html_options options=$input.options selected=$input.value}
 								</select>
 							</div>
 						{/if}

@@ -89,7 +89,7 @@ class BillmateInvoice extends PaymentModule
         $this->name = 'billmateinvoice';
         $this->moduleName='billmateinvoice';
         $this->tab = 'payments_gateways';
-        $this->version = '1.31';
+        $this->version = '1.32';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;
@@ -103,8 +103,8 @@ class BillmateInvoice extends PaymentModule
 
         /* The parent construct is required for translations */
         $this->page = basename(__FILE__, '.php');
-        $this->displayName = $this->l('BillMate Invoice');
-        $this->description = $this->l('Accepts invoice payments by BillMate');
+        $this->displayName = $this->l('Billmate Invoice');
+        $this->description = $this->l('Accepts invoice payments by Billmate');
         $this->confirmUninstall = $this->l(
             'Are you sure you want to delete your settings?'
         );
@@ -182,6 +182,9 @@ class BillmateInvoice extends PaymentModule
 		$smarty = $this->context->smarty;
 		$activateCountry = array();
 		$currency = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
+		$statuses = OrderState::getOrderStates((int)$this->context->language->id);
+		foreach ($statuses as $status)
+			$statuses_array[$status['id_order_state']] = $status['name'];
 		foreach ($this->countries as $country)
 		{
 			$countryNames[$country['name']] = array('flag' => '../modules/'.$this->moduleName.'/img/flag_'.$country['name'].'.png',	'country_name' => $country['name']);
@@ -210,6 +213,15 @@ class BillmateInvoice extends PaymentModule
 				'type' => 'text',
 				'label' => $this->l('Invoice Fee ').'('.$currency['sign'].')',
 				'desc' => $this->l(''),
+			);
+			$input_country[$country['name']]['order_status_'.$country['name']] = array(
+				'name' => 'billmateOrderStatus'.$country['name'],
+				'required' => true,
+				'type' => 'select',
+				'label' => $this->l('Set Order Status'),
+				'desc' => $this->l(''),
+				'value'=> Tools::safeOutput(Configuration::get('BM_INV_ORDER_STATUS_'.$country['name'])),
+			    'options' => $statuses_array
 			);
 			$input_country[$country['name']]['minimum_value_'.$country['name']] = array(
 				'name' => 'billmateMinimumValue'.$country['name'],
@@ -310,7 +322,7 @@ class BillmateInvoice extends PaymentModule
 			foreach ($languages as $language)
 			{
 				$category->name[$language['id_lang']] = 'Category '.$this->getFeeLabel('');
-				$category->link_rewrite[$language['id_lang']] = 'billmate_invoice_fee_'.$country['name'];
+				$category->link_rewrite[$language['id_lang']] = 'billmate_invoice_fee';
 			}
 			if( $category->add() ){
 				Configuration::updateValue('BM_INV_CATEID', $category->id);
@@ -328,6 +340,7 @@ class BillmateInvoice extends PaymentModule
 				Configuration::updateValue('BM_INV_STORE_ID_'.$country['name'], $storeId);
 				Configuration::updateValue('BM_INV_SECRET_'.$country['name'], $secret);
 				Configuration::updateValue('BM_INV_FEE_'.$country['name'], (float)Tools::getValue('billmateInvoiceFee'.$country['name']));
+				Configuration::updateValue('BM_INV_ORDER_STATUS_'.$country['name'], (int)(Tools::getValue('billmateOrderStatus'.$country['name'])));
 				Configuration::updateValue('BM_INV_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
 				Configuration::updateValue('BM_INV_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
 				$id_product = Db::getInstance()->getValue('SELECT `id_product` FROM `'._DB_PREFIX_.'product_lang` WHERE `name` = \''.$this->getFeeLabel($country['name']).'\'');
@@ -350,7 +363,7 @@ class BillmateInvoice extends PaymentModule
 					//$productInvoicefee->addToCategories((int)$category_id);
 					$productInvoicefee->price = (float)Tools::getValue('billmateInvoiceFee'.$country['name']);
 					if (_PS_VERSION_ >= 1.5)
-						StockAvailable::setProductOutOfStock((int)$productInvoicefee->id, true, null, 0);
+						StockAvailable::setProductOutOfStock((int)$productInvoicefee->id, false, null, 0);
 					if ($idTaxe != 0)
 						$productInvoicefee->id_tax_rules_group = (int)$idTaxe;
 					$productInvoicefee->update();
@@ -371,10 +384,10 @@ class BillmateInvoice extends PaymentModule
 					}
 					$productInvoicefee->price = (float)Tools::getValue('billmateInvoiceFee'.$country['name']);
 					if (_PS_VERSION_ >= 1.5)
-						$productInvoicefee->active = false;
+						$productInvoicefee->active = true;
 					$productInvoicefee->add();
 					if (_PS_VERSION_ >= 1.5)
-						StockAvailable::setProductOutOfStock((int)$productInvoicefee->id, true, null, 0);
+						StockAvailable::setProductOutOfStock((int)$productInvoicefee->id, false, null, 0);
 				}
 				Db::getInstance()->delete('category_product', 'id_product = '.(int)$productInvoicefee->id);
 				$product_cats = array(
@@ -382,7 +395,8 @@ class BillmateInvoice extends PaymentModule
 					'id_product' => (int)$productInvoicefee->id,
 					'position' => (int)1,
 				);
-				
+				StockAvailable::setQuantity(Tools::getValue((int)$productInvoicefee->id), '', Tools::getValue(10000), (int)Configuration::get('PS_SHOP_DEFAULT'));
+
 				$db = Db::getInstance();
 				if((version_compare(_PS_VERSION_,'1.5','>'))){
 					Db::getInstance()->insert('category_product', $product_cats,false,true,Db::INSERT_IGNORE);
@@ -417,6 +431,24 @@ class BillmateInvoice extends PaymentModule
 		$this->context->smarty->assign('billmateValidation', $this->_postValidations);
 		return $this->display(__FILE__, 'tpl/validation.tpl');
 	}
+	/******************************************************************/
+	/** add payment state ***********************************/
+	/******************************************************************/
+	private function addState($en, $color)
+	{
+		$orderState = new OrderState();
+		$orderState->name = array();
+		foreach (Language::getLanguages() as $language)
+			$orderState->name[$language['id_lang']] = $en;
+		$orderState->send_email = false;
+		$orderState->color = $color;
+		$orderState->hidden = false;
+		$orderState->delivery = false;
+		$orderState->logable = true;
+		if ($orderState->add())
+			copy(dirname(__FILE__).'/logo.gif', dirname(__FILE__).'/../../img/os/'.(int)$orderState->id.'.gif');
+		return $orderState->id;
+	}
 
     /**
      * Install the Billmate Invoice module
@@ -430,6 +462,10 @@ class BillmateInvoice extends PaymentModule
 
 
 		$this->registerHook('displayPayment');
+		if (!Configuration::get('BILLMATE_PAYMENT_ACCEPTED'))
+			Configuration::updateValue('BILLMATE_PAYMENT_ACCEPTED', $this->addState('Billmate : Payment accepted', '#DDEEFF'));
+		if (!Configuration::get('BILLMATE_PAYMENT_PENDING'))
+			Configuration::updateValue('BILLMATE_PAYMENT_PENDING', $this->addState('Billmate : payment in pending verification', '#DDEEFF'));
 
 		/*auto install currencies*/
 		$currencies = array(

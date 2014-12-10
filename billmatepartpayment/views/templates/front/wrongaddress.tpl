@@ -2,8 +2,7 @@
 	<span style="font-size: 1.3em;line-height: 1.4em;">
 		{$firstname} {$lastname}
 		<br/>{$address}
-		<br/>{$zipcode}
-		<br/>{$city}
+		<br/>{$zipcode} {$city}
 		<br/>{$country}
 	</span>
 	<div style="margin-top:1em">

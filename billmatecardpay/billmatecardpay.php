@@ -1,6 +1,6 @@
 <?php
 /**
- * The file for specified the BillMate Cardpay payment module
+ * The file for specified the Billmate Cardpay payment module
  *
  * PHP Version 5.3
  *
@@ -59,7 +59,7 @@ class BillmateCardpay extends PaymentModule
         $this->name = 'billmatecardpay';
         $this->moduleName='billmatecardpay';
         $this->tab = 'payments_gateways';
-        $this->version = '1.31';
+        $this->version = '1.32';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;
@@ -73,8 +73,8 @@ class BillmateCardpay extends PaymentModule
 
         /* The parent construct is required for translations */
         $this->page = basename(__FILE__, '.php');
-        $this->displayName = $this->l('BillMate Cardpay');
-        $this->description = $this->l('Accepts cardpay payments by BillMate');
+        $this->displayName = $this->l('Billmate Cardpay');
+        $this->description = $this->l('Accepts cardpay payments by Billmate');
         $this->confirmUninstall = $this->l(
             'Are you sure you want to delete your settings?'
         );
@@ -93,7 +93,7 @@ class BillmateCardpay extends PaymentModule
 			<fieldset>
 			<legend><img src="../img/admin/contact.gif" />'.$this->l('Billmate Configurations:').'</legend>
 				<table border="0" width="100%" cellpadding="0" cellspacing="0" id="form">
-					<tr><td colspan="2">'.$this->l('BillMate Credentials').'.<br /><br /></td></tr>
+					<tr><td colspan="2">'.$this->l('Billmate Credentials').'.<br /><br /></td></tr>
 					<tr><td width="130" style="height: 35px;">'.$this->l('Merchant ID:').'</td><td><input type="text" name="billmate_merchant_id" value="'.htmlentities( Tools::getValue('billmate_merchant_id', $this->billmate_merchant_id), ENT_COMPAT, 'UTF-8').'" style="width: 300px;" /></td></tr>
 					<tr><td width="130" style="height: 35px;">'.$this->l('Billmate Secret:').'</td><td><input type="text" name="billmate_secret" value="'.htmlentities(Tools::getValue('billmate_secret', $this->billmate_secret), ENT_COMPAT, 'UTF-8').'" style="width: 300px;" /></td></tr>
 					<tr><td colspan="2" align="center"><input class="button" name="btnSubmit" value="'.$this->l('Update settings').'" type="submit" /></td></tr>
@@ -174,6 +174,9 @@ class BillmateCardpay extends PaymentModule
 		$smarty = $this->context->smarty;
 		$activateCountry = array();
 		$currency = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
+		$statuses = OrderState::getOrderStates((int)$this->context->language->id);
+		foreach ($statuses as $status)
+			$statuses_array[$status['id_order_state']] = $status['name'];
 		foreach ($this->countries as $country)
 		{
 			$countryNames[$country['name']] = array('flag' => '../modules/'.$this->moduleName.'/img/flag_SWEDEN.png', 'country_name' => $country['name']);
@@ -195,6 +198,15 @@ class BillmateCardpay extends PaymentModule
 				'label' => $this->l('Secret'),
 				'desc' => $this->l(''),
 			);
+			$input_country[$country['name']]['order_status_'.$country['name']] = array(
+				'name' => 'billmateOrderStatus'.$country['name'],
+				'required' => true,
+				'type' => 'select',
+				'label' => $this->l('Set Order Status'),
+				'desc' => $this->l(''),
+				'value'=> Tools::safeOutput(Configuration::get('BCARDPAY_ORDER_STATUS_'.$country['name'])),
+			    'options' => $statuses_array
+			);			
 			$input_country[$country['name']]['minimum_value_'.$country['name']] = array(
 				'name' => 'billmateMinimumValue'.$country['name'],
 				'required' => false,
@@ -294,6 +306,7 @@ class BillmateCardpay extends PaymentModule
 
 				Configuration::updateValue('BCARDPAY_STORE_ID_'.$country['name'], $storeId);
 				Configuration::updateValue('BCARDPAY_SECRET_'.$country['name'], $secret);
+				Configuration::updateValue('BCARDPAY_ORDER_STATUS_'.$country['name'], (int)(Tools::getValue('billmateOrderStatus'.$country['name'])));
 				Configuration::updateValue('BCARDPAY_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
 				Configuration::updateValue('BCARDPAY_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
 
@@ -325,6 +338,24 @@ class BillmateCardpay extends PaymentModule
 		$this->_html .= '<div class="conf confirm"> '.$this->l('Settings updated').'</div>';
 	}
 
+	/******************************************************************/
+	/** add payment state ***********************************/
+	/******************************************************************/
+	private function addState($en, $color)
+	{
+		$orderState = new OrderState();
+		$orderState->name = array();
+		foreach (Language::getLanguages() as $language)
+			$orderState->name[$language['id_lang']] = $en;
+		$orderState->send_email = false;
+		$orderState->color = $color;
+		$orderState->hidden = false;
+		$orderState->delivery = false;
+		$orderState->logable = true;
+		if ($orderState->add())
+			copy(dirname(__FILE__).'/logo.gif', dirname(__FILE__).'/../../img/os/'.(int)$orderState->id.'.gif');
+		return $orderState->id;
+	}
     /**
      * Install the Billmate Cardpay module
      *
@@ -338,6 +369,10 @@ class BillmateCardpay extends PaymentModule
 
 		$this->registerHook('displayPayment');
 		$this->registerHook('header');
+		if (!Configuration::get('BILLMATE_PAYMENT_ACCEPTED'))
+			Configuration::updateValue('BILLMATE_PAYMENT_ACCEPTED', $this->addState('Billmate : Payment accepted', '#DDEEFF'));
+		if (!Configuration::get('BILLMATE_PAYMENT_PENDING'))
+			Configuration::updateValue('BILLMATE_PAYMENT_PENDING', $this->addState('Billmate : payment in pending verification', '#DDEEFF'));
 
 		/*auto install currencies*/
 		$currencies = array(

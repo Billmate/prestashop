@@ -14,7 +14,7 @@ class pClasses{
 		$this->config['language'] = $language;
 		$this->config['currency'] = $currency;
 		$this->config['mode'] = $mode;
-		$this->getPClasses($eid);
+		$this->getPClasses($eid);  
 	}
 	public function clear(){
 		Db::getInstance()->Execute('truncate `'._DB_PREFIX_.'billmate_payment_pclasses`');
@@ -24,7 +24,7 @@ class pClasses{
         $ssl=true;
         $debug = false;
 		
-        $billmate = new Billmate($eid, $secret, $ssl, $debug, $testmode);
+        $billmate = new Billmate($eid, $secret, $ssl, $debug, $testmode);         
 		switch ($country) {
 			// Sweden
 			case 'SE':

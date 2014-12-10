@@ -31,6 +31,13 @@ display: block!important;
 border-top: 1px solid grey!important;
 padding-top: 13px!important;
 }
+.error {
+font-size: 1.6em;
+color: #000;
+background-color: #FAD7D7;
+padding: 1px 16px 23px;
+border-radius: 6px;
+}
 #pno{ margin:auto!important;display:block!important;text-align:center!important;	 }
 #billmate_submit{ width:26em!important; }
 @media only screen and (min-width: 500px){

@@ -315,7 +315,7 @@ if(!function_exists('match_usernamevp')){
 			}
 		}
 		$foundName = array_intersect( $filterStr1, $filterStr2 );
-        return count($foundName)>0;
+		return (count($foundName)==count($filterStr1));
 	}
 
 	function utf8_strlen($string) {
