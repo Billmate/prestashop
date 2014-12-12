@@ -190,7 +190,7 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
 					//modalWin.ShowMessage(response.content,310,500,windowtitlebillmate);
 				}else{
 					modalWin.HideModalPopUp();
-					$('<div class="error">'+response.content+'</div>').insertBefore($('#order_area'));
+					$('<div class="error">'+response.content+'</div>').insertBefore($('#order_area').first());
 				}
             }
         });

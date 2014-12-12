@@ -1,4 +1,4 @@
-<div  style="margin: 0% 3%;">
+<div id="order_area" style="margin: 0% 3%;">
 {capture name=path}{l s='Billmate Partpayment' mod='billmatepartpayment'}{/capture}
 {include file="$tpl_dir./breadcrumb.tpl"}
 <h2>{l s='Order summary' mod='billmatepartpayment'}</h2>
@@ -165,7 +165,7 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
 					$( "input[type='button']" ).button();
 				}else{
 					modalWin.HideModalPopUp();
-					$('<div class="error">'+response.content+'</div>').insertAfter($('.breadcrumb').first());
+					$('<div class="error">'+response.content+'</div>').insertBefore($('#order_area').first());
 				}
             }
         });

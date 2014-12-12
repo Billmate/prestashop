@@ -133,7 +133,7 @@ $('#right_column').remove();
 					ShowMessage(response.content,windowtitlebillmate);
 				}else{
 					modalWin.HideModalPopUp();
-					$('<div class="error">'+response.content+'</div>').insertAfter($('.breadcrumb').first());
+					$('<div class="error">'+response.content+'</div>').insertBefore($('#order_area').first());
 				}
             }
         });
