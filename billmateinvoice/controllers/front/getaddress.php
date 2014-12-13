@@ -343,6 +343,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				$new_history->id_order = (int)$order_id;
 				//$new_history->changeIdOrderState((int)Configuration::get('BILLMATE_PAYMENT_ACCEPTED'), $order, true);
 				$new_history->changeIdOrderState((int)Configuration::get('BM_INV_ORDER_STATUS_SWEDEN'), $order, true);
+				$new_history->addWithemail(true);
 				
 				$url = 'order-confirmation&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
 				$return['redirect'] = Context::getContext()->link->getPageLink($url);

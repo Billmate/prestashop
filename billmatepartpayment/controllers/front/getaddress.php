@@ -344,6 +344,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				$new_history->id_order = (int)$order_id;
 				//$new_history->changeIdOrderState((int)Configuration::get('BILLMATE_PAYMENT_ACCEPTED'), $order, true);
 				$new_history->changeIdOrderState((int)Configuration::get('BILLMATE_ORDER_STATUS_SWEDEN'), $order, true);
+				$new_history->addWithemail(true);
 
 				//				$return['redirect'] = __PS_BASE_URI__.'order-confirmation.php?id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
 
