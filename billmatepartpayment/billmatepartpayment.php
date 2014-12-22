@@ -91,7 +91,7 @@ class BillmatePartpayment extends PaymentModule
         $this->name = 'billmatepartpayment';
         $this->moduleName='billmatepartpayment';
         $this->tab = 'payments_gateways';
-        $this->version = '1.33';
+        $this->version = '1.34';
         $this->author  = 'eFinance Nordic AB';
 
         $this->currencies = true;

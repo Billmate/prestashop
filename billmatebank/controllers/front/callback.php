@@ -45,12 +45,6 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 			if( !empty($extra)){
 				Db::getInstance()->update('order_payment',$extra,'order_reference="'.$order->reference.'"');
 			}
-
-			
-			$new_history = new OrderHistory();
-			$new_history->id_order = (int)$order->id;
-			$new_history->changeIdOrderState((int)Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $order, true);
-			$new_history->addWithemail(true);
 		}
 		exit("finalize");
 	}
