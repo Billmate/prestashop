@@ -2,14 +2,14 @@
 /**
  * BillMate Class
  *
- * LICENSE: This source file is part of BillMate, that is fully owned by eFinance Nordic AB
+ * LICENSE: This source file is part of BillMate, that is fully owned by Billmate AB
  * This is not open source. For licensing queries, please contact at info@efinance.se
  *
  * @category Billmate
  * @package Billmate
  * @author Yuksel Findik <yuksel@efinance.se>
- * @copyright 2013-2014 eFinance Nordic AB
- * @license Proprietary and fully owned by eFinance Nordic AB
+ * @copyright 2013-2014 Billmate AB
+ * @license Proprietary and fully owned by Billmate AB
  * @version 0.5.8
  * @link http://www.efinance.se
  *

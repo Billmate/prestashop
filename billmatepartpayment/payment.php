@@ -175,29 +175,22 @@ class BillmatePartpaymentController extends FrontController
 	{
 		if (!$this->billmate->active)
 			return ;
-		$billmate = new Billmate();
-		$billmate->config(
+		$pclass = new pClasses(
 			Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name']),
 			Configuration::get('BILLMATE_SECRET_'.$countries[$country->iso_code]['name']),
 			$countries[$country->iso_code]['code'],
 			$countries[$country->iso_code]['langue'],
 			$countries[$country->iso_code]['currency'],
-			Configuration::get('BILLMATE_MOD'),
-			'mysql',
-			array(
-				'user' => _DB_USER_,
-				'passwd' => _DB_PASSWD_,
-				'dsn' => _DB_SERVER_,
-				'db' => _DB_NAME_,
-				'table' => _DB_PREFIX_.'billmate_payment_pclasses'
-			));
+			Configuration::get('BILLMATE_MOD')
+		);
 
 		$accountPrice = array();
-		$pclasses = array_merge($billmate->getPClasses(BillmatePClass::ACCOUNT), $billmate->getPClasses(BillmatePClass::CAMPAIGN));
+		$pclasses = $pclass->getPClasses(Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name']));
 		$total = (float)$cart->getOrderTotal();
 		foreach ($pclasses as $val)
-			if ($val->getMinAmount() < $total)
-				$accountPrice[$val->getId()] = array('price' => BillmateCalc::calc_monthly_cost($total, $val, BillmateFlags::CHECKOUT_PAGE), 'month' => (int)$val->getMonths(), 'description' => htmlspecialchars_decode(Tools::safeOutput($val->getDescription())));
+
+			if ($val['minamount'] < $total)
+				$accountPrice[$val['id']] = array('price' => BillmateCalc::calc_monthly_cost($total, $val, BillmateFlags::CHECKOUT_PAGE), 'month' => (int)$val['months'], 'description' => htmlspecialchars_decode(Tools::safeOutput($val['description'])));
 
 		return $accountPrice;
 	}

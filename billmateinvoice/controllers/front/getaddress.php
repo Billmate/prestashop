@@ -58,6 +58,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 	
 		global $link;
         parent::init();
+        $this->context = Context::getContext();
         if( !empty($_GET['clearFee'] )){
             $cart = $this->context->cart;
             $address = new Address(intval($cart->id_address_delivery));
@@ -322,6 +323,9 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				$measurements['calculatetotal'] = microtime(true) - $timestart;
 				
 				$timestart = microtime(true);
+                if((version_compare(_PS_VERSION_,'1.5','<'))){
+                    $this->module = new BillmateInvoice();
+                }
 				$extra = array('transaction_id'=>$invoiceid);
 			    $this->module->validateOrder((int)$this->context->cart->id, Configuration::get('PS_OS_PREPARATION'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 			    $order_id = $this->module->currentOrder;
@@ -344,9 +348,15 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				//$new_history->changeIdOrderState((int)Configuration::get('BILLMATE_PAYMENT_ACCEPTED'), $order, true);
 				$new_history->changeIdOrderState((int)Configuration::get('BM_INV_ORDER_STATUS_SWEDEN'), $order, true);
 				$new_history->addWithemail(true);
-				
-				$url = 'order-confirmation&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
-				$return['redirect'] = Context::getContext()->link->getPageLink($url);
+
+                if(version_compare(_PS_VERSION_,'1.5','>=')){
+                    $url = 'order-confirmation&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
+                    $return['redirect'] = Context::getContext()->link->getPageLink($url);
+                } else {
+                    $return['redirect'] = __PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id;
+
+                    //$url = 'order-confirmation.php&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
+                }
            
         	}catch(Exception $ex ){
                 $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
@@ -529,7 +539,8 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				$shippingPrice = $cart->getTotalShippingCost();
 		
 			$carrier = new Carrier($cart->id_carrier, $this->context->cart->id_lang);
-			$taxrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
+			//$taxrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
+            $taxrate = Tax::getCarrierTaxRate($cart->id_carrier,Configuration::get('PS_TAX_ADDRESS_TYPE'));
 
 			if( !empty( $shippingPrice ) ){
 				$shippingPrice = $shippingPrice / (1+$taxrate/100);

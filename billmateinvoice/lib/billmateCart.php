@@ -37,7 +37,7 @@ class billmateCart extends PaymentModule{
 
 		$new_history = new OrderHistory();
 		$new_history->id_order = (int)$order->id;
-		$new_history->changeIdOrderState((int)Configuration::get('PS_OS_CANCELED'), $order, true);
+		$new_history->changeIdOrderState((int)Configuration::get('PS_OS_CANCELED'), $order->id, true);
 		$new_history->addWithemail(true);
 		if( isset($_SESSION['billmate_order_id'])){
 			unset($_SESSION['billmate_order_id']);
@@ -64,16 +64,16 @@ class billmateCart extends PaymentModule{
 		}
 
 		switch($order->module){
-			case 'billmatecardpay': $order_status = Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS'); break;
-			case 'billmatebank': $order_status = Configuration::get('BBANK_ORDER_STATUS_SETTINGS'); break;
+			case 'billmatecardpay': $order_status = Configuration::get('BCARDPAY_ORDER_STATUS_SWEDEN'); break;
+			case 'billmatebank': $order_status = Configuration::get('BBANK_ORDER_STATUS_SWEDEN'); break;
 			default: $order_status = Configuration::get('BILLMATE_PAYMENT_ACCEPTED');
 		}
 
 		if( $prevOrder->id == Configuration::get('BILLMATE_PAYMENT_PENDING') ){
 			$new_history = new OrderHistory();
 			$new_history->id_order = (int)$order->id;
-			$new_history->changeIdOrderState((int)$order_status, $order, true);
-			$new_history->addWithemail(true, $extra_vars);
+			$new_history->changeIdOrderState((int)$order_status, $order->id, true);
+			$new_history->addWithemail(true, $extra);
 		}
 		//call_user_func_array(array('Mail','Send'),$_SESSION['mailexecution']);
 	}

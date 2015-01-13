@@ -284,7 +284,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$ssl = true;
 		$debug = false;
         
-        return new BillMate($eid,$secret,$ssl,$debug,Configuration::get('BCARDPAY_MOD'));
+        return new BillMate($eid,$secret,$ssl,$debug,Configuration::get('BBANK_MOD'));
 	}
 
 	/**

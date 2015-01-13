@@ -91,8 +91,8 @@ class BillmatePartpayment extends PaymentModule
         $this->name = 'billmatepartpayment';
         $this->moduleName='billmatepartpayment';
         $this->tab = 'payments_gateways';
-        $this->version = '1.34';
-        $this->author  = 'eFinance Nordic AB';
+        $this->version = '1.35';
+        $this->author  = 'Billmate AB';
 
         $this->currencies = true;
         $this->currencies_mode = 'radio';
@@ -494,7 +494,7 @@ class BillmatePartpayment extends PaymentModule
 		if( version_compare(_PS_VERSION_, '1.5', '>=') ){
 			$moduleurl = $link->getModuleLink('billmatepartpayment', 'validation', array(), true);
 		}else{
-			$moduleurl = __PS_BASE_URI__.'modules/billmatepartpayment/payment.php';
+			$moduleurl = __PS_BASE_URI__.'modules/billmatepartpayment/payment.php?type=account';
 		}
 		
         $smarty->assign('moduleurl', $moduleurl);
@@ -526,6 +526,10 @@ class BillmatePartpayment extends PaymentModule
      */
     public function hookPaymentReturn($params)
     {
-        return $this->display(__FILE__, 'confirmation.tpl');
+		if(version_compare(PS_VERSION,'1.5','<')){
+			return $this->display(dirname(__FILE__).'/', 'tpl/order-confirmation.tpl');
+		} else {
+			return $this->display(__FILE__,'confirmation.tpl');
+		}
     }
 }

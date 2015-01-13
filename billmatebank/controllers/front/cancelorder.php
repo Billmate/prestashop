@@ -19,7 +19,7 @@ class BillmateBankCancelorderModuleFrontController extends ModuleFrontController
 
 		$new_history = new OrderHistory();
 		$new_history->id_order = (int)$order->id;
-		$new_history->changeIdOrderState((int)Configuration::get('PS_OS_CANCELED'), $order, true);
+		$new_history->changeIdOrderState((int)Configuration::get('PS_OS_CANCELED'), $order->id, true);
 		$new_history->addWithemail(true);
 		$orderUrl = $this->context->link->getPageLink('order.php', true);
 		Tools::redirectLink($orderUrl);
