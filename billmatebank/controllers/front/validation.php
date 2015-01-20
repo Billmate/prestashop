@@ -40,7 +40,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			$_REQUEST['order_id'] = $ids[0];
 			$_REQUEST['cart_id'] = $ids[1];
 			
-			$this->context->cart->id = (int)$_POST['cart_id'];
+			$this->context->cart->id = (int)$_REQUEST['cart_id'];
 			
 			$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
 

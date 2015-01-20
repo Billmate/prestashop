@@ -447,7 +447,7 @@ class BillmateCardpay extends PaymentModule
     public function hookPayment($params)
     {
         global $smarty, $link;
-		
+
 		if ( !Configuration::get('BCARDPAY_ACTIVE_CARDPAY') || !Configuration::get('PS_SHOP_COUNTRY'))
 			return false;
 		//Rabatt($this->context->language);

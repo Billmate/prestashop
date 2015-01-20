@@ -48,10 +48,13 @@ class billmateCart extends PaymentModule{
 		$this->context = Context::getContext();
 		$this->context->cart = new Cart($id_cart);
 
+
 		$order = new Order($this->id);
 		if( !empty($extra)){
 			Db::getInstance()->update('order_payment',$extra,'order_reference="'.$order->reference.'"');
 		}
+
+
 		$order->id_cart = (int)$this->context->cart->id;
 		$order->save();
 		SpecificPrice::deleteByIdCart($this->context->cart->id);
@@ -64,7 +67,7 @@ class billmateCart extends PaymentModule{
 		}
 
 		switch($order->module){
-			case 'billmatecardpay': $order_status = Configuration::get('BCARDPAY_ORDER_STATUS_SWEDEN'); break;
+			case 'billmatecardpay': $order_status = Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS'); break;
 			case 'billmatebank': $order_status = Configuration::get('BBANK_ORDER_STATUS_SWEDEN'); break;
 			default: $order_status = Configuration::get('BILLMATE_PAYMENT_ACCEPTED');
 		}
@@ -601,7 +604,7 @@ class billmateCart extends PaymentModule{
 					// Hook validate order
 					Hook::exec('actionValidateOrder', array(
 						'cart' => $this->context->cart,
-						'order' => $order,
+						'order' => new Order($order->id),
 						'customer' => $this->context->customer,
 						'currency' => $this->context->currency,
 						'orderStatus' => $order_status
@@ -615,7 +618,7 @@ class billmateCart extends PaymentModule{
 					$order = $this->recast('Order',$order);
 					$new_history = new OrderHistory();
 					$new_history->id_order = (int)$order->id;
-					$new_history->changeIdOrderState((int)$id_order_state, $order, true);
+					$new_history->changeIdOrderState((int)$id_order_state, $order->id, true);
 					$new_history->addWithemail(true, $extra_vars);
 
 					// Switch to back order if needed

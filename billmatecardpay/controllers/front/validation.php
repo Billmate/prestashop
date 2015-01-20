@@ -45,7 +45,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			$_REQUEST['cart_id'] = $ids[1];
 			$post = $_REQUEST;
 			
-			$this->context->cart->id = (int)$_POST['cart_id'];
+			$this->context->cart->id = (int)$_REQUEST['cart_id'];
 			
 			$eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
 			
@@ -65,8 +65,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 						$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code));
 						$measurements['after_add_invoice'] =  microtime(true) - $timestart;
 						extract($data_return);
-						
-						
+
 					   // $customer = new Customer((int)$this->context->cart->id_customer);
 						$total = $this->context->cart->getOrderTotal(true, Cart::BOTH); 
 						$extra = array('transaction_id'=>$invoiceid);
@@ -82,7 +81,9 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 						
 						$timestart = microtime(true);
 						$extra = array('transaction_id'=>$invoiceid);
-					   // $this->module->validateOrder((int)$this->context->cart->id, Configuration::get('PS_OS_PREPARATION'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+						//$t->id = $_REQUEST['order_id'];
+					    //$t->validateOrder((int)$this->context->cart->id, Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+
 						$measurements['validateorder'] = microtime(true) - $timestart;
 						
 						$timestart = microtime(true);
@@ -108,7 +109,11 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		       $this->context->smarty->assign('error_message', $post['error_message']) ;
 		    }
 		}
-		$len = strlen( $post['error_message']) > 0;
+		if(isset($post['error_message'])) {
+			$len = strlen($post['error_message']) > 0;
+		} else {
+			$len = false;
+		}
 		$this->context->smarty->assign('posted', $len) ;
 	}
 

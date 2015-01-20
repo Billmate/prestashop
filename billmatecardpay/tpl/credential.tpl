@@ -35,14 +35,14 @@
 		<h4>{$billmatecardpayCredentialText}</h4>
 		<ul class="billmate_list_click_country" style="margin-bottom:0px">
 			{foreach from=$credentialInputVar key=name item=c}
-			<li class="billmate_flag_{$name}">{$name|lower|capitalize}</li>
+			<li class="billmate_flag_{$name}"><img src="{$countryNames[$name].flag}" alt=""/>{$name|lower|capitalize}</li>
 			{/foreach}
 		</ul>
 		<ul class="billmate_list_country">
 			{foreach from=$credentialInputVar key=country_name item=country}
 			<li class="billmate_form_{$country_name}">
 				<fieldset>
-					<p class="title">{$country_name|lower|capitalize}</p>
+					<p class="title"><img src="{$countryNames[$name].flag}" alt=""/>{$country_name|lower|capitalize}</p>
 					<div class="fieldset-wrap">						
 						{foreach from=$country item=input}
 						{if $input.type == 'text'}
