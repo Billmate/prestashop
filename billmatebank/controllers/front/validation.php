@@ -4,7 +4,7 @@
 require_once BBANK_BASE. '/Billmate.php';
 error_reporting(E_ERROR);
 ini_set('display_errors', 1);
-require_once BBANK_BASE .'/lib/billmateCart.php';
+//require_once BBANK_BASE .'/lib/billmateCart.php';
 //error_reporting(E_ERROR);
 class BillmateBankValidationModuleFrontController extends ModuleFrontController
 {
@@ -35,27 +35,23 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 
 	    if (isset($_REQUEST['status']) && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']))
 		{
-			$ids = explode("-",$_REQUEST['order_id']);
-			if( sizeof($ids) < 2 ) return false;
-			$_REQUEST['order_id'] = $ids[0];
-			$_REQUEST['cart_id'] = $ids[1];
+
 			
-			$this->context->cart->id = (int)$_REQUEST['cart_id'];
+			$this->context->cart->id = (int)$_REQUEST['order_id'];
 			
 			$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
 
 		    if( $_REQUEST['status'] == 0 ){
 		        try{
 
-					$order = new Order($_REQUEST['order_id']);
-					$orderhistory = OrderHistory::getLastOrderState((int)$_REQUEST['order_id']);
+					//$order = new Order($_REQUEST['order_id']);
+					//$orderhistory = OrderHistory::getLastOrderState((int)$_REQUEST['order_id']);
 
-					if( $orderhistory->id != Configuration::get('BBANK_ORDER_STATUS_SWEDEN')){
+					//if( $orderhistory->id != Configuration::get('BBANK_ORDER_STATUS_SWEDEN')){
 
 						$data = $measurements = array();
 						
-						$t = new billmateCart();
-						$t->id = $_REQUEST['order_id'];
+
 						$timestart = $timetotalstart = microtime(true);
 						$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code));
 						$measurements['after_add_invoice'] =  microtime(true) - $timestart;
@@ -73,21 +69,25 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 						$extra = array('transaction_id'=>$invoiceid);
 
 
-						$t->completeOrder($extra,$this->context->cart->id);
-						//$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('PS_OS_PREPARATION'), $total, $this->module->displayName, null, $extra , null, false, $customer->secure_key);
+						//$t->completeOrder($extra,$this->context->cart->id);
+						$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $this->module->displayName, null, $extra , null, false, $customer->secure_key);
 						$measurements['validateorder'] = microtime(true) - $timestart;
-						
+
+						if( !empty($extra)){
+							Db::getInstance()->update('order_payment',$extra,'order_reference="'.$this->module->currentOrderReference.'"');
+						}
 						$timestart = microtime(true);
-						//$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrderReference.','.$this->module->currentOrder);
-						unset($_SESSION["uniqueId"]);
+						$api = $this->getBillmate();
+						$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrderReference.','.$this->module->currentOrder);
+						//unset($_SESSION["uniqueId"]);
 						$measurements['update_order_no'] = microtime(true) - $timestart;
 						$duration = ( microtime(true)-$timetotalstart ) * 1000;
 
 						//$api->stat("client_order_measurements", json_encode(array('order_id'=>$this->module->currentOrder, 'measurements'=>$measurements)), '', $duration);
-					}else{
-						$customer = new Customer((int)$this->context->cart->id_customer);
-					}
-					$this->module->currentOrder = $_REQUEST['order_id'];
+					//}else{
+					//	$customer = new Customer((int)$this->context->cart->id_customer);
+					//}
+					//$this->module->currentOrder = $_REQUEST['order_id'];
 					if( isset($_SESSION['billmate_order_id'])){
 						unset($_SESSION['billmate_order_id']);
 					}
@@ -305,27 +305,23 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$secret = substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
 		$callback_url = $this->context->link->getModuleLink('billmatebank', 'callback', array(), true);
 
-		$t = new billmateCart();
-		$t->name="billmatebank";
+
 		$extra = array('transaction_id'=>time());
 		$customer = new Customer((int)$this->context->cart->id_customer);
 
-		if( isset($_SESSION['billmate_order_id'])){
-			if(!isset($_REQUEST['pay_method'])) $t->cancelOrder($_SESSION['billmate_order_id']);
-			unset($_SESSION['billmate_order_id']);
-		}
+
 
 		$total =  $this->context->cart->getOrderTotal(true, Cart::BOTH);
 		try{
-			$t->validateOrder((int)$this->context->cart->id, Configuration::get('BILLMATE_PAYMENT_PENDING'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+			//$t->validateOrder((int)$this->context->cart->id, Configuration::get('BILLMATE_PAYMENT_PENDING'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 		}catch(Exception $ex ){
 			echo $ex->getMessage();
 		}
 
 		
-		$order_id = $_SESSION['billmate_order_id'] = $t->currentOrder;
+		//$order_id = $_SESSION['billmate_order_id'] = $t->currentOrder;
 		
-		$sendtohtml = $order_id.'-'.$this->context->cart->id;
+		$sendtohtml = $this->context->cart->id;
 		unset($_SESSION['INVOICE_CREATED_BANK']);
         $data = array(
 		    'gatewayurl' => Configuration::get('BBANK_MOD') == 0 ?BANKPAY_LIVEURL : BANKPAY_TESTURL,

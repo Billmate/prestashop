@@ -99,6 +99,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 			if(!isset($_SESSION['billmate'][$md5]) || $person != $_SESSION['billmate'][$md5]){
 			
 				$addr = $cache_addr = $k->GetAddress($person);
+
 			}else{
 				$addr = $cache_addr = $_SESSION['billmate']['invoice_person_nummber_data'];
 			}
@@ -122,7 +123,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 			$message = '{success:false, content: "'.utf8_encode($ex->getMessage()).'"}';
 			
 //			$k->stat('client_address_error', $message );
-			die($message);
+			//die($message);
         }
 		
        // echo BillmateCountry::getContryByNumber($addr[0][5]);
@@ -327,7 +328,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
                     $this->module = new BillmateInvoice();
                 }
 				$extra = array('transaction_id'=>$invoiceid);
-			    $this->module->validateOrder((int)$this->context->cart->id, Configuration::get('PS_OS_PREPARATION'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+			    $this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BM_INV_ORDER_STATUS_SWEDEN'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 			    $order_id = $this->module->currentOrder;
 				$measurements['validateorder'] = microtime(true) - $timestart;
 				
@@ -342,13 +343,13 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				$k->stat("client_order_measurements",json_encode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
 
 				//set order status
-				$order = new Order($order_id);
-				$new_history = new OrderHistory();
+                /*$order = new Order($order_id);
+                $new_history = new OrderHistory();
 				$new_history->id_order = (int)$order_id;
 				//$new_history->changeIdOrderState((int)Configuration::get('BILLMATE_PAYMENT_ACCEPTED'), $order, true);
 				$new_history->changeIdOrderState((int)Configuration::get('BM_INV_ORDER_STATUS_SWEDEN'), $order, true);
 				$new_history->addWithemail(true);
-
+                */
                 if(version_compare(_PS_VERSION_,'1.5','>=')){
                     $url = 'order-confirmation&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
                     $return['redirect'] = Context::getContext()->link->getPageLink($url);
@@ -539,9 +540,11 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				$shippingPrice = $cart->getTotalShippingCost();
 		
 			$carrier = new Carrier($cart->id_carrier, $this->context->cart->id_lang);
-			//$taxrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
-            $taxrate = Tax::getCarrierTaxRate($cart->id_carrier,Configuration::get('PS_TAX_ADDRESS_TYPE'));
-
+            if(version_compare(_PS_VERSION_, '1.5', '>=')){
+                $taxrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
+            } else {
+                $taxrate = Tax::getCarrierTaxRate($cart->id_carrier,Configuration::get('PS_TAX_ADDRESS_TYPE'));
+            }
 			if( !empty( $shippingPrice ) ){
 				$shippingPrice = $shippingPrice / (1+$taxrate/100);
 				$goods_list[] = array(
