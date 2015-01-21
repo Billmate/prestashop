@@ -526,7 +526,7 @@ class BillmatePartpayment extends PaymentModule
      */
     public function hookPaymentReturn($params)
     {
-		if(version_compare(PS_VERSION,'1.5','<')){
+		if(version_compare(_PS_VERSION_,'1.5','<')){
 			return $this->display(dirname(__FILE__).'/', 'tpl/order-confirmation.tpl');
 		} else {
 			return $this->display(__FILE__,'confirmation.tpl');
