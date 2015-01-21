@@ -503,7 +503,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 						'price'    => (int)($product['price'] * 100),
 						'vat'      => (float)$product['rate'],
 						'discount' => 0.0,
-						'flags'    => 0,
+						'flags'    => ($product['id_product'] == Configuration::get('BM_INV_FEE_ID_SWEDEN')) ? 16 : 0,
 					)
 					
 				);
@@ -555,7 +555,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 						'price'    => (int)($shippingPrice*100),
 						'vat'      => (float)$taxrate,
 						'discount' => 0.0,
-						'flags'    => 16, //16|32
+						'flags'    => 8, //16|32
 					)
 				);
 			}
