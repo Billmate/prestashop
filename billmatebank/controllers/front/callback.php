@@ -28,7 +28,9 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 
 		if( isset($_POST['status']) && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']) ) {
 			if($_POST['status'] == 0) {
-
+				if($this->context->cart->orderExists()){
+					die('OK');
+				}
 				$this->context->cart->id = (int)$_POST['cart_id'];
 				$customer = new Customer($this->context->cart->id_customer);
 				$total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
@@ -36,9 +38,14 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 				extract($data_return);
 				$extra = array('transaction_id' => $invoiceid);
 				$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+				$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
+				$secret = Configuration::get('BBANK_SECRET_SWEDEN');
 
-				$api = $this->getBillmate();
-				$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrderReference . ',' . $this->module->currentOrder);
+				$ssl = true;
+				$debug = false;
+
+				$k = new BillMate($eid,$secret,$ssl,$debug,Configuration::get('BBANK_MOD'));
+				$k->UpdateOrderNo((string)$invoiceid, $this->module->currentOrder);
 
 
 				//$order = new Order($_POST['order_id']);

@@ -77,7 +77,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 							Db::getInstance()->update('order_payment',$extra,'order_reference="'.$this->module->currentOrderReference.'"');
 						}
 						$timestart = microtime(true);
-						$api = $this->getBillmate();
+						//$api = $this->getBillmate();
 						$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrder);
 						//unset($_SESSION["uniqueId"]);
 						$measurements['update_order_no'] = microtime(true) - $timestart;
@@ -105,7 +105,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$this->context->smarty->assign('posted', $len) ;
 	}
 	public function logData($merchant_id, $order_id){
-		if(isset( $_REQUEST['order_id'])) $order_id = $_REQUEST['order_id'];
+		//if(isset( $_REQUEST['order_id'])) $order_id = $_REQUEST['order_id'];
 		
 		$timetotalstart = microtime(true);
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
@@ -343,7 +343,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		);
 		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency. $merchant_id . $orderId . 'BANK' . $return_method . $secret;
 
-		$this->logData($merchant_id,$order_id);
+		$this->logData($merchant_id,$orderId);
 		
 		$data['mac'] = hash('sha256', $mac_str);
 		$this->context->smarty->assign($data);
