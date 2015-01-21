@@ -38,7 +38,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			$cartId = explode('-',$_REQUEST['order_id']);
 			$cartId = $cartId[0];
 			$this->context->cart->id = (int)$cartId;
-			
+			$customer = new Customer($this->context->cart->id_customer);
 			$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
 
 		    if( $_REQUEST['status'] == 0 ){
@@ -53,7 +53,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 						
 
 						$timestart = $timetotalstart = microtime(true);
-						$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code));
+						$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code),$_REQUEST['order_id']);
 						$measurements['after_add_invoice'] =  microtime(true) - $timestart;
 						extract($data_return);
 						
@@ -78,7 +78,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 						}
 						$timestart = microtime(true);
 						$api = $this->getBillmate();
-						$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrderReference.','.$this->module->currentOrder);
+						$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrder);
 						//unset($_SESSION["uniqueId"]);
 						$measurements['update_order_no'] = microtime(true) - $timestart;
 						$duration = ( microtime(true)-$timetotalstart ) * 1000;
@@ -323,6 +323,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		
 		$sendtohtml = $this->context->cart->id.'-'.time();
 		$orderId = substr($sendtohtml,0,10);
+		$_REQUEST['order_id'] = $orderId;
 		unset($_SESSION['INVOICE_CREATED_BANK']);
         $data = array(
 		    'gatewayurl' => Configuration::get('BBANK_MOD') == 0 ?BANKPAY_LIVEURL : BANKPAY_TESTURL,

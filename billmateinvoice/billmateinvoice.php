@@ -395,7 +395,9 @@ class BillmateInvoice extends PaymentModule
 					'id_product' => (int)$productInvoicefee->id,
 					'position' => (int)1,
 				);
-				StockAvailable::setQuantity(Tools::getValue((int)$productInvoicefee->id), '', Tools::getValue(10000), (int)Configuration::get('PS_SHOP_DEFAULT'));
+				if(version_compare(_PS_VERSION_,'1.5','>')){
+					StockAvailable::setQuantity(Tools::getValue((int)$productInvoicefee->id), '', 10000, (int)Configuration::get('PS_SHOP_DEFAULT'));
+				}
 
 				$db = Db::getInstance();
 				if((version_compare(_PS_VERSION_,'1.5','>'))){
@@ -403,7 +405,7 @@ class BillmateInvoice extends PaymentModule
 				} else {
 					$row = $db->getRow('select id_category from `'._DB_PREFIX_.'category_product` where id_product="'.$productInvoicefee->id.'"');
 					if(!is_array( $row ) || !isset($row['id_category'])){
-						$result &= $db->Execute('insert into `'._DB_PREFIX_.'category_product` SET id_category="'.$category_id.'", id_product="'.$productInvoicefee->id.'",position="1"');
+						$result =& $db->Execute('insert into `'._DB_PREFIX_.'category_product` SET id_category="'.$category_id.'", id_product="'.$productInvoicefee->id.'",position="1"');
 					}
 				}
 				
@@ -590,7 +592,7 @@ class BillmateInvoice extends PaymentModule
      */
     public function hookPaymentReturn($params)
     {
-		if(version_compare(PS_VERSION,'1.5','<')){
+		if(version_compare(_PS_VERSION_,'1.5','<')){
 			return $this->display(dirname(__FILE__).'/', 'tpl/order-confirmation.tpl');
 		} else {
 			return $this->display(__FILE__,'confirmation.tpl');

@@ -31,8 +31,8 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 
 				$this->context->cart->id = (int)$_POST['cart_id'];
 				$customer = new Customer($this->context->cart->id_customer);
-				$total = $this->context->cart->getOrderTotal();
-				$data_return = $this->processReserveInvoice(strtoupper($this->context->country->iso_code));
+				$total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
+				$data_return = $this->processReserveInvoice(strtoupper($this->context->country->iso_code),$_REQUEST['order_id']);
 				extract($data_return);
 				$extra = array('transaction_id' => $invoiceid);
 				$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);

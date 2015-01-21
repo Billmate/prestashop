@@ -94,7 +94,7 @@ class pClasses{
 					$data = $_row;
 					array_walk($data,create_function('&$value, $idx','$value = "`".$idx."`=\'$value\'";'));
 				
-					$result &= $db->Execute('insert into `'._DB_PREFIX_.'billmate_payment_pclasses` SET '.implode(',',$data));
+					$result =& $db->Execute('insert into `'._DB_PREFIX_.'billmate_payment_pclasses` SET '.implode(',',$data));
 				}
 			}
 		}
