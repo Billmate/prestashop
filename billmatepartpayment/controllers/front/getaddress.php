@@ -371,7 +371,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
   }
     public function processReserveInvoice( $isocode ){
 		$cart = $this->context->cart;
-		$order_id2 = Order::getOrderByCartId((int)$cart->id);
+		$order_id2 = substr($cart->id.'-'.time(),0,10);//Order::getOrderByCartId((int)$cart->id);
        	$order_id = $order_id2 == '' ? time(): $order_id2;
         
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);

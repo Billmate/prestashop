@@ -123,7 +123,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 			$message = '{success:false, content: "'.utf8_encode($ex->getMessage()).'"}';
 			
 //			$k->stat('client_address_error', $message );
-			//die($message);
+			die($message);
         }
 		
        // echo BillmateCountry::getContryByNumber($addr[0][5]);
@@ -373,7 +373,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
   }
     public function processReserveInvoice( $isocode ){
 		$cart = $this->context->cart;
-		$order_id2 = Order::getOrderByCartId((int)$cart->id);
+		$order_id2 = substr($cart->id.'-'.time(),0,10);//Order::getOrderByCartId((int)$cart->id);
        	$order_id = $order_id2 == '' ? time(): $order_id2;
         
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);

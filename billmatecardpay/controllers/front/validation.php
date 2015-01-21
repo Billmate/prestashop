@@ -87,7 +87,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
 						$timestart = microtime(true);
 						//$api = $this->getBillmate();
-						$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrder);
+						$api->UpdateOrderNo((string)$invoiceid,(string) $this->module->currentOrder);
 						//unset($_SESSION["uniqueId"]);
 						//$measurements['update_order_no'] = microtime(true) - $timestart;
 						//$duration = ( microtime(true)-$timetotalstart ) * 1000;

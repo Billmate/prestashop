@@ -45,7 +45,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 				$debug = false;
 
 				$k = new BillMate($eid,$secret,$ssl,$debug,Configuration::get('BBANK_MOD'));
-				$k->UpdateOrderNo((string)$invoiceid, $this->module->currentOrder);
+				$k->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
 
 
 				//$order = new Order($_POST['order_id']);
