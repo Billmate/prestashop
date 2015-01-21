@@ -58,6 +58,7 @@ class BillmateInvoiceValidationModuleFrontController extends ModuleFrontControll
 		$this->context->smarty->assign('previouslink', $previouslink);
 
 		$this->context->smarty->assign(array(
+			'ps_version' => _PS_VERSION_,
 			'total' => $this->context->cart->getOrderTotal(true, Cart::BOTH) + (float)$price_wt,
 			'fee' =>(float)$price_wt,
 			'customer_email' => $customer->email,

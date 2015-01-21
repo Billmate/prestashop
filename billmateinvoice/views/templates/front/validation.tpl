@@ -31,13 +31,13 @@ display: block!important;
 border-top: 1px solid grey!important;
 padding-top: 13px!important;
 }
-.error {
+/*.error {
 font-size: 1.6em;
 color: #000;
 background-color: #FAD7D7;
 padding: 1px 16px 23px;
 border-radius: 6px;
-}
+}*/
 #pno{ margin:auto!important;display:block!important;text-align:center!important;	 }
 #billmate_submit{ width:26em!important; }
 @media only screen and (min-width: 500px){
@@ -87,7 +87,7 @@ border-radius: 6px;
 </form>
 <link rel="stylesheet" href="{$smarty.const._MODULE_DIR_}billmateinvoice/style.css" />
 <script src="{$smarty.const._MODULE_DIR_}billmateinvoice/js/billmatepopup.js"></script>
-
+<script id="version" type="text/template">{$ps_version}</script>
 <script type="text/javascript">
 var ajaxurl = "{$link->getModuleLink('billmateinvoice', 'getaddress', ['ajax'=> 0], true)}";
 var emptypersonerror = "{l s='PNO/SSN missing' mod='billmateinvoice'}";
@@ -112,8 +112,13 @@ $('#right_column').remove();
 		}
 	});
     function getData( param ){
+		var version =  $('#version').html();
 		ShowMessage('',loadingWindowTitle);
-        $('div.error').remove();
+		if(versionCompare(version,'1.6') == 1){
+			$('div.alert-danger').remove();
+		} else {
+			$('div.error').remove();
+		}
         jQuery.post( ajaxurl+param, jQuery('.billmate').serializeArray(), function(json){
             eval('var response = '+ json );
             if( response.success ){
@@ -133,7 +138,11 @@ $('#right_column').remove();
 					ShowMessage(response.content,windowtitlebillmate);
 				}else{
 					modalWin.HideModalPopUp();
-					$('<div class="error">'+response.content+'</div>').insertBefore($('#order_area').first());
+					if(versionCompare(version,'1.6') == 1){
+						$('<div class="alert alert-danger">'+response.content+'</div>').insertBefore($('#order_area').first());
+					} else {
+						$('<div class="error">'+response.content+'</div>').insertBefore($('#order_area').first());
+					}
 				}
             }
         });

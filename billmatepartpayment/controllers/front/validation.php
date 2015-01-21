@@ -64,6 +64,7 @@ class BillmatePartpaymentValidationModuleFrontController extends ModuleFrontCont
 		$this->context->smarty->assign('accountPrice', $monthlycost);		
 		
 		$this->context->smarty->assign(array(
+			'ps_version' => _PS_VERSION_,
 			'total' => $this->context->cart->getOrderTotal(true, Cart::BOTH),
 			'customer_email' => $customer->email,
 			'opc'=> (bool)Configuration::get('PS_ORDER_PROCESS_TYPE'),

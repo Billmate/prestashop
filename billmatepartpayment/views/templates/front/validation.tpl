@@ -41,13 +41,13 @@ font-size:1.5em;
 #billmate_submit {
 	text-align: center;
 }
-.error {
+/*.error {
 font-size: 1.6em;
 color: #000;
 background-color: #FAD7D7;
 padding: 1px 16px 23px;
 border-radius: 6px;
-}
+}*/
 .bsmall{
 	font-size:1.1em;
 }
@@ -144,7 +144,7 @@ function closeIframe(id)
 {/if}
 <link rel="stylesheet" href="{$smarty.const._MODULE_DIR_}billmateinvoice/style.css" />
 <script src="{$smarty.const._MODULE_DIR_}billmateinvoice/js/billmatepopup.js"></script>
-
+    <script id="version" type="text/template">{$ps_version}</script>
 <script type="text/javascript">
 var success = "{*$ajaxurl.this_path_ssl*}payment.php?type={*$payment_type*}";
 var ajaxurl = "{$link->getModuleLink('billmatepartpayment', 'getaddress', ['ajax'=> 0], true)}";
@@ -166,10 +166,32 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
     $.getScript("https://billmate.se/billmate/base.js", function(){
 		    $("#terms-delbetalning").Terms("villkor_delbetalning",{eid: eid,effectiverate:34});
     });
+versionCompare = function(left, right) {
+    if (typeof left + typeof right != 'stringstring')
+        return false;
 
+    var a = left.split('.')
+            ,   b = right.split('.')
+            ,   i = 0, len = Math.max(a.length, b.length);
+
+    for (; i < len; i++) {
+        if ((a[i] && !b[i] && parseInt(a[i]) > 0) || (parseInt(a[i]) > parseInt(b[i]))) {
+            return 1;
+        } else if ((b[i] && !a[i] && parseInt(b[i]) > 0) || (parseInt(a[i]) < parseInt(b[i]))) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
     function getData( param ){
 		ShowMessage('',loadingWindowTitle);
-        $('div.error').remove();
+        var version =  $('#version').html();
+        if(versionCompare(version,'1.6') == 1){
+            $('div.alert-danger').remove();
+        } else {
+            $('div.error').remove();
+        }
         jQuery.post( ajaxurl+param, jQuery('.billmate').serializeArray(), function(json){
             eval('var response = '+ json );
             if( response.success ){
@@ -190,7 +212,11 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
 					//modalWin.ShowMessage(response.content,310,500,windowtitlebillmate);
 				}else{
 					modalWin.HideModalPopUp();
-					$('<div class="error">'+response.content+'</div>').insertBefore($('#order_area').first());
+                    if(versionCompare(version,'1.6') == 1){
+                        $('<div class="alert alert-danger">'+response.content+'</div>').insertBefore($('#order_area').first());
+                    } else {
+                        $('<div class="error">'+response.content+'</div>').insertBefore($('#order_area').first());
+                    }
 				}
             }
         });
