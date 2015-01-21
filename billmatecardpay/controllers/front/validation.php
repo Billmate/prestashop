@@ -41,8 +41,9 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 	
 
 			$post = $_REQUEST;
-			
-			$this->context->cart->id = (int)$_REQUEST['order_id'];
+			$cartId = explode('-',$_REQUEST['order_id']);
+			$cartId = $cartId[0];
+			$this->context->cart->id = (int)$cartId;
 			
 			$eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
 			
@@ -152,12 +153,12 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		}
 
 
-		$sendtohtml = $this->context->cart->id;
-		
+		$sendtohtml = $this->context->cart->id.'-'.time();
+		$orderId = substr($sendtohtml,0,10);
 		unset($_SESSION['INVOICE_CREATED_CARD']);
         $data = array(
 		    'gatewayurl' => Configuration::get('BCARDPAY_MOD') == 0 ? CARDPAY_LIVEURL : CARDPAY_TESTURL,
-		    'order_id'   => $sendtohtml,
+		    'order_id'   => $orderId,
 		    'amount'     => $amount,
 		    'merchant_id'=> $merchant_id,
 		    'currency'   => $currency,
@@ -174,7 +175,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			'this_path'  => $this->module->getPathUri(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		);
-		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency. $do_3d_secure . $languageCode . $merchant_id . $sendtohtml . 'CARD' . $prompt_name_entry . $return_method. $secret;
+		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency. $do_3d_secure . $languageCode . $merchant_id . $orderId . 'CARD' . $prompt_name_entry . $return_method. $secret;
 		
 		$data['mac'] = hash('sha256', $mac_str);
 		$this->logData($merchant_id);

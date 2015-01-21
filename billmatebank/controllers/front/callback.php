@@ -20,43 +20,44 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 		$_POST = $_GET = $_REQUEST = (array)json_decode($input);
 		$ids = explode("-",$_POST['order_id']);
 		if( sizeof($ids) < 2 ) return false;
-		$_POST['order_id'] = $ids[0];
-		$_POST['cart_id'] = $ids[1];
-		
-		
-		$order = new Order($_POST['order_id']);
+		//$_POST['order_id'] = $ids[0];
+		$_POST['cart_id'] = $ids[0];
+
 
 		$total_amount = round(($_POST['amount']/100),2);
 
-		if( ($order->total_paid == $total_amount) && ($order->module == 'billmatebank') ) {
-			echo 'Updating order';
-			$t = new billmateCart();
-			$t->id = $_REQUEST['order_id'];
-			$this->context->cart->id = (int)$_POST['cart_id'];
-			
-			$t->completeOrder(array(),$_POST['cart_id']);
-			$this->context->cart = Cart::getCartByOrderId($_POST['order_id']);
-			$this->context->cart->id = (int)$_POST['cart_id'];
+		if( isset($_POST['status']) && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']) ) {
+			if($_POST['status'] == 0) {
 
-			$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code));
-			extract($data_return);
-			$extra = array('transaction_id'=>$invoiceid);
-			$order = new Order($_POST['order_id']);
-			if( !empty($extra)){
-				Db::getInstance()->update('order_payment',$extra,'order_reference="'.$order->reference.'"');
+				$this->context->cart->id = (int)$_POST['cart_id'];
+				$customer = new Customer($this->context->cart->id_customer);
+				$total = $this->context->cart->getOrderTotal();
+				$data_return = $this->processReserveInvoice(strtoupper($this->context->country->iso_code));
+				extract($data_return);
+				$extra = array('transaction_id' => $invoiceid);
+				$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+
+				$api = $this->getBillmate();
+				$api->UpdateOrderNo((string)$invoiceid, $this->module->currentOrderReference . ',' . $this->module->currentOrder);
+
+
+				//$order = new Order($_POST['order_id']);
+				if (!empty($extra)) {
+					Db::getInstance()->update('order_payment', $extra, 'order_reference="' . $this->module->currentOrderReference . '"');
+				}
 			}
 		}
 		exit("finalize");
 	}
 	
     public function processReserveInvoice( $isocode, $order_id = ''){
-       	$order_id = $_POST['order_id'];
+		$order_id = $order_id == '' ? time(): $order_id;
 
-		$order = new Order($_POST['order_id']);
+		//$order = new Order($_POST['order_id']);
 		
-		$this->context->cart->id_address_delivery = $order->id_address_delivery;
-		$this->context->cart->id_address_invoice = $order->id_address_invoice;
-		$this->context->cart->id_customer = $order->id_customer;
+		//$this->context->cart->id_address_delivery = $order->id_address_delivery;
+		//$this->context->cart->id_address_invoice = $order->id_address_invoice;
+		//$this->context->cart->id_customer = $order->id_customer;
 		$this->context->customer = $customer = new Customer((int)$this->context->cart->id_customer);
 		
 		

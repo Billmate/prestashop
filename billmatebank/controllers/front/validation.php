@@ -35,9 +35,9 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 
 	    if (isset($_REQUEST['status']) && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']))
 		{
-
-			
-			$this->context->cart->id = (int)$_REQUEST['order_id'];
+			$cartId = explode('-',$_REQUEST['order_id']);
+			$cartId = $cartId[0];
+			$this->context->cart->id = (int)$cartId;
 			
 			$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
 
@@ -321,11 +321,12 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		
 		//$order_id = $_SESSION['billmate_order_id'] = $t->currentOrder;
 		
-		$sendtohtml = $this->context->cart->id;
+		$sendtohtml = $this->context->cart->id.'-'.time();
+		$orderId = substr($sendtohtml,0,10);
 		unset($_SESSION['INVOICE_CREATED_BANK']);
         $data = array(
 		    'gatewayurl' => Configuration::get('BBANK_MOD') == 0 ?BANKPAY_LIVEURL : BANKPAY_TESTURL,
-		    'order_id'   => $sendtohtml,
+		    'order_id'   => $orderId,
 		    'amount'     => $amount,
 		    'merchant_id'=> $merchant_id,
 			'return_method'=> $return_method,
@@ -339,7 +340,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			'this_path'  => $this->module->getPathUri(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		);
-		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency. $merchant_id . $sendtohtml . 'BANK' . $return_method . $secret;
+		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency. $merchant_id . $orderId . 'BANK' . $return_method . $secret;
 
 		$this->logData($merchant_id,$order_id);
 		

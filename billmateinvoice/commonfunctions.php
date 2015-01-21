@@ -3,8 +3,10 @@
 if(!function_exists('getCountryID')){
 
 	require dirname(__FILE__).'/utf8.php';
-	require dirname(__FILE__).'/xmlrpc-2.2.2/lib/xmlrpc.inc';
-	require dirname(__FILE__).'/xmlrpc-2.2.2/lib/xmlrpcs.inc';
+
+    require_once dirname(__FILE__) . '/xmlrpc-2.2.2/lib/xmlrpc.inc';
+
+	require_once dirname(__FILE__).'/xmlrpc-2.2.2/lib/xmlrpcs.inc';
 
 	define('BILLPLUGIN_VERSION', '1.35');
 	
