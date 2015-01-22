@@ -569,8 +569,13 @@ class BillmateInvoice extends PaymentModule
 		}else{
 			$moduleurl = __PS_BASE_URI__.'modules/billmateinvoice/validation.php?type=invoice';
 		}
-        $smarty->assign('moduleurl', $moduleurl);
-
+		$id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
+		$adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
+		$product = new Product($id_product);
+		$price   = $product->price;
+		$price_wt = $price * (1 + (($product->getTaxesRate($adrsDelivery)) * 0.01));
+        $this->context->smarty->assign('moduleurl', $moduleurl);
+		$this->context->smarty->assign('invoiceFee',$price_wt);
 
         if( $total > $minVal && $total < $maxVal ){
             $customer = new Customer(intval($cart->id_customer));
