@@ -133,7 +133,7 @@ class BillmateBankController extends FrontController
 
         $adrsDelivery = new Address((int)self::$cart->id_address_delivery);
         $adrsBilling = new Address((int)self::$cart->id_address_invoice);
-        $country = strtoupper($adrsDelivery->country);
+        $country = Tools::strtoupper($adrsDelivery->country);
         $country = new Country((int)$adrsDelivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );

@@ -13,28 +13,27 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 	public function postProcess()
 	{
 		$this->context = Context::getContext();
-		$input = Tools::file_get_contents("php://input");
-	//	$input = '{"status": 0, "order_id": "66-54", "error_message": "Approved", "amount": "3250", "currency": "SEK", "mac": "fe5ad1a1851f556ef8028065f0499d9951b7b219cacd7109112dd70c955fe451", "time": "2014-05-10 07:15:56.043216", "test": "YES", "merchant_id": "7270", "pay_method": "handelsbanken", "trans_id": "800747942"}';
+		$input = Tools::file_get_contents('php://input');
 
-		
 		$_POST = $_GET = $_REQUEST = (array)Tools::jsonDecode($input);
-		$ids = explode("-", Tools::getValue('order_id'));
-		if( sizeof($ids) < 2 ) return false;
+		$ids = explode('-', Tools::getValue('order_id'));
+		if (count($ids) < 2) return false;
 		//$_POST['order_id'] = $ids[0];
-		$cartId = $ids[0];
+		$cart_id = $ids[0];
 
+		$total_amount = round((Tools::getValue('amount') / 100), 2);
 
-		$total_amount = round((Tools::getValue('amount')/100), 2);
-
-		if( Tools::getIsset($_POST['status']) && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']) ) {
-			if($_POST['status'] == 0) {
-				$lockfile = _PS_CACHE_DIR_ . Tools::getValue('order_id');
+		if (Tools::getIsset('status') && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']))
+		{
+			if (Tools::getValue('status') == 0)
+			{
+				$lockfile = _PS_CACHE_DIR_.Tools::getValue('order_id');
 				$processing = file_exists($lockfile);
-				if($this->context->cart->orderExists() || $processing){
+				if ($this->context->cart->orderExists() || $processing)
 					die('OK');
-				}
+
 				file_put_contents($lockfile, 1);
-				$this->context->cart = new Cart($cartId);
+				$this->context->cart = new Cart($cart_id);
 
 				$customer = new Customer($this->context->cart->id_customer);
 				$total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
@@ -42,20 +41,28 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 				$invoiceid = $data_return['invoiceid'];
 				$api = $data_return['api'];
 				$extra = array('transaction_id' => $invoiceid);
-				$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+				$this->module->validateOrder((int)$this->context->cart->id,
+												Configuration::get('BBANK_ORDER_STATUS_SWEDEN'),
+												$total,
+												$this->module->displayName,
+												null,
+												$extra,
+												null,
+												false,
+												$customer->secure_key);
 
 
 				$api->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
 
 
 				//$order = new Order($_POST['order_id']);
-				if (!empty($extra)) {
-					Db::getInstance()->update('order_payment', $extra, 'order_reference="' . $this->module->currentOrderReference . '"');
-				}
+				if (!empty($extra))
+					Db::getInstance()->update('order_payment', $extra, 'order_reference="'.$this->module->currentOrderReference .'"');
+
 				unlink($lockfile);
 			}
 		}
-		exit("finalize");
+		exit('finalize');
 	}
 	
     public function processReserveInvoice( $isocode, $order_id = ''){
@@ -69,21 +76,21 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 		$this->context->customer = $customer = new Customer((int)$this->context->cart->id_customer);
 		
 		
-        $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
-        $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
-        $country = Tools::strtoupper($adrsDelivery->country);
-        $country = new Country((int)$adrsDelivery->id_country);
+		$address_delivery = new Address((int)$this->context->cart->id_address_delivery);
+		$address_billing = new Address((int)$this->context->cart->id_address_invoice);
+		$country = Tools::strtoupper($address_delivery->country);
+		$country = new Country((int)$address_delivery->id_country);
+
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
+		$countryname = Tools::strtoupper($countryname);
         
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
-        
-        $eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-        $secret = Configuration::get('BBANK_SECRET_SWEDEN');
+		$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
+		$secret = Configuration::get('BBANK_SECRET_SWEDEN');
 
 		$ssl = true;
 		$debug = false;
 
-        $k = new BillMate($eid,$secret,$ssl,$debug,Configuration::get('BBANK_MOD'));
+		$k = new BillMate($eid, $secret, $ssl, $debug, Configuration::get('BBANK_MOD'));
 
         $personalnumber = '';
         $country_to_currency = array(
@@ -99,7 +106,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 		$encoding = 2;
 		$currency = 0;
 		
-        $country = new Country((int)$adrsDelivery->id_country);
+        $country = new Country((int)$address_delivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -107,19 +114,19 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 		
         $ship_address = array(
             'email'           => $this->context->customer->email,
-            'telno'           => $adrsDelivery->phone,
-            'cellno'          => $adrsDelivery->phone_mobile,
-            'fname'           => $adrsDelivery->firstname,
-            'lname'           => $adrsDelivery->lastname,
-            'company'         => ($adrsDelivery->company == 'undefined') ? '' : $adrsDelivery->company,
+            'telno'           => $address_delivery->phone,
+            'cellno'          => $address_delivery->phone_mobile,
+            'fname'           => $address_delivery->firstname,
+            'lname'           => $address_delivery->lastname,
+            'company'         => ($address_delivery->company == 'undefined') ? '' : $address_delivery->company,
             'careof'          => '',
-            'street'          => $adrsDelivery->address1,
-            'zip'             => $adrsDelivery->postcode,
-            'city'            => $adrsDelivery->city,
+            'street'          => $address_delivery->address1,
+            'zip'             => $address_delivery->postcode,
+            'city'            => $address_delivery->city,
             'country'         => (string)$countryname,
         );
 
-        $country = new Country((int)$adrsBilling->id_country);
+        $country = new Country((int)$address_billing->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -127,17 +134,17 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
         
         $bill_address = array(
             'email'           => $this->context->customer->email,
-            'telno'           => $adrsBilling->phone,
-            'cellno'          => $adrsBilling->phone_mobile,
-            'fname'           => $adrsBilling->firstname,
-            'lname'           => $adrsBilling->lastname,
-            'company'         => ($adrsBilling->company == 'undefined') ? '' : $adrsBilling->company,
+            'telno'           => $address_billing->phone,
+            'cellno'          => $address_billing->phone_mobile,
+            'fname'           => $address_billing->firstname,
+            'lname'           => $address_billing->lastname,
+            'company'         => ($address_billing->company == 'undefined') ? '' : $address_billing->company,
             'careof'          => '',
-            'street'          => $adrsBilling->address1,
+            'street'          => $address_billing->address1,
             'house_number'    => '',
             'house_extension' => '',
-            'zip'             => $adrsBilling->postcode,
-            'city'            => $adrsBilling->city,
+            'zip'             => $address_billing->postcode,
+            'city'            => $address_billing->city,
             'country'         => (string)$countryname,
         );
         

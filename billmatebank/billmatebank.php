@@ -14,7 +14,7 @@ if (!defined('_CAN_LOAD_FILES_'))
 
 define('BBANK_BASE', dirname(dirname(__FILE__)).'/billmateinvoice');
 include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
-require_once(BBANK_BASE . '/Billmate.php');
+require_once(BBANK_BASE.'/Billmate.php');
 
 /**
  * BillmateBank class
@@ -104,7 +104,7 @@ class BillmateBank extends PaymentModule
 
 
 
-		if (!empty($_POST) && isset($_POST['submitBillmate']))
+		if (!empty($_POST) && Tools::getIsset('submitBillmate'))
 		{
 			$this->_postValidation();
 			if (sizeof($this->_postValidations))
@@ -254,12 +254,12 @@ class BillmateBank extends PaymentModule
 	private function _postValidation()
 	{
 
-		if ($_POST['billmate_mod'] == 'live')
+		if (Tools::getValue('billmate_mod') == 'live')
 			Configuration::updateValue('BBANK_MOD', 0);
 		else
 			Configuration::updateValue('BBANK_MOD', 1);
 		
-		if (isset($_POST['billmate_active_bank']) && $_POST['billmate_active_bank'])
+		if (Tools::getIsset('billmate_active_bank') && Tools::getIsset('billmate_active_bank'))
 			Configuration::updateValue('BBANK_ACTIVE', true);
 		else
 			billmate_deleteConfig('BBANK_ACTIVE');
@@ -274,7 +274,7 @@ class BillmateBank extends PaymentModule
 		foreach ($this->countries as $key => $country)
 		{
 
-			if (isset($_POST['activate'.$country['name']]))
+			if (Tools::getIsset('activate'.$country['name']))
 			{
 				$storeId = (int)Tools::getValue('billmateStoreId'.$country['name']);
 				$secret = pSQL(Tools::getValue('billmateSecret'.$country['name']));
@@ -283,7 +283,7 @@ class BillmateBank extends PaymentModule
 				Configuration::updateValue('BBANK_SECRET_'.$country['name'], $secret);
 				Configuration::updateValue('BBANK_ORDER_STATUS_'.$country['name'], (int)(Tools::getValue('billmateOrderStatus'.$country['name'])));
 				Configuration::updateValue('BBANK_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
-				Configuration::updateValue('BBANK_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
+				Configuration::updateValue('BBANK_MAX_VALUE_'.$country['name'], (Tools::getValue('billmateMaximumValue'.$country['name']) != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
 	
 				$this->_postValidations[] = $this->l('Your account has been updated to be used in ').$country['name'];
 			}
@@ -390,7 +390,7 @@ class BillmateBank extends PaymentModule
 		Currency::refreshCurrencies();
 		
 		$version = str_replace('.', '', _PS_VERSION_);
-		$version = substr($version, 0, 2);
+		$version = Tools::substr($version, 0, 2);
 		
 		
 		/* The hook "displayMobileHeader" has been introduced in v1.5.x - Called separately to fail silently if the hook does not exist */
