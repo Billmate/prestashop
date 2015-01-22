@@ -8,6 +8,23 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 	public $ssl = true;
 	public $ajax = true;
 
+	/**
+	 * A recursive method which delays order-confirmation until order is processed
+	 * @param $cartId Cart Id
+	 * @return integer OrderId
+	 */
+
+	private function checkOrder($cartId)
+	{
+		$order = Order::getOrderByCartId($cartId);
+		if(!$order){
+			sleep(1);
+			$this->checkOrder($cartId);
+		} else {
+			return $order;
+		}
+	}
+
 	public function postProcess()
 	{
 
@@ -59,9 +76,14 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
 					//if( $orderhistory->id != Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS')){
 						if($this->context->cart->orderExists() || $processing){
+							$orderId = 0;
+							if($processing){
+								$orderId = $this->checkOrder($this->context->cart->id);
+							} else {
+								$orderId = Order::getOrderByCartId($this->context->cart->id);
 
-							$order = Order::getOrderByCartId($this->context->cart->id);
-							$orderId = ($order->id != 0) ? $order->id : 0;
+							}
+
 
 							Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$orderId);
 							die;
