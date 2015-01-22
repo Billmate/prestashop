@@ -67,12 +67,12 @@ class BillmateBankController extends FrontController
 					$address_invoice = new Address((int)self::$cart->id_address_invoice);
 					$country = new Country((int)$address_invoice->id_country);
 
-					$this->processReserveInvoice( strtoupper($country->iso_code));
+					$this->processReserveInvoice( Tools::strtoupper($country->iso_code));
 					$bilmatebank = new BillmateBank();
 
 			        $customer = new Customer((int)$cookie->id_customer);
 			        $total = self::$cart->getOrderTotal();
-			        $bilmatebank->validateOrder((int)self::$cart->id, Configuration::get('PS_OS_PREPARATION'), $total, $bilmatebank->displayName, null, array(), null, false, $customer->secure_key);
+			        $bilmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $bilmatebank->displayName, null, array(), null, false, $customer->secure_key);
 			        Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$bilmatebank->id.'&id_order='.(int)$bilmatebank->currentOrder);
 		        }catch(Exception $ex){
     		       $this->context->smarty->assign('error_message', utf8_encode($ex->getMessage())) ;
@@ -101,7 +101,7 @@ class BillmateBankController extends FrontController
 		$currency   = 'SEK';
 		
 		$merchant_id = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-		$secret = substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
+		$secret = Tools::substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
 		$callback_url = 'http://api.billmate.se/callback.php';
 		$return_method = 'GET';
 		
@@ -134,7 +134,7 @@ class BillmateBankController extends FrontController
         $adrsDelivery = new Address((int)self::$cart->id_address_delivery);
         $adrsBilling = new Address((int)self::$cart->id_address_invoice);
         $country = strtoupper($adrsDelivery->country);
-        $country = new Country(intval($adrsDelivery->id_country));
+        $country = new Country((int)$adrsDelivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -161,7 +161,7 @@ class BillmateBankController extends FrontController
 		$encoding = 2;
 		$currency = 0;
 		
-        $country = new Country(intval($adrsDelivery->id_country));
+        $country = new Country((int)$adrsDelivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -258,7 +258,7 @@ class BillmateBankController extends FrontController
 				'qty'   => 1,
 				'goods' => array(
 					'artno'    => '',
-					'title'    => isset($label[$total])? $label[$total] : ucwords( str_replace('_', ' ', str_replace('total_','', $total) ) ),
+					'title'    => Tools::getIsset($label[$total])? $label[$total] : ucwords( str_replace('_', ' ', str_replace('total_','', $total) ) ),
 					'price'    => (int) ($cart_details[$total]*100),
 					'vat'      => (float)$vatrate,
 					'discount' => 0.0,

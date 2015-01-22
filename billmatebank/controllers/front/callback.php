@@ -13,22 +13,22 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 	public function postProcess()
 	{
 		$this->context = Context::getContext();
-		$input = file_get_contents("php://input");
+		$input = Tools::file_get_contents("php://input");
 	//	$input = '{"status": 0, "order_id": "66-54", "error_message": "Approved", "amount": "3250", "currency": "SEK", "mac": "fe5ad1a1851f556ef8028065f0499d9951b7b219cacd7109112dd70c955fe451", "time": "2014-05-10 07:15:56.043216", "test": "YES", "merchant_id": "7270", "pay_method": "handelsbanken", "trans_id": "800747942"}';
 
 		
-		$_POST = $_GET = $_REQUEST = (array)json_decode($input);
-		$ids = explode("-",$_POST['order_id']);
+		$_POST = $_GET = $_REQUEST = (array)Tools::jsonDecode($input);
+		$ids = explode("-", Tools::getValue('order_id'));
 		if( sizeof($ids) < 2 ) return false;
 		//$_POST['order_id'] = $ids[0];
 		$cartId = $ids[0];
 
 
-		$total_amount = round(($_POST['amount']/100),2);
+		$total_amount = round((Tools::getValue('amount')/100), 2);
 
-		if( isset($_POST['status']) && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']) ) {
+		if( Tools::getIsset($_POST['status']) && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']) ) {
 			if($_POST['status'] == 0) {
-				$lockfile = _PS_CACHE_DIR_.$_POST['order_id'];
+				$lockfile = _PS_CACHE_DIR_ . Tools::getValue('order_id');
 				$processing = file_exists($lockfile);
 				if($this->context->cart->orderExists() || $processing){
 					die('OK');
@@ -38,18 +38,14 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 
 				$customer = new Customer($this->context->cart->id_customer);
 				$total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
-				$data_return = $this->processReserveInvoice(strtoupper($this->context->country->iso_code),$_REQUEST['order_id']);
-				extract($data_return);
+				$data_return = $this->processReserveInvoice(Tools::strtoupper($this->context->country->iso_code), Tools::getValue('order_id'));
+				$invoiceid = $data_return['invoiceid'];
+				$api = $data_return['api'];
 				$extra = array('transaction_id' => $invoiceid);
 				$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
-				$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-				$secret = Configuration::get('BBANK_SECRET_SWEDEN');
 
-				$ssl = true;
-				$debug = false;
 
-				$k = new BillMate($eid,$secret,$ssl,$debug,Configuration::get('BBANK_MOD'));
-				$k->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
+				$api->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
 
 
 				//$order = new Order($_POST['order_id']);
@@ -75,8 +71,8 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 		
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
         $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
-        $country = strtoupper($adrsDelivery->country);
-        $country = new Country(intval($adrsDelivery->id_country));
+        $country = Tools::strtoupper($adrsDelivery->country);
+        $country = new Country((int)$adrsDelivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -103,7 +99,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 		$encoding = 2;
 		$currency = 0;
 		
-        $country = new Country(intval($adrsDelivery->id_country));
+        $country = new Country((int)$adrsDelivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -123,7 +119,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
             'country'         => (string)$countryname,
         );
 
-        $country = new Country(intval($adrsBilling->id_country));
+        $country = new Country((int)$adrsBilling->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);

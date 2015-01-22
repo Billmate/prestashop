@@ -49,14 +49,14 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		if (!Validate::isLoadedObject($customer))
 			Tools::redirectLink(__PS_BASE_URI__.'order&step=1');
 
-	    if (isset($_REQUEST['status']) && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']))
+	    if (Tools::getIsset($_REQUEST['status']) && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']))
 		{
-			$cartId = explode('-',$_REQUEST['order_id']);
+			$cartId = explode('-', Tools::getValue('order_id'));
 			$cartId = $cartId[0];
 			$this->context->cart = new Cart($cartId);
 			$customer = new Customer($this->context->cart->id_customer);
 			$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-			$lockfile = _PS_CACHE_DIR_.$_REQUEST['order_id'];
+			$lockfile = _PS_CACHE_DIR_ . Tools::getValue('order_id');
 			$processing = file_exists($lockfile);
 		    if( $_REQUEST['status'] == 0 ){
 		        try{
@@ -83,9 +83,10 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 						file_put_contents($lockfile, '1');
 
 						$timestart = $timetotalstart = microtime(true);
-						$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code),$_REQUEST['order_id']);
+						$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code), Tools::getValue('order_id'));
 						$measurements['after_add_invoice'] =  microtime(true) - $timestart;
-						extract($data_return);
+						$api = $data_return['api'];
+						$invoiceid = $data_return['invoiceid'];
 						
 						$timestart = microtime(true);
 						$customer = new Customer((int)$this->context->cart->id_customer);
@@ -131,8 +132,8 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		       $this->context->smarty->assign('error_message', $_REQUEST['error_message']) ;
 		    }
 		}
-		$len = strlen( $_REQUEST['error_message']) > 0;
-		$this->context->smarty->assign('posted', $len) ;
+		$len = Tools::strlen( $_REQUEST['error_message']) > 0;
+		$this->context->smarty->assign('posted', $len);
 	}
 	public function logData($merchant_id, $order_id){
 		//if(isset( $_REQUEST['order_id'])) $order_id = $_REQUEST['order_id'];
@@ -141,7 +142,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
         $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
         $country = strtoupper($adrsDelivery->country);
-        $country = new Country(intval($adrsDelivery->id_country));
+        $country = new Country((int)$adrsDelivery->id_country);
 
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -158,7 +159,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$encoding = 2;
 		$currency = 0;
 		
-        $country = new Country(intval($adrsDelivery->id_country));
+        $country = new Country((int)$adrsDelivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -265,7 +266,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 				'qty'   => 1,
 				'goods' => array(
 					'artno'    => '',
-					'title'    => isset($label[$total])? $label[$total] : ucwords( str_replace('_', ' ', str_replace('total_','', $total) ) ),
+					'title'    => Tools::getIsset($label[$total])? $label[$total] : ucwords( str_replace('_', ' ', str_replace('total_','', $total) ) ),
 					'price'    => (int) ($cart_details[$total]*100),
 					'vat'      => (float)$vatrate,
 					'discount' => 0.0,
@@ -356,7 +357,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		//$order_id = $_SESSION['billmate_order_id'] = $t->currentOrder;
 		
 		$sendtohtml = $this->context->cart->id.'-'.time();
-		$orderId = substr($sendtohtml,0,10);
+		$orderId = Tools::substr($sendtohtml,0,10);
 		$_REQUEST['order_id'] = $orderId;
 		unset($_SESSION['INVOICE_CREATED_BANK']);
         $data = array(
@@ -377,9 +378,9 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			'this_path'  => $this->module->getPathUri(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		);
-		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency.$languageCode. $merchant_id . $orderId . 'BANK' . $return_method . $secret;
+		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency . $languageCode. $merchant_id . $orderId . 'BANK' . $return_method . $secret;
 
-		$this->logData($merchant_id,$orderId);
+		$this->logData($merchant_id, $orderId);
 		
 		$data['mac'] = hash('sha256', $mac_str);
 		$this->context->smarty->assign($data);
@@ -391,7 +392,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
         $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
         $country = strtoupper($adrsDelivery->country);
-        $country = new Country(intval($adrsDelivery->id_country));
+        $country = new Country((int)$adrsDelivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -438,7 +439,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
             'country'         => (string)$countryname,
         );
 
-        $country = new Country(intval($adrsBilling->id_country));
+        $country = new Country((int)$adrsBilling->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
