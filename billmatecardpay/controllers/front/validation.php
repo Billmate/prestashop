@@ -322,7 +322,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		$cutomerId = $cutomerId >0 ? $cutomerId: time();
 
 		$transaction = array(
-			"order1"=>(string)time(),
+			"order1"=>(string)$order_id,
 			'order2'=>'',
 			'gender'=>'',
 			"comment"=>'',

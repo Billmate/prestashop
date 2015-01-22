@@ -102,6 +102,24 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
 if( document.getElementById('center_column') != null ){
 	document.getElementById('center_column').className = 'grid_9';
 }
+versionCompare = function(left, right) {
+	if (typeof left + typeof right != 'stringstring')
+		return false;
+
+	var a = left.split('.')
+			,   b = right.split('.')
+			,   i = 0, len = Math.max(a.length, b.length);
+
+	for (; i < len; i++) {
+		if ((a[i] && !b[i] && parseInt(a[i]) > 0) || (parseInt(a[i]) > parseInt(b[i]))) {
+			return 1;
+		} else if ((b[i] && !a[i] && parseInt(b[i]) > 0) || (parseInt(a[i]) < parseInt(b[i]))) {
+			return -1;
+		}
+	}
+
+	return 0;
+}
 $('#right_column').remove();
     {literal}
 	$(function() {

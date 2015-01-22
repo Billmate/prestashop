@@ -300,7 +300,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$amount     = round($this->context->cart->getOrderTotal(true, Cart::BOTH),2)*100;
 		$order_id   = time();
 		$currency   = 'SEK';//$this->context->currency->iso_code;
-		$return_method  = 'GET';
+		$return_method  = 'POST';
 		$merchant_id = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
 		$secret = substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
 		$callback_url = $this->context->link->getModuleLink('billmatebank', 'callback', array(), true);
