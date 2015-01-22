@@ -85,7 +85,7 @@ $_MODULE['<{billmatepartpayment}prestashop>validation_0cdf70925b9cf08910e959dfbd
 $_MODULE['<{billmatepartpayment}prestashop>validation_f1d3b424cd68795ecaa552883759aceb'] = 'Ordersummering';
 $_MODULE['<{billmatepartpayment}prestashop>validation_1aad76502b13db1736d1641f033cf46b'] = 'Billmate Delbetalning';
 $_MODULE['<{billmatepartpayment}prestashop>validation_e2867a925cba382f1436d1834bb52a1c'] = 'Det totala beloppet för din beställning är';
-$_MODULE['<{billmatepartpayment}prestashop>validation_1f87346a16cf80c372065de3c54c86d9'] = '(inkl.)';
+$_MODULE['<{billmatepartpayment}prestashop>validation_1f87346a16cf80c372065de3c54c86d9'] = '(inkl. moms)';
 $_MODULE['<{billmatepartpayment}prestashop>validation_a19913198c22eb3ebaf4e18f1a28835a'] = 'Personnummer/Organisationsnummer';
 $_MODULE['<{billmatepartpayment}prestashop>validation_c3051d2f277689e707b09e1d2ab3c20c'] = 'Min e-postadress %1$s är korrekt och kan användas för fakturering.';
 $_MODULE['<{billmatepartpayment}prestashop>validation_46b9e3665f187c739c55983f757ccda0'] = 'Bekräfta order';
