@@ -43,7 +43,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			$post = $_REQUEST;
 			$cartId = explode('-',$_REQUEST['order_id']);
 			$cartId = $cartId[0];
-			$this->context->cart->id = (int)$cartId;
+			$this->context->cart = new Cart($cartId);
 			$customer = new Customer($this->context->cart->id_customer);
 			$eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
 			
@@ -57,7 +57,11 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
 
 					//if( $orderhistory->id != Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS')){
-
+						if($this->context->cart->orderExists()){
+							$order = Cart::getOrderByCartId($this->context->cart->id);
+							Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order->id);
+							die;
+						}
 
 						$timestart = $timetotalstart = microtime(true);
 						$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code),$_REQUEST['order_id']);

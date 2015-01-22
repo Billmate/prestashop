@@ -18,7 +18,7 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
 		$ids = explode("-",$_POST['order_id']);
 		if( sizeof($ids) < 2 ) return false;
 		//$_POST['order_id'] = $ids[0];
-		$_POST['cart_id'] = $ids[0];
+		$cartId = $ids[0];
 
 
 		$total_amount = round(($_POST['amount']/100),2);
@@ -27,7 +27,7 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
 				if($this->context->cart->orderExists()){
 					die('OK');
 				}
-				$this->context->cart->id = (int)$_POST['cart_id'];
+				$this->context->cart = new Cart($cartId);
 				$customer = new Customer($this->context->cart->id_customer);
 				$total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 				$data_return = $this->processReserveInvoice(strtoupper($this->context->country->iso_code),$_REQUEST['order_id']);
