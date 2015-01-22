@@ -314,7 +314,11 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$secret = substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
 		$callback_url = $this->context->link->getModuleLink('billmatebank', 'callback', array(), true);
 
+		$languageCode= strtoupper( $this->context->language->iso_code );
 
+		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
+		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
+		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
 		$extra = array('transaction_id'=>time());
 		$customer = new Customer((int)$this->context->cart->id_customer);
 
@@ -342,6 +346,8 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			'return_method'=> $return_method,
 		    'currency'   => $currency,
 			'pay_method' => 'BANK',
+
+			'language'	 => $languageCode,
 		    'accept_url' => $accept_url,
 			'callback_url'=> $callback_url,
 			'capture_now' => 'YES',
@@ -350,7 +356,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			'this_path'  => $this->module->getPathUri(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		);
-		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency. $merchant_id . $orderId . 'BANK' . $return_method . $secret;
+		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency.$languageCode. $merchant_id . $orderId . 'BANK' . $return_method . $secret;
 
 		$this->logData($merchant_id,$orderId);
 		
