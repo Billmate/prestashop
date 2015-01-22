@@ -234,7 +234,7 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
 			"extraInfo"=>array(array("cust_no"=>"0" ,"creditcard_data"=> $_REQUEST))
 		);
 
-		$transaction["extraInfo"][0]["status"] = 'Paid';
+		//$transaction["extraInfo"][0]["status"] = 'Paid';
 		
 		if(Configuration::get('BCARDPAY_AUTHMOD') == 'sale' ) $transaction["extraInfo"][0]["status"] = 'Paid';
 
