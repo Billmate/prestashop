@@ -46,7 +46,8 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			$this->context->cart = new Cart($cartId);
 			$customer = new Customer($this->context->cart->id_customer);
 			$eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
-			
+			$lockfile = _PS_CACHE_DIR_.$_REQUEST['order_id'];
+			$processing = file_exists($lockfile);
 		    if( $post['status'] == 0 ){
 		        try{
 					
@@ -57,12 +58,15 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
 
 					//if( $orderhistory->id != Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS')){
-						if($this->context->cart->orderExists()){
-							$order = Cart::getOrderByCartId($this->context->cart->id);
-							Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order->id);
+						if($this->context->cart->orderExists() || $processing){
+
+							$order = Order::getOrderByCartId($this->context->cart->id);
+							$orderId = ($order->id != 0) ? $order->id : 0;
+
+							Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$orderId);
 							die;
 						}
-
+						file_put_contents($lockfile, '1');
 						$timestart = $timetotalstart = microtime(true);
 						$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code),$_REQUEST['order_id']);
 						$measurements['after_add_invoice'] =  microtime(true) - $timestart;
@@ -103,7 +107,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 					if( isset($_SESSION['billmate_order_id'])){
 						unset($_SESSION['billmate_order_id']);
 					}
-					
+					unlink($lockfile);
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);
 					die;
 		        }catch(Exception $ex){

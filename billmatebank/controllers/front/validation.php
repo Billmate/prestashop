@@ -40,7 +40,8 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			$this->context->cart = new Cart($cartId);
 			$customer = new Customer($this->context->cart->id_customer);
 			$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-
+			$lockfile = _PS_CACHE_DIR_.$_REQUEST['order_id'];
+			$processing = file_exists($lockfile);
 		    if( $_REQUEST['status'] == 0 ){
 		        try{
 
@@ -50,11 +51,15 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 					//if( $orderhistory->id != Configuration::get('BBANK_ORDER_STATUS_SWEDEN')){
 
 						$data = $measurements = array();
-						if($this->context->cart->orderExists()){
-							$order = Cart::getOrderByCartId($this->context->cart->id);
-							Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order->id);
+						if($this->context->cart->orderExists() || $processing){
+
+							$order = Order::getOrderByCartId($this->context->cart->id);
+							$orderId = ($order->id != 0) ? $order->id : 0;
+
+							Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$orderId);
 							die;
 						}
+						file_put_contents($lockfile, '1');
 
 						$timestart = $timetotalstart = microtime(true);
 						$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code),$_REQUEST['order_id']);

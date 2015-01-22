@@ -24,9 +24,12 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
 		$total_amount = round(($_POST['amount']/100),2);
 		if( isset($_POST['status']) && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']) ) {
 			if($_POST['status'] == 0) {
-				if($this->context->cart->orderExists()){
+				$lockfile = _PS_CACHE_DIR_.$_POST['order_id'];
+				$processing = file_exists($lockfile);
+				if($this->context->cart->orderExists() || $processing){
 					die('OK');
 				}
+				file_put_contents($lockfile, 1);
 				$this->context->cart = new Cart($cartId);
 				$customer = new Customer($this->context->cart->id_customer);
 				$total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
@@ -49,6 +52,7 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
 				if (!empty($extra)) {
 					Db::getInstance()->update('order_payment', $extra, 'order_reference="' . $this->module->currentOrderReference . '"');
 				}
+				unlink($lockfile);
 			}
 		}
 		exit("finalize");
