@@ -138,6 +138,8 @@ class BillmateBankController extends FrontController
 		
 	}
     public function processReserveInvoice( $isocode, $order_id = ''){
+		if (version_compare(_PS_VERSION_,'1.5','<'))
+			$this->context->controller->module = new BillmateBank();
 		global $cookie;
        	$order_id = $order_id == '' ? time(): $order_id;
 

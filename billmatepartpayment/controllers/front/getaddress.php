@@ -393,7 +393,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
     {
         if (version_compare(_PS_VERSION_,'1.5','<'))
             $this->context->controller->module = new BillmatePartpayment();
-        
+
 		$cart = $this->context->cart;
 		$order_id2 = Tools::substr($cart->id.'-'.time(), 0, 10);//Order::getOrderByCartId((int)$cart->id);
        	$order_id = $order_id2 == '' ? time(): $order_id2;
