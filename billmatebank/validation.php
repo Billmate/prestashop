@@ -32,7 +32,6 @@ include(dirname(__FILE__).'/../../init.php');
 include_once(_PS_MODULE_DIR_.'/billmatebank/billmatebank.php');
 require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
 
-//define('BBANK_BASE', dirname(__FILE__));
 
 require_once BBANK_BASE. '/Billmate.php';
 require_once BBANK_BASE. '/utf8.php';
