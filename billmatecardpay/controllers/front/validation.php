@@ -493,7 +493,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 					'goods' => array(
 						'artno'    => $product['reference'],
 						'title'    => $product['name'],
-						'price'    => round($product['price'] * 100, 0),
+						'price'    => $product['price'] * 100,
 						'vat'      => (float)$product['rate'],
 						'discount' => 0.0,
 						'flags'    => 0,
@@ -513,7 +513,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 					'goods' => array(
 						'artno'    => '',
 						'title'    => $this->context->controller->module->l('Rabatt'),
-						'price'    => 0 - round(abs($discountamount * 100), 0),
+						'price'    => 0 - abs($discountamount * 100),
 						'vat'      => $vatrate,
 						'discount' => 0.0,
 						'flags'    => 0,
@@ -545,7 +545,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 				'goods' => array(
 					'artno'    => '',
 					'title'    => isset($label[$total])? $label[$total] : ucwords( str_replace('_', ' ', str_replace('total_', '', $total))),
-					'price'    => round($cart_details[$total] * 100, 0),
+					'price'    => $cart_details[$total] * 100,
 					'vat'      => (float)$vatrate,
 					'discount' => 0.0,
 					'flags'    => $flag | 32,

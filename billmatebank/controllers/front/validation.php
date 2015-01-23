@@ -223,7 +223,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 					'goods' => array(
 						'artno'    => $product['reference'],
 						'title'    => $product['name'],
-						'price'    => (int)$product['price'] * 100,
+						'price'    => $product['price'] * 100,
 						'vat'      => (float)$product['rate'],
 						'discount' => 0.0,
 						'flags'    => 0,
@@ -243,7 +243,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 					'goods' => array(
 						'artno'    => '',
 						'title'    => $this->context->controller->module->l('Rabatt'),
-						'price'    => 0 - round(abs($discountamount * 100), 0),
+						'price'    => 0 - abs($discountamount * 100),
 						'vat'      => $vatrate,
 						'discount' => 0.0,
 						'flags'    => 0,
@@ -272,7 +272,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 				'goods' => array(
 					'artno'    => '',
 					'title'    => isset($label[$total])? $label[$total] : ucwords(str_replace('_', ' ', str_replace('total_', '', $total))),
-					'price'    => (int)$cart_details[$total] * 100,
+					'price'    => $cart_details[$total] * 100,
 					'vat'      => (float)$vatrate,
 					'discount' => 0.0,
 					'flags'    => $flag | 32,
@@ -384,10 +384,10 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
     {
        	$order_id = $order_id == '' ? time(): $order_id;
 
-        $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
-        $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
-        $country = Tools::strtoupper($adrsDelivery->country);
-        $country = new Country((int)$adrsDelivery->id_country);
+        $address_delivery = new Address((int)$this->context->cart->id_address_delivery);
+        $address_billing = new Address((int)$this->context->cart->id_address_invoice);
+        $country = Tools::strtoupper($address_delivery->country);
+        $country = new Country((int)$address_delivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -410,7 +410,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$encoding = 2;
 		$currency = 0;
 		
-        $country = new Country((int)$adrsDelivery->id_country);
+        $country = new Country((int)$address_delivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -418,37 +418,37 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		
         $ship_address = array(
             'email'           => $this->context->customer->email,
-            'telno'           => $adrsDelivery->phone,
-            'cellno'          => $adrsDelivery->phone_mobile,
-            'fname'           => $adrsDelivery->firstname,
-            'lname'           => $adrsDelivery->lastname,
-            'company'         => ($adrsDelivery->company == 'undefined') ? '' : $adrsDelivery->company,
+            'telno'           => $address_delivery->phone,
+            'cellno'          => $address_delivery->phone_mobile,
+            'fname'           => $address_delivery->firstname,
+            'lname'           => $address_delivery->lastname,
+            'company'         => ($address_delivery->company == 'undefined') ? '' : $address_delivery->company,
             'careof'          => '',
-            'street'          => $adrsDelivery->address1,
-            'zip'             => $adrsDelivery->postcode,
-            'city'            => $adrsDelivery->city,
+            'street'          => $address_delivery->address1,
+            'zip'             => $address_delivery->postcode,
+            'city'            => $address_delivery->city,
             'country'         => (string)$countryname,
         );
 
-        $country = new Country((int)$adrsBilling->id_country);
+        $country = new Country((int)$address_billing->id_country);
         
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+        $countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
         $countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
         
         $bill_address = array(
             'email'           => $this->context->customer->email,
-            'telno'           => $adrsBilling->phone,
-            'cellno'          => $adrsBilling->phone_mobile,
-            'fname'           => $adrsBilling->firstname,
-            'lname'           => $adrsBilling->lastname,
-            'company'         => ($adrsBilling->company == 'undefined') ? '' : $adrsBilling->company,
+            'telno'           => $address_billing->phone,
+            'cellno'          => $address_billing->phone_mobile,
+            'fname'           => $address_billing->firstname,
+            'lname'           => $address_billing->lastname,
+            'company'         => ($address_billing->company == 'undefined') ? '' : $address_billing->company,
             'careof'          => '',
-            'street'          => $adrsBilling->address1,
+            'street'          => $address_billing->address1,
             'house_number'    => '',
             'house_extension' => '',
-            'zip'             => $adrsBilling->postcode,
-            'city'            => $adrsBilling->city,
+            'zip'             => $address_billing->postcode,
+            'city'            => $address_billing->city,
             'country'         => (string)$countryname,
         );
         
@@ -479,7 +479,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 					'goods' => array(
 						'artno'    => $product['reference'],
 						'title'    => $product['name'],
-						'price'    => (int)$product['price'] * 100 ,
+						'price'    => $product['price'] * 100,
 						'vat'      => (float)$product['rate'],
 						'discount' => 0.0,
 						'flags'    => 0,
@@ -499,7 +499,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 					'goods' => array(
 						'artno'    => '',
 						'title'    => $this->context->controller->module->l('Rabatt'),
-						'price'    => 0 - round(abs($discountamount * 100), 0),
+						'price'    => 0 - abs($discountamount * 100),
 						'vat'      => $vatrate,
 						'discount' => 0.0,
 						'flags'    => 0,
@@ -528,7 +528,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 				'goods' => array(
 					'artno'    => '',
 					'title'    => isset($label[$total])? $label[$total] : ucwords(str_replace('_', ' ', str_replace('total_', '', $total))),
-					'price'    => (int)$cart_details[$total] * 100,
+					'price'    => $cart_details[$total] * 100,
 					'vat'      => (float)$vatrate,
 					'discount' => 0.0,
 					'flags'    => $flag | 32,

@@ -82,7 +82,7 @@ class BillmatePartpaymentController extends FrontController
 
 	public function displayContent()
 	{
-		global $link, $cookie;
+		global $link;
 		parent::displayContent();
 	
 		$customer = new Customer((int)self::$cart->id_customer);
@@ -119,7 +119,7 @@ class BillmatePartpaymentController extends FrontController
 			$i = 2000;
 			while ($i >= 1910)
 				$years[] = $i--;
-			$houseInfo = $this->getHouseInfo($address_invoice->address1);
+			$house_info = $this->getHouseInfo($address_invoice->address1);
 			if(version_compare(_PS_VERSION_,'1.5','<')){
 				$this->_path = __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/';
 //				$this->_path = .__PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/controllers/front/getaddress.php';
@@ -130,18 +130,18 @@ class BillmatePartpaymentController extends FrontController
 			self::$smarty->assign(
 				array(
 					'days' => $days,
-					'customer_day' =>	(int)substr($customer->birthday, 8, 2),
+					'customer_day' =>	(int)Tools::substr($customer->birthday, 8, 2),
 					'months' => $months,
 					'customer_email' => str_replace('%1$s', $customer->email, $this->billmate->l('Min e-postadress %1$s är korrekt och kan användas för fakturering.')),
 					'eid'    => Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name']),
 					'opc'=> (bool)Configuration::get('PS_ORDER_PROCESS_TYPE') == 1,
-					'customer_month' => (int)substr($customer->birthday, 5, 2),
+					'customer_month' => (int)Tools::substr($customer->birthday, 5, 2),
 					'years' => $years, 'customer_year' => (int)substr($customer->birthday, 0, 4),
-					'street_number' => $houseInfo[1],
-					'house_ext' => $houseInfo[2],
+					'street_number' => $house_info[1],
+					'house_ext' => $house_info[2],
 					'modulepath' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/payment.php',
 					'ajaxurl'   => array(
-						'path' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/', 
+						'path' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/',
 						'this_path_ssl' =>  $this->_path
 					))
 

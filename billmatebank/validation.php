@@ -51,37 +51,41 @@ class BillmateBankController extends FrontController
 		if (!Configuration::get('BBANK_ACTIVE'))
 			exit;
 		parent::__construct();
-		self::$smarty->assign('path' , __PS_BASE_URI__.'modules/billmatepartpayment');
+		self::$smarty->assign('path', __PS_BASE_URI__.'modules/billmatepartpayment');
 	}
 
 	public function process()
 	{
 		global $country,$cookie;
 		if (!Configuration::get('BBANK_ACTIVE'))
-			return ;
+			return;
 		parent::process();
 
 		$post = $_REQUEST;
-	    if (isset($post['status']) && !empty($post['trans_id']) && !empty($post['error_message']))
+	    if (Tools::getIsset('status') && !empty($post['trans_id']) && !empty($post['error_message']))
 		{
-		    if( $post['status'] == 0 ){
+		    if ($post['status'] == 0 )
+			{
 		        try{
 					
 					$address_invoice = new Address((int)self::$cart->id_address_invoice);
 					$country = new Country((int)$address_invoice->id_country);
 
-					$this->processReserveInvoice( Tools::strtoupper($country->iso_code));
-					$bilmatebank = new BillmateBank();
+					$data = $this->processReserveInvoice(Tools::strtoupper($country->iso_code));
+					$billmatebank = new BillmateBank();
 
 			        $customer = new Customer((int)$cookie->id_customer);
 			        $total = self::$cart->getOrderTotal();
-			        $bilmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $bilmatebank->displayName, null, array(), null, false, $customer->secure_key);
-			        Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$bilmatebank->id.'&id_order='.(int)$bilmatebank->currentOrder);
-		        }catch(Exception $ex){
-    		       $this->context->smarty->assign('error_message', utf8_encode($ex->getMessage())) ;
+			        $billmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $billmatebank->displayName, null, array(), null, false, $customer->secure_key);
+			        Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatebank->id.'&id_order='.(int)$billmatebank->currentOrder);
+
+					$data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatebank->currentOrder);
+
+				}catch(Exception $ex){
+    		       $this->context->smarty->assign('error_message', utf8_encode($ex->getMessage()));
 		        }
 		    } else {
-		       $this->context->smarty->assign('error_message', $post['error_message']) ;
+		       $this->context->smarty->assign('error_message', $post['error_message']);
 		    }
 		}
 	}
@@ -96,10 +100,10 @@ class BillmateBankController extends FrontController
 		$country = new Country((int)$address_invoice->id_country);
 		$currency = new Currency((int)self::$cart->id_currency);
 
-		$accept_url =  _PS_BASE_URL_.__PS_BASE_URI__.'modules/billmatebank/validation.php';
+		$accept_url = _PS_BASE_URL_.__PS_BASE_URI__.'modules/billmatebank/validation.php';
 		$cancel_url = $link->getPageLink('order.php', true);
 		
-		$amount     = round(self::$cart->getOrderTotal(),2)*100;
+		$amount     = round(self::$cart->getOrderTotal(), 2) * 100;
 		$order_id   = time();
 		$currency   = 'SEK';
 
@@ -137,18 +141,19 @@ class BillmateBankController extends FrontController
 		self::$smarty->display(_PS_MODULE_DIR_.'billmatebank/tpl/form.tpl');
 		
 	}
-    public function processReserveInvoice( $isocode, $order_id = ''){
-		if (version_compare(_PS_VERSION_,'1.5','<'))
+    public function processReserveInvoice($isocode, $order_id = '')
+	{
+		if (version_compare(_PS_VERSION_, '1.5', '<'))
 			$this->context->controller->module = new BillmateBank();
 		global $cookie;
        	$order_id = $order_id == '' ? time(): $order_id;
 
-        $adrsDelivery = new Address((int)self::$cart->id_address_delivery);
-        $adrsBilling = new Address((int)self::$cart->id_address_invoice);
-        $country = Tools::strtoupper($adrsDelivery->country);
-        $country = new Country((int)$adrsDelivery->id_country);
+        $address_delivery = new Address((int)self::$cart->id_address_delivery);
+        $address_billing = new Address((int)self::$cart->id_address_invoice);
+        $country = Tools::strtoupper($address_delivery->country);
+        $country = new Country((int)$address_delivery->id_country);
         
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+        $countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
         $countryname = Tools::strtoupper($countryname);
         
         $eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
@@ -157,7 +162,7 @@ class BillmateBankController extends FrontController
 		$ssl = true;
 		$debug = false;
         
-        $k = new BillMate($eid,$secret,$ssl,$debug,Configuration::get('BBANK_MOD'));
+        $k = new BillMate($eid, $secret, $ssl, $debug, Configuration::get('BBANK_MOD'));
 
         $personalnumber = '';
         $country_to_currency = array(
@@ -173,9 +178,9 @@ class BillmateBankController extends FrontController
 		$encoding = 2;
 		$currency = 0;
 		
-        $country = new Country((int)$adrsDelivery->id_country);
+        $country = new Country((int)$address_delivery->id_country);
         
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+        $countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
         $countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
 		
@@ -183,17 +188,17 @@ class BillmateBankController extends FrontController
             'email'           => $cookie->email,
             'telno'           => '',
             'cellno'          => '',
-            'fname'           => $adrsDelivery->firstname,
-            'lname'           => $adrsDelivery->lastname,
-            'company'         => $adrsDelivery->company,
+            'fname'           => $address_delivery->firstname,
+            'lname'           => $address_delivery->lastname,
+            'company'         => $address_delivery->company,
             'careof'          => '',
-            'street'          => $adrsDelivery->address1,
-            'zip'             => $adrsDelivery->postcode,
-            'city'            => $adrsDelivery->city,
+            'street'          => $address_delivery->address1,
+            'zip'             => $address_delivery->postcode,
+            'city'            => $address_delivery->city,
             'country'         => (string)$countryname,
         );
 
-        $country = new Country((int)$adrsBilling->id_country);
+        $country = new Country((int)$address_billing->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -203,15 +208,15 @@ class BillmateBankController extends FrontController
             'email'           => $cookie->email,
             'telno'           => '',
             'cellno'          => '',
-            'fname'           => $adrsBilling->firstname,
-            'lname'           => $adrsBilling->lastname,
-            'company'         => $adrsBilling->company,
+            'fname'           => $address_billing->firstname,
+            'lname'           => $address_billing->lastname,
+            'company'         => $address_billing->company,
             'careof'          => '',
-            'street'          => $adrsBilling->address1,
+            'street'          => $address_billing->address1,
             'house_number'    => '',
             'house_extension' => '',
-            'zip'             => $adrsBilling->postcode,
-            'city'            => $adrsBilling->city,
+            'zip'             => $address_billing->postcode,
+            'city'            => $address_billing->city,
             'country'         => (string)$countryname,
         );
         
@@ -237,7 +242,7 @@ class BillmateBankController extends FrontController
 				'goods' => array(
 					'artno'    => $product['id_product'],
 					'title'    => $product['name'],
-					'price'    => (int)$product['price'] * 100,
+					'price'    => $product['price'] * 100,
 					'vat'      => (float)$product['rate'],
 					'discount' => 0.0,
 					'flags'    => 0,
@@ -254,7 +259,7 @@ class BillmateBankController extends FrontController
 				'goods' => array(
 					'artno'    => '',
 					'title'    => $this->context->controller->module->l('Rabatt'),
-					'price'    => 0 - round(abs($discountamount * 100), 0),
+					'price'    => 0 - abs($discountamount * 100),
 					'vat'      => $vatrate,
 					'discount' => 0.0,
 					'flags'    => 0,
@@ -274,8 +279,8 @@ class BillmateBankController extends FrontController
 				'qty'   => 1,
 				'goods' => array(
 					'artno'    => '',
-					'title'    => Tools::getIsset($label[$total]) ? $label[$total] : ucwords( str_replace('_', ' ', str_replace('total_', '', $total))),
-					'price'    => (int)$cart_details[$total] * 100,
+					'title'    => isset($label[$total]) ? $label[$total] : ucwords( str_replace('_', ' ', str_replace('total_', '', $total))),
+					'price'    => $cart_details[$total] * 100,
 					'vat'      => (float)$vatrate,
 					'discount' => 0.0,
 					'flags'    => $flag | 32,
@@ -309,8 +314,10 @@ class BillmateBankController extends FrontController
 		
 		$result1 = $k->AddInvoice('', $bill_address, $ship_address, $goods_list, $transaction);
 
-		if(is_string($result1))
+		if (is_string($result1))
 			throw new Exception(utf8_encode($result1), 122);
+
+		return array('invoiceid' => $result1[0], 'api' => $k );
 
     }
 

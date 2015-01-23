@@ -525,7 +525,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 					'goods' => array(
 						'artno'    => $product['reference'],
 						'title'    => $product['name'],
-						'price'    => (int)$product['price'] * 100,
+						'price'    => $product['price'] * 100,
 						'vat'      => (float)$product['rate'],
 						'discount' => 0.0,
 						'flags'    => 0,
@@ -580,7 +580,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 					'goods' => array(
 						'artno'    => (string)$carrier->name.$cart->id_carrier,
 						'title'    => $carrier->name,
-						'price'    => (int)$shippingPrice * 100,
+						'price'    => $shippingPrice * 100,
 						'vat'      => (float)$taxrate,
 						'discount' => 0.0,
 						'flags'    => 8, //16|32

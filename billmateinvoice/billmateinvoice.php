@@ -584,12 +584,8 @@ class BillmateInvoice extends PaymentModule
 		$this->context->smarty->assign('moduleurl', $moduleurl);
 
         if ($total > $minVal && $total < $maxVal)
-		{
-            $customer = new Customer(intval($cart->id_customer));
-            $currency = $this->getCurrency(intval($cart->id_currency));
-
-            return $this->display(__FILE__, 'billmateinvoice.tpl');
-        }else
+			return $this->display(__FILE__, 'billmateinvoice.tpl');
+        else
             return false;
 
     }

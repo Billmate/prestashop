@@ -31,6 +31,7 @@ include(dirname(__FILE__).'/../../init.php');
 
 include_once(_PS_MODULE_DIR_.'/billmateinvoice/billmateinvoice.php');
 require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
+
 class BillmateInvoiceController extends FrontController
 {
 	public $ssl = true;
@@ -41,7 +42,7 @@ class BillmateInvoiceController extends FrontController
 		if (!$this->billmate->active)
 			exit;
 		parent::__construct();
-		self::$smarty->assign('path' , __PS_BASE_URI__.'modules/billmateinvoice');
+		self::$smarty->assign('path', __PS_BASE_URI__.'modules/billmateinvoice');
 	}
 	
 	public function init()
@@ -49,7 +50,7 @@ class BillmateInvoiceController extends FrontController
 		global $cookie;
 		$this->ajax = true;
 		if (!$this->billmate->active)
-			return ;
+			return;
 		parent::init();
 		if (Tools::isSubmit('pno'))
 		{
@@ -84,34 +85,27 @@ class BillmateInvoiceController extends FrontController
 			self::$smarty->assign('pnoValue', $pno[$country->iso_code]);
 			self::$smarty->assign('iso_code', strtolower($country->iso_code));
 
-			if(version_compare(_PS_VERSION_,'1.5','<')){
+			if (version_compare(_PS_VERSION_, '1.5', '<'))
 				$this->_path = __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/';
-//				$this->_path = .__PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/controllers/front/getaddress.php';
-			} else {
+			else
 				$this->_path = $link->getModuleLink('billmateinvoice', 'getaddress', array('ajax'=> 0), true);
-				//Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/'
-			}
-			self::$smarty->assign(
-				array(
+
+			self::$smarty->assign(array(
 					'customer_email' => str_replace('%1$s', $customer->email, $this->billmate->l('My email %1$s is accurate and can be used for invoicing.')),
 					'eid'    => Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name']),
 					'opc'=> (bool)Configuration::get('PS_ORDER_PROCESS_TYPE') == 1,
-					'customer_month' => (int)substr($customer->birthday, 5, 2),
+					'customer_month' => (int)Tools::substr($customer->birthday, 5, 2),
 					'moduleurl' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/validation.php',
 					'ajaxurl'   => array(
-						'path' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/validation.php', 
+						'path' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/validation.php',
 						'this_path_ssl' =>  $this->_path
-					))
-
-			);
+					)));
 			$total = self::$cart->getOrderTotal() + (float)Product::getPriceStatic((int)Configuration::get('BM_INV_FEE_ID_'.$countries[$country->iso_code]['name']));
 
-			self::$smarty->assign(
-				array(
+			self::$smarty->assign(array(
 					'total' => $total,
 					'fee' => ($type == 'invoice' ? (float)Product::getPriceStatic((int)Configuration::get('BM_INV_FEE_ID_'.$countries[$country->iso_code]['name'])) : 0)
-				)
-			);
+				));
 
 			self::$smarty->assign('linkTermsCond', (
 			$type == 'invoice' ?'https://online.billmate.com/villkor'.($country->iso_code != 'SE' ? '_'.Tools::strtolower($country->iso_code) : '').'.yaws?eid='.(int)Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name']).'&charge='.round((float)Product::getPriceStatic((int)Configuration::get('BM_INV_FEE_ID_'.$countries[$country->iso_code]['name'])), 2) : 'https://online.billmate.com/account_'.Tools::strtolower($country->iso_code).'.yaws?eid='.(int)Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name'])));
@@ -123,5 +117,5 @@ class BillmateInvoiceController extends FrontController
 	}
 }
 
-$billmateController = new BillmateInvoiceController();
-$billmateController->run();
+$billmate_controller = new BillmateInvoiceController();
+$billmate_controller->run();

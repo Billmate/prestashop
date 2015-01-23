@@ -30,7 +30,7 @@
 	    <input type="text" value="" id="pno" name="pno" style="border:1px solid #D3D3D3" required  />
 	</p>
 	<p style="padding-top:14px">
-	    <input type="checkbox" value="" id="confirm_my_age" name="confirm_my_age" required style="margin:0px" />
+	    <input type="checkbox" value="" checked="checked" id="confirm_my_age" name="confirm_my_age" required style="margin:0px" />
 	    <label for="phone">{$customer_email}</label>
 	</p>
 	<p><br/>

@@ -128,7 +128,7 @@ class BillmatePartpayment extends PaymentModule
 	public function getContent()
 	{
 		$html = '';
-		if (!empty($_POST) && isset($_POST['submitBillmate']))
+		if (!empty($_POST) && Tools::getIsset('submitBillmate'))
 		{
 			$this->_postValidation();
 			if (sizeof($this->_postValidations))
@@ -268,13 +268,13 @@ class BillmatePartpayment extends PaymentModule
 	 */
 	private function _postValidation()
 	{
-		if ($_POST['billmate_mod'] == 'live')
+		if (Tools::getValue('billmate_mod') == 'live')
 			Configuration::updateValue('BILLMATE_MOD', 0);
 		else
 			Configuration::updateValue('BILLMATE_MOD', 1);
 
 
-		if (isset($_POST['billmate_active_partpayment']) && $_POST['billmate_active_partpayment'])
+		if (Tools::getIsset('billmate_active_partpayment') && Tools::getValue('billmate_active_partpayment'))
 			Configuration::updateValue('BILLMATE_ACTIVE_PARTPAYMENT', true);
 		else
 			billmate_deleteConfig('BILLMATE_ACTIVE_PARTPAYMENT');
@@ -302,7 +302,7 @@ class BillmatePartpayment extends PaymentModule
 
 		foreach ($this->countries as $key => $country)
 		{
-			if (isset($_POST['activate'.$country['name']]))
+			if (Tools::getIsset('activate'.$country['name']))
 			{
 				$storeId = (int)Tools::getValue('billmateStoreId'.$country['name']);
 				$secret = Tools::getValue('billmateSecret'.$country['name']);

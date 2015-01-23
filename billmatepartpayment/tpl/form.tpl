@@ -28,9 +28,9 @@
 {include file="$tpl_dir./breadcrumb.tpl"}
 <h2>{l s='Order summary' mod='billmatepartpayment'}</h2>
 <style type="text/css">
-#right_column{
+/*#right_column{
 	display:none
-}
+}*/
 .billmate *{
 color: #7a7a7a!important;
 }
