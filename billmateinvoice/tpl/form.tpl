@@ -39,7 +39,7 @@
 {rdelim});</script>
 	</p>
 	<p class="cart_navigation" style="display:block!important">
-		<a href="{$link->getPageLink('order', true)}?step=3" class="button_large" style="float:left">
+		<a href="{$link->getPageLink('order.php', true)}?step=3" class="button_large" style="float:left">
 			<input type="button" value="{l s='Other payment methods' mod='billmateinvoice'}" class="exclusive_large hideOnSubmit" />
 		</a>
       <input type="button" name="submit" id="billmate_submit" value="{l s='I confirm my order' mod='billmateinvoice'}" class="exclusive_large hideOnSubmit" />
