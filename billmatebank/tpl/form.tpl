@@ -6,6 +6,7 @@
 	<input type="hidden" name="amount" value="{$amount}" />
 	<input type="hidden" name="merchant_id" value="{$merchant_id}" />
 	<input type="hidden" name="currency" value="{$currency}" />
+	<input type="hidden" name="language" value="{$language}" />
 	<input type="hidden" name="accept_url" value="{$accept_url}" />
 	<input type="hidden" name="pay_method" value="{$pay_method}" />
 	<input type="hidden" name="return_method" value="{$return_method}" />

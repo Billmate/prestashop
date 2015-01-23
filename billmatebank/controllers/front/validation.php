@@ -46,7 +46,6 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			}
 		}
 
-
 		if (!$authorized)
 			Tools::redirectLink(__PS_BASE_URI__.'order&step=3');
 
@@ -56,9 +55,9 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 
 		if (Tools::getIsset('status') && !empty($_REQUEST['trans_id']) && !empty($_REQUEST['error_message']))
 		{
-			$cartId = explode('-', Tools::getValue('order_id'));
-			$cartId = $cartId[0];
-			$this->context->cart = new Cart($cartId);
+			$cart_id = explode('-', Tools::getValue('order_id'));
+			$cart_id = $cart_id[0];
+			$this->context->cart = new Cart($cart_id);
 			$customer = new Customer($this->context->cart->id_customer);
 			$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
 			$lockfile = _PS_CACHE_DIR_.Tools::getValue('order_id');
@@ -103,8 +102,6 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 						$timestart = microtime(true);
 						$extra = array('transaction_id'=>$invoiceid);
 
-
-						//$t->completeOrder($extra,$this->context->cart->id);
 						$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 						$measurements['validateorder'] = microtime(true) - $timestart;
 
@@ -122,8 +119,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 					if (isset($_SESSION['billmate_order_id']))
 						unset($_SESSION['billmate_order_id']);
 
-					
-			        Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);
+					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);
 					die;
 				}catch(Exception $ex){
 					$this->context->smarty->assign('error_message', utf8_encode($ex->getMessage()));
@@ -180,7 +176,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			'country'         => (string)$countryname,
 			);
 
-		$country = new Country(intval($address_billing->id_country));
+		$country = new Country((int)$address_billing->id_country);
 
 		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
 		$countryname = Tools::strtoupper($countryname);
@@ -217,6 +213,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$cart_details = $this->context->cart->getSummaryDetails(null, true);
 
 		$vatrate = 0;
+		$goods_list = array();
 		foreach ($products as $product)
 		{
 			if (!empty($product['price']))
@@ -343,7 +340,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$secret = Tools::substr(Configuration::get('BBANK_SECRET_SWEDEN'), 0, 12);
 		$callback_url = $this->context->link->getModuleLink('billmatebank', 'callback', array(), true);
 
-		$languageCode= Tools::strtoupper( $this->context->language->iso_code );
+		$languageCode = Tools::strtoupper($this->context->language->iso_code);
 
 		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
 		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
@@ -351,13 +348,8 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$extra = array('transaction_id'=>time());
 		$customer = new Customer((int)$this->context->cart->id_customer);
 
+		$total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 
-
-		$total =  $this->context->cart->getOrderTotal(true, Cart::BOTH);
-
-		
-		//$order_id = $_SESSION['billmate_order_id'] = $t->currentOrder;
-		
 		$sendtohtml = $this->context->cart->id.'-'.time();
 		$orderId = Tools::substr($sendtohtml, 0, 10);
 		$_REQUEST['order_id'] = $orderId;
@@ -388,8 +380,8 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$this->context->smarty->assign($data);
 		$this->setTemplate('validation.tpl');
 	}
-    public function processReserveInvoice( $isocode, $order_id = '')
-	{
+    public function processReserveInvoice($isocode, $order_id = '')
+    {
        	$order_id = $order_id == '' ? time(): $order_id;
 
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
@@ -402,8 +394,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
         
         $eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
 
-
-        $k = $this->getBillmate();
+		$k = $this->getBillmate();
 
         $personalnumber = '';
         $country_to_currency = array(
@@ -419,7 +410,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		$encoding = 2;
 		$currency = 0;
 		
-        $country = new Country(intval($adrsDelivery->id_country));
+        $country = new Country((int)$adrsDelivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -476,10 +467,12 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
         $products = $this->context->cart->getProducts();
     	$cart_details = $this->context->cart->getSummaryDetails(null, true);
     	
-        $vatrate =  0;
+        $vatrate = 0;
+
+		$goods_list = array();
 		foreach ($products as $product)
 		{
-			if(!empty($product['price']))
+			if (!empty($product['price']))
 			{
 				$goods_list[] = array(
 					'qty'   => (int)$product['cart_quantity'],
@@ -496,10 +489,11 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
                 $vatrate = $product['rate'];
 		}
 		$carrier = $cart_details['carrier'];
-		if( !empty($cart_details['total_discounts']))
+		if (!empty($cart_details['total_discounts']))
 		{
-			$discountamount = $cart_details['total_discounts'] / (($vatrate+100)/100);
-			if(!empty($discountamount)){
+			$discountamount = $cart_details['total_discounts'] / (($vatrate + 100) / 100);
+			if (!empty($discountamount))
+			{
 				$goods_list[] = array(
 					'qty'   => 1,
 					'goods' => array(
@@ -516,15 +510,15 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		}
 
 		$totals = array('total_shipping','total_handling');
-		$label =  array();
+		$label = array();
 		//array('total_tax' => 'Tax :'. $cart_details['products'][0]['tax_name']);
 		foreach ($totals as $total)
 		{
-		    $flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
-		    if(empty($cart_details[$total]) || $cart_details[$total]<=0 ) continue;
-			if( $total == 'total_shipping' && $cart_details['free_ship'] == 1 ) continue;
-			if(empty($cart_details[$total])) {continue;} 
-			if($total == 'total_shipping')
+		    $flag = $total == 'total_handling' ? 16 : ($total == 'total_shipping' ? 8 : 0);
+		    if (empty($cart_details[$total]) || $cart_details[$total] <= 0) continue;
+			if ($total == 'total_shipping' && $cart_details['free_ship'] == 1) continue;
+			if (empty($cart_details[$total])) continue;
+			if ($total == 'total_shipping')
 			{
 				$carrier = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
 				$vatrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
@@ -533,8 +527,8 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 				'qty'   => 1,
 				'goods' => array(
 					'artno'    => '',
-					'title'    => isset($label[$total])? $label[$total] : ucwords(str_replace('_', ' ', str_replace('total_','', $total))),
-					'price'    => (int) ($cart_details[$total] *100 ),
+					'title'    => isset($label[$total])? $label[$total] : ucwords(str_replace('_', ' ', str_replace('total_', '', $total))),
+					'price'    => (int)$cart_details[$total] * 100,
 					'vat'      => (float)$vatrate,
 					'discount' => 0.0,
 					'flags'    => $flag | 32,
@@ -543,27 +537,27 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 		}
 		$pclass = -1;
 		$cutomerId = (int)$this->context->cart->id_customer;
-		$cutomerId = $cutomerId >0 ? $cutomerId: time();
+		$cutomerId = $cutomerId > 0 ? $cutomerId: time();
 
 		$transaction = array(
-			"order1"=>(string)$order_id,
-			"comment"=>'',
-			"flags"=>0,
-			"reference"=>"",
-			"reference_code"=>"",
-			"currency"=>$currency,
-			"country"=>209,
-			"language"=>$language,
-			"pclass"=>$pclass,
-			"shipInfo"=>array("delay_adjust"=>"1"),
-			"travelInfo"=>array(),
-			"incomeInfo"=>array(),
-			"bankInfo"=>array(),
-			"sid"=>array("time"=>microtime(true)),
-			"extraInfo"=>array(array("cust_no"=>"0" ,"creditcard_data"=> $_REQUEST))
+			'order1'=>(string)$order_id,
+			'comment'=>'',
+			'flags'=>0,
+			'reference'=>'',
+			'reference_code'=>'',
+			'currency'=>$currency,
+			'country'=>209,
+			'language'=>$language,
+			'pclass'=>$pclass,
+			'shipInfo'=>array('delay_adjust'=>'1'),
+			'travelInfo'=>array(),
+			'incomeInfo'=>array(),
+			'bankInfo'=>array(),
+			'sid'=>array('time'=>microtime(true)),
+			'extraInfo'=>array(array('cust_no'=>'0' ,'creditcard_data'=> $_REQUEST))
 		);
 
-		$transaction["extraInfo"][0]["status"] = 'Paid';
+		$transaction['extraInfo'][0]['status'] = 'Paid';
 
 		if (empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
 		
@@ -573,13 +567,10 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			$result1 = $k->AddInvoice('', $bill_address, $ship_address, $goods_list, $transaction);
 
 		if (is_string($result1) || isset($result1['error']) || !is_array($result1))
-		{
 			throw new Exception(utf8_encode($result1), 122);
-		}
 		else
-		{
 			$_SESSION['INVOICE_CREATED_BANK'] = $result1[0];
-		}
+
 		return array('invoiceid' => $result1[0], 'api' => $k,'eid' => $eid);
     }
 }

@@ -34,7 +34,7 @@ require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php
 
 //define('BBANK_BASE', dirname(__FILE__));
 
-require_once BBANK_BASE. '/BillMate.php';
+require_once BBANK_BASE. '/Billmate.php';
 require_once BBANK_BASE. '/utf8.php';
 include_once(BBANK_BASE."/xmlrpc-2.2.2/lib/xmlrpc.inc");
 include_once(BBANK_BASE."/xmlrpc-2.2.2/lib/xmlrpcs.inc");
@@ -45,6 +45,9 @@ class BillmateBankController extends FrontController
 
 	public function __construct()
 	{
+
+		if (version_compare(_PS_VERSION_, '1.5', '<'))
+			$this->context = Context::getContext();
 		if (!Configuration::get('BBANK_ACTIVE'))
 			exit;
 		parent::__construct();
@@ -99,6 +102,12 @@ class BillmateBankController extends FrontController
 		$amount     = round(self::$cart->getOrderTotal(),2)*100;
 		$order_id   = time();
 		$currency   = 'SEK';
+
+		$languageCode = Tools::strtoupper($this->context->language->iso_code);
+
+		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
+		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
+		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
 		
 		$merchant_id = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
 		$secret = Tools::substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
@@ -111,6 +120,7 @@ class BillmateBankController extends FrontController
 		    'amount'     => $amount,
 		    'merchant_id'=> $merchant_id,
 		    'currency'   => $currency,
+			'language'	 => $languageCode,
 			'pay_method' => 'BANK',
 		    'accept_url' => $accept_url,
 			'callback_url'=> $callback_url,
@@ -120,7 +130,7 @@ class BillmateBankController extends FrontController
 			'total'      => self::$cart->getOrderTotal(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/billmatebank/'
 		);
-		$mac_str = $accept_url . $amount . $callback_url .  $cancel_url . $data['capture_now'] . $currency. $merchant_id . $order_id . 'BANK' . $return_method. $secret;
+		$mac_str = $accept_url.$amount.$callback_url.$cancel_url.$data['capture_now'].$currency.$languageCode.$merchant_id.$order_id.'BANK'.$return_method.$secret;
 
 		$data['mac'] = hash('sha256', $mac_str);
 		self::$smarty->assign($data);
@@ -181,7 +191,7 @@ class BillmateBankController extends FrontController
             'country'         => (string)$countryname,
         );
 
-        $country = new Country(intval($adrsBilling->id_country));
+        $country = new Country((int)$adrsBilling->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -203,27 +213,29 @@ class BillmateBankController extends FrontController
             'country'         => (string)$countryname,
         );
         
-        foreach( $ship_address as $key => $col ){
-            if( !is_array( $col )) {
-                $ship_address[$key] = utf8_decode( Encoding::fixUTF8($col));
-            }
+        foreach ($ship_address as $key => $col){
+            if (!is_array($col))
+				$ship_address[$key] = utf8_decode( Encoding::fixUTF8($col));
         }
-        foreach( $bill_address as $key => $col ){
-            if( !is_array( $col )) {
+
+        foreach ($bill_address as $key => $col)
+		{
+            if (!is_array($col))
                 $bill_address[$key] = utf8_decode( Encoding::fixUTF8($col));
-            }
         }
+
         $products = self::$cart->getProducts();
     	$cart_details = self::$cart->getSummaryDetails(null, true);
     	
-        $vatrate =  0;
-		foreach ($products as $product) {
+        $vatrate = 0;
+		foreach ($products as $product)
+		{
 			$goods_list[] = array(
 				'qty'   => (int)$product['cart_quantity'],
 				'goods' => array(
 					'artno'    => $product['id_product'],
 					'title'    => $product['name'],
-					'price'    => (int) number_format($product['price'], 2 , '',''),
+					'price'    => (int)$product['price'] * 100,
 					'vat'      => (float)$product['rate'],
 					'discount' => 0.0,
 					'flags'    => 0,
@@ -232,14 +244,15 @@ class BillmateBankController extends FrontController
                 $vatrate = $product['rate'];
 		}
 		$carrier = $cart_details['carrier'];
-		if( !empty($cart_details['total_discounts'])){
-			$discountamount = $cart_details['total_discounts'] / (($vatrate+100)/100);
+		if (!empty($cart_details['total_discounts']))
+		{
+			$discountamount = $cart_details['total_discounts'] / (($vatrate + 100) / 100);
 			$goods_list[] = array(
 				'qty'   => 1,
 				'goods' => array(
 					'artno'    => '',
 					'title'    => $this->context->controller->module->l('Rabatt'),
-					'price'    => 0 - round(abs($discountamount*100),0),
+					'price'    => 0 - round(abs($discountamount * 100), 0),
 					'vat'      => $vatrate,
 					'discount' => 0.0,
 					'flags'    => 0,
@@ -251,18 +264,19 @@ class BillmateBankController extends FrontController
 		$totals = array('total_shipping','total_handling');
 		$label =  array();
 		//array('total_tax' => 'Tax :'. $cart_details['products'][0]['tax_name']);
-		foreach ($totals as $total) {
+		foreach ($totals as $total)
+		{
 		    $flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
-		    if(empty($cart_details[$total]) || $cart_details[$total]<=0 ) continue;
+		    if (empty($cart_details[$total]) || $cart_details[$total] <= 0) continue;
 			$goods_list[] = array(
 				'qty'   => 1,
 				'goods' => array(
 					'artno'    => '',
-					'title'    => Tools::getIsset($label[$total])? $label[$total] : ucwords( str_replace('_', ' ', str_replace('total_','', $total) ) ),
-					'price'    => (int) ($cart_details[$total]*100),
+					'title'    => Tools::getIsset($label[$total]) ? $label[$total] : ucwords( str_replace('_', ' ', str_replace('total_', '', $total))),
+					'price'    => (int)$cart_details[$total] * 100,
 					'vat'      => (float)$vatrate,
 					'discount' => 0.0,
-					'flags'    => $flag|32,
+					'flags'    => $flag | 32,
 				)
 			);
 		}
@@ -271,32 +285,31 @@ class BillmateBankController extends FrontController
 		$cutomerId = $cutomerId >0 ? $cutomerId: time();
 
 		$transaction = array(
-			"order1"=>(string)$order_id,
-			"comment"=>'',
-			"flags"=>0,
+			'order1'=>(string)$order_id,
+			'comment'=>'',
+			'flags'=>0,
 			'gender'=>0,
-			"reference"=>"",
-			"reference_code"=>"",
-			"currency"=>$currency,
-			"country"=>209,
-			"language"=>$language,
-			"pclass"=>$pclass,
-			"shipInfo"=>array("delay_adjust"=>"1"),
-			"travelInfo"=>array(),
-			"incomeInfo"=>array(),
-			"bankInfo"=>array(),
-			"sid"=>array("time"=>microtime(true)),
-			"extraInfo"=>array(array("cust_no"=>"0" ,"creditcard_data"=> $_REQUEST))
+			'reference'=>'',
+			'reference_code'=>'',
+			'currency'=>$currency,
+			'country'=>209,
+			'language'=>$language,
+			'pclass'=>$pclass,
+			'shipInfo'=>array('delay_adjust'=>'1'),
+			'travelInfo'=>array(),
+			'incomeInfo'=>array(),
+			'bankInfo'=>array(),
+			'sid'=>array('time'=>microtime(true)),
+			'extraInfo'=>array(array('cust_no'=>'0' ,'creditcard_data'=> $_REQUEST))
 		);
 
-		$transaction["extraInfo"][0]["status"] = 'Paid';
+		$transaction['extraInfo'][0]['status'] = 'Paid';
 		
-		$result1 = $k->AddInvoice('',$bill_address,$ship_address,$goods_list,$transaction);  
+		$result1 = $k->AddInvoice('', $bill_address, $ship_address, $goods_list, $transaction);
 
 		if(is_string($result1))
-		{
 			throw new Exception(utf8_encode($result1), 122);
-		}
+
     }
 
 }
