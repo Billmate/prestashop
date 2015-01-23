@@ -63,22 +63,25 @@ class BillmateBankController extends FrontController
 		$post = $_REQUEST;
 	    if (Tools::getIsset('status') && !empty($post['trans_id']) && !empty($post['error_message']))
 		{
-		    if ($post['status'] == 0 )
+		    if ($post['status'] == 0)
 			{
 		        try{
 					
 					$address_invoice = new Address((int)self::$cart->id_address_invoice);
 					$country = new Country((int)$address_invoice->id_country);
 
-					$data = $this->processReserveInvoice(Tools::strtoupper($country->iso_code));
+					$data = $this->processReserveInvoice(Tools::strtoupper($country->iso_code),Tools::getValue('order_id'));
 					$billmatebank = new BillmateBank();
 
 			        $customer = new Customer((int)$cookie->id_customer);
 			        $total = self::$cart->getOrderTotal();
 			        $billmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $billmatebank->displayName, null, array(), null, false, $customer->secure_key);
-			        Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatebank->id.'&id_order='.(int)$billmatebank->currentOrder);
 
 					$data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatebank->currentOrder);
+
+					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatebank->id.'&id_order='.(int)$billmatebank->currentOrder);
+
+
 
 				}catch(Exception $ex){
     		       $this->context->smarty->assign('error_message', utf8_encode($ex->getMessage()));
@@ -103,7 +106,7 @@ class BillmateBankController extends FrontController
 		$cancel_url = $link->getPageLink('order.php', true);
 		
 		$amount     = round(self::$cart->getOrderTotal(), 2) * 100;
-		$order_id   = time();
+
 		$currency   = 'SEK';
 
 		$languageCode = Tools::strtoupper($this->context->language->iso_code);
@@ -116,6 +119,9 @@ class BillmateBankController extends FrontController
 		$secret = Tools::substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
 		$callback_url = 'http://api.billmate.se/callback.php';
 		$return_method = 'GET';
+
+		$sendtohtml = self::$cart->id.'-'.time();
+		$order_id = Tools::substr($sendtohtml, 0, 10);
 		
         $data = array(
 		    'gatewayurl' => Configuration::get('BBANK_MOD') == 0 ? BANKPAY_LIVEURL : BANKPAY_TESTURL,
@@ -136,11 +142,13 @@ class BillmateBankController extends FrontController
 		$mac_str = $accept_url.$amount.$callback_url.$cancel_url.$data['capture_now'].$currency.$languageCode.$merchant_id.$order_id.'BANK'.$return_method.$secret;
 
 		$data['mac'] = hash('sha256', $mac_str);
+
+		$this->processReserveInvoice(Tools::strtoupper($country->iso_code), $order_id, 'order');
 		self::$smarty->assign($data);
 		self::$smarty->display(_PS_MODULE_DIR_.'billmatebank/tpl/form.tpl');
 		
 	}
-    public function processReserveInvoice($isocode, $order_id = '')
+    public function processReserveInvoice($isocode, $order_id = '',$method = 'invoice')
 	{
 		if (version_compare(_PS_VERSION_, '1.5', '<'))
 			$this->context->controller->module = new BillmateBank();
@@ -310,8 +318,10 @@ class BillmateBankController extends FrontController
 		);
 
 		$transaction['extraInfo'][0]['status'] = 'Paid';
-		
-		$result1 = $k->AddInvoice('', $bill_address, $ship_address, $goods_list, $transaction);
+		if ($method == 'invoice')
+			$result1 = $k->AddInvoice('', $bill_address, $ship_address, $goods_list, $transaction);
+		else
+			$result1 = $k->AddOrder('', $bill_address, $ship_address, $goods_list, $transaction);
 
 		if (is_string($result1))
 			throw new Exception(utf8_encode($result1), 122);

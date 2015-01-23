@@ -69,20 +69,25 @@ class BillmateCardpayController extends FrontController
 		{
 		    if( $post['status'] == 0 ){
 		        try{
-					
+
 					$address_invoice = new Address((int)self::$cart->id_address_invoice);
 					$country = new Country((int)$address_invoice->id_country);
 
-					$data = $this->processReserveInvoice( strtoupper($country->iso_code));
+					$data = $this->processReserveInvoice(Tools::strtoupper($country->iso_code),Tools::getValue('order_id'));
 					$billmatecard = new BillmateCardpay();
 
-			        $customer = new Customer((int)$cookie->id_customer);
-			        $total = self::$cart->getOrderTotal();
-			        $billmatecard->validateOrder((int)self::$cart->id, Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS'), $total, $billmatecard->displayName, null, array(), null, false, $customer->secure_key);
-			        Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatecard->id.'&id_order='.(int)$billmatecard->currentOrder);
+					$customer = new Customer((int)$cookie->id_customer);
+					$total = self::$cart->getOrderTotal();
 
-					$data['api']->updateOrderNo((string)$data['invoiceid'],(string) $billmatecard->currentOrder);
+			        $billmatecard->validateOrder((int)self::$cart->id, Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS'), $total, $billmatecard->displayName, null, array(), null, false, $customer->secure_key);
+
+					$data['api']->updateOrderNo((string)$data['invoiceid'], (string)$billmatecard->currentOrder);
+
+					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatecard->id.'&id_order='.(int)$billmatecard->currentOrder);
+					die();
+
 				}catch(Exception $ex){
+
     		       $this->context->smarty->assign('error_message', utf8_encode($ex->getMessage()));
 		        }
 		    } else {
@@ -100,6 +105,7 @@ class BillmateCardpayController extends FrontController
 	{
 		global $link,$currency;
 		parent::displayContent();
+
 		$customer = new Customer((int)self::$cart->id_customer);
 		$address_invoice = new Address((int)self::$cart->id_address_invoice);
 		$country = new Country((int)$address_invoice->id_country);
@@ -118,7 +124,9 @@ class BillmateCardpayController extends FrontController
 		$do_3d_secure = Configuration::get('BILL_3DSECURE') == 'YES'? 'YES': 'NO';
 		$prompt_name_entry = Configuration::get('BILL_PRNAME') == 'YES'? 'YES': 'NO';
 		$return_method = Tools::strlen(Configuration::get('BCARDPAY_METHOD')) ? 'GET' : 'GET';
-		
+
+		$sendtohtml = self::$cart->id.'-'.time();
+		$order_id = Tools::substr($sendtohtml, 0, 10);
         $data = array(
 		    'gatewayurl' => Configuration::get('BCARDPAY_MOD') == 0 ? CARDPAY_LIVEURL : CARDPAY_TESTURL,
 		    'order_id'   => $order_id,
@@ -138,12 +146,17 @@ class BillmateCardpayController extends FrontController
 		);
 		$mac_str = $accept_url.$amount.$callback_url.$cancel_url.$data['capture_now'].$currency.$do_3d_secure.$merchant_id.$order_id.'CARD'.$prompt_name_entry.$return_method.$secret;
 
+		$this->processReserveInvoice(Tools::strtoupper($country->iso_code),$order_id,'order');
+
 		$data['mac'] = hash('sha256', $mac_str);
 		self::$smarty->assign($data);
 		self::$smarty->display(_PS_MODULE_DIR_.'billmatecardpay/tpl/form.tpl');
 		
 	}
-    public function processReserveInvoice( $isocode, $order_id = ''){
+
+
+
+    public function processReserveInvoice( $isocode, $order_id = '',$method = 'invoice'){
 		if (version_compare(_PS_VERSION_,'1.5','<'))
 			$this->context->controller->module = new BillmateCardpay();
 
@@ -152,6 +165,7 @@ class BillmateCardpayController extends FrontController
 
         $address_delivery = new Address((int)self::$cart->id_address_delivery);
         $address_billing = new Address((int)self::$cart->id_address_invoice);
+
         $country = strtoupper($address_delivery->country);
         $country = new Country((int)$address_delivery->id_country);
         
@@ -314,8 +328,11 @@ class BillmateCardpayController extends FrontController
 		);
 
 		if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale' ) $transaction['extraInfo'][0]['status'] = 'Paid';
-		
-		$result1 = $k->AddInvoice('',$bill_address,$ship_address,$goods_list,$transaction);  
+
+		if($method == 'invoice')
+			$result1 = $k->AddInvoice('', $bill_address, $ship_address, $goods_list, $transaction);
+		else
+			$result1 = $k->AddOrder('', $bill_address, $ship_address, $goods_list, $transaction);
 
 		if (is_string($result1))
 			throw new Exception(utf8_encode($result1), 122);
