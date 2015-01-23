@@ -59,7 +59,10 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
     {
         global $link;
         parent::init();
-        $this->context = Context::getContext();
+
+        if ((version_compare(_PS_VERSION_, '1.5', '<')))
+            $this->context = Context::getContext();
+
         if (Tools::getValue('clearFee'))
         {
             $cart = $this->context->cart;
@@ -301,8 +304,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				$this->context->smarty->assign('previouslink', $previouslink);
 				$extra = '.tpl';
 
-				if ((version_compare(_PS_VERSION_, '1.5', '<')))
-					$this->context = Context::getContext();
+
 
 				if ($this->context->getMobileDevice()) $extra = '-mobile.tpl';
 
@@ -555,18 +557,12 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		
 		if ($carrier->active && $notfree)
 		{
-			
-			if ($order_id2)
-			{
-				$order = new Order((int)$order_id2);
-				$shippingPrice = $order->total_shipping_tax_incl;
-			}
-			else
-				if(version_compare(_PS_VERSION_, '1.5', '<'))
-					$shippingPrice = $cart->getOrderShippingCost();
-				else
-					$shippingPrice = $cart->getTotalShippingCost();
-					
+
+            if(version_compare(_PS_VERSION_, '1.5', '<'))
+                $shippingPrice = $cart->getOrderShippingCost();
+            else
+                $shippingPrice = $cart->getTotalShippingCost();
+
 			$carrier = new Carrier($cart->id_carrier, $this->context->cart->id_lang);
             if (version_compare(_PS_VERSION_, '1.5', '>='))
                 $taxrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
