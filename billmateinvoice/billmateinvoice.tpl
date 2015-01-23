@@ -22,11 +22,28 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 *}
-
+<style>
+p.payment_module a.billmateinvoice {
+	background: url("{$smarty.const._MODULE_DIR_}billmateinvoice/bm_faktura_l.png") 15px 15px no-repeat #fbfbfb;
+	padding-left: 180px;
+}
+p.payment_module a.billmateinvoice:after{
+	display: block;
+	content: "\f054";
+	position: absolute;
+	right: 15px;
+	margin-top: -11px;
+	top: 50%;
+	font-family: "FontAwesome";
+	font-size: 25px;
+	height: 22px;
+	width: 14px;
+	color: #777;
+}
+</style>
 <p class="payment_module">
-	<a href="{$moduleurl}" title="{l s='Pay by invoice' mod='billmateinvoice'}">
-		<img src="{$smarty.const._MODULE_DIR_}billmateinvoice/bm_faktura_l.png" alt="{l s='Pay by invoice' mod='billmateinvoice'}" style="float:left;" />
-		{l s='Pay by invoice' mod='billmateinvoice'} {if $invoiceFee != 0}<br/> {l s="Handling fee is added by " mod="billmateinvoice"} {displayPrice price=$invoiceFee}{/if}
+	<a href="{$moduleurl}" title="{l s='Pay by invoice' mod='billmateinvoice'}" class="billmateinvoice">
+		{l s='Pay by invoice' mod='billmateinvoice'} {if $invoiceFee != 0} <span>({displayPrice price=$invoiceFee} {l s=" invoice fee is added to your order" mod="billmateinvoice"} )</span> {/if}
 		<br style="clear:both;" />
 	</a>
 </p>

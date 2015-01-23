@@ -471,8 +471,10 @@ class BillmateCardpay extends PaymentModule
 		
         if ($total > $minVal && $total < $maxVal)
 		{
-
-            return $this->display(__FILE__, 'billmatecardpay.tpl');
+			if(version_compare(_PS_VERSION_, '1.6','>='))
+            	return $this->display(__FILE__, 'billmatecardpay.tpl');
+			else
+				return $this->display(__FILE__, 'billmatecardpay-legacy.tpl');
         }else
             return false;
 

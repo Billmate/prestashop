@@ -570,7 +570,7 @@ class BillmateInvoice extends PaymentModule
 			$moduleurl = $link->getModuleLink('billmateinvoice', 'validation', array(), true);
 		else
 			$moduleurl = __PS_BASE_URI__.'modules/billmateinvoice/validation.php?type=invoice';
-
+		$price_wt = 0;
 		if (version_compare(_PS_VERSION_, '1.5', '>='))
 		{
 			$id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
@@ -579,12 +579,16 @@ class BillmateInvoice extends PaymentModule
 			$price   = $product->price;
 			$price_wt = $price * (1 + (($product->getTaxesRate($adrsDelivery)) * 0.01));
 
-			$this->context->smarty->assign('invoiceFee',$price_wt);
+
 		}
+		$this->context->smarty->assign('invoiceFee',$price_wt);
 		$this->context->smarty->assign('moduleurl', $moduleurl);
 
         if ($total > $minVal && $total < $maxVal)
-			return $this->display(__FILE__, 'billmateinvoice.tpl');
+			if (version_compare(_PS_VERSION_,'1.6','>='))
+				return $this->display(__FILE__, 'billmateinvoice.tpl');
+			else
+				return $this->display(__FILE__, 'billmateinvoice-legacy.tpl');
         else
             return false;
 

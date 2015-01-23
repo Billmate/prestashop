@@ -508,9 +508,10 @@ class BillmatePartpayment extends PaymentModule
 				'specialActive' => true));
 
 		if( $total > $minVal && $total < $maxVal ){
-            $customer = new Customer(intval($cart->id_customer));
-            $currency = $this->getCurrency(intval($cart->id_currency));
-            return $this->display(__FILE__, 'tpl/payment.tpl');
+            if(version_compare(_PS_VERSION_, '1.6','>='))
+            	return $this->display(__FILE__, 'tpl/payment.tpl');
+			else
+				return $this->display(__FILE__, 'tpl/payment-legacy.tpl');
         }else{
             return false;
         }
@@ -526,7 +527,7 @@ class BillmatePartpayment extends PaymentModule
      */
     public function hookPaymentReturn($params)
     {
-		if(version_compare(_PS_VERSION_,'1.5','<')){
+		if(version_compare(_PS_VERSION_,'1.6','<')){
 			return $this->display(dirname(__FILE__).'/', 'tpl/order-confirmation.tpl');
 		} else {
 			return $this->display(__FILE__,'confirmation.tpl');

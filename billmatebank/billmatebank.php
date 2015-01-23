@@ -446,8 +446,10 @@ class BillmateBank extends PaymentModule
 			if( !in_array($current_currency_code,$this->allowed_currencies))
 				return false;
 
-
-            return $this->display(__FILE__, 'tpl/billmatebank.tpl');
+			if (version_compare(_PS_VERSION_, '1.6', '>='))
+            	return $this->display(__FILE__, 'tpl/billmatebank.tpl');
+			else
+				return $this->display(__FILE__, 'tpl/billmatebank-legacy.tpl');
         }else
             return false;
 

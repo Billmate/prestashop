@@ -24,9 +24,27 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 {if $accountActive && $monthly_amount != 0}
+<style>
+	p.payment_module a.billmatepartpayment {
+		background: url("{$smarty.const._MODULE_DIR_}billmatepartpayment/bm_delbetalning_l.png") 15px 15px no-repeat #fbfbfb;
+		padding-left: 180px;
+	}
+	p.payment_module a.billmatepartpayment:after{
+		display: block;
+		content: "\f054";
+		position: absolute;
+		right: 15px;
+		margin-top: -11px;
+		top: 50%;
+		font-family: "FontAwesome";
+		font-size: 25px;
+		height: 22px;
+		width: 14px;
+		color: #777;
+	}
+</style>
 <p class="payment_module">
-	<a href="{$moduleurl}">
-		<img src="{$smarty.const._MODULE_DIR_}billmatepartpayment/bm_delbetalning_l.png" alt="Billmate"/>
+	<a href="{$moduleurl}" class="billmatepartpayment">
 		{l s='Part pay from ' mod='billmatepartpayment'} {displayPrice price=$monthly_amount} {l s='per month' mod='billmatepartpayment'}.
 	</a>
 </p>
