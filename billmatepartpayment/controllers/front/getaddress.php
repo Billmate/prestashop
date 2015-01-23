@@ -596,23 +596,23 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		$pclass = (int)Tools::getValue('paymentAccount');
 		
 		$transaction = array(
-			"order1"=>(string)$order_id,
+			'order1'=>(string)$order_id,
 			'order2' => '', 
-			"comment"=>'',
-			"flags"=>0,
+			'comment'=>'',
+			'flags'=>0,
 			'gender'=>1,
-			"reference"=>"",
-			"reference_code"=>"",
-			"currency"=>$currency,
-			"country"=>$country,
-			"language"=>$language,
-			"pclass"=>$pclass,
-			"shipInfo"=>array("delay_adjust"=>"1"),
-			"travelInfo"=>array(),
-			"incomeInfo"=>array(),
-			"bankInfo"=>array(),
-			"sid"=>array("time"=>microtime(true)),
-			"extraInfo"=>array(array("cust_no"=>(int)$this->context->cart->id_customer))
+			'reference'=>'',
+			'reference_code'=>'',
+			'currency'=>$currency,
+			'country'=>$country,
+			'language'=>$language,
+			'pclass'=>$pclass,
+			'shipInfo'=>array('delay_adjust'=>'1'),
+			'travelInfo'=>array(),
+			'incomeInfo'=>array(),
+			'bankInfo'=>array(),
+			'sid'=>array('time'=>microtime(true)),
+			'extraInfo'=>array(array('cust_no'=>(int)$this->context->cart->id_customer))
 		);
 		if (empty($personalnumber) || empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
 		$md5 = md5('partpayment_'.$eid.$secret.$personalnumber);
@@ -620,11 +620,8 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		$result1 = $k->AddInvoice($personalnumber,$bill_address,$ship_address,$goods_list,$transaction);  
 
 		if(is_string($result1) || isset($result1['error']) || !is_array($result1))
-		{
-			throw new Exception($result1.$personalnumber);
-		}
-		$_SESSION['billmate'] = array();
-		unset( $_SESSION['billmate'] );
+		    throw new Exception($result1.$personalnumber);
+
 		return $result1[0];
     }
 	public function postProcess()

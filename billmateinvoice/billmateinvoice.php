@@ -134,7 +134,7 @@ class BillmateInvoice extends PaymentModule
 	public function getContent()
 	{
 		$html = '';
-		if (!empty($_POST) && isset($_POST['submitBillmate']))
+		if (!empty($_POST) && Tools::getIsset('submitBillmate'))
 		{
 			$this->_postValidation();
 			if (sizeof($this->_postValidations))
@@ -282,13 +282,13 @@ class BillmateInvoice extends PaymentModule
 
 	private function _postValidation()
 	{
-		if ($_POST['billmate_mod'] == 'live')
+		if (Tools::getValue('billmate_mod') == 'live')
 			Configuration::updateValue('BILLMATEINV_MOD', 0);
 		else
 			Configuration::updateValue('BILLMATEINV_MOD', 1);
 
 
-		if (isset($_POST['billmate_active_invoice']) && $_POST['billmate_active_invoice'])
+		if (Tools::getIsset('billmate_active_invoice') && Tools::getValue('billmate_active_invoice'))
 			Configuration::updateValue('BILLMATEINV_ACTIVE_INVOICE', true);
 		else
 			billmate_deleteConfig('BILLMATEINV_ACTIVE_INVOICE');
@@ -302,14 +302,16 @@ class BillmateInvoice extends PaymentModule
 
 		$category_id = Configuration::get('BM_INV_CATEID');
 
-		if(!empty($category_id)){
+		if (!empty($category_id))
+		{
 			$sql = 'SELECT COUNT(*) FROM '._DB_PREFIX_.'category where id_category="'.$category_id.'"';
 			if( Db::getInstance()->getValue($sql) <= 0){
 				$category_id = '';
 			}
 		}
 
-		if(empty($category_id)){
+		if (empty($category_id))
+		{
 			$category = new Category();
 			$top_category = Category::getRootCategory();
 			$category->id_parent = $top_category->id;
@@ -324,7 +326,8 @@ class BillmateInvoice extends PaymentModule
 				$category->name[$language['id_lang']] = 'Category '.$this->getFeeLabel('');
 				$category->link_rewrite[$language['id_lang']] = 'billmate_invoice_fee';
 			}
-			if( $category->add() ){
+			if ($category->add())
+			{
 				Configuration::updateValue('BM_INV_CATEID', $category->id);
 				$category_id = $category->id;
 			}
@@ -332,7 +335,7 @@ class BillmateInvoice extends PaymentModule
 		
 		foreach ($this->countries as $key => $country)
 		{
-			if (isset($_POST['activate'.$country['name']]))
+			if (Tools::getIsset('activate'.$country['name']))
 			{
 				$storeId = (int)Tools::getValue('billmateStoreId'.$country['name']);
 				$secret = pSQL(Tools::getValue('billmateSecret'.$country['name']));
@@ -395,14 +398,15 @@ class BillmateInvoice extends PaymentModule
 					'id_product' => (int)$productInvoicefee->id,
 					'position' => (int)1,
 				);
-				if(version_compare(_PS_VERSION_,'1.5','>')){
+				if (version_compare(_PS_VERSION_,'1.5','>'))
 					StockAvailable::setQuantity(Tools::getValue((int)$productInvoicefee->id), '', 10000, (int)Configuration::get('PS_SHOP_DEFAULT'));
-				}
+
 
 				$db = Db::getInstance();
-				if((version_compare(_PS_VERSION_,'1.5','>'))){
+				if ((version_compare(_PS_VERSION_,'1.5','>')))
 					Db::getInstance()->insert('category_product', $product_cats,false,true,Db::INSERT_IGNORE);
-				} else {
+				else
+				{
 					$row = $db->getRow('select id_category from `'._DB_PREFIX_.'category_product` where id_product="'.$productInvoicefee->id.'"');
 					if(!is_array( $row ) || !isset($row['id_category'])){
 						$result =& $db->Execute('insert into `'._DB_PREFIX_.'category_product` SET id_category="'.$category_id.'", id_product="'.$productInvoicefee->id.'",position="1"');
@@ -416,7 +420,8 @@ class BillmateInvoice extends PaymentModule
 			}
 		} 
 	}
-	function getFeeLabel($country){
+	public function getFeeLabel($country)
+	{
 	    $countrie = array('SWEDEN' => 'Billmate fakturaavgift');
 	    if( empty($countrie[$country])){
 	        return $this->l('Billmate Invoice Fee - '.$country);
@@ -511,7 +516,7 @@ class BillmateInvoice extends PaymentModule
 		Currency::refreshCurrencies();
 		
 		$version = str_replace('.', '', _PS_VERSION_);
-		$version = substr($version, 0, 2);
+		$version = Tools::substr($version, 0, 2);
 		
 		foreach ($this->countries as $key => $val)
 		{
@@ -521,9 +526,6 @@ class BillmateInvoice extends PaymentModule
 		}
 		/* The hook "displayMobileHeader" has been introduced in v1.5.x - Called separately to fail silently if the hook does not exist */
 
-      if ($ret) {
-            return false;
-        }
         return true;
     }
     
@@ -564,27 +566,32 @@ class BillmateInvoice extends PaymentModule
         $maxVal = Configuration::get('BM_INV_MAX_VALUE_'.$countryname);
         
 
-		if( version_compare(_PS_VERSION_, '1.5', '>=') ){
+		if (version_compare(_PS_VERSION_, '1.5', '>='))
 			$moduleurl = $link->getModuleLink('billmateinvoice', 'validation', array(), true);
-		}else{
+		else
 			$moduleurl = __PS_BASE_URI__.'modules/billmateinvoice/validation.php?type=invoice';
-		}
-		$id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
-		$adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
-		$product = new Product($id_product);
-		$price   = $product->price;
-		$price_wt = $price * (1 + (($product->getTaxesRate($adrsDelivery)) * 0.01));
-        $this->context->smarty->assign('moduleurl', $moduleurl);
-		$this->context->smarty->assign('invoiceFee',$price_wt);
 
-        if( $total > $minVal && $total < $maxVal ){
+		if (version_compare(_PS_VERSION_, '1.5', '>='))
+		{
+			$id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
+			$adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
+			$product = new Product($id_product);
+			$price   = $product->price;
+			$price_wt = $price * (1 + (($product->getTaxesRate($adrsDelivery)) * 0.01));
+
+			$this->context->smarty->assign('invoiceFee',$price_wt);
+		}
+		$this->context->smarty->assign('moduleurl', $moduleurl);
+
+        if ($total > $minVal && $total < $maxVal)
+		{
             $customer = new Customer(intval($cart->id_customer));
             $currency = $this->getCurrency(intval($cart->id_currency));
 
             return $this->display(__FILE__, 'billmateinvoice.tpl');
-        }else{
+        }else
             return false;
-        }
+
     }
 
     /**
@@ -597,10 +604,10 @@ class BillmateInvoice extends PaymentModule
      */
     public function hookPaymentReturn($params)
     {
-		if(version_compare(_PS_VERSION_,'1.5','<')){
+		if (version_compare(_PS_VERSION_, '1.5', '<'))
 			return $this->display(dirname(__FILE__).'/', 'tpl/order-confirmation.tpl');
-		} else {
+		else
 			return $this->display(__FILE__,'confirmation.tpl');
-		}
+
     }
 }

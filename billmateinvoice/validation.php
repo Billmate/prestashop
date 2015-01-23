@@ -97,9 +97,6 @@ class BillmateInvoiceController extends FrontController
 					'eid'    => Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name']),
 					'opc'=> (bool)Configuration::get('PS_ORDER_PROCESS_TYPE') == 1,
 					'customer_month' => (int)substr($customer->birthday, 5, 2),
-					'years' => $years, 'customer_year' => (int)substr($customer->birthday, 0, 4),
-					'street_number' => $houseInfo[1],
-					'house_ext' => $houseInfo[2],
 					'moduleurl' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/validation.php',
 					'ajaxurl'   => array(
 						'path' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/validation.php', 
@@ -112,15 +109,15 @@ class BillmateInvoiceController extends FrontController
 			self::$smarty->assign(
 				array(
 					'total' => $total,
-					'fee' => ($type == 'invoice' ? (float)Product::getPriceStatic((int)Configuration::get('BILLMATE_INV_FEE_ID_'.$countries[$country->iso_code]['name'])) : 0)
+					'fee' => ($type == 'invoice' ? (float)Product::getPriceStatic((int)Configuration::get('BM_INV_FEE_ID_'.$countries[$country->iso_code]['name'])) : 0)
 				)
 			);
 
 			self::$smarty->assign('linkTermsCond', (
-			$type == 'invoice' ?'https://online.billmate.com/villkor'.($country->iso_code != 'SE' ? '_'.strtolower($country->iso_code) : '').'.yaws?eid='.(int)Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name']).'&charge='.round((float)Product::getPriceStatic((int)Configuration::get('BILLMATE_INV_FEE_ID_'.$countries[$country->iso_code]['name'])), 2) : 'https://online.billmate.com/account_'.strtolower($country->iso_code).'.yaws?eid='.(int)Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name'])));
+			$type == 'invoice' ?'https://online.billmate.com/villkor'.($country->iso_code != 'SE' ? '_'.Tools::strtolower($country->iso_code) : '').'.yaws?eid='.(int)Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name']).'&charge='.round((float)Product::getPriceStatic((int)Configuration::get('BM_INV_FEE_ID_'.$countries[$country->iso_code]['name'])), 2) : 'https://online.billmate.com/account_'.Tools::strtolower($country->iso_code).'.yaws?eid='.(int)Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name'])));
 			self::$smarty->assign('payment_type', Tools::safeOutput($type));
 			//self::$smarty->assign()
-			
+
 			self::$smarty->display(_PS_MODULE_DIR_.'billmateinvoice/tpl/form.tpl');
 //		}
 	}
