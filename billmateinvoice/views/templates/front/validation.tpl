@@ -72,8 +72,8 @@ border-radius: 6px;
 	    <input type="text" value="" id="pno" name="pno" style="border:1px solid #D3D3D3;padding:0.2em;" required  />
 	</p>
 	<p class="bsmall">
-	    <input type="checkbox" checked="checked" value="" id="confirm_my_age" name="confirm_my_age" required style="margin:0px" />
-	    <label for="phone">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmateinvoice'}</label>
+	    <input type="checkbox" checked="checked" value="" id="confirm_my_age" class="comparator" name="confirm_my_age" required />
+	    <label for="confirm_my_age">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmateinvoice'}</label>
 	</p>
 	<p>
 		<input type="button" name="submit" value="{l s='I confirm my order' mod='billmateinvoice'}" class="exclusive_large blarge" id="billmate_submit"/>

@@ -119,8 +119,8 @@ padding-top: 13px!important;
       <br /><br/>
 	</p>
 	<p class="bsmall">
-		<input type="checkbox" checked="checked" value="" id="confirm_my_age" name="confirm_my_age" required />
-		<label for="phone">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmatepartpayment'}</label>
+		<input type="checkbox" checked="checked" value="" id="confirm_my_age" name="confirm_my_age" class="comparator" required />
+		<label for="confirm_my_age">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmatepartpayment'}</label>
 	</p>
 	<input type="button" name="submit" id="billmate_submit" style="width:26em!important" value="{l s='I confirm my order' mod='billmatepartpayment'}" class="exclusive_large blarge" />
     <p class="cart_navigation billfooter">
