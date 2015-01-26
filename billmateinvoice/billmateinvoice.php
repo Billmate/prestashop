@@ -597,7 +597,10 @@ class BillmateInvoice extends PaymentModule
 
         if ($total > $minVal && $total < $maxVal)
 			if (version_compare(_PS_VERSION_,'1.6','>='))
-				return $this->display(__FILE__, 'billmateinvoice.tpl');
+            {
+                $this->context->smarty->assign('invoicefeestring', $this->l(' invoice fee is added to your order'));
+                return $this->display(__FILE__, '/views/templates/front/billmateinvoice.tpl');
+            }
 			else
 				return $this->display(__FILE__, 'billmateinvoice-legacy.tpl');
         else
