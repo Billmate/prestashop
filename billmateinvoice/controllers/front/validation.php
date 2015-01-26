@@ -34,16 +34,16 @@ class BillmateInvoiceValidationModuleFrontController extends ModuleFrontControll
 	 */
 	public function initContent()
 	{
-	    global $link;
+		global $link;
 		$this->display_column_left = false;
 		parent::initContent();
-        $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
+		$adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
 
-        $country = new Country((int)$adrsDelivery->id_country);
-        
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
-        
+		$country = new Country((int)$adrsDelivery->id_country);
+
+		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = Tools::strtoupper($countryname);
+
 		$id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
 		$product = new Product($id_product);
 		$price   = $product->price;
@@ -66,7 +66,7 @@ class BillmateInvoiceValidationModuleFrontController extends ModuleFrontControll
 			'this_path' => $this->module->getPathUri(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		));
-        
+
 		$extra = '.tpl';
 		if( $this->context->getMobileDevice() ) $extra = '-mobile.tpl';
 

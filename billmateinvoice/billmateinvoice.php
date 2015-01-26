@@ -34,18 +34,18 @@ include_once(BILLMATE_BASE . '/commonfunctions.php');
 
 class BillmateInvoice extends PaymentModule
 {
-    private $_html = '';
+	private $_html = '';
 
-    private $_postErrors = array();
-    public $billmate;
-    public $kitt;
-    public $core;
-    public $settings;
-    public $billmate_merchant_id;
-    public $billmate_secret;
-    public $billmate_pending_status;
-    public $billmate_accepted_status;
-    public $billmate_countries;
+	private $_postErrors = array();
+	public $billmate;
+	public $kitt;
+	public $core;
+	public $settings;
+	public $billmate_merchant_id;
+	public $billmate_secret;
+	public $billmate_pending_status;
+	public $billmate_accepted_status;
+	public $billmate_countries;
 	private $_postValidations = array();
 	private $countries = array(
 		'SE' => array('name' =>'SWEDEN', 'code' => 'SE', 'langue' => 'SV', 'currency' => 'SEK'),
@@ -59,10 +59,10 @@ class BillmateInvoice extends PaymentModule
 	const RESERVED = 1;
 	const SHIPPED = 2;
 	const CANCEL = 3;
-    	
-    /**
-     * Constructor for BillmateInvoice
-     */
+
+	/**
+	 * Constructor for BillmateInvoice
+	 */
 	public function getCountries()
 	{
 		return $this->countries;
@@ -84,50 +84,50 @@ class BillmateInvoice extends PaymentModule
 			return true;
 		return false;
 	}
-    public function __construct()
-    {
-        $this->name = 'billmateinvoice';
-        $this->moduleName='billmateinvoice';
-        $this->tab = 'payments_gateways';
-        $this->version = '1.35';
-        $this->author  = 'Billmate AB';
+	public function __construct()
+	{
+		$this->name = 'billmateinvoice';
+		$this->moduleName='billmateinvoice';
+		$this->tab = 'payments_gateways';
+		$this->version = '1.35';
+		$this->author  = 'Billmate AB';
 
-        $this->currencies = true;
-        $this->currencies_mode = 'radio';
+		$this->currencies = true;
+		$this->currencies_mode = 'radio';
 
-        parent::__construct();
-        $this->core = null;
-        $this->billmate = null;
-        $this->country = null;
+		parent::__construct();
+		$this->core = null;
+		$this->billmate = null;
+		$this->country = null;
 		$this->limited_countries = array('se', 'onl', 'dk', 'no', 'fi','gb','us'); //, 'no', 'fi', 'dk', 'de', 'nl'
 
-        /* The parent construct is required for translations */
-        $this->page = basename(__FILE__, '.php');
-        $this->displayName = $this->l('Billmate Invoice');
-        $this->description = $this->l('Accepts invoice payments by Billmate');
-        $this->confirmUninstall = $this->l(
-            'Are you sure you want to delete your settings?'
-        );
-        $this->billmate_merchant_id = Configuration::get('BILLMATE_MERCHANT_ID');
-        $this->billmate_secret = Configuration::get('BILLMATE_SECRET');
-        $this->billmate_countries = unserialize( Configuration::get('BILLMATE_ENABLED_COUNTRIES_LIST'));
-        $this->billmate_fee = Configuration::get('BILLMATE_FEE');
+		/* The parent construct is required for translations */
+		$this->page = basename(__FILE__, '.php');
+		$this->displayName = $this->l('Billmate Invoice');
+		$this->description = $this->l('Accepts invoice payments by Billmate');
+		$this->confirmUninstall = $this->l(
+			'Are you sure you want to delete your settings?'
+		);
+		$this->billmate_merchant_id = Configuration::get('BILLMATE_MERCHANT_ID');
+		$this->billmate_secret = Configuration::get('BILLMATE_SECRET');
+		$this->billmate_countries = unserialize( Configuration::get('BILLMATE_ENABLED_COUNTRIES_LIST'));
+		$this->billmate_fee = Configuration::get('BILLMATE_FEE');
 		require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
 		$this->context->smarty->assign('base_dir', __PS_BASE_URI__);
-      }
-    
+	  }
 
 
-    /**
-     * Get the content to display on the backend page.
-     *
-     * @return string
-     */
-    public function enable($forceAll = false){
+
+	/**
+	 * Get the content to display on the backend page.
+	 *
+	 * @return string
+	 */
+	public function enable($forceAll = false){
 		parent::enable($forceAll);
 		Configuration::updateValue('BILLMATEINV_ACTIVE_INVOICE', true );
 	}	
-    public function disable($forceAll = false){
+	public function disable($forceAll = false){
 		parent::disable($forceAll);
 		Configuration::updateValue('BILLMATEINV_ACTIVE_INVOICE', false );
 	}	
@@ -225,7 +225,7 @@ class BillmateInvoice extends PaymentModule
 				'label' => $this->l('Set Order Status'),
 				'desc' => $this->l(''),
 				'value'=> Tools::safeOutput(Configuration::get('BM_INV_ORDER_STATUS_'.$country['name'])),
-			    'options' => $statuses_array
+				'options' => $statuses_array
 			);
 			$input_country[$country['name']]['minimum_value_'.$country['name']] = array(
 				'name' => 'billmateMinimumValue'.$country['name'],
@@ -426,11 +426,11 @@ class BillmateInvoice extends PaymentModule
 	}
 	public function getFeeLabel($country)
 	{
-	    $countrie = array('SWEDEN' => 'Billmate fakturaavgift');
-	    if( empty($countrie[$country])){
-	        return $this->l('Billmate Invoice Fee - '.$country);
-	    }
-	    return $countrie[$country];
+		$countrie = array('SWEDEN' => 'Billmate fakturaavgift');
+		if( empty($countrie[$country])){
+			return $this->l('Billmate Invoice Fee - '.$country);
+		}
+		return $countrie[$country];
 	}
 	/**
 	 * @brief Validation display Method
@@ -461,13 +461,13 @@ class BillmateInvoice extends PaymentModule
 		return $orderState->id;
 	}
 
-    /**
-     * Install the Billmate Invoice module
-     *
-     * @return bool
-     */
-    public function install()
-    {
+	/**
+	 * Install the Billmate Invoice module
+	 *
+	 * @return bool
+	 */
+	public function install()
+	{
 		if (!parent::install() || !$this->registerHook('payment') || !$this->registerHook('adminOrder') || !$this->registerHook('paymentReturn') || !$this->registerHook('orderConfirmation'))
 			return false;
 
@@ -530,45 +530,45 @@ class BillmateInvoice extends PaymentModule
 		}
 		/* The hook "displayMobileHeader" has been introduced in v1.5.x - Called separately to fail silently if the hook does not exist */
 
-        return true;
-    }
-    
-    public function hookOrderConfirmation($params){
-        global $smarty;
-    	
-    }
+		return true;
+	}
 
-    /**
-     * Hook the payment module to be shown in the payment selection page
-     *
-     * @param array $params The Smarty instance params
-     *
-     * @return string
-     */
+	public function hookOrderConfirmation($params){
+		global $smarty;
+
+	}
+
+	/**
+	 * Hook the payment module to be shown in the payment selection page
+	 *
+	 * @param array $params The Smarty instance params
+	 *
+	 * @return string
+	 */
 	public function hookdisplayPayment($params)
 	{
 		return $this->hookPayment($params);
 	}
 
-    public function hookPayment($params)
-    {
-        global $smarty, $link;
+	public function hookPayment($params)
+	{
+		global $smarty, $link;
 		if ( !Configuration::get('BILLMATEINV_ACTIVE_INVOICE'))
 			return false;
 		$_SESSION['billmate'] = array();
-        $total = $this->context->cart->getOrderTotal();
+		$total = $this->context->cart->getOrderTotal();
 
-        $cart = $params['cart'];
-        $address = new Address((int)$cart->id_address_delivery);
-        $country = new Country((int)$address->id_country);
-        
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
-        $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
-       
-        $minVal = Configuration::get('BM_INV_MIN_VALUE_'.$countryname);
-        $maxVal = Configuration::get('BM_INV_MAX_VALUE_'.$countryname);
-        
+		$cart = $params['cart'];
+		$address = new Address((int)$cart->id_address_delivery);
+		$country = new Country((int)$address->id_country);
+
+		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = Tools::strtoupper($countryname);
+		$this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
+
+		$minVal = Configuration::get('BM_INV_MIN_VALUE_'.$countryname);
+		$maxVal = Configuration::get('BM_INV_MAX_VALUE_'.$countryname);
+
 
 		if (version_compare(_PS_VERSION_, '1.5', '>='))
 			$moduleurl = $link->getModuleLink('billmateinvoice', 'validation', array(), true);
@@ -585,43 +585,43 @@ class BillmateInvoice extends PaymentModule
 
 
 		}
-        else
-        {
-            $id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
-            $product = new Product($id_product);
-            $price   = $product->price;
-            $price_wt = $price * (1 + ((Tax::getProductTaxRate($product->id, $cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')})) * 0.01));
-        }
+		else
+		{
+			$id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
+			$product = new Product($id_product);
+			$price   = $product->price;
+			$price_wt = $price * (1 + ((Tax::getProductTaxRate($product->id, $cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')})) * 0.01));
+		}
 		$this->context->smarty->assign('invoiceFee',$price_wt);
 		$this->context->smarty->assign('moduleurl', $moduleurl);
 
-        if ($total > $minVal && $total < $maxVal)
+		if ($total > $minVal && $total < $maxVal)
 			if (version_compare(_PS_VERSION_,'1.6','>='))
-            {
-                $this->context->smarty->assign('invoicefeestring', $this->l(' invoice fee is added to your order'));
-                return $this->display(__FILE__, '/views/templates/front/billmateinvoice.tpl');
-            }
+			{
+				$this->context->smarty->assign('invoicefeestring', $this->l(' invoice fee is added to your order'));
+				return $this->display(__FILE__, '/views/templates/front/billmateinvoice.tpl');
+			}
 			else
 				return $this->display(__FILE__, 'billmateinvoice-legacy.tpl');
-        else
-            return false;
+		else
+			return false;
 
-    }
+	}
 
-    /**
-     * Hook the payment module to display its confirmation template upon
-     * a successful purchase
-     *
-     * @param array $params The Smarty instance params
-     *
-     * @return string
-     */
-    public function hookPaymentReturn($params)
-    {
+	/**
+	 * Hook the payment module to display its confirmation template upon
+	 * a successful purchase
+	 *
+	 * @param array $params The Smarty instance params
+	 *
+	 * @return string
+	 */
+	public function hookPaymentReturn($params)
+	{
 		if (version_compare(_PS_VERSION_, '1.5', '<'))
 			return $this->display(dirname(__FILE__).'/', 'tpl/order-confirmation.tpl');
 		else
 			return $this->display(__FILE__,'confirmation.tpl');
 
-    }
+	}
 }

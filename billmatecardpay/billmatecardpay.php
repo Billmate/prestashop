@@ -29,19 +29,19 @@ define('CARDPAY_LIVEURL', 'https://cardpay.billmate.se/pay');
 
 class BillmateCardpay extends PaymentModule
 {
-    private $_html = '';
+	private $_html = '';
 
-    private $_postErrors = array();
-    public $billmate;
-    public $kitt;
-    public $core;
-    public $settings;
-    public $billmate_merchant_id;
-    public $billmate_secret;
-    public $billmate_pending_status;
-    public $billmate_accepted_status;
-    public $billmate_countries;
-    
+	private $_postErrors = array();
+	public $billmate;
+	public $kitt;
+	public $core;
+	public $settings;
+	public $billmate_merchant_id;
+	public $billmate_secret;
+	public $billmate_pending_status;
+	public $billmate_accepted_status;
+	public $billmate_countries;
+
 	private $_postValidations = array();
 	private $countries = array(
 		'SE' => array('name' =>'SETTINGS', 'code' => BillmateCountry::SE, 'langue' => BillmateLanguage::SV, 'currency' => BillmateCurrency::SEK)
@@ -50,44 +50,44 @@ class BillmateCardpay extends PaymentModule
 	const RESERVED = 1;
 	const SHIPPED = 2;
 	const CANCEL = 3;
-    
-    /**
-     * Constructor for BillmateCardpay
-     */
-    public function __construct()
-    {
-        $this->name = 'billmatecardpay';
-        $this->moduleName='billmatecardpay';
-        $this->tab = 'payments_gateways';
-        $this->version = '1.35';
-        $this->author  = 'Billmate AB';
 
-        $this->currencies = true;
-        $this->currencies_mode = 'radio';
+	/**
+	 * Constructor for BillmateCardpay
+	 */
+	public function __construct()
+	{
+		$this->name = 'billmatecardpay';
+		$this->moduleName='billmatecardpay';
+		$this->tab = 'payments_gateways';
+		$this->version = '1.35';
+		$this->author  = 'Billmate AB';
 
-        parent::__construct();
-        $this->core = null;
-        $this->billmate = null;
-        $this->country = null;
+		$this->currencies = true;
+		$this->currencies_mode = 'radio';
+
+		parent::__construct();
+		$this->core = null;
+		$this->billmate = null;
+		$this->country = null;
 		//$this->limited_countries = array('se'); //, 'no', 'fi', 'dk', 'de', 'nl'
 
-        /* The parent construct is required for translations */
-        $this->page = basename(__FILE__, '.php');
-        $this->displayName = $this->l('Billmate Cardpay');
-        $this->description = $this->l('Accepts cardpay payments by Billmate');
-        $this->confirmUninstall = $this->l(
-            'Are you sure you want to delete your settings?'
-        );
-        $this->billmate_merchant_id = Configuration::get('BCARDPAY_MERCHANT_ID');
-        $this->billmate_secret = Configuration::get('BCARDPAY_SECRET');
-        $this->billmate_countries = unserialize( Configuration::get('BILLMATE_ENABLED_COUNTRIES_LIST'));
+		/* The parent construct is required for translations */
+		$this->page = basename(__FILE__, '.php');
+		$this->displayName = $this->l('Billmate Cardpay');
+		$this->description = $this->l('Accepts cardpay payments by Billmate');
+		$this->confirmUninstall = $this->l(
+			'Are you sure you want to delete your settings?'
+		);
+		$this->billmate_merchant_id = Configuration::get('BCARDPAY_MERCHANT_ID');
+		$this->billmate_secret = Configuration::get('BCARDPAY_SECRET');
+		$this->billmate_countries = unserialize( Configuration::get('BILLMATE_ENABLED_COUNTRIES_LIST'));
 		require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
-    }
+	}
 
 	private function _displayForm()
 	{
 
-        
+
 		$this->_html .=
 		'<form action="'.Tools::htmlentitiesUTF8($_SERVER['REQUEST_URI']).'" method="post">
 			<fieldset>
@@ -102,11 +102,11 @@ class BillmateCardpay extends PaymentModule
 		</form>';
 	}
 
-    /**
-     * Get the content to display on the backend page.
-     *
-     * @return string
-     */
+	/**
+	 * Get the content to display on the backend page.
+	 *
+	 * @return string
+	 */
 	public function getContent()
 	{
 		$html = '';
@@ -212,7 +212,7 @@ class BillmateCardpay extends PaymentModule
 				'label' => $this->l('Set Order Status'),
 				'desc' => $this->l(''),
 				'value'=> Tools::safeOutput(Configuration::get('BCARDPAY_ORDER_STATUS_'.$country['name'])),
-			    'options' => $statuses_array
+				'options' => $statuses_array
 			);			
 			$input_country[$country['name']]['minimum_value_'.$country['name']] = array(
 				'name' => 'billmateMinimumValue'.$country['name'],
@@ -283,15 +283,15 @@ class BillmateCardpay extends PaymentModule
 		else
 			Configuration::updateValue('BCARDPAY_MOD', 1);
 
-        Configuration::updateValue('BCARDPAY_AUTHMOD', Tools::getValue('billmate_authmod'));
+		Configuration::updateValue('BCARDPAY_AUTHMOD', Tools::getValue('billmate_authmod'));
 
 		//$prompt = !empty($_POST['billmate_prompt_name']) ? $_POST['billmate_prompt_name'] : 'NO';
 		//$p3dsecure = !empty($_POST['billmate_3dsecure']) ? $_POST['billmate_3dsecure'] : 'NO';
 		$prompt = Tools::getValue('billmate_prompt_name','NO');
 		$p3dsecure = Tools::getValue('billmate_3dsecure');
 		
-        Configuration::updateValue('BILL_PRNAME', $prompt);
-        Configuration::updateValue('BILL_3DSECURE', $p3dsecure );
+		Configuration::updateValue('BILL_PRNAME', $prompt);
+		Configuration::updateValue('BILL_3DSECURE', $p3dsecure );
 		
 		if (Tools::getIsset('billmate_active_cardpay') && Tools::getValue('billmate_active_cardpay'))
 			Configuration::updateValue('BCARDPAY_ACTIVE_CARDPAY', true);
@@ -365,13 +365,13 @@ class BillmateCardpay extends PaymentModule
 			copy(dirname(__FILE__).'/logo.gif', dirname(__FILE__).'/../../img/os/'.(int)$orderState->id.'.gif');
 		return $orderState->id;
 	}
-    /**
-     * Install the Billmate Cardpay module
-     *
-     * @return bool
-     */
-    public function install()
-    {
+	/**
+	 * Install the Billmate Cardpay module
+	 *
+	 * @return bool
+	 */
+	public function install()
+	{
 		if (!parent::install() || !$this->registerHook('payment') || !$this->registerHook('adminOrder') || !$this->registerHook('paymentReturn') || !$this->registerHook('orderConfirmation'))
 			return false;
 
@@ -422,85 +422,85 @@ class BillmateCardpay extends PaymentModule
 		/* The hook "displayMobileHeader" has been introduced in v1.5.x - Called separately to fail silently if the hook does not exist */
 
 
-        return true;
-    }
-    
-    public function hookOrderConfirmation($params){
-        global $smarty;
-    	
-    }
+		return true;
+	}
 
-    /**
-     * Hook the payment module to be shown in the payment selection page
-     *
-     * @param array $params The Smarty instance params
-     *
-     * @return string
-     */
+	public function hookOrderConfirmation($params){
+		global $smarty;
+
+	}
+
+	/**
+	 * Hook the payment module to be shown in the payment selection page
+	 *
+	 * @param array $params The Smarty instance params
+	 *
+	 * @return string
+	 */
 	public function hookdisplayPayment($params)
 	{
 	
 		return $this->hookPayment($params);
 	}
 	
-    public function hookPayment($params)
-    {
-        global $smarty, $link;
+	public function hookPayment($params)
+	{
+		global $smarty, $link;
 
 		if ( !Configuration::get('BCARDPAY_ACTIVE_CARDPAY') || !Configuration::get('PS_SHOP_COUNTRY'))
 			return false;
 		//Rabatt($this->context->language);
 		//die;
 		
-        $total = $this->context->cart->getOrderTotal();
+		$total = $this->context->cart->getOrderTotal();
 
-        $cart = $params['cart'];
-        $address = new Address((int)$cart->id_address_delivery);
-        $country = new Country((int)$address->id_country);
+		$cart = $params['cart'];
+		$address = new Address((int)$cart->id_address_delivery);
+		$country = new Country((int)$address->id_country);
 
-        $countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
-        $countryname = Tools::strtoupper($countryname);
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
+		$countryname = Tools::strtoupper($countryname);
 
-        $minVal = Configuration::get('BCARDPAY_MIN_VALUE_SETTINGS');
-        $maxVal = Configuration::get('BCARDPAY_MAX_VALUE_SETTINGS');
+		$minVal = Configuration::get('BCARDPAY_MIN_VALUE_SETTINGS');
+		$maxVal = Configuration::get('BCARDPAY_MAX_VALUE_SETTINGS');
 
 		if (version_compare(_PS_VERSION_, '1.5', '>='))
 			$moduleurl = $link->getModuleLink('billmatecardpay', 'validation', array(), true);
 		else
 			$moduleurl = __PS_BASE_URI__.'modules/billmatecardpay/validation.php';
 
-        $smarty->assign('moduleurl', $moduleurl);
+		$smarty->assign('moduleurl', $moduleurl);
 		
-        if ($total > $minVal && $total < $maxVal)
+		if ($total > $minVal && $total < $maxVal)
 		{
 			if(version_compare(_PS_VERSION_, '1.6','>='))
-            	return $this->display(__FILE__, 'billmatecardpay.tpl');
+				return $this->display(__FILE__, 'billmatecardpay.tpl');
 			else
 				return $this->display(__FILE__, 'billmatecardpay-legacy.tpl');
-        }else
-            return false;
+		}else
+			return false;
 
-    }
+	}
 
-    /**
-     * Hook the payment module to display its confirmation template upon
-     * a successful purchase
-     *
-     * @param array $params The Smarty instance params
-     *
-     * @return string
-     */
-    public function hookPaymentReturn($params)
-    {
-        global $cart;
+	/**
+	 * Hook the payment module to display its confirmation template upon
+	 * a successful purchase
+	 *
+	 * @param array $params The Smarty instance params
+	 *
+	 * @return string
+	 */
+	public function hookPaymentReturn($params)
+	{
+		global $cart;
 
-        //customers were to reorder an order done with billmate cardpay.
-        $cart->save();
-        if (!$this->active)
-            return;
+		//customers were to reorder an order done with billmate cardpay.
+		$cart->save();
+		if (!$this->active)
+			return;
 
 
-         return $this->display(dirname(__FILE__), 'confirmation.tpl');
-    }
+		 return $this->display(dirname(__FILE__), 'confirmation.tpl');
+	}
 
 }

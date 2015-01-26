@@ -53,16 +53,16 @@ class BillmateBankController extends FrontController
 		self::$smarty->assign('path', __PS_BASE_URI__.'modules/billmatepartpayment');
 	}
 
-    private function checkOrder($cartId)
-    {
-        $order = Order::getOrderByCartId($cartId);
-        if(!$order){
-            sleep(1);
-            $this->checkOrder($cartId);
-        } else {
-            return $order;
-        }
-    }
+	private function checkOrder($cartId)
+	{
+		$order = Order::getOrderByCartId($cartId);
+		if(!$order){
+			sleep(1);
+			$this->checkOrder($cartId);
+		} else {
+			return $order;
+		}
+	}
 
 	public function process()
 	{
@@ -72,25 +72,25 @@ class BillmateBankController extends FrontController
 		parent::process();
 
 		$post = $_REQUEST;
-	    if (Tools::getIsset('status') && !empty($post['trans_id']) && !empty($post['error_message']))
+		if (Tools::getIsset('status') && !empty($post['trans_id']) && !empty($post['error_message']))
 		{
-		    if ($post['status'] == 0)
+			if ($post['status'] == 0)
 			{
-		        try{
-                    $lockfile = _PS_CACHE_DIR_.$post['order_id'];
-                    $processing = file_exists($lockfile);
-                    $customer = new Customer((int)$cookie->id_customer);
-                    $billmatebank = new BillmateBank();
-                    if($processing || self::$cart->orderExists())
-                    {
-                        if($processing)
-                            $orderId = $this->checkOrder(self::$cart->id);
-                        else
-                            $orderId = Order::getOrderByCartId(self::$cart->id);
+				try{
+					$lockfile = _PS_CACHE_DIR_.$post['order_id'];
+					$processing = file_exists($lockfile);
+					$customer = new Customer((int)$cookie->id_customer);
+					$billmatebank = new BillmateBank();
+					if($processing || self::$cart->orderExists())
+					{
+						if($processing)
+							$orderId = $this->checkOrder(self::$cart->id);
+						else
+							$orderId = Order::getOrderByCartId(self::$cart->id);
 
-                        Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatebank->id.'&id_order='.(int)$orderId);
-                        die;
-                    }
+						Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatebank->id.'&id_order='.(int)$orderId);
+						die;
+					}
 
 					file_put_contents($lockfile,'1');
 					$address_invoice = new Address((int)self::$cart->id_address_invoice);
@@ -98,23 +98,23 @@ class BillmateBankController extends FrontController
 
 					$data = $this->processReserveInvoice(Tools::strtoupper($country->iso_code),Tools::getValue('order_id'));
 
-                    $extra = array('transaction_id' => $data['invoiceid']);
+					$extra = array('transaction_id' => $data['invoiceid']);
 
-			        $total = self::$cart->getOrderTotal();
-			        $billmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $billmatebank->displayName, null, $extra, null, false, $customer->secure_key);
+					$total = self::$cart->getOrderTotal();
+					$billmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $billmatebank->displayName, null, $extra, null, false, $customer->secure_key);
 
 					$data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatebank->currentOrder);
-                    unlink($lockfile);
+					unlink($lockfile);
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatebank->id.'&id_order='.(int)$billmatebank->currentOrder);
 
 
 
 				}catch(Exception $ex){
-    		       $this->context->smarty->assign('error_message', utf8_encode($ex->getMessage()));
-		        }
-		    } else {
-		       $this->context->smarty->assign('error_message', $post['error_message']);
-		    }
+				   $this->context->smarty->assign('error_message', utf8_encode($ex->getMessage()));
+				}
+			} else {
+			   $this->context->smarty->assign('error_message', $post['error_message']);
+			}
 		}
 	}
 
@@ -149,19 +149,19 @@ class BillmateBankController extends FrontController
 		$sendtohtml = self::$cart->id.'-'.time();
 		$order_id = Tools::substr($sendtohtml, 0, 10);
 		
-        $data = array(
-		    'gatewayurl' => Configuration::get('BBANK_MOD') == 0 ? BANKPAY_LIVEURL : BANKPAY_TESTURL,
-		    'order_id'   => $order_id,
-		    'amount'     => $amount,
-		    'merchant_id'=> $merchant_id,
-		    'currency'   => $currency,
+		$data = array(
+			'gatewayurl' => Configuration::get('BBANK_MOD') == 0 ? BANKPAY_LIVEURL : BANKPAY_TESTURL,
+			'order_id'   => $order_id,
+			'amount'     => $amount,
+			'merchant_id'=> $merchant_id,
+			'currency'   => $currency,
 			'language'	 => $languageCode,
 			'pay_method' => 'BANK',
-		    'accept_url' => $accept_url,
+			'accept_url' => $accept_url,
 			'callback_url'=> $callback_url,
 			'return_method'=> $return_method,
 			'capture_now' => 'YES',
-		    'cancel_url' => $cancel_url,
+			'cancel_url' => $cancel_url,
 			'total'      => self::$cart->getOrderTotal(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/billmatebank/'
 		);
@@ -174,104 +174,104 @@ class BillmateBankController extends FrontController
 		self::$smarty->display(_PS_MODULE_DIR_.'billmatebank/tpl/form.tpl');
 		
 	}
-    public function processReserveInvoice($isocode, $order_id = '',$method = 'invoice')
+	public function processReserveInvoice($isocode, $order_id = '',$method = 'invoice')
 	{
 		if (version_compare(_PS_VERSION_, '1.5', '<'))
 			$this->context->controller->module = new BillmateBank();
 		global $cookie;
-       	$order_id = $order_id == '' ? time(): $order_id;
+		$order_id = $order_id == '' ? time(): $order_id;
 
-        $address_delivery = new Address((int)self::$cart->id_address_delivery);
-        $address_billing = new Address((int)self::$cart->id_address_invoice);
-        $country = Tools::strtoupper($address_delivery->country);
-        $country = new Country((int)$address_delivery->id_country);
-        
-        $countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
-        $countryname = Tools::strtoupper($countryname);
-        
-        $eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-        $secret = (float)Configuration::get('BBANK_SECRET_SWEDEN');
+		$address_delivery = new Address((int)self::$cart->id_address_delivery);
+		$address_billing = new Address((int)self::$cart->id_address_invoice);
+		$country = Tools::strtoupper($address_delivery->country);
+		$country = new Country((int)$address_delivery->id_country);
+
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
+		$countryname = Tools::strtoupper($countryname);
+
+		$eid = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
+		$secret = (float)Configuration::get('BBANK_SECRET_SWEDEN');
 
 		$ssl = true;
 		$debug = false;
-        
-        $k = new BillMate($eid, $secret, $ssl, $debug, Configuration::get('BBANK_MOD'));
 
-        $personalnumber = '';
-        $country_to_currency = array(
-            'NOR' => 'NOK',
-            'SWE' => 'SEK',
-            'FIN' => 'EUR',
-            'DNK' => 'DKK',
-            'DEU' => 'EUR',
-            'NLD' => 'EUR',
-        );
+		$k = new BillMate($eid, $secret, $ssl, $debug, Configuration::get('BBANK_MOD'));
+
+		$personalnumber = '';
+		$country_to_currency = array(
+			'NOR' => 'NOK',
+			'SWE' => 'SEK',
+			'FIN' => 'EUR',
+			'DNK' => 'DKK',
+			'DEU' => 'EUR',
+			'NLD' => 'EUR',
+		);
 		$country = 209;
 		$language = 138;
 		$encoding = 2;
 		$currency = 0;
 		
-        $country = new Country((int)$address_delivery->id_country);
-        
-        $countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
-        $countryname = Tools::strtoupper($countryname);
+		$country = new Country((int)$address_delivery->id_country);
+
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
+		$countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
 		
-        $ship_address = array(
-            'email'           => $cookie->email,
-            'telno'           => '',
-            'cellno'          => '',
-            'fname'           => $address_delivery->firstname,
-            'lname'           => $address_delivery->lastname,
-            'company'         => $address_delivery->company,
-            'careof'          => '',
-            'street'          => $address_delivery->address1,
-            'zip'             => $address_delivery->postcode,
-            'city'            => $address_delivery->city,
-            'country'         => (string)$countryname,
-        );
+		$ship_address = array(
+			'email'           => $cookie->email,
+			'telno'           => '',
+			'cellno'          => '',
+			'fname'           => $address_delivery->firstname,
+			'lname'           => $address_delivery->lastname,
+			'company'         => $address_delivery->company,
+			'careof'          => '',
+			'street'          => $address_delivery->address1,
+			'zip'             => $address_delivery->postcode,
+			'city'            => $address_delivery->city,
+			'country'         => (string)$countryname,
+		);
 
-        $country = new Country((int)$address_billing->id_country);
-        
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
+		$country = new Country((int)$address_billing->id_country);
+
+		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
-        
-        $bill_address = array(
-            'email'           => $cookie->email,
-            'telno'           => '',
-            'cellno'          => '',
-            'fname'           => $address_billing->firstname,
-            'lname'           => $address_billing->lastname,
-            'company'         => $address_billing->company,
-            'careof'          => '',
-            'street'          => $address_billing->address1,
-            'house_number'    => '',
-            'house_extension' => '',
-            'zip'             => $address_billing->postcode,
-            'city'            => $address_billing->city,
-            'country'         => (string)$countryname,
-        );
-        
-        foreach ($ship_address as $key => $col){
-            if (!is_array($col))
+
+		$bill_address = array(
+			'email'           => $cookie->email,
+			'telno'           => '',
+			'cellno'          => '',
+			'fname'           => $address_billing->firstname,
+			'lname'           => $address_billing->lastname,
+			'company'         => $address_billing->company,
+			'careof'          => '',
+			'street'          => $address_billing->address1,
+			'house_number'    => '',
+			'house_extension' => '',
+			'zip'             => $address_billing->postcode,
+			'city'            => $address_billing->city,
+			'country'         => (string)$countryname,
+		);
+
+		foreach ($ship_address as $key => $col){
+			if (!is_array($col))
 				$ship_address[$key] = utf8_decode( Encoding::fixUTF8($col));
-        }
+		}
 
-        foreach ($bill_address as $key => $col)
+		foreach ($bill_address as $key => $col)
 		{
-            if (!is_array($col))
-                $bill_address[$key] = utf8_decode( Encoding::fixUTF8($col));
-        }
+			if (!is_array($col))
+				$bill_address[$key] = utf8_decode( Encoding::fixUTF8($col));
+		}
 
-        $products = self::$cart->getProducts();
-    	$cart_details = self::$cart->getSummaryDetails(null, true);
-    	
-        $vatrate = 0;
+		$products = self::$cart->getProducts();
+		$cart_details = self::$cart->getSummaryDetails(null, true);
+
+		$vatrate = 0;
 		$goods_list = array();
 		foreach ($products as $product)
 		{
-            $taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
+			$taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
 			$goods_list[] = array(
 				'qty'   => (int)$product['cart_quantity'],
 				'goods' => array(
@@ -283,7 +283,7 @@ class BillmateBankController extends FrontController
 					'flags'    => 0,
 				)
 			);
-                $vatrate = $taxrate;
+				$vatrate = $taxrate;
 		}
 		$carrier = $cart_details['carrier'];
 		if (!empty($cart_details['total_discounts']))
@@ -308,9 +308,9 @@ class BillmateBankController extends FrontController
 		//array('total_tax' => 'Tax :'. $cart_details['products'][0]['tax_name']);
 		foreach ($totals as $total)
 		{
-		    $flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
-		    if (empty($cart_details[$total]) || $cart_details[$total] <= 0) continue;
-            $flags = ($vatrate > 0) ? $flag | 32 : $flag;
+			$flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
+			if (empty($cart_details[$total]) || $cart_details[$total] <= 0) continue;
+			$flags = ($vatrate > 0) ? $flag | 32 : $flag;
 			$goods_list[] = array(
 				'qty'   => 1,
 				'goods' => array(
@@ -357,7 +357,7 @@ class BillmateBankController extends FrontController
 
 		return array('invoiceid' => $result1[0], 'api' => $k );
 
-    }
+	}
 
 }
 

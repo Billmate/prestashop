@@ -222,10 +222,7 @@ versionCompare = function(left, right) {
         });
     }
     jQuery(document).ready(function(){
-		setTimeout(function(){
-			if(typeof $.uniform == 'object')	$.uniform.restore();
-		},5000);
-		
+
         jQuery('#billmate_submit').click(function(){
             if( $.trim( $('#billmate_pno').val()) == '' ){
                 alert(emptypersonerror);

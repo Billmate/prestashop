@@ -31,49 +31,7 @@
 /*#right_column{
 	display:none
 }*/
-.billmate *{
-color: #7a7a7a!important;
-}
-.billmate p{ padding-bottom:10px; }
-#billmate_submit {
-	text-align: center;
-}
 
-.blarge{
-font-size:1.5em;
-}
-.bsmall{
-	font-size:1.1em;
-}
-.billmate{
-text-align:center;
-line-height:1.5em;
-border-top:1px solid grey;
-}
-.bnormal{
-font-size:1.3em;
-}
-.billbutton{
-	font-weight:bold;
-	color:#56AADB!important;
-
-}
-.billfooter {
-display: block!important;
-border-top: 1px solid grey!important;
-padding-top: 13px!important;
-}
-.billdropdown{
-	max-width: 100%;
-	padding: 0.3em;
-	width: 34em;
-	font-size: 1.2em;
-}
-#billmate_pno{ margin:auto!important;display:block!important;text-align:center!important;	 }
-
-@media only screen and (min-width: 500px){
-	#billmate_pno{ width:330px!important; }
-}
 </style>
 {assign var='current_step' value='payment'}
 {include file="$tpl_dir./order-steps.tpl"}
@@ -112,7 +70,7 @@ padding-top: 13px!important;
     <p class="blarge">
 
       <label>{l s='Personal Number:' mod='billmatepartpayment'}</label>
-      <input type="text" name="billmate_pno" id="billmate_pno" value="" style="border:1px solid #D3D3D3;padding:0.2em;" required />
+      <input type="text" name="billmate_pno" id="billmate_pno" value="" required />
       <br /><br/>
 	</p>
 	<p class="bsmall">

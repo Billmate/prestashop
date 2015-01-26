@@ -169,9 +169,7 @@ $('#right_column').remove();
 			
     }
     jQuery(document).ready(function(){
-		setTimeout(function(){
-			if(typeof $.uniform == 'object')	$.uniform.restore();
-		},5000);
+
         jQuery('#billmate_submit').click(function(){
             if($.trim( $('#pno').val()) == '' ){
                 alert(emptypersonerror);

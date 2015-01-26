@@ -10,10 +10,12 @@
 
 <form action="{$moduleurl}" method="post" class="billmate">
 	<input type="hidden" name="confirm" value="1" />
-	<p>
-		<img src="{$smarty.const._MODULE_DIR_}billmateinvoice/bm_faktura_l.png" alt="{l s='Billmate Invoice Payment' mod='billmateinvoice'}" style="float:left; margin: 0px 10px 5px 0px;" />
-		{l s='You have chosen the Billmate Invoice method.' mod='billmateinvoice'}
-		<br/><br /><br/>
+	<p class="blarge">
+		<img src="{$smarty.const._MODULE_DIR_}billmateinvoice/bm_faktura_m.png" alt="{l s='Billmate Invoice Payment' mod='billmateinvoice'}" style="margin: 0px 10px 5px 0px;" />
+        <br/>
+    </p>
+    <p class="blarge">
+
 		{l s='The total amount of your order is' mod='billmateinvoice'}
 		<span id="amount_{$currencies.0.id_currency}">{convertPrice price=$total}.</span>{if $fee != 0}<br/><span id="amount">{l s=' This includes the invoice cost' mod='billmateinvoice'} {displayPrice price=$fee}</span>{/if}
 		{if $use_taxes == 1}
@@ -25,15 +27,15 @@
 	    <b>{l s='Please fill following fields for complete order' mod='billmateinvoice'}</b>
     </p>
     <br/>	
-	<p class="">
-	    <label for="pno">{l s='Personal Number' mod='billmateinvoice'}</label>
-	    <input type="text" value="" id="pno" name="pno" style="border:1px solid #D3D3D3" required  />
+	<p class="blarge">
+	    <label for="pno">{l s='Personal Number' mod='billmateinvoice'}:</label>
+	    <input type="text" value="" id="billmate_pno" name="pno" required  />
 	</p>
-	<p style="padding-top:14px">
+	<p class="bsmall">
 	    <input type="checkbox" value="" checked="checked" id="confirm_my_age" name="confirm_my_age" required style="margin:0px" />
 	    <label for="phone">{$customer_email}</label>
 	</p>
-	<p><br/>
+	<p>
 		<b>{l s='Please confirm your order by clicking \'I confirm my order\'' mod='billmateinvoice'}.</b> <a id="terms" style="cursor:pointer!important">{l s='Terms of invoice' mod='billmateinvoice'}</a><script type="text/javascript">$.getScript("https://billmate.se/billmate/base.js", function(){ldelim}
 		$("#terms").Terms("villkor",{ldelim}invoicefee: {$fee}{rdelim});
 {rdelim});</script>

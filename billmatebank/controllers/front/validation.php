@@ -507,7 +507,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 						'flags'    => 0,
 					)
 				);
-            }
+			}
 		}
 
 		$totals = array('total_shipping','total_handling');

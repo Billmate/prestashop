@@ -53,7 +53,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			$post=$_POST;
 		}
 		$post = $_REQUEST;
-	    if (isset($post['status']) && !empty($post['trans_id']) && !empty($post['error_message']))
+		if (isset($post['status']) && !empty($post['trans_id']) && !empty($post['error_message']))
 		{
 	
 
@@ -65,8 +65,8 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			$eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
 			$lockfile = _PS_CACHE_DIR_.$_REQUEST['order_id'];
 			$processing = file_exists($lockfile);
-		    if( $post['status'] == 0 ){
-		        try{
+			if( $post['status'] == 0 ){
+				try{
 					
 					$data = $measurements = array();
 					
@@ -109,7 +109,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 						$timestart = microtime(true);
 						$extra = array('transaction_id'=>$invoiceid);
 						//$t->id = $_REQUEST['order_id'];
-					    $this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+						$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 						if( !empty($extra)){
 							Db::getInstance()->update('order_payment',$extra,'order_reference="'.$this->module->currentOrderReference.'"');
 						}
@@ -132,12 +132,12 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 					unlink($lockfile);
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);
 					die;
-		        }catch(Exception $ex){
-    		       $this->context->smarty->assign('error_message', utf8_encode($ex->getMessage())) ;
-		        }
-		    } else {
-		       $this->context->smarty->assign('error_message', $post['error_message']) ;
-		    }
+				}catch(Exception $ex){
+				   $this->context->smarty->assign('error_message', utf8_encode($ex->getMessage())) ;
+				}
+			} else {
+			   $this->context->smarty->assign('error_message', $post['error_message']) ;
+			}
 		}
 		if(isset($post['error_message'])) {
 			$len = Tools::strlen($post['error_message']) > 0;
@@ -187,21 +187,21 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		$orderId = Tools::substr($sendtohtml, 0, 10);
 		$_REQUEST['order_id'] = $orderId;
 		unset($_SESSION['INVOICE_CREATED_CARD']);
-        $data = array(
-		    'gatewayurl' => Configuration::get('BCARDPAY_MOD') == 0 ? CARDPAY_LIVEURL : CARDPAY_TESTURL,
-		    'order_id'   => $orderId,
-		    'amount'     => $amount,
-		    'merchant_id'=> $merchant_id,
-		    'currency'   => $currency,
+		$data = array(
+			'gatewayurl' => Configuration::get('BCARDPAY_MOD') == 0 ? CARDPAY_LIVEURL : CARDPAY_TESTURL,
+			'order_id'   => $orderId,
+			'amount'     => $amount,
+			'merchant_id'=> $merchant_id,
+			'currency'   => $currency,
 			'language'	 => $languageCode,
 			'pay_method' => 'CARD',
-		    'accept_url' => $accept_url,
+			'accept_url' => $accept_url,
 			'callback_url'=> $callback_url,
 			'return_method'=> $return_method,
 			'capture_now' => Configuration::get('BCARDPAY_AUTHMOD') == 'sale'? 'YES': 'NO',
 			'do_3d_secure' => $do_3d_secure,
 			'prompt_name_entry' => $prompt_name_entry,
-		    'cancel_url' => $cancel_url,
+			'cancel_url' => $cancel_url,
 			'total'      => $total,
 			'this_path'  => $this->module->getPathUri(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
@@ -217,83 +217,83 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
 		//if(isset( $_REQUEST['order_id'])) $order_id = $_REQUEST['order_id'];
 		$timetotalstart = microtime(true);
-        $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
-        $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
+		$adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
+		$adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
 
-        $country_to_currency = array(
-            'NOR' => 'NOK',
-            'SWE' => 'SEK',
-            'FIN' => 'EUR',
-            'DNK' => 'DKK',
-            'DEU' => 'EUR',
-            'NLD' => 'EUR',
-        );
+		$country_to_currency = array(
+			'NOR' => 'NOK',
+			'SWE' => 'SEK',
+			'FIN' => 'EUR',
+			'DNK' => 'DKK',
+			'DEU' => 'EUR',
+			'NLD' => 'EUR',
+		);
 
 		$encoding = 2;
-        $country = new Country((int)$adrsDelivery->id_country);
-        
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
+		$country = new Country((int)$adrsDelivery->id_country);
+
+		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
 		
-        $ship_address = array(
-            'email'           => $this->context->customer->email,
-            'telno'           => $adrsDelivery->phone,
-            'cellno'          => $adrsDelivery->phone_mobile,
-            'fname'           => $adrsDelivery->firstname,
-            'lname'           => $adrsDelivery->lastname,
-            'company'         => ($adrsDelivery->company == 'undefined') ? '' :$adrsDelivery->company ,
-            'careof'          => '',
-            'street'          => $adrsDelivery->address1,
-            'zip'             => $adrsDelivery->postcode,
-            'city'            => $adrsDelivery->city,
-            'country'         => (string)$countryname,
-        );
+		$ship_address = array(
+			'email'           => $this->context->customer->email,
+			'telno'           => $adrsDelivery->phone,
+			'cellno'          => $adrsDelivery->phone_mobile,
+			'fname'           => $adrsDelivery->firstname,
+			'lname'           => $adrsDelivery->lastname,
+			'company'         => ($adrsDelivery->company == 'undefined') ? '' :$adrsDelivery->company ,
+			'careof'          => '',
+			'street'          => $adrsDelivery->address1,
+			'zip'             => $adrsDelivery->postcode,
+			'city'            => $adrsDelivery->city,
+			'country'         => (string)$countryname,
+		);
 
-        $country = new Country((int)$adrsBilling->id_country);
-        
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
+		$country = new Country((int)$adrsBilling->id_country);
+
+		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
-        
-        $bill_address = array(
-            'email'           => $this->context->customer->email,
-            'telno'           => $adrsBilling->phone,
-            'cellno'          => $adrsBilling->phone_mobile,
-            'fname'           => $adrsBilling->firstname,
-            'lname'           => $adrsBilling->lastname,
-            'company'         => ($adrsBilling->company == 'undefined') ? '' : $adrsBilling->company,
-            'careof'          => '',
-            'street'          => $adrsBilling->address1,
-            'house_number'    => '',
-            'house_extension' => '',
-            'zip'             => $adrsBilling->postcode,
-            'city'            => $adrsBilling->city,
-            'country'         => (string)$countryname,
-        );
-        
-        foreach ($ship_address as $key => $col)
-		{
-            if (!is_array($col))
-                $ship_address[$key] = utf8_decode(Encoding::fixUTF8($col));
 
-        }
-        foreach ($bill_address as $key => $col)
-		{
-            if (!is_array($col))
-                $bill_address[$key] = utf8_decode(Encoding::fixUTF8($col));
+		$bill_address = array(
+			'email'           => $this->context->customer->email,
+			'telno'           => $adrsBilling->phone,
+			'cellno'          => $adrsBilling->phone_mobile,
+			'fname'           => $adrsBilling->firstname,
+			'lname'           => $adrsBilling->lastname,
+			'company'         => ($adrsBilling->company == 'undefined') ? '' : $adrsBilling->company,
+			'careof'          => '',
+			'street'          => $adrsBilling->address1,
+			'house_number'    => '',
+			'house_extension' => '',
+			'zip'             => $adrsBilling->postcode,
+			'city'            => $adrsBilling->city,
+			'country'         => (string)$countryname,
+		);
 
-        }
-        $products = $this->context->cart->getProducts();
-    	$cart_details = $this->context->cart->getSummaryDetails(null, true);
-    	
-        $vatrate = 0;
+		foreach ($ship_address as $key => $col)
+		{
+			if (!is_array($col))
+				$ship_address[$key] = utf8_decode(Encoding::fixUTF8($col));
+
+		}
+		foreach ($bill_address as $key => $col)
+		{
+			if (!is_array($col))
+				$bill_address[$key] = utf8_decode(Encoding::fixUTF8($col));
+
+		}
+		$products = $this->context->cart->getProducts();
+		$cart_details = $this->context->cart->getSummaryDetails(null, true);
+
+		$vatrate = 0;
 		$goods_list = array();
 		foreach ($products as $product)
 		{
 			if (!empty($product['price']))
 			{
-                $taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
+				$taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
 				$goods_list[] = array(
 					'qty'   => (int)$product['cart_quantity'],
 					'goods' => array(
@@ -306,7 +306,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 					)
 				);
 			}
-                $vatrate = $taxrate;
+				$vatrate = $taxrate;
 		}
 		$carrier = $cart_details['carrier'];
 		if (!empty($cart_details['total_discounts']))
@@ -334,8 +334,8 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		//array('total_tax' => 'Tax :'. $cart_details['products'][0]['tax_name']);
 		foreach ($totals as $total)
 		{
-		    $flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
-		    if (empty($cart_details[$total]) || $cart_details[$total] <= 0) continue;
+			$flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
+			if (empty($cart_details[$total]) || $cart_details[$total] <= 0) continue;
 			if ($total == 'total_shipping' && $cart_details['free_ship'] == 1) continue;
 			if (empty($cart_details[$total])) continue;
 			
@@ -344,7 +344,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 				$carrier = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
 				$vatrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
 			}
-            $flags = ($vatrate > 0) ? $flag | 32 : $flag;
+			$flags = ($vatrate > 0) ? $flag | 32 : $flag;
 			$goods_list[] = array(
 				'qty'   => 1,
 				'goods' => array(
@@ -396,37 +396,37 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
 	public function getBillmate()
 	{
-        $eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
-        $secret = Configuration::get('BCARDPAY_SECRET_SETTINGS');
+		$eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
+		$secret = Configuration::get('BCARDPAY_SECRET_SETTINGS');
 
 		$ssl = true;
 		$debug = false;
-        
-        return new BillMate($eid, $secret, $ssl, $debug, Configuration::get('BCARDPAY_MOD'));
-	}
-    public function processReserveInvoice( $isocode, $order_id = '')
-	{
-       	$order_id = $order_id == '' ? time(): $order_id;
 
-        $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
-        $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
-        $country = Tools::strtoupper($adrsDelivery->country);
-        $countryObj = new Country((int)$adrsDelivery->id_country);
+		return new BillMate($eid, $secret, $ssl, $debug, Configuration::get('BCARDPAY_MOD'));
+	}
+	public function processReserveInvoice( $isocode, $order_id = '')
+	{
+		$order_id = $order_id == '' ? time(): $order_id;
+
+		$adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
+		$adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
+		$country = Tools::strtoupper($adrsDelivery->country);
+		$countryObj = new Country((int)$adrsDelivery->id_country);
 		
-        $countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($countryObj->iso_code));
-        $countryname = Tools::strtoupper($countryname);
-        
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($countryObj->iso_code));
+		$countryname = Tools::strtoupper($countryname);
+
 		$k = $this->getBillmate();
 	
-        $personalnumber = '';
-        $country_to_currency = array(
-            'NOR' => 'NOK',
-            'SWE' => 'SEK',
-            'FIN' => 'EUR',
-            'DNK' => 'DKK',
-            'DEU' => 'EUR',
-            'NLD' => 'EUR',
-        );
+		$personalnumber = '';
+		$country_to_currency = array(
+			'NOR' => 'NOK',
+			'SWE' => 'SEK',
+			'FIN' => 'EUR',
+			'DNK' => 'DKK',
+			'DEU' => 'EUR',
+			'NLD' => 'EUR',
+		);
 		
 		
 		//$country = 209;
@@ -434,62 +434,62 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		
 		$country = $countryname == 'SWEDEN' ? '209' : $countryname;
 		
-        $ship_address = array(
-            'email'           => $this->context->customer->email,
-            'telno'           => $adrsDelivery->phone,
-            'cellno'          => $adrsDelivery->phone_mobile,
-            'fname'           => $adrsDelivery->firstname,
-            'lname'           => $adrsDelivery->lastname,
-            'company'         => ($adrsDelivery->company == 'undefined') ? '' : $adrsDelivery->company,
-            'careof'          => '',
-            'street'          => $adrsDelivery->address1,
-            'zip'             => $adrsDelivery->postcode,
-            'city'            => $adrsDelivery->city,
-            'country'         => $countryname,
-        );
+		$ship_address = array(
+			'email'           => $this->context->customer->email,
+			'telno'           => $adrsDelivery->phone,
+			'cellno'          => $adrsDelivery->phone_mobile,
+			'fname'           => $adrsDelivery->firstname,
+			'lname'           => $adrsDelivery->lastname,
+			'company'         => ($adrsDelivery->company == 'undefined') ? '' : $adrsDelivery->company,
+			'careof'          => '',
+			'street'          => $adrsDelivery->address1,
+			'zip'             => $adrsDelivery->postcode,
+			'city'            => $adrsDelivery->city,
+			'country'         => $countryname,
+		);
 
-        $country = new Country((int)$adrsBilling->id_country);
-        
-        $countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($countryObj->iso_code));
+		$country = new Country((int)$adrsBilling->id_country);
+
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($countryObj->iso_code));
 		$country = $countryname == 'SWEDEN' ? 209 : Tools::strtoupper($countryname);
-        
-        $bill_address = array(
-            'email'           => $this->context->customer->email,
-            'telno'           => $adrsBilling->phone,
-            'cellno'          => $adrsBilling->phone_mobile,
-            'fname'           => $adrsBilling->firstname,
-            'lname'           => $adrsBilling->lastname,
-            'company'         => ($adrsBilling->company == 'undefined') ? '' : $adrsBilling->company,
-            'careof'          => '',
-            'street'          => $adrsBilling->address1,
-            'house_number'    => '1',
-            'house_extension' => '',
-            'zip'             => $adrsBilling->postcode,
-            'city'            => $adrsBilling->city,
-            'country'         => $countryname,
-        );
-        
-        foreach ($ship_address as $key => $col)
-		{
-            if (!is_array( $col ))
-                $ship_address[$key] = utf8_decode( Encoding::fixUTF8($col));
 
-        }
-        foreach ($bill_address as $key => $col)
-		{
-            if (!is_array( $col ))
-                $bill_address[$key] = utf8_decode( Encoding::fixUTF8($col));
+		$bill_address = array(
+			'email'           => $this->context->customer->email,
+			'telno'           => $adrsBilling->phone,
+			'cellno'          => $adrsBilling->phone_mobile,
+			'fname'           => $adrsBilling->firstname,
+			'lname'           => $adrsBilling->lastname,
+			'company'         => ($adrsBilling->company == 'undefined') ? '' : $adrsBilling->company,
+			'careof'          => '',
+			'street'          => $adrsBilling->address1,
+			'house_number'    => '1',
+			'house_extension' => '',
+			'zip'             => $adrsBilling->postcode,
+			'city'            => $adrsBilling->city,
+			'country'         => $countryname,
+		);
 
-        }
-        $products = $this->context->cart->getProducts();
-    	$cart_details = $this->context->cart->getSummaryDetails(null, true);
-    	
-        $vatrate = 0;
+		foreach ($ship_address as $key => $col)
+		{
+			if (!is_array( $col ))
+				$ship_address[$key] = utf8_decode( Encoding::fixUTF8($col));
+
+		}
+		foreach ($bill_address as $key => $col)
+		{
+			if (!is_array( $col ))
+				$bill_address[$key] = utf8_decode( Encoding::fixUTF8($col));
+
+		}
+		$products = $this->context->cart->getProducts();
+		$cart_details = $this->context->cart->getSummaryDetails(null, true);
+
+		$vatrate = 0;
 		$goods_list = array();
 		foreach ($products as $product) {
 			if (!empty($product['price']))
 			{
-                $taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
+				$taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
 				$goods_list[] = array(
 					'qty'   => (int)$product['cart_quantity'],
 					'goods' => array(
@@ -502,7 +502,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 					)
 				);
 			}
-                $vatrate = $taxrate;
+				$vatrate = $taxrate;
 		}
 		$carrier = $cart_details['carrier'];
 		if (!empty($cart_details['total_discounts']))
@@ -531,8 +531,8 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
 		foreach ($totals as $total)
 		{
-		    $flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
-		    if (empty($cart_details[$total]) || $cart_details[$total] <= 0) continue;
+			$flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
+			if (empty($cart_details[$total]) || $cart_details[$total] <= 0) continue;
 			if ($total == 'total_shipping' && $cart_details['free_ship'] == 1) continue;
 			if (empty($cart_details[$total])) continue;
 
@@ -541,7 +541,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 				$carrier = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
 				$vatrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
 			}
-            $flags = ($vatrate > 0) ? $flag | 32 : $flag;
+			$flags = ($vatrate > 0) ? $flag | 32 : $flag;
 			$goods_list[] = array(
 				'qty'   => 1,
 				'goods' => array(
@@ -593,5 +593,5 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			$_SESSION['INVOICE_CREATED_CARD'] = $result1[0];
 
 		return array('invoiceid' => $result1[0], 'api' => $k );
-    }
+	}
 }

@@ -39,7 +39,7 @@ class BillmatePartpaymentValidationModuleFrontController extends ModuleFrontCont
 		global $link;
 		$this->display_column_left = false;
 		parent::initContent();
-        $address_delivery = new Address((int)$this->context->cart->id_address_delivery);
+		$address_delivery = new Address((int)$this->context->cart->id_address_delivery);
 
 		$country = new Country((int)$address_delivery->id_country);
 
@@ -71,7 +71,7 @@ class BillmatePartpaymentValidationModuleFrontController extends ModuleFrontCont
 			'this_path' => $this->module->getPathUri(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		));
-        
+
 		$extra = '.tpl';
 		if( $this->context->getMobileDevice() ) $extra = '-mobile.tpl';
 
@@ -84,8 +84,8 @@ class BillmatePartpaymentValidationModuleFrontController extends ModuleFrontCont
 		$countryString  = $countries[$country->iso_code]['code'];
 		$language = $countries[$country->iso_code]['langue'];
 		$currency = $countries[$country->iso_code]['currency'];
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
+		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = Tools::strtoupper($countryname);
 
 		$eid    = Configuration::get('BILLMATE_STORE_ID_'.$countryname);
 		$secret = Configuration::get('BILLMATE_SECRET_'.$countryname);

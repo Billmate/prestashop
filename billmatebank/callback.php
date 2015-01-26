@@ -179,7 +179,7 @@ class BillmateCallbackController extends FrontController {
 		$goods_list = array();
 		foreach ($products as $product)
 		{
-            $taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
+			$taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
 			$goods_list[] = array(
 				'qty'   => (int)$product['cart_quantity'],
 				'goods' => array(
@@ -218,7 +218,7 @@ class BillmateCallbackController extends FrontController {
 		{
 			$flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
 			if (empty($cart_details[$total]) || $cart_details[$total] <= 0) continue;
-            $flags = ($vatrate > 0) ? $flag | 32 : $flag;
+			$flags = ($vatrate > 0) ? $flag | 32 : $flag;
 			$goods_list[] = array(
 				'qty'   => 1,
 				'goods' => array(
