@@ -585,6 +585,13 @@ class BillmateInvoice extends PaymentModule
 
 
 		}
+        else
+        {
+            $id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
+            $product = new Product($id_product);
+            $price   = $product->price;
+            $price_wt = $price * (1 + ((Tax::getProductTaxRate($product->id, $cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')})) * 0.01));
+        }
 		$this->context->smarty->assign('invoiceFee',$price_wt);
 		$this->context->smarty->assign('moduleurl', $moduleurl);
 
