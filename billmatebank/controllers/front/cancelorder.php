@@ -1,7 +1,6 @@
 <?php
 
 require_once BBANK_BASE.'/Billmate.php';
-require_once BBANK_BASE.'/lib/billmateCart.php';
 
 class BillmateBankCancelorderModuleFrontController extends ModuleFrontController
 {

@@ -1,7 +1,7 @@
 <?php
 
 require_once BCARDPAY_BASE. '/Billmate.php';
-require_once BCARDPAY_BASE .'/lib/billmateCart.php';
+
 //error_reporting(E_ERROR);
 class BillmateCardpayValidationModuleFrontController extends ModuleFrontController
 {

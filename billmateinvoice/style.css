@@ -88,6 +88,9 @@
 }
 
 #left_column { display: none!important; }
+/*#right_column{
+	display:none
+}*/
 #divFrameParent *{text-align:center;font-size:1em;font-family:tahoma}
 #divFrameParent p{padding-bottom:0px!important}
 

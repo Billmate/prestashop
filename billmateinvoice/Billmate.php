@@ -3,7 +3,7 @@
  * BillMate Class
  *
  * LICENSE: This source file is part of BillMate, that is fully owned by Billmate AB
- * This is not open source. For licensing queries, please contact at info@efinance.se
+ * This is not open source. For licensing queries, please contact at info@billmate.se
  *
  * @category Billmate
  * @package Billmate
@@ -11,7 +11,7 @@
  * @copyright 2013-2014 Billmate AB
  * @license Proprietary and fully owned by Billmate AB
  * @version 0.5.8
- * @link http://www.efinance.se
+ * @link http://www.billmate.se
  *
  * History:
  * 0.0.1 20130318 Yuksel Findik: First Version
