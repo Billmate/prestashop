@@ -7,7 +7,7 @@
  *
  * @category Billmate
  * @package Billmate
- * @author Yuksel Findik <yuksel@efinance.se>
+ * @author Yuksel Findik <yuksel@billmate.se>
  * @copyright 2013-2014 Billmate AB
  * @license Proprietary and fully owned by Billmate AB
  * @version 0.5.8
