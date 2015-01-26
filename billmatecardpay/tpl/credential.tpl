@@ -25,9 +25,9 @@
 		<p><input type="checkbox" id="billmate_active_cardpay" name="billmate_active_cardpay" {if $billmate_active_cardpay == 1}checked='checked'{/if} value="1" /> <label for="billmate_active_cardpay">{l s='Billmate Cardpay' mod='billmatecardpay'}</label><br>
 		<small><img src="{$smarty.const._MODULE_DIR_}billmatecardpay/bm_kort_l.png"/></small></p>
 
-		<h4>{l s='Set the mode authentication' mod='billmatecardpay'}</h4>
-		<input type="radio" id="billmate_authmod-sale" name="billmate_authmod" {if $billmate_authmod == 'sale'}checked='checked'{/if} value="sale" /> <label for="billmate_authmod-sale">{l s='Sale' mod='billmatecardpay'}</label>
-		<input type="radio" id="billmate_authmod-authorization" name="billmate_authmod" {if $billmate_authmod == 'auth'}checked='checked'{/if} value="auth" /> <label for="billmate_authmod-authorization">{l s='Authorization' mod='billmatecardpay'}</label>
+		<h4 style="margin: 1em 0; margin-top: 0;">{l s='Set the mode authentication' mod='billmatecardpay'}</h4>
+		<span style="display:block"><input type="radio" id="billmate_authmod-sale" name="billmate_authmod" {if $billmate_authmod == 'sale'}checked='checked'{/if} value="sale" /> <label for="billmate_authmod-sale">{l s='Sale' mod='billmatecardpay'}</label></span>
+		<span style="display:block"><input type="radio" id="billmate_authmod-authorization" name="billmate_authmod" {if $billmate_authmod == 'auth'}checked='checked'{/if} value="auth" /> <label for="billmate_authmod-authorization">{l s='Authorization' mod='billmatecardpay'}</label></span>
 		</fieldset>
 	<div class="clear"></div>	
 	<fieldset>
