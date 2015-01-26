@@ -369,7 +369,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 
            
         	}catch(Exception $ex ){
-                p($ex);
+
                 $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
         		$return['success'] = false;
         		unset($return['redirect']);

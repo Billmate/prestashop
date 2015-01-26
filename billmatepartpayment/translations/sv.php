@@ -92,7 +92,7 @@ $_MODULE['<{billmatepartpayment}prestashop>validation_1aad76502b13db1736d1641f03
 $_MODULE['<{billmatepartpayment}prestashop>validation_e2867a925cba382f1436d1834bb52a1c'] = 'Det totala beloppet för din beställning är';
 $_MODULE['<{billmatepartpayment}prestashop>validation_1f87346a16cf80c372065de3c54c86d9'] = '(inkl. moms)';
 $_MODULE['<{billmatepartpayment}prestashop>validation_a19913198c22eb3ebaf4e18f1a28835a'] = 'Personnummer/Organisationsnummer';
-$_MODULE['<{billmatepartpayment}prestashop>validation_c3051d2f277689e707b09e1d2ab3c20c'] = 'Min e-postadress %1$s är korrekt och kan användas för fakturering.';
+$_MODULE['<{billmatepartpayment}prestashop>validation_c3051d2f277689e707b09e1d2ab3c20c'] = 'Min e-postadress %1$s är korrekt och får användas för fakturering. Jag godkänner även köpvillkoren';
 $_MODULE['<{billmatepartpayment}prestashop>validation_46b9e3665f187c739c55983f757ccda0'] = 'Bekräfta order';
 $_MODULE['<{billmatepartpayment}prestashop>validation_569fd05bdafa1712c4f6be5b153b8418'] = 'Andra betalningsmetoder';
 $_MODULE['<{billmatepartpayment}prestashop>validation_f1719bbcc79df3e1bb8dcf7752fba399'] = 'Villkor för delbetalning';

@@ -121,7 +121,7 @@ padding-top: 13px!important;
 	</p>
     <p>
         <br/>
-        <b>{l s="Choose I confirm my order to Order"}</b>
+        <b>{l s="Choose I confirm my order to Order" mod="billmatepartpayment"}</b>
         <a id="terms-delbetalning" style="cursor:pointer!important;">{l s='Conditions of payment' mod='billmatepartpayment'}</a>
     </p>
     <p class="cart_navigation billfooter">
