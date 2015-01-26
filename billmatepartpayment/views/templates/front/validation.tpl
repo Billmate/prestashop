@@ -235,7 +235,7 @@ versionCompare = function(left, right) {
 				
 				getData( '' );
 			}else{
-				alert(checkbox_required);
+				alert($('<textarea/>').html(checkbox_required).text());
 			}
         });
     });

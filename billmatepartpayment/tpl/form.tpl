@@ -212,7 +212,7 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
 				
 				getData( '' );
 			}else{
-				alert(checkbox_required);
+				alert($('<textarea/>').html(checkbox_required).text());
 			}
         });
     });

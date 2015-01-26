@@ -96,7 +96,8 @@ var windowtitlebillmate= "{l s='You have entered the wrong address' mod='billmat
 			if(document.getElementById('confirm_my_age').checked ){
 				getData( '' );
 			}else{
-				alert(checkbox_required);
+
+				alert($('<textarea/>').html(checkbox_required).text());
 			}
         });
     });

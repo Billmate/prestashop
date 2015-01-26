@@ -180,7 +180,7 @@ $('#right_column').remove();
 			if($('#confirm_my_age').prop('checked') == true){
 				getData( '' );
 			}else{
-				alert(checkbox_required);
+				alert($('<textarea/>').html(checkbox_required).text());
 			}
         });
     });
