@@ -281,18 +281,19 @@ class BillmateCardpayController extends FrontController
 		$goods_list = array();
 		foreach ($products as $product)
 		{
+            $taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
 			$goods_list[] = array(
 				'qty'   => (int)$product['cart_quantity'],
 				'goods' => array(
 					'artno'    => $product['id_product'],
 					'title'    => $product['name'],
 					'price'    => $product['price'] * 100,
-					'vat'      => (float)$product['rate'],
+					'vat'      => (float)$taxrate,
 					'discount' => 0.0,
 					'flags'    => 0,
 				)
 			);
-                $vatrate = $product['rate'];
+                $vatrate = $taxrate;
 		}
 		$carrier = $cart_details['carrier'];
 		if (!empty($cart_details['total_discounts']))
@@ -319,6 +320,7 @@ class BillmateCardpayController extends FrontController
 		{
 		    $flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
 		    if (empty($cart_details[$total]) || $cart_details[$total] <= 0 ) continue;
+            $flags = ($vatrate > 0) ? $flag | 32 : $flag;
 			$goods_list[] = array(
 				'qty'   => 1,
 				'goods' => array(
@@ -327,7 +329,7 @@ class BillmateCardpayController extends FrontController
 					'price'    => $cart_details[$total] * 100,
 					'vat'      => (float)$vatrate,
 					'discount' => 0.0,
-					'flags'    => $flag | 32,
+					'flags'    => $flags,
 				)
 			);
 		}

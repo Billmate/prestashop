@@ -167,19 +167,20 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 		{
 			if (!empty($product['price']))
 			{
+                $taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
 				$goods_list[] = array(
 					'qty'   => (int)$product['cart_quantity'],
 					'goods' => array(
 						'artno'    => $product['reference'],
 						'title'    => $product['name'],
 						'price'    => $product['price'] * 100,
-						'vat'      => (float)$product['rate'],
+						'vat'      => (float)$taxrate,
 						'discount' => 0.0,
 						'flags'    => 0,
 					)
 				);
 			}
-                $vatrate = $product['rate'];
+                $vatrate = $taxrate;
 		}
 		$carrier = $cart_details['carrier'];
 		if (!empty($cart_details['total_discounts']))
@@ -215,6 +216,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 				$carrier = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
 				$vatrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
 			}
+            $flags = ($vatrate > 0) ? $flag | 32 : $flag;
 			$goods_list[] = array(
 				'qty'   => 1,
 				'goods' => array(
@@ -223,7 +225,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 					'price'    => $cart_details[$total] * 100,
 					'vat'      => (float)$vatrate,
 					'discount' => 0.0,
-					'flags'    => $flag | 32,
+					'flags'    => $flags,
 				)
 			);
 		}

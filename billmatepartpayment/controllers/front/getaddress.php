@@ -519,13 +519,14 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
         {
 			if (!empty($product['price']))
             {
+                $taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
 				$goods_list[] = array(
 					'qty'   => (int)$product['cart_quantity'],
 					'goods' => array(
 						'artno'    => $product['reference'],
 						'title'    => $product['name'],
 						'price'    => $product['price'] * 100,
-						'vat'      => (float)$product['rate'],
+						'vat'      => (float)$taxrate,
 						'discount' => 0.0,
 						'flags'    => 0,
 					)
