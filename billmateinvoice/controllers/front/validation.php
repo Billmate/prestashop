@@ -39,7 +39,7 @@ class BillmateInvoiceValidationModuleFrontController extends ModuleFrontControll
 		parent::initContent();
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
 
-        $country = new Country(intval($adrsDelivery->id_country));
+        $country = new Country((int)$adrsDelivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);

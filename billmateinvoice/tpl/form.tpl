@@ -1,4 +1,4 @@
-{capture name=path}{l s='Shipping' mod='billmateinvoice'}{/capture}
+{capture name=path}{l s='Billmate Invoice' mod='billmateinvoice'}{/capture}
 {include file="$tpl_dir./breadcrumb.tpl"}
 <div id="order_area">
 <h2>{l s='Order summation' mod='billmateinvoice'}</h2>

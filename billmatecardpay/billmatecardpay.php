@@ -25,7 +25,7 @@ include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
  * 
  */
 define('CARDPAY_TESTURL', 'https://cardpay.billmate.se/pay/test');
-define('CARDPAY_LIVEURL', 'https://cardpay.billmate.se/pay');;
+define('CARDPAY_LIVEURL', 'https://cardpay.billmate.se/pay');
 
 class BillmateCardpay extends PaymentModule
 {
@@ -117,25 +117,27 @@ class BillmateCardpay extends PaymentModule
 
 
 
-		if (!empty($_POST) && isset($_POST['submitBillmate']))
+		if (!empty($_POST) && Tools::getIsset('submitBillmate'))
 		{
 			$this->_postValidation();
-			if (sizeof($this->_postValidations))
+			if (count($this->_postValidations))
 				$html .= $this->_displayValidation();
-			if (sizeof($this->_postErrors))
+			if (count($this->_postErrors))
 				$html .= $this->_displayErrors();
 		}
 		$html .= $this->_displayAdminTpl();
 		return $html;
 	}
-    public function enable($forceAll=false){
-		parent::enable($forceAll);
-		Configuration::updateValue('BCARDPAY_ACTIVE_CARDPAY', true );
-	}	
-    public function disable($forceAll=false){
-		parent::disable($forceAll);
-		Configuration::updateValue('BCARDPAY_ACTIVE_CARDPAY', false );
-	}	
+	public function enable($force_all = false)
+	{
+		parent::enable($force_all);
+		Configuration::updateValue('BCARDPAY_ACTIVE_CARDPAY', true);
+	}
+	public function disable($force_all = false)
+	{
+		parent::disable($force_all);
+		Configuration::updateValue('BCARDPAY_ACTIVE_CARDPAY', false);
+	}
 
 	/**
 	 * @brief Method that will displayed all the tabs in the configurations forms
@@ -281,7 +283,7 @@ class BillmateCardpay extends PaymentModule
 		else
 			Configuration::updateValue('BCARDPAY_MOD', 1);
 
-        Configuration::updateValue('BCARDPAY_AUTHMOD', $_POST['billmate_authmod'] );
+        Configuration::updateValue('BCARDPAY_AUTHMOD', Tools::getValue('billmate_authmod'));
 
 		//$prompt = !empty($_POST['billmate_prompt_name']) ? $_POST['billmate_prompt_name'] : 'NO';
 		//$p3dsecure = !empty($_POST['billmate_3dsecure']) ? $_POST['billmate_3dsecure'] : 'NO';
@@ -315,7 +317,7 @@ class BillmateCardpay extends PaymentModule
 				Configuration::updateValue('BCARDPAY_SECRET_'.$country['name'], $secret);
 				Configuration::updateValue('BCARDPAY_ORDER_STATUS_'.$country['name'], (int)(Tools::getValue('billmateOrderStatus'.$country['name'])));
 				Configuration::updateValue('BCARDPAY_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
-				Configuration::updateValue('BCARDPAY_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
+				Configuration::updateValue('BCARDPAY_MAX_VALUE_'.$country['name'], (Tools::getValue('billmateMaximumValue'.$country['name']) != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
 
 				$this->_postValidations[] = $this->l('Your account has been updated to be used in ').$country['name'];
 			}
@@ -414,7 +416,7 @@ class BillmateCardpay extends PaymentModule
 		Currency::refreshCurrencies();
 		
 		$version = str_replace('.', '', _PS_VERSION_);
-		$version = substr($version, 0, 2);
+		$version = Tools::substr($version, 0, 2);
 		
 		
 		/* The hook "displayMobileHeader" has been introduced in v1.5.x - Called separately to fail silently if the hook does not exist */
@@ -501,20 +503,4 @@ class BillmateCardpay extends PaymentModule
          return $this->display(dirname(__FILE__), 'confirmation.tpl');
     }
 
-    /**
-     * Forwards the cart and process the purchase in the Core module
-     *
-     * @param Cart $cart The customers cart
-     *
-     * @return mixed
-     */
-    public function process($cart)
-    {
-        $this->_requireCore();
-        $this->configureKiTT();
-        $this->core->process(
-            new BillmateCardpayOrderHelper(BillmateCore::getCardpayFee(), $this),
-            $cart
-        );
-    }
 }

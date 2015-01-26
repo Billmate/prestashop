@@ -183,6 +183,10 @@ class BillmateInvoice extends PaymentModule
 		$activateCountry = array();
 		$currency = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
 		$statuses = OrderState::getOrderStates((int)$this->context->language->id);
+		$statuses_array = array();
+		$input_country = array();
+		$countryCodes = array();
+		$countryNames = array();
 		foreach ($statuses as $status)
 			$statuses_array[$status['id_order_state']] = $status['name'];
 		foreach ($this->countries as $country)
@@ -345,7 +349,7 @@ class BillmateInvoice extends PaymentModule
 				Configuration::updateValue('BM_INV_FEE_'.$country['name'], (float)Tools::getValue('billmateInvoiceFee'.$country['name']));
 				Configuration::updateValue('BM_INV_ORDER_STATUS_'.$country['name'], (int)(Tools::getValue('billmateOrderStatus'.$country['name'])));
 				Configuration::updateValue('BM_INV_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
-				Configuration::updateValue('BM_INV_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
+				Configuration::updateValue('BM_INV_MAX_VALUE_'.$country['name'], (Tools::getValue('billmateMaximumValue'.$country['name']) != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
 				$id_product = Db::getInstance()->getValue('SELECT `id_product` FROM `'._DB_PREFIX_.'product_lang` WHERE `name` = \''.$this->getFeeLabel($country['name']).'\'');
 
 				$taxeRules = TaxRulesGroup::getAssociatedTaxRatesByIdCountry(Country::getByIso($key));
@@ -555,8 +559,8 @@ class BillmateInvoice extends PaymentModule
         $total = $this->context->cart->getOrderTotal();
 
         $cart = $params['cart'];
-        $address = new Address(intval($cart->id_address_delivery));
-        $country = new Country(intval($address->id_country));
+        $address = new Address((int)$cart->id_address_delivery);
+        $country = new Country((int)$address->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);

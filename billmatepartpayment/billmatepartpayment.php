@@ -177,6 +177,10 @@ class BillmatePartpayment extends PaymentModule
 		$activateCountry = array();
 		$currency = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
 		$statuses = OrderState::getOrderStates((int)$this->context->language->id);
+		$statuses_array = array();
+		$countryCodes = array();
+		$countryNames = array();
+		$input_country = array();
 		foreach ($statuses as $status)
 			$statuses_array[$status['id_order_state']] = $status['name'];
 		foreach ($this->countries as $country)
@@ -324,7 +328,7 @@ class BillmatePartpayment extends PaymentModule
 				Configuration::updateValue('BILLMATE_SECRET_'.$country['name'], $secret);
 				Configuration::updateValue('BILLMATE_ORDER_STATUS_'.$country['name'], (int)(Tools::getValue('billmateOrderStatus'.$country['name'])));				
 				Configuration::updateValue('BILLMATE_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
-				Configuration::updateValue('BILLMATE_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
+				Configuration::updateValue('BILLMATE_MAX_VALUE_'.$country['name'], (Tools::getValue('billmateMaximumValue'.$country['name']) != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
 			}
 		} 
 	}
@@ -421,7 +425,7 @@ class BillmatePartpayment extends PaymentModule
 		Currency::refreshCurrencies();
 		
 		$version = str_replace('.', '', _PS_VERSION_);
-		$version = substr($version, 0, 2);
+		$version = Tools::substr($version, 0, 2);
 		
 		foreach ($this->countries as $key => $val)
 		{
@@ -459,8 +463,8 @@ class BillmatePartpayment extends PaymentModule
         $total = $this->context->cart->getOrderTotal();
 		$_SESSION['billmate'] = array();
         $cart = $params['cart'];
-        $address = new Address(intval($cart->id_address_delivery));
-        $country = new Country(intval($address->id_country));
+        $address = new Address((int)$cart->id_address_delivery);
+        $country = new Country((int)$address->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -494,14 +498,14 @@ class BillmatePartpayment extends PaymentModule
 		if( version_compare(_PS_VERSION_, '1.5', '>=') ){
 			$moduleurl = $link->getModuleLink('billmatepartpayment', 'validation', array(), true);
 		}else{
-			$moduleurl = __PS_BASE_URI__.'modules/billmatepartpayment/payment.php?type=account';
+			$moduleurl = __PS_BASE_URI__.'modules/billmatepartpayment/validation.php?type=partpayment';
 		}
 		
         $smarty->assign('moduleurl', $moduleurl);
 		
   		$smarty->assign(array(
 				'var' => array('path' => $this->_path, 'this_path_ssl' => (_PS_VERSION_ >= 1.4 ? Tools::getShopDomainSsl(true, true) : '' ).__PS_BASE_URI__.'modules/'.$this->moduleName.'/'),
-				'iso_code' => strtolower($country->iso_code),
+				'iso_code' => Tools::strtolower($country->iso_code),
 				'monthly_amount' => (float)$value,
 				'invoiceActive' => Configuration::get('BILLMATE_ACTIVE_INVOICE'),
 				'accountActive' => Configuration::get('BILLMATE_ACTIVE_PARTPAYMENT'),

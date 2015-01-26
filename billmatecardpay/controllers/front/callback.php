@@ -13,7 +13,7 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
 		$this->context = Context::getContext();
 
 		$input = Tools::file_get_contents('php://input');
-		$_POST = $_GET = $_REQUEST = (array)json_decode($input);
+		$_POST = $_GET = $_REQUEST = (array)Tools::jsonDecode($input);
 		$ids = explode('-', $_POST['order_id']);
 		if (count($ids) < 2) return false;
 		//$_POST['order_id'] = $ids[0];
@@ -101,7 +101,7 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
 		$encoding = 2;
 		$currency = 0;
 		
-        $country = new Country(intval($address_delivery->id_country));
+        $country = new Country((int)$address_delivery->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -121,7 +121,7 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
             'country'         => (string)$countryname,
         );
 
-        $country = new Country(intval($address_billing->id_country));
+        $country = new Country((int)$address_billing->id_country);
         
         $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
         $countryname = Tools::strtoupper($countryname);
@@ -158,6 +158,7 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
     	$cart_details = $this->context->cart->getSummaryDetails(null, true);
     	
         $vatrate =  0;
+		$goods_list = array();
 		foreach ($products as $product)
 		{
 			if (!empty($product['price']))

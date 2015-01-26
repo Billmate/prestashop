@@ -90,7 +90,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 						}
 						file_put_contents($lockfile, '1');
 						$timestart = $timetotalstart = microtime(true);
-						$data_return = $this->processReserveInvoice( strtoupper($this->context->country->iso_code),$_REQUEST['order_id']);
+						$data_return = $this->processReserveInvoice(Tools::strtoupper($this->context->country->iso_code),$_REQUEST['order_id']);
 						$measurements['after_add_invoice'] =  microtime(true) - $timestart;
 						extract($data_return);
 
@@ -140,7 +140,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		    }
 		}
 		if(isset($post['error_message'])) {
-			$len = strlen($post['error_message']) > 0;
+			$len = Tools::strlen($post['error_message']) > 0;
 		} else {
 			$len = false;
 		}
@@ -393,8 +393,8 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		//$k->stat("client_card_add_order_measurements",json_encode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
 	}
 
-	function getBillmate(){
-
+	public function getBillmate()
+	{
         $eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
         $secret = Configuration::get('BCARDPAY_SECRET_SETTINGS');
 
@@ -409,7 +409,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
         $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
         $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
-        $country = strtoupper($adrsDelivery->country);
+        $country = Tools::strtoupper($adrsDelivery->country);
         $countryObj = new Country((int)$adrsDelivery->id_country);
 		
         $countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($countryObj->iso_code));

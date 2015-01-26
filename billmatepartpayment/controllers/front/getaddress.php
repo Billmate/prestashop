@@ -78,11 +78,11 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
         }
 
 		
-        $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
+        $address_delivery = new Address((int)$this->context->cart->id_address_delivery);
         $adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
 	    $customer = new Customer((int)$this->context->cart->id_customer);
         
-        $country = Tools::strtoupper($adrsDelivery->country);
+        $country = Tools::strtoupper($address_delivery->country);
 		$country = new Country((int)$adrsBilling->id_country);
         $countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
         $countryname = Tools::strtoupper($countryname);
@@ -121,7 +121,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				$addr[0][$key] = utf8_encode($adr);
 			}
         }catch(Exception $ex ){
-            $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));        
+            $this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
         	$return = array('success' => false, 'content' =>utf8_encode( $ex->getMessage() ));
 			
 			$message = '{success:false, content: "'.utf8_encode($ex->getMessage()).'"}';
@@ -131,23 +131,21 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
         }
 		
        // echo BillmateCountry::getContryByNumber($addr[0][5]);
-        $fullname = $adrsDelivery->firstname.' '.$adrsDelivery->lastname.' '.$adrsDelivery->company;
+        $fullname = $address_delivery->firstname.' '.$address_delivery->lastname.' '.$address_delivery->company;
 
 		$_SESSION['billmate'][$md5] = $person;
 		$_SESSION['billmate']['partpayment_person_nummber_data'] = $cache_addr;
 
-        if(Tools::strlen($addr[0][0]) <= 0 ){
-            $apiName = $adrsDelivery->firstname.' '.$adrsDelivery->lastname.' '.$adrsDelivery->company;
-        } else {
-            $apiName  = $addr[0][0].' '.$addr[0][1];
-        }
+        if (Tools::strlen($addr[0][0]) <= 0 )
+            $api_name = $address_delivery->firstname.' '.$address_delivery->lastname.' '.$address_delivery->company;
+        else
+            $api_name  = $addr[0][0].' '.$addr[0][1];
 
-        
-        $usership = $adrsDelivery->firstname.' '.$adrsDelivery->lastname;
+        $usership = $address_delivery->firstname.' '.$address_delivery->lastname;
         $userbill = $adrsBilling->firstname.' '.$adrsBilling->lastname;
 
-        $firstArr = explode(' ', $adrsDelivery->firstname);
-        $lastArr  = explode(' ', $adrsDelivery->lastname);
+        $firstArr = explode(' ', $address_delivery->firstname);
+        $lastArr  = explode(' ', $address_delivery->lastname);
         
         if (empty($addr[0][0]))
         {
@@ -164,17 +162,17 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
         $apiMatchedName   = !empty($matchedFirst) && !empty($matchedLast);
 
         $address_same = matchstr($usership, $userbill) &&
-            matchstr($adrsBilling->city, $adrsDelivery->city) &&
-            matchstr($adrsBilling->postcode, $adrsDelivery->postcode) &&
-            matchstr($adrsBilling->address1, $adrsDelivery->address1);
+            matchstr($adrsBilling->city, $address_delivery->city) &&
+            matchstr($adrsBilling->postcode, $address_delivery->postcode) &&
+            matchstr($adrsBilling->address1, $address_delivery->address1);
 
 
         if (
             !(
                $apiMatchedName  
-               && matchstr($adrsDelivery->address1, $addr[0][2])
-               && matchstr($adrsDelivery->postcode , $addr[0][3])
-               && matchstr($adrsDelivery->city ,$addr[0][4])
+               && matchstr($address_delivery->address1, $addr[0][2])
+               && matchstr($address_delivery->postcode , $addr[0][3])
+               && matchstr($address_delivery->city ,$addr[0][4])
                && matchstr(BillmateCountry::getContryByNumber($addr[0][5]), $countryname)
 			   && $address_same
            )  )
@@ -195,8 +193,8 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 
 				if (empty($addr[0][0]))
                 {
-					$addressnew->firstname = $adrsDelivery->firstname;
-					$addressnew->lastname = $adrsDelivery->lastname;
+					$addressnew->firstname = $address_delivery->firstname;
+					$addressnew->lastname = $address_delivery->lastname;
 					$addressnew->company = $addr[0][1];
 				}
                 else
@@ -516,6 +514,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		
         $products = $this->context->cart->getProducts();
 		$taxrate = 0;
+        $goods_list = array();
 		foreach ($products as $product)
         {
 			if (!empty($product['price']))

@@ -83,7 +83,7 @@ class BillmateInvoiceController extends FrontController
 			$pno = array('SE' => 'yymmdd-nnnn', 'FI' => 'ddmmyy-nnnn', 'DK' => 'ddmmyynnnn', 'NO' => 'ddmmyynnnn', 'DE' => 'ddmmyy', 'NE' => 'ddmmyynnnn');
 			self::$smarty->assign('country', $country);
 			self::$smarty->assign('pnoValue', $pno[$country->iso_code]);
-			self::$smarty->assign('iso_code', strtolower($country->iso_code));
+			self::$smarty->assign('iso_code', Tools::strtolower($country->iso_code));
 
 			if (version_compare(_PS_VERSION_, '1.5', '<'))
 				$this->_path = __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/';

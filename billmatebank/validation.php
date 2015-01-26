@@ -53,6 +53,17 @@ class BillmateBankController extends FrontController
 		self::$smarty->assign('path', __PS_BASE_URI__.'modules/billmatepartpayment');
 	}
 
+    private function checkOrder($cartId)
+    {
+        $order = Order::getOrderByCartId($cartId);
+        if(!$order){
+            sleep(1);
+            $this->checkOrder($cartId);
+        } else {
+            return $order;
+        }
+    }
+
 	public function process()
 	{
 		global $country,$cookie;
@@ -66,19 +77,34 @@ class BillmateBankController extends FrontController
 		    if ($post['status'] == 0)
 			{
 		        try{
-					
+                    $lockfile = _PS_CACHE_DIR_.$post['order_id'];
+                    $processing = file_exists($lockfile);
+                    $customer = new Customer((int)$cookie->id_customer);
+                    $billmatebank = new BillmateBank();
+                    if($processing || self::$cart->orderExists())
+                    {
+                        if($processing)
+                            $orderId = $this->checkOrder(self::$cart->id);
+                        else
+                            $orderId = Order::getOrderByCartId(self::$cart->id);
+
+                        Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatebank->id.'&id_order='.(int)$orderId);
+                        die;
+                    }
+
+					file_put_contents($lockfile,'1');
 					$address_invoice = new Address((int)self::$cart->id_address_invoice);
 					$country = new Country((int)$address_invoice->id_country);
 
 					$data = $this->processReserveInvoice(Tools::strtoupper($country->iso_code),Tools::getValue('order_id'));
-					$billmatebank = new BillmateBank();
 
-			        $customer = new Customer((int)$cookie->id_customer);
+                    $extra = array('transaction_id' => $data['invoiceid']);
+
 			        $total = self::$cart->getOrderTotal();
-			        $billmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $billmatebank->displayName, null, array(), null, false, $customer->secure_key);
+			        $billmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $billmatebank->displayName, null, $extra, null, false, $customer->secure_key);
 
 					$data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatebank->currentOrder);
-
+                    unlink($lockfile);
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatebank->id.'&id_order='.(int)$billmatebank->currentOrder);
 
 
@@ -117,7 +143,7 @@ class BillmateBankController extends FrontController
 		
 		$merchant_id = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
 		$secret = Tools::substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
-		$callback_url = 'http://api.billmate.se/callback.php';
+		$callback_url = _PS_BASE_URL_.__PS_BASE_URI__.'modules/billmatebank/callback.php';
 		$return_method = 'GET';
 
 		$sendtohtml = self::$cart->id.'-'.time();
@@ -242,6 +268,7 @@ class BillmateBankController extends FrontController
     	$cart_details = self::$cart->getSummaryDetails(null, true);
     	
         $vatrate = 0;
+		$goods_list = array();
 		foreach ($products as $product)
 		{
 			$goods_list[] = array(
