@@ -626,7 +626,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		$result1 = $k->AddInvoice($personalnumber, $bill_address, $ship_address, $goods_list, $transaction);
 
 		if(is_string($result1) || isset($result1['error']) || !is_array($result1))
-			throw new Exception($result1.$personalnumber);
+			throw new Exception($result1.' '.$personalnumber);
 
 		return $result1[0];
 	}
