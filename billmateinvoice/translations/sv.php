@@ -92,7 +92,7 @@ $_MODULE['<{billmateinvoice}prestashop>validation_e2867a925cba382f1436d1834bb52a
 $_MODULE['<{billmateinvoice}prestashop>validation_2fd82751bde655a78a9f066d3ac2b86e'] = ' Detta inkluderar fakturaavgiften på';
 $_MODULE['<{billmateinvoice}prestashop>validation_06565e5611f23fdf8cc43e5077b92b54'] = 'inkl.';
 $_MODULE['<{billmateinvoice}prestashop>validation_0e5c759bb4b58bc494d7c58f3e453397'] = 'moms';
-$_MODULE['<{billmateinvoice}prestashop>validation_1b3ff35077584650230f6aa2c39e86f8'] = ' Vänligen fyll följande fält för fullständig ordning';
+$_MODULE['<{billmateinvoice}prestashop>validation_1b3ff35077584650230f6aa2c39e86f8'] = 'Vänligen fyll i nedanstående fält för att slutföra er order.';
 $_MODULE['<{billmateinvoice}prestashop>validation_df95769429421c386d13219f0266a194'] = 'Personnummer/Organisationsnummer:';
 $_MODULE['<{billmateinvoice}prestashop>validation_c3051d2f277689e707b09e1d2ab3c20c'] = 'Min e-postadress %1$s är korrekt och kan användas för fakturering. ';
 $_MODULE['<{billmateinvoice}prestashop>validation_12ec406d37a4fec3d685f8964b3c4f63'] = 'Jag godkänner även köpvillkor för fakturabetalning.';
