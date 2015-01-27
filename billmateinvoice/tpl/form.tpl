@@ -91,7 +91,7 @@ var windowtitlebillmate= "{l s='You have entered the wrong address' mod='billmat
     }
     jQuery(document).ready(function(){
         jQuery('#billmate_submit').click(function(){
-            if( $.trim( $('#pno').val()) == '' ){
+            if( $.trim( $('#billmate_pno').val()) == '' ){
                 alert(emptypersonerror);
                 return;
             }
