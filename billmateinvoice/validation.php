@@ -59,7 +59,7 @@ class BillmateInvoiceController extends FrontController
 			$controller->context = new stdClass;
 			$controller->context->controller = new stdClass;
 			$controller->context->controller->module = $this->billmate;
-			$controller->context->cart 	 = self::$cart;
+			$controller->context->cart = self::$cart;
 			$controller->context->smarty = self::$smarty;
 			$controller->context->customer = $cookie->id_customer;
 			$controller->module = $this->billmate;
@@ -98,7 +98,7 @@ class BillmateInvoiceController extends FrontController
 					'moduleurl' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/validation.php',
 					'ajaxurl'   => array(
 						'path' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/validation.php',
-						'this_path_ssl' =>  $this->_path
+						'this_path_ssl' => $this->_path
 					)));
 			$total = self::$cart->getOrderTotal() + (float)Product::getPriceStatic((int)Configuration::get('BM_INV_FEE_ID_'.$countries[$country->iso_code]['name']));
 

@@ -191,7 +191,7 @@ class BillmateInvoice extends PaymentModule
 			$statuses_array[$status['id_order_state']] = $status['name'];
 		foreach ($this->countries as $country)
 		{
-			$countryNames[$country['name']] = array('flag' => '../modules/'.$this->moduleName.'/img/flag_'.$country['name'].'.png',	'country_name' => $country['name']);
+			$countryNames[$country['name']] = array('flag' => '../modules/'.$this->moduleName.'/img/flag_'.$country['name'].'.png', 'country_name' => $country['name']);
 			$countryCodes[$country['code']] = $country['name'];
 
 			$input_country[$country['name']]['eid_'.$country['name']] = array(
@@ -248,7 +248,7 @@ class BillmateInvoice extends PaymentModule
 				$activateCountry[] = $country['name'];
 		}
 
-		$smarty->assign($this->moduleName.'FormCredential',	'./index.php?tab=AdminModules&configure='.$this->name.'&token='.Tools::getAdminTokenLite('AdminModules').'&tab_module='.$this->tab.'&module_name='.$this->name);
+		$smarty->assign($this->moduleName.'FormCredential', './index.php?tab=AdminModules&configure='.$this->name.'&token='.Tools::getAdminTokenLite('AdminModules').'&tab_module='.$this->tab.'&module_name='.$this->name);
 		$smarty->assign($this->moduleName.'CredentialTitle', $this->l('Location'));
 		$smarty->assign($this->moduleName.'CredentialText', $this->l('In order to use the Billmate module, please select your host country and supply the appropriate credentials.'));
 		$smarty->assign($this->moduleName.'CredentialFootText', $this->l('Please note: The selected currency and country must match the customers\' registration').'<br/>'.
@@ -405,7 +405,6 @@ class BillmateInvoice extends PaymentModule
 				if (version_compare(_PS_VERSION_,'1.5','>'))
 					StockAvailable::setQuantity(Tools::getValue((int)$productInvoicefee->id), '', 10000, (int)Configuration::get('PS_SHOP_DEFAULT'));
 
-
 				$db = Db::getInstance();
 				if ((version_compare(_PS_VERSION_,'1.5','>')))
 					Db::getInstance()->insert('category_product', $product_cats,false,true,Db::INSERT_IGNORE);
@@ -516,7 +515,7 @@ class BillmateInvoice extends PaymentModule
 				$currency->add();
 			}
 		}
-		
+
 		Currency::refreshCurrencies();
 		
 		$version = str_replace('.', '', _PS_VERSION_);
@@ -562,7 +561,7 @@ class BillmateInvoice extends PaymentModule
 		$address = new Address((int)$cart->id_address_delivery);
 		$country = new Country((int)$address->id_country);
 
-		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
 		$countryname = Tools::strtoupper($countryname);
 		$this->context->cart->deleteProduct((int)Configuration::get('BM_INV_FEE_ID_'.$countryname));
 

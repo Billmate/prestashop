@@ -1,12 +1,15 @@
 <?php
 @session_start();
-if(!function_exists('my_dump')){
-	function my_dump($data, $die = false){
-		if($_SERVER['REMOTE_ADDR'] == '122.173.165.160' ){
+if (!function_exists('my_dump'))
+{
+	function my_dump($data, $die = false)
+	{
+		if ($_SERVER['REMOTE_ADDR'] == '122.173.165.160' )
+		{
 			echo '<pre>';
 			var_dump($data);
 			echo '</pre>';
-			if( $die ) die("die");
+			if ($die) die('die');
 		}
 	}
 }
@@ -40,15 +43,16 @@ if(!function_exists('my_dump')){
  * @since 1.5.0
  */
 
- if (version_compare(_PS_VERSION_,'1.5','<')){
-	if( !class_exists('ModuleFrontController')){
+ if (version_compare(_PS_VERSION_, '1.5', '<')){
+	if(!class_exists('ModuleFrontController'))
+	{
 		class ModuleFrontController extends FrontController{
 		}
 	}
 }
 
 include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
-require_once BILLMATE_BASE. '/Billmate.php';
+require_once BILLMATE_BASE.'/Billmate.php';
 require_once(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
 
 class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontController
@@ -96,7 +100,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		$debug = false;
 
 		try{
-			$k = new BillMate($eid,$secret,$ssl,$debug, Configuration::get('BILLMATE_MOD'));
+			$k = new BillMate($eid, $secret, $ssl, $debug, Configuration::get('BILLMATE_MOD'));
 			
 			$person = trim(Tools::getValue('billmate_pno'));
 			$md5 = md5('partpayment_'.$eid.$secret.$person);
@@ -136,7 +140,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		$_SESSION['billmate'][$md5] = $person;
 		$_SESSION['billmate']['partpayment_person_nummber_data'] = $cache_addr;
 
-		if (Tools::strlen($addr[0][0]) <= 0 )
+		if (Tools::strlen($addr[0][0]) <= 0)
 			$api_name = $address_delivery->firstname.' '.$address_delivery->lastname.' '.$address_delivery->company;
 		else
 			$api_name  = $addr[0][0].' '.$addr[0][1];
@@ -172,12 +176,12 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 			   $apiMatchedName
 			   && matchstr($address_delivery->address1, $addr[0][2])
 			   && matchstr($address_delivery->postcode , $addr[0][3])
-			   && matchstr($address_delivery->city ,$addr[0][4])
+			   && matchstr($address_delivery->city, $addr[0][4])
 			   && matchstr(BillmateCountry::getContryByNumber($addr[0][5]), $countryname)
 			   && $address_same
 		   )  )
 		{
-			if ( Tools::getValue('geturl') == 'yes')
+			if (Tools::getValue('geturl') == 'yes')
 			{
 
 				$cart_details = $this->context->cart->getSummaryDetails(null, true);
@@ -210,7 +214,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				$addressnew->postcode = $addr[0][3];
 				$addressnew->city = $addr[0][4];
 				$addressnew->country = BillmateCountry::getContryByNumber($addr[0][5]);
-				$addressnew->alias   = 'Bimport-'.time().ip2long($_SERVER['REMOTE_ADDR']);
+				$addressnew->alias = 'Bimport-'.time().ip2long($_SERVER['REMOTE_ADDR']);
 
 				$addressnew->id_country = Country::getByIso(BillmateCountry::getCode($addr[0][5]));
 				$addressnew->save();
@@ -231,7 +235,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				
 				$this->context->cart->id_address_invoice = (int)$addressnew->id;
 				$this->context->cart->id_address_delivery = (int)$addressnew->id;
-				$this->context->cart->update();                             
+				$this->context->cart->update();
 				
 				if (version_compare(_PS_VERSION_, '1.5', '>='))
 				{
@@ -266,7 +270,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 							'success' => true,
 							'action'  => array(
 								'method'=> 'updateExtraCarrier',
-								'id_delivery_option'=> $carrier_id.',', 
+								'id_delivery_option'=> $carrier_id.',',
 								'id_address' => $addressnew->id,
 								'allow_refresh'=> 1, 
 								'ajax' => true,
@@ -286,13 +290,13 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				if (BillmateCountry::getCode($addr[0][5]) != 'se')
 					$countryname = billmate_translate_country(BillmateCountry::getCode($addr[0][5]));
 
-				//$previouslink = 
+				//$previouslink =
 				$this->context->smarty->assign('firstname', $addr[0][0]);
 				$this->context->smarty->assign('lastname', $addr[0][1]);
 				$this->context->smarty->assign('address', $addr[0][2]);
 				$this->context->smarty->assign('zipcode', $addr[0][3]);
 				$this->context->smarty->assign('city', $addr[0][4]);
-				$this->context->smarty->assign('country',$countryname );
+				$this->context->smarty->assign('country', $countryname);
 
 				if (version_compare(_PS_VERSION_, '1.5', '>='))
 					$previouslink = $link->getModuleLink('billmateinvoice', 'getaddress', array('ajax'=> 0,'clearFee' => true), true);
@@ -307,7 +311,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				if ($this->context->getMobileDevice()) $extra = '-mobile.tpl';
 
 				$html = $this->context->smarty->fetch(BILLMATE_BASE.'/views/templates/front/wrongaddress.tpl');
-				$return  = array( 'success'=> false, 'content'=> $html , 'popup' => true );
+				$return = array( 'success'=> false, 'content'=> $html , 'popup' => true );
 		   }
 		}
 		else
@@ -350,8 +354,8 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				//billmate_log_data(array(array('order_id'=>$order_id,'measurements'=>$measurements)), $eid );
 				
 				$timestart = microtime(true);
-				//$k->UpdateOrderNo($invoiceid, $this->module->currentOrderReference.','.$order_id); 
-				$k->UpdateOrderNo($invoiceid, (string)$order_id); 
+				//$k->UpdateOrderNo($invoiceid, $this->module->currentOrderReference.','.$order_id);
+				$k->UpdateOrderNo($invoiceid, (string)$order_id);
 				unset($_SESSION["uniqueId"]);
 				$measurements['update_order_no'] = microtime(true) - $timestart;
 				
@@ -389,7 +393,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
   }
 	public function processReserveInvoice($isocode)
 	{
-		if (version_compare(_PS_VERSION_,'1.5','<'))
+		if (version_compare(_PS_VERSION_, '1.5', '<'))
 			$this->context->controller->module = new BillmatePartpayment();
 
 		$cart = $this->context->cart;
@@ -400,7 +404,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		$adrsBilling = new Address((int)$this->context->cart->id_address_invoice);
 		$country = Tools::strtoupper($adrsDelivery->country);
 
-		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($isocode)  );
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($isocode));
 		$countryname = Tools::strtoupper($countryname);
 
 		$eid = (int)Configuration::get('BILLMATE_STORE_ID_'.$countryname);
@@ -421,7 +425,8 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 			'NLD' => 'EUR',
 		);
 
-		switch ($isocode) {
+		switch ($isocode)
+		{
 			// Sweden
 			case 'SE':
 				$country = 209;
@@ -504,7 +509,8 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				$ship_address[$key] = utf8_decode( Encoding::fixUTF8($col));
 
 		}
-		foreach( $bill_address as $key => $col ){
+		foreach( $bill_address as $key => $col )
+		{
 			if (!is_array($col))
 				$bill_address[$key] = utf8_decode( Encoding::fixUTF8($col));
 
@@ -570,7 +576,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 			if (version_compare(_PS_VERSION_, '1.5', '>='))
 				$taxrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
 			else
-				$taxrate = Tax::getCarrierTaxRate($cart->id_carrier,Configuration::get('PS_TAX_ADDRESS_TYPE'));
+				$taxrate = Tax::getCarrierTaxRate($cart->id_carrier, Configuration::get('PS_TAX_ADDRESS_TYPE'));
 
 			if (!empty($shippingPrice))
 			{
@@ -591,13 +597,13 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		
 		  
 
-		$label =  array();
+		$label = array();
 
 		$pclass = (int)Tools::getValue('paymentAccount');
 		
 		$transaction = array(
 			'order1'=>(string)$order_id,
-			'order2' => '', 
+			'order2' => '',
 			'comment'=>'',
 			'flags'=>0,
 			'gender'=>1,
@@ -617,7 +623,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		if (empty($personalnumber) || empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
 		$md5 = md5('partpayment_'.$eid.$secret.$personalnumber);
 
-		$result1 = $k->AddInvoice($personalnumber,$bill_address,$ship_address,$goods_list,$transaction);  
+		$result1 = $k->AddInvoice($personalnumber, $bill_address, $ship_address, $goods_list, $transaction);
 
 		if(is_string($result1) || isset($result1['error']) || !is_array($result1))
 			throw new Exception($result1.$personalnumber);

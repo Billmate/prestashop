@@ -62,7 +62,7 @@ class BillmatePartpaymentController extends FrontController
 			$controller->context = new stdClass;
 			$controller->context->controller = new stdClass;
 			$controller->context->controller->module = $this->billmate;
-			$controller->context->cart 	 = self::$cart;
+			$controller->context->cart = self::$cart;
 			$controller->context->smarty = self::$smarty;
 			$controller->context->customer = $cookie->id_customer;
 			$controller->init();
@@ -131,7 +131,7 @@ class BillmatePartpaymentController extends FrontController
 
 			self::$smarty->assign(array(
 					'days' => $days,
-					'customer_day' =>	(int)Tools::substr($customer->birthday, 8, 2),
+					'customer_day' => (int)Tools::substr($customer->birthday, 8, 2),
 					'months' => $months,
 					'customer_email' => str_replace('%1$s', $customer->email, $this->billmate->l('Min e-postadress %1$s är korrekt och kan användas för fakturering.')),
 					'eid'    => Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name']),
@@ -141,9 +141,9 @@ class BillmatePartpaymentController extends FrontController
 					'street_number' => $house_info[1],
 					'house_ext' => $house_info[2],
 					'modulepath' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/validation.php',
-					'ajaxurl'   => array(
+					'ajaxurl' => array(
 						'path' => __PS_BASE_URI__.'modules/'.$this->billmate->moduleName.'/',
-						'this_path_ssl' =>  $this->_path
+						'this_path_ssl' => $this->_path
 					)));
 			if ($type == 'invoice')
 				$total = self::$cart->getOrderTotal() + (float)Product::getPriceStatic((int)Configuration::get('BILLMATE_INV_FEE_ID_'.$countries[$country->iso_code]['name']));

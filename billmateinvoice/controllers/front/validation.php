@@ -41,13 +41,13 @@ class BillmateInvoiceValidationModuleFrontController extends ModuleFrontControll
 
 		$country = new Country((int)$adrsDelivery->id_country);
 
-		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
 		$countryname = Tools::strtoupper($countryname);
 
 		$id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
 		$product = new Product($id_product);
 		$price   = $product->price;
-		$price_wt = $price * (1 + (($product->getTaxesRate($adrsDelivery)) * 0.01));		
+		$price_wt = $price * (1 + (($product->getTaxesRate($adrsDelivery)) * 0.01));
 		$customer = new Customer($this->context->cart->id_customer);
 		
 		if(version_compare(_PS_VERSION_,'1.5','>=')){

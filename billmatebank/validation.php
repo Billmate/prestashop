@@ -33,10 +33,10 @@ include_once(_PS_MODULE_DIR_.'/billmatebank/billmatebank.php');
 require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
 
 
-require_once BBANK_BASE. '/Billmate.php';
-require_once BBANK_BASE. '/utf8.php';
-include_once(BBANK_BASE."/xmlrpc-2.2.2/lib/xmlrpc.inc");
-include_once(BBANK_BASE."/xmlrpc-2.2.2/lib/xmlrpcs.inc");
+require_once BBANK_BASE.'/Billmate.php';
+require_once BBANK_BASE.'/utf8.php';
+include_once(BBANK_BASE.'/xmlrpc-2.2.2/lib/xmlrpc.inc');
+include_once(BBANK_BASE.'/xmlrpc-2.2.2/lib/xmlrpcs.inc');
 
 class BillmateBankController extends FrontController
 {
@@ -44,7 +44,6 @@ class BillmateBankController extends FrontController
 
 	public function __construct()
 	{
-
 		if (version_compare(_PS_VERSION_, '1.5', '<'))
 			$this->context = Context::getContext();
 		if (!Configuration::get('BBANK_ACTIVE'))
@@ -56,12 +55,14 @@ class BillmateBankController extends FrontController
 	private function checkOrder($cartId)
 	{
 		$order = Order::getOrderByCartId($cartId);
-		if(!$order){
+		if (!$order)
+		{
 			sleep(1);
 			$this->checkOrder($cartId);
-		} else {
-			return $order;
 		}
+		else
+			return $order;
+
 	}
 
 	public function process()
@@ -81,9 +82,9 @@ class BillmateBankController extends FrontController
 					$processing = file_exists($lockfile);
 					$customer = new Customer((int)$cookie->id_customer);
 					$billmatebank = new BillmateBank();
-					if($processing || self::$cart->orderExists())
+					if ($processing || self::$cart->orderExists())
 					{
-						if($processing)
+						if ($processing)
 							$orderId = $this->checkOrder(self::$cart->id);
 						else
 							$orderId = Order::getOrderByCartId(self::$cart->id);
@@ -92,11 +93,11 @@ class BillmateBankController extends FrontController
 						die;
 					}
 
-					file_put_contents($lockfile,'1');
+					file_put_contents($lockfile, '1');
 					$address_invoice = new Address((int)self::$cart->id_address_invoice);
 					$country = new Country((int)$address_invoice->id_country);
 
-					$data = $this->processReserveInvoice(Tools::strtoupper($country->iso_code),Tools::getValue('order_id'));
+					$data = $this->processReserveInvoice(Tools::strtoupper($country->iso_code), Tools::getValue('order_id'));
 
 					$extra = array('transaction_id' => $data['invoiceid']);
 
@@ -120,7 +121,6 @@ class BillmateBankController extends FrontController
 
 	public function displayContent()
 	{
-		
 		global $link,$currency;
 		parent::displayContent();
 		$customer = new Customer((int)self::$cart->id_customer);
@@ -135,14 +135,14 @@ class BillmateBankController extends FrontController
 
 		$currency   = 'SEK';
 
-		$languageCode = Tools::strtoupper($this->context->language->iso_code);
+		$language_code = Tools::strtoupper($this->context->language->iso_code);
 
-		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
-		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
-		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
+		$language_code = $language_code == 'DA' ? 'DK' : $language_code;
+		$language_code = $language_code == 'SV' ? 'SE' : $language_code;
+		$language_code = $language_code == 'EN' ? 'GB' : $language_code;
 		
 		$merchant_id = (int)Configuration::get('BBANK_STORE_ID_SWEDEN');
-		$secret = Tools::substr(Configuration::get('BBANK_SECRET_SWEDEN'),0,12);
+		$secret = Tools::substr(Configuration::get('BBANK_SECRET_SWEDEN'), 0, 12);
 		$callback_url = _PS_BASE_URL_.__PS_BASE_URI__.'modules/billmatebank/callback.php';
 		$return_method = 'GET';
 
@@ -155,7 +155,7 @@ class BillmateBankController extends FrontController
 			'amount'     => $amount,
 			'merchant_id'=> $merchant_id,
 			'currency'   => $currency,
-			'language'	 => $languageCode,
+			'language'	 => $language_code,
 			'pay_method' => 'BANK',
 			'accept_url' => $accept_url,
 			'callback_url'=> $callback_url,
@@ -165,7 +165,7 @@ class BillmateBankController extends FrontController
 			'total'      => self::$cart->getOrderTotal(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/billmatebank/'
 		);
-		$mac_str = $accept_url.$amount.$callback_url.$cancel_url.$data['capture_now'].$currency.$languageCode.$merchant_id.$order_id.'BANK'.$return_method.$secret;
+		$mac_str = $accept_url.$amount.$callback_url.$cancel_url.$data['capture_now'].$currency.$language_code.$merchant_id.$order_id.'BANK'.$return_method.$secret;
 
 		$data['mac'] = hash('sha256', $mac_str);
 
@@ -174,7 +174,7 @@ class BillmateBankController extends FrontController
 		self::$smarty->display(_PS_MODULE_DIR_.'billmatebank/tpl/form.tpl');
 		
 	}
-	public function processReserveInvoice($isocode, $order_id = '',$method = 'invoice')
+	public function processReserveInvoice($isocode, $order_id = '', $method = 'invoice')
 	{
 		if (version_compare(_PS_VERSION_, '1.5', '<'))
 			$this->context->controller->module = new BillmateBank();
@@ -233,7 +233,7 @@ class BillmateBankController extends FrontController
 
 		$country = new Country((int)$address_billing->id_country);
 
-		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code));
 		$countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
 
@@ -304,7 +304,7 @@ class BillmateBankController extends FrontController
 		}
 
 		$totals = array('total_shipping','total_handling');
-		$label =  array();
+		$label = array();
 		//array('total_tax' => 'Tax :'. $cart_details['products'][0]['tax_name']);
 		foreach ($totals as $total)
 		{
@@ -324,8 +324,8 @@ class BillmateBankController extends FrontController
 			);
 		}
 		$pclass = -1;
-		$cutomerId = (int)$cookie->id_customer;
-		$cutomerId = $cutomerId >0 ? $cutomerId: time();
+		$customer_id = (int)$cookie->id_customer;
+		$customer_id = $customer_id > 0 ? $customer_id: time();
 
 		$transaction = array(
 			'order1'=>(string)$order_id,
@@ -361,5 +361,5 @@ class BillmateBankController extends FrontController
 
 }
 
-$billmateController = new BillmateBankController();
-$billmateController->run();
+$billmate_controller = new BillmateBankController();
+$billmate_controller->run();

@@ -43,7 +43,7 @@ class BillmateCallbackController extends FrontController {
 		$_POST = $_GET = $_REQUEST = (array)Tools::jsonDecode($input);
 
 		$post = $_POST;
-		$cart = explode('-',$_POST['order_id']);
+		$cart = explode('-', $_POST['order_id']);
 		$cart_id = $cart[0];
 		if (Tools::getIsset('status') && !empty($post['trans_id']) && !empty($post['error_message']))
 		{
@@ -54,14 +54,14 @@ class BillmateCallbackController extends FrontController {
 					$lockfile = _PS_CACHE_DIR_.$_POST['order_id'];
 					$processing = file_exists($lockfile);
 					self::$cart = new Cart($cart_id);
-					if($processing || self::$cart->orderExists())
+					if ($processing || self::$cart->orderExists())
 						die('OK');
 
 					file_put_contents($lockfile, 1);
 					$address_invoice = new Address((int)self::$cart->id_address_invoice);
 					$country = new Country((int)$address_invoice->id_country);
 
-					$data = $this->processReserveInvoice(Tools::strtoupper($country->iso_code),$post['order_id']);
+					$data = $this->processReserveInvoice(Tools::strtoupper($country->iso_code), $post['order_id']);
 					$billmatebank = new BillmateBank();
 
 					$customer = new Customer((int)self::$cart->id_customer);
@@ -161,7 +161,8 @@ class BillmateCallbackController extends FrontController {
 			'country'         => (string)$countryname,
 		);
 
-		foreach ($ship_address as $key => $col){
+		foreach ($ship_address as $key => $col)
+        {
 			if (!is_array($col))
 				$ship_address[$key] = utf8_decode( Encoding::fixUTF8($col));
 		}
@@ -212,7 +213,7 @@ class BillmateCallbackController extends FrontController {
 		}
 
 		$totals = array('total_shipping','total_handling');
-		$label =  array();
+		$label = array();
 		//array('total_tax' => 'Tax :'. $cart_details['products'][0]['tax_name']);
 		foreach ($totals as $total)
 		{
@@ -232,8 +233,8 @@ class BillmateCallbackController extends FrontController {
 			);
 		}
 		$pclass = -1;
-		$cutomerId = (int)$cookie->id_customer;
-		$cutomerId = $cutomerId >0 ? $cutomerId: time();
+		$customer_id = (int)$cookie->id_customer;
+		$customer_id = $customer_id > 0 ? $customer_id: time();
 
 		$transaction = array(
 			'order1'=>(string)$order_id,

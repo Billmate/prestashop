@@ -141,7 +141,7 @@ class BillmateCallbackController extends FrontController {
 
 		$country = new Country((int)$address_billing->id_country);
 
-		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
 		$countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
 

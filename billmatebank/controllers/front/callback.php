@@ -1,6 +1,6 @@
 <?php
 
-require_once BBANK_BASE. '/Billmate.php';
+require_once BBANK_BASE.'/Billmate.php';
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -106,7 +106,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 		
 		$country = new Country((int)$address_delivery->id_country);
 
-		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
 		$countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
 		
@@ -126,7 +126,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 
 		$country = new Country((int)$address_billing->id_country);
 
-		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
 		$countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
 
@@ -161,7 +161,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 		$products = $this->context->cart->getProducts();
 		$cart_details = $this->context->cart->getSummaryDetails(null, true);
 
-		$vatrate =  0;
+		$vatrate = 0;
 		$goods_list = array();
 		foreach ($products as $product)
 		{
@@ -204,9 +204,10 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 		}
 
 		$totals = array('total_shipping','total_handling');
-		$label =  array();
+		$label = array();
 		//array('total_tax' => 'Tax :'. $cart_details['products'][0]['tax_name']);
-		foreach ($totals as $total) {
+		foreach ($totals as $total)
+        {
 			$flag = $total == 'total_handling' ? 16 : ( $total == 'total_shipping' ? 8 : 0);
 			if (empty($cart_details[$total]) || $cart_details[$total] <= 0) continue;
 			if ($total == 'total_shipping' && $cart_details['free_ship'] == 1) continue;
@@ -256,7 +257,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 		$transaction['extraInfo'][0]['status'] = 'Paid';
 		
 
-		if( empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
+		if (empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
 		
 		$result1 = $k->AddInvoice('', $bill_address, $ship_address, $goods_list, $transaction);
 		if (is_string($result1) || isset($result1['error']) || !is_array($result1))

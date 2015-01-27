@@ -103,7 +103,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 						$measurements['after_customer'] =  microtime(true) - $timestart;
 						
 						$timestart = microtime(true);
-						$total = $this->context->cart->getOrderTotal(true, Cart::BOTH); 
+						$total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 						$measurements['calculatetotal'] = microtime(true) - $timestart;
 						
 						$timestart = microtime(true);
@@ -232,7 +232,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		$encoding = 2;
 		$country = new Country((int)$adrsDelivery->id_country);
 
-		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code));
 		$countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
 		
@@ -252,7 +252,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
 		$country = new Country((int)$adrsBilling->id_country);
 
-		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code));
 		$countryname = Tools::strtoupper($countryname);
 		$country = $countryname == 'SWEDEN' ? 209 : $countryname;
 

@@ -73,27 +73,26 @@ class BillmatePartpaymentValidationModuleFrontController extends ModuleFrontCont
 		));
 
 		$extra = '.tpl';
-		if( $this->context->getMobileDevice() ) $extra = '-mobile.tpl';
+		if ($this->context->getMobileDevice()) $extra = '-mobile.tpl';
 
 		$this->setTemplate('validation'.$extra);
 //		$this->setTemplate('validation.tpl');
 	}
 	public function getMonthlyCoast($cart, $countries, $country)
 	{
-
-		$countryString  = $countries[$country->iso_code]['code'];
+		$countryString = $countries[$country->iso_code]['code'];
 		$language = $countries[$country->iso_code]['langue'];
 		$currency = $countries[$country->iso_code]['currency'];
-		$countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
 		$countryname = Tools::strtoupper($countryname);
 
-		$eid    = Configuration::get('BILLMATE_STORE_ID_'.$countryname);
+		$eid	= Configuration::get('BILLMATE_STORE_ID_'.$countryname);
 		$secret = Configuration::get('BILLMATE_SECRET_'.$countryname);
-		$mode   = Configuration::get('BILLMATE_MOD');
+		$mode	= Configuration::get('BILLMATE_MOD');
 		$this->context->smarty->assign(array(
 			'eid' => $eid
 		));
-		$billmate = new pClasses($eid, $secret,$countryString, $language, $currency, $mode);
+		$billmate = new pClasses($eid, $secret, $countryString, $language, $currency, $mode);
 
 		$accountPrice = array();
 		$pclasses = $billmate->getPClasses();

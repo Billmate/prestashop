@@ -230,7 +230,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				
 				$this->context->cart->id_address_invoice = (int)$addressnew->id;
 				$this->context->cart->id_address_delivery = (int)$addressnew->id;
-				$this->context->cart->update();                             
+				$this->context->cart->update();
 				
 				if (version_compare(_PS_VERSION_, '1.5', '>='))
 				{
@@ -266,7 +266,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 							'success' => true,
 							'action'  => array(
 								'method'=> 'updateExtraCarrier',
-								'id_delivery_option'=> $carrier_id.',', 
+								'id_delivery_option'=> $carrier_id.',',
 								'id_address' => $addressnew->id,
 								'allow_refresh'=> 1, 
 								'ajax' => true,
@@ -286,7 +286,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				if (BillmateCountry::getCode($addr[0][5]) != 'se')
 					$countryname = billmate_translate_country(BillmateCountry::getCode($addr[0][5]));
 
-				//$previouslink = 
+				//$previouslink =
 				$this->context->smarty->assign('firstname', $addr[0][0]);
 				$this->context->smarty->assign('lastname', $addr[0][1]);
 				$this->context->smarty->assign('address', $addr[0][2]);
@@ -352,8 +352,8 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				
 				//billmate_log_data(array(array('order_id'=>$order_id,'measurements'=>$measurements)), $eid );
 				$timestart = microtime(true);
-				//$k->UpdateOrderNo($invoiceid, $this->module->currentOrderReference.','.$order_id); 
-				$k->UpdateOrderNo($invoiceid, (string)$order_id); 
+				//$k->UpdateOrderNo($invoiceid, $this->module->currentOrderReference.','.$order_id);
+				$k->UpdateOrderNo($invoiceid, (string)$order_id);
 				unset($_SESSION["uniqueId"]);
 				$measurements['update_order_no'] = microtime(true) - $timestart;
 
@@ -458,7 +458,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 				$currency = 2;
 				break;
 		}
-	
+
 		$ship_address = array(
 			'email'           => $this->context->customer->email,
 			'telno'           => $adrsDelivery->phone,
@@ -586,7 +586,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 		
 		$transaction = array(
 			'order1'=>(string)$order_id,
-			'order2' => '', 
+			'order2' => '',
 			'comment'=>'',
 			'flags'=>0,
 			'gender'=>1,
@@ -605,7 +605,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 		);
 		if (empty($personalnumber) || empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
 		$md5 = md5('invoice_'.$eid.$secret.$personalnumber);
-		$result1 = $k->AddInvoice($personalnumber,$bill_address,$ship_address,$goods_list,$transaction);  
+		$result1 = $k->AddInvoice($personalnumber,$bill_address,$ship_address,$goods_list,$transaction);
 		
 		if(is_string($result1) || isset($result1['error']) || !is_array($result1))
 			throw new Exception($result1.$personalnumber);
