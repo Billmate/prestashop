@@ -59,6 +59,7 @@ $_MODULE['<{billmatepartpayment}prestashop>form_1aad76502b13db1736d1641f033cf46b
 $_MODULE['<{billmatepartpayment}prestashop>form_e2867a925cba382f1436d1834bb52a1c'] = 'Totalsumman av din order är';
 $_MODULE['<{billmatepartpayment}prestashop>form_1f87346a16cf80c372065de3c54c86d9'] = '(inkl. moms)';
 $_MODULE['<{billmatepartpayment}prestashop>form_a19913198c22eb3ebaf4e18f1a28835a'] = 'Personnummer: ';
+$_MODULE['<{billmatepartpayment}prestashop>form_300e4417ca2c2ff7b38a04d942cfc84c'] = 'Välj bekräfta order för att beställa';
 $_MODULE['<{billmatepartpayment}prestashop>form_f1719bbcc79df3e1bb8dcf7752fba399'] = 'Köpvillkor delbetalning';
 $_MODULE['<{billmatepartpayment}prestashop>form_569fd05bdafa1712c4f6be5b153b8418'] = 'Andra betalningsmetoder';
 $_MODULE['<{billmatepartpayment}prestashop>form_46b9e3665f187c739c55983f757ccda0'] = 'Bekräfta order';

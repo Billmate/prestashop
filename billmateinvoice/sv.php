@@ -19,6 +19,7 @@ $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_553e273389202dfdbbda58bdf
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_ff1b19ce6d095426e2d9ae7faa391967'] = 'D.v.s svensk kund, SEK, Sverige och svenska.';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_dd06c3a7cdedb70e392c134e37b74b61'] = 'För att dina kunder att använda Billmate Faktura, måste kunderna vara belägna i samma land där din e-butik är registrerad.';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_3dcb60f1a19a0c124645b92fe25bb2b7'] = 'Inställningar är uppdaterade';
+$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_cd1fcf54768263e43caa52b30c2d4478'] = 'fakturaavgift tillkommer på ordern';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_bd973f0db7dda66b28ed35a13ffbd52f'] = 'Betala med faktura';
 $_MODULE['<{billmateinvoice}prestashop>confirmation_2e2117b7c81aa9ea6931641ea2c6499f'] = 'Din beställning på';
 $_MODULE['<{billmateinvoice}prestashop>confirmation_75fbf512d744977d62599cc3f0ae2bb4'] = 'är klar.';
@@ -47,7 +48,6 @@ $_MODULE['<{billmateinvoice}prestashop>credential_b39ce3657fdce8a871c6b37797e65b
 $_MODULE['<{billmateinvoice}prestashop>form_c79f3b0a3c5936107bfd51556e2d3dd5'] = 'Billmate Faktura';
 $_MODULE['<{billmateinvoice}prestashop>form_0c25b529b4d690c39b0831840d0ed01c'] = 'Order summering';
 $_MODULE['<{billmateinvoice}prestashop>form_bdbaf840bae85f563f456e6815bb0e50'] = 'Billmate Fakturabetalning';
-$_MODULE['<{billmateinvoice}prestashop>form_76e9def70131abca64eeef5dcea6da92'] = 'Du har valt Billmate Faktura.';
 $_MODULE['<{billmateinvoice}prestashop>form_e2867a925cba382f1436d1834bb52a1c'] = 'Det totala beloppet för din beställning är';
 $_MODULE['<{billmateinvoice}prestashop>form_2fd82751bde655a78a9f066d3ac2b86e'] = 'Detta inkluderar fakturabeloppet';
 $_MODULE['<{billmateinvoice}prestashop>form_06565e5611f23fdf8cc43e5077b92b54'] = 'moms';

@@ -354,7 +354,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				//billmate_log_data(array(array('order_id'=>$order_id,'measurements'=>$measurements)), $eid );
 				
 				$timestart = microtime(true);
-				//$k->UpdateOrderNo($invoiceid, $this->module->currentOrderReference.','.$order_id);
+
 				$k->UpdateOrderNo($invoiceid, (string)$order_id);
 				unset($_SESSION["uniqueId"]);
 				$measurements['update_order_no'] = microtime(true) - $timestart;
@@ -362,15 +362,6 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				$duration = (microtime(true) - $timetotalstart) * 1000;
 				$k->stat("client_order_measurements", Tools::jsonEncode(array('order_id'=>$order_id, 'measurements'=>$measurements)), '', $duration);
 
-				//set order status
-				/*$order = new Order($order_id);
-				$new_history = new OrderHistory();
-				$new_history->id_order = (int)$order_id;
-				//$new_history->changeIdOrderState((int)Configuration::get('BILLMATE_PAYMENT_ACCEPTED'), $order, true);
-				$new_history->changeIdOrderState((int)Configuration::get('BILLMATE_ORDER_STATUS_SWEDEN'), $order_id, true);
-				$new_history->addWithemail(true);
-				*/
-				//				$return['redirect'] = __PS_BASE_URI__.'order-confirmation.php?id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
 				if(version_compare(_PS_VERSION_, '1.5', '>='))
 				{
 					$url = 'order-confirmation&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id.'&key='.$customer->secure_key;
@@ -566,8 +557,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 		
 		if ($carrier->active && $notfree)
 		{
-
-			if(version_compare(_PS_VERSION_, '1.5', '<'))
+            if(version_compare(_PS_VERSION_, '1.5', '<'))
 				$shippingPrice = $cart->getOrderShippingCost();
 			else
 				$shippingPrice = $cart->getTotalShippingCost();
@@ -594,10 +584,8 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				);
 			}
 		}
-		
-		  
 
-		$label = array();
+        $label = array();
 
 		$pclass = (int)Tools::getValue('paymentAccount');
 		
