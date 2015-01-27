@@ -23,10 +23,9 @@
 		{/if}
 	</p>
 	<p class="clear"></p>
-	<p class="text">
+	<p class="bnormal">
 	    <b>{l s='Please fill following fields for complete order' mod='billmateinvoice'}</b>
     </p>
-    <br/>	
 	<p class="blarge">
 	    <label for="pno">{l s='Personal Number' mod='billmateinvoice'}:</label>
 	    <input type="text" value="" id="billmate_pno" name="pno" required  />
@@ -36,7 +35,7 @@
 	    <label for="phone">{$customer_email}</label>
 	</p>
 	<p>
-		<b>{l s='Please confirm your order by clicking \'I confirm my order\'' mod='billmateinvoice'}.</b> <a id="terms" style="cursor:pointer!important">{l s='Terms of invoice' mod='billmateinvoice'}</a><script type="text/javascript">$.getScript("https://billmate.se/billmate/base.js", function(){ldelim}
+        <script type="text/javascript">$.getScript("https://billmate.se/billmate/base.js", function(){ldelim}
 		$("#terms").Terms("villkor",{ldelim}invoicefee: {$fee}{rdelim});
 {rdelim});</script>
 	</p>

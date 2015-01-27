@@ -84,6 +84,7 @@
     text-align:center;
     line-height:1.5em;
     border-top:1px solid grey;
+    padding-top: 13px;
 }
 .bnormal{
     font-size:1.3em;
@@ -164,6 +165,6 @@
 .billmate_button:hover{
 	background-color:#444444!important;
 }
-#order_area{
-margin-left: 22px;
+.columns-container > #columns .row{
+    margin-left: 3px;
 }

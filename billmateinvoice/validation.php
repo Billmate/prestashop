@@ -91,7 +91,7 @@ class BillmateInvoiceController extends FrontController
 				$this->_path = $link->getModuleLink('billmateinvoice', 'getaddress', array('ajax'=> 0), true);
 
 			self::$smarty->assign(array(
-					'customer_email' => str_replace('%1$s', $customer->email, $this->billmate->l('My email %1$s is accurate and can be used for invoicing.')),
+					'customer_email' => str_replace('%1$s', $customer->email, $this->billmate->verifyEmail),
 					'eid'    => Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name']),
 					'opc'=> (bool)Configuration::get('PS_ORDER_PROCESS_TYPE') == 1,
 					'customer_month' => (int)Tools::substr($customer->birthday, 5, 2),

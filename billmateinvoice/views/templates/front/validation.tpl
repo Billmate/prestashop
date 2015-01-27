@@ -3,51 +3,7 @@
 <h2>{l s='Order summation' mod='billmateinvoice'}</h2>
 {assign var='current_step' value='payment'}
 {include file="$tpl_dir./order-steps.tpl"}
-<style type="text/css">
-.bsmall{
-	font-size:1.1em;
-}
-.billmate *{
-color: #7a7a7a!important;
-}
-.billmate{
-text-align:center;
-line-height:1.5em;
-border-top:1px solid grey;
-}
-.blarge{
-font-size:1.5em;
-}
-.bnormal{
-font-size:1.3em;
-}
-.billbutton{
-	font-weight:bold;
-	color:#56AADB!important;
 
-}
-.billfooter {
-display: block!important;
-border-top: 1px solid grey!important;
-padding-top: 13px!important;
-}
-/*.error {
-font-size: 1.6em;
-color: #000;
-background-color: #FAD7D7;
-padding: 1px 16px 23px;
-border-radius: 6px;
-}*/
-#pno{ margin:auto!important;display:block!important;text-align:center!important;	 }
-#billmate_submit{ width:26em!important; }
-@media only screen and (min-width: 500px){
-	#pno{ width:330px!important; }
-	#billmate_submit{ width:26em!important; }
-}
-#billmate_submit {
-	text-align: center;
-}
-</style>
 <h3>{l s='Billmate Invoice Payment' mod='billmateinvoice'}</h3>
 {* $link->getModuleLink('billmateinvoice', 'getaddress', [], true) *}
 <form action="javascript://" method="post" class="billmate">
@@ -69,19 +25,19 @@ border-radius: 6px;
     </p>
 	<p class="blarge">
 	    <label for="pno">{l s='Personal Number' mod='billmateinvoice'}</label>
-	    <input type="text" value="" id="pno" name="pno" style="border:1px solid #D3D3D3;padding:0.2em;" required  />
+	    <input type="text" value="" id="billmate_pno" name="pno" style="border:1px solid #D3D3D3;padding:0.2em;" required  />
 	</p>
 	<p class="bsmall">
 	    <input type="checkbox" checked="checked" value="" id="confirm_my_age" class="comparator" name="confirm_my_age" required />
-	    <label for="confirm_my_age">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmateinvoice'}</label>
+	    <label for="confirm">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmateinvoice'} <a class="terms" style="cursor:pointer!important;">{l s='I confirm the terms for invoice payment' mod='billmateinvoice'}</a></label>
 	</p>
 	<p>
 		<input type="button" name="submit" value="{l s='I confirm my order' mod='billmateinvoice'}" class="exclusive_large blarge" id="billmate_submit"/>
 	</p>
 	<p class="cart_navigation billfooter">
 		<a href="{$previouslink}" class="billbutton blarge" style="float:left;line-height:1em;">{l s='Other payment methods' mod='billmateinvoice'}</a>
-		<a id="terms" class="billbutton blarge" style="cursor:pointer!important;float:right">{l s='Terms of invoice' mod='billmateinvoice'}</a><script type="text/javascript">$.getScript("https://billmate.se/billmate/base.js", function(){ldelim}
-		$("#terms").Terms("villkor",{ldelim}invoicefee: {$fee}{rdelim});
+		<a id="terms" class="billbutton blarge terms" style="cursor:pointer!important;float:right">{l s='Terms of invoice' mod='billmateinvoice'}</a><script type="text/javascript">$.getScript("https://billmate.se/billmate/base.js", function(){ldelim}
+		$(".terms").Terms("villkor",{ldelim}invoicefee: {$fee}{rdelim});
 {rdelim});</script>
 	</p>
 </form>
@@ -171,7 +127,7 @@ $('#right_column').remove();
     jQuery(document).ready(function(){
 
         jQuery('#billmate_submit').click(function(){
-            if($.trim( $('#pno').val()) == '' ){
+            if($.trim( $('#billmate_pno').val()) == '' ){
                 alert(emptypersonerror);
                 return;
             }

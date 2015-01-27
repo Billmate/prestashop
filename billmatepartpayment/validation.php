@@ -133,7 +133,7 @@ class BillmatePartpaymentController extends FrontController
 					'days' => $days,
 					'customer_day' => (int)Tools::substr($customer->birthday, 8, 2),
 					'months' => $months,
-					'customer_email' => str_replace('%1$s', $customer->email, $this->billmate->l('Min e-postadress %1$s är korrekt och kan användas för fakturering.')),
+					'customer_email' => str_replace('%1$s', $customer->email, $this->billmate->verifyEmail),
 					'eid'    => Configuration::get('BILLMATE_STORE_ID_'.$countries[$country->iso_code]['name']),
 					'opc'=> (bool)Configuration::get('PS_ORDER_PROCESS_TYPE') == 1,
 					'customer_month' => (int)Tools::substr($customer->birthday, 5, 2),

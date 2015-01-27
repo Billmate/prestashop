@@ -100,7 +100,7 @@ class BillmateInvoice extends PaymentModule
 		$this->billmate = null;
 		$this->country = null;
 		$this->limited_countries = array('se', 'onl', 'dk', 'no', 'fi','gb','us'); //, 'no', 'fi', 'dk', 'de', 'nl'
-
+        $this->verifyEmail = $this->l('My email %1$s is accurate and can be used for invoicing.').'<a id="terms" style="cursor:pointer!important"> '.$this->l('I confirm the terms for invoice payment').'</a>';
 		/* The parent construct is required for translations */
 		$this->page = basename(__FILE__, '.php');
 		$this->displayName = $this->l('Billmate Invoice');

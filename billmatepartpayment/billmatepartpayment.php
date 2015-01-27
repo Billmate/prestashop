@@ -110,6 +110,8 @@ class BillmatePartpayment extends PaymentModule
 		$this->confirmUninstall = $this->l(
 			'Are you sure you want to delete your settings?'
 		);
+
+        $this->verifyEmail = $this->l('Min e-postadress %1$s är korrekt och kan användas för fakturering.').'<a id="terms-delbetalning" style="cursor:pointer!important"> '.$this->l('I confirm the terms for partpayment').'</a>';
 		$this->billmate_merchant_id = Configuration::get('BILLMATE_MERCHANT_ID');
 		$this->billmate_secret = Configuration::get('BILLMATE_SECRET');
 		$this->billmate_countries = unserialize( Configuration::get('BILLMATE_ENABLED_COUNTRIES_LIST'));

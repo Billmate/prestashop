@@ -57,11 +57,12 @@
 		{l s='(tax incl.)' mod='billmatepartpayment'}
       {/if}
     </p>
+      <p class="bnormal"><b>{l s='Choose the payment option that best suite your needs' mod='billmatepartpayment'}</b></p>
     {if isset($accountPrice)}
-    <br/>
+
     <select name="paymentAccount" class="billdropdown">
       {foreach from=$accountPrice item=val key=k}
-	  <option value="{$k}">{$val.month}  månaders delbetalning - {displayPrice price=$val.price} per månad</option>
+	  <option value="{$k}">{$val.month} {l s='månaders delbetalning' mod='billmatepartpayment'} - {displayPrice price=$val.price} {l s='per månad' mod='billmatepartpayment'}</option>
       {/foreach}
     </select>
     <br/>
@@ -71,17 +72,12 @@
 
       <label>{l s='Personal Number:' mod='billmatepartpayment'}</label>
       <input type="text" name="billmate_pno" id="billmate_pno" value="" required />
-      <br /><br/>
 	</p>
 	<p class="bsmall">
 		<input type="checkbox" checked="checked" value="" id="confirm_my_age" name="confirm_my_age" required />
 		<label for="phone">{$customer_email}</label>
 	</p>
-    <p>
-        <br/>
-        <b>{l s='Choose I confirm my order to Order' mod='billmatepartpayment'}</b>
-        <a id="terms-delbetalning" style="cursor:pointer!important;">{l s='Conditions of payment' mod='billmatepartpayment'}</a>
-    </p>
+
     <p class="cart_navigation billfooter">
       <a href="{$link->getPageLink('order.php', true)}?step=3" class="billbutton blarge" style="float:left;line-height:1em;">
           <input type="button" class="exclusive_large hideOnSubmit" value="{l s='Other payment methods' mod='billmatepartpayment'}"></a>
