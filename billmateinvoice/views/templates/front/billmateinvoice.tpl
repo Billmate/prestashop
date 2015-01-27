@@ -43,7 +43,7 @@ p.payment_module a.billmateinvoice:after{
 </style>
 <p class="payment_module">
 	<a href="{$moduleurl}" title="{l s='Pay by invoice' mod='billmateinvoice'}" class="billmateinvoice">
-		{l s='Pay by invoice' mod='billmateinvoice'} {if $invoiceFee != 0} <span>({displayPrice price=$invoiceFee} {$invoicefeestring} )</span> {/if}
+		{l s='Pay by invoice' mod='billmateinvoice'} {if $invoiceFee != 0} <span>({displayPrice price=$invoiceFee} {$invoicefeestring})</span> {/if}
 		<br style="clear:both;" />
 	</a>
 </p>
