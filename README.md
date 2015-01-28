@@ -1,7 +1,7 @@
 # Billmate Payment Gateway for Prestashop
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
-Documentation with instructions on how to setup the plugin can be found [here](https://billmate.se/plugins/prestashop/Instruktionsmanual_Prestashop_Billmate_Plugin.pdf).
+Documentation with instructions on how to setup the plugin can be found [here](http://billmate.se/plugins/manual/Installation_Manual_Prestashop_Billmate.pdf) (Swedish).
 
 ## Description
 
