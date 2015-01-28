@@ -1,10 +1,11 @@
 # Billmate Payment Gateway for Prestashop
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
+
 Documentation with instructions on how to setup the plugin can be found [here](https://billmate.se/plugins/prestashop/Instruktionsmanual_Prestashop_Billmate_Plugin.pdf).
 
 ## Description
 
-Billmate Gateway is a plugin that extends Prestashop, allowing your customers to get their products first and pay by invoice to Billmate later (http://www.billmate.com/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
+Billmate Gateway is a plugin that extends Prestashop, allowing your customers to get their products first and pay by invoice to Billmate later (https://www.billmate.com/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
 
 When the order is passed to Billmate a credit record of the customer is made. If the check turns out all right, Billmate creates an invoice in their system. After you (as the merchant) completes the order in Prestashop, you need to log in to Billmate to approve/send the invoice.
 
@@ -13,7 +14,7 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 
 ## Important Note
 
-This plugin does not currently support Campaigns.
+This plugin does not currently support campaigns.
 
 ### Invoice Fee Handling
 Since of version 1.31 the Invoice Fee for Billmate Invoice are added as a simple (hidden) product. This is to match order total in Prestashop and your billmate part payment (in earlier versions the invoice fee only were added to Billmate).
