@@ -158,7 +158,7 @@
 	word-break:break-word!important;
 	margin-top:1em!important;
 }
-label > #terms, .underline{
+label > #terms, .underline:hover{
     text-decoration: underline;
 }
 .linktag{
