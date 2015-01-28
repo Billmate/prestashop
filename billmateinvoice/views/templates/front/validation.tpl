@@ -35,7 +35,7 @@
 		<input type="button" name="submit" value="{l s='I confirm my order' mod='billmateinvoice'}" style="width:26em!important" class="exclusive_large blarge" id="billmate_submit"/>
 	</p>
 	<p class="cart_navigation billfooter">
-		<a href="{$previouslink}" class="billbutton blarge underine" style="float:left;line-height:1em;">{l s='Other payment methods' mod='billmateinvoice'}</a>
+		<a href="{$previouslink}" class="billbutton blarge underline" style="float:left;line-height:1em;">{l s='Other payment methods' mod='billmateinvoice'}</a>
 		<a id="terms" class="billbutton blarge terms underline" style="cursor:pointer!important;float:right">{l s='Terms of invoice' mod='billmateinvoice'}</a><script type="text/javascript">$.getScript("https://billmate.se/billmate/base.js", function(){ldelim}
 		$(".terms").Terms("villkor",{ldelim}invoicefee: {$fee}{rdelim});
 {rdelim});</script>
