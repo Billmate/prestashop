@@ -27,8 +27,8 @@
 	    <input type="text" value="" id="billmate_pno" name="pno" style="border:1px solid #D3D3D3;padding:0.2em;" required  />
 	</p>
 	<p class="bsmall">
-	    <input type="checkbox" checked="checked" value="" id="confirm_my_age" class="comparator" name="confirm_my_age" required />
-	    <label for="confirm">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmateinvoice'}
+        <label for="confirm"><input type="checkbox" checked="checked" value="" id="confirm_my_age" class="comparator" name="confirm_my_age" required />
+	    {l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmateinvoice'}
             <br/> <a id="terms" class="terms" style="cursor:pointer!important;">{l s='I confirm the terms for invoice payment' mod='billmateinvoice'}</a></label>
 	</p>
 	<p>

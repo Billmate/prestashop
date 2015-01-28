@@ -119,8 +119,8 @@ padding-top: 13px!important;
 	  <input type="text" name="billmate_pno" id="billmate_pno" value="" style="border:1px solid #D3D3D3;padding:0.2em;" required />
 	</p>
 	<p class="bsmall">
-		<input type="checkbox" checked="checked" value="" id="confirm_my_age" name="confirm_my_age" class="comparator" required />
-		<label for="confirm">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmatepartpayment'}
+        <label for="confirm"><input type="checkbox" checked="checked" value="" id="confirm_my_age" name="confirm_my_age" class="comparator" required />
+		{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmatepartpayment'}
             <br/> <a id="terms" class="terms-delbetalning" style="cursor:pointer!important;">{l s='I confirm the terms for partpayment' mod='billmatepartpayment'}</a></label>
 	</p>
 	  <p>
