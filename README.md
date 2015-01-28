@@ -6,6 +6,7 @@ Billmate payment plugin for Prestashop
 == Changelog ==
 
 = 1.35 =
+
 Total of 61 issues closed, the biggest release yet.
 
 * Fix - Made the styling better overall through the plugin
