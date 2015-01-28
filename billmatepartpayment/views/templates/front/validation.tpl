@@ -120,14 +120,15 @@ padding-top: 13px!important;
 	</p>
 	<p class="bsmall">
 		<input type="checkbox" checked="checked" value="" id="confirm_my_age" name="confirm_my_age" class="comparator" required />
-		<label for="confirm">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmatepartpayment'} <a class="terms-delbetalning" style="cursor:pointer!important;">{l s='I confirm the terms for partpayment' mod='billmatepartpayment'}</a></label>
+		<label for="confirm">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmatepartpayment'}
+            <br/> <a id="terms" class="terms-delbetalning" style="cursor:pointer!important;">{l s='I confirm the terms for partpayment' mod='billmatepartpayment'}</a></label>
 	</p>
 	  <p>
 		<input type="button" name="submit" id="billmate_submit" style="width:26em!important" value="{l s='I confirm my order' mod='billmatepartpayment'}" class="exclusive_large blarge" />
 	</p>
 	  <p class="cart_navigation billfooter">
 	  <a href="{$link->getPageLink('order.php', true)}?step=3" class="billbutton blarge" style="float:left;line-height:1em;">{l s='Other payment methods' mod='billmatepartpayment'}</a>
-	  <a class="terms-delbetalning" class="billbutton blarge terms-delbetalning" style="cursor:pointer!important;float:right">{l s='Conditions of payment' mod='billmatepartpayment'}</a>
+	  <a class="billbutton blarge terms-delbetalning" style="cursor:pointer!important;float:right">{l s='Conditions of payment' mod='billmatepartpayment'}</a>
 	</p>
   </form>
 <script type="text/javascript">

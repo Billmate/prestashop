@@ -29,7 +29,8 @@
 	</p>
 	<p class="bsmall">
 	    <input type="checkbox" checked="checked" value="" id="confirm_my_age" class="comparator" name="confirm_my_age" required />
-	    <label for="confirm">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmateinvoice'} <a class="terms" style="cursor:pointer!important;">{l s='I confirm the terms for invoice payment' mod='billmateinvoice'}</a></label>
+	    <label for="confirm">{l s='My email %1$s is accurate and can be used for invoicing.' sprintf=[$customer_email] mod='billmateinvoice'}
+            <br/> <a id="terms" class="terms" style="cursor:pointer!important;">{l s='I confirm the terms for invoice payment' mod='billmateinvoice'}</a></label>
 	</p>
 	<p>
 		<input type="button" name="submit" value="{l s='I confirm my order' mod='billmateinvoice'}" class="exclusive_large blarge" id="billmate_submit"/>

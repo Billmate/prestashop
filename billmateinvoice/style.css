@@ -158,6 +158,9 @@
 	word-break:break-word!important;
 	margin-top:1em!important;
 }
+label > #terms{
+    text-decoration: underline;
+}
 .linktag{
 	font-size: 0.8em!important;
 	text-decoration: none!important;
