@@ -34,8 +34,8 @@ class BillmateInvoiceGetInfoModuleFrontController extends ModuleFrontController
 {
 	public $ssl = true;
 	public $ajax = true;
-    public function init(){
-        parent::init();
+	public function init(){
+		parent::init();
 		echo '<h1>Billmate version '.BILLPLUGIN_VERSION.'</h1>';
 		phpinfo();
   }

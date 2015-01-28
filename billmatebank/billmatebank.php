@@ -14,7 +14,7 @@ if (!defined('_CAN_LOAD_FILES_'))
 
 define('BBANK_BASE', dirname(dirname(__FILE__)).'/billmateinvoice');
 include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
-require_once(BBANK_BASE . '/Billmate.php');
+require_once(BBANK_BASE.'/Billmate.php');
 
 /**
  * BillmateBank class
@@ -25,102 +25,102 @@ require_once(BBANK_BASE . '/Billmate.php');
  * 
  */
 define('BANKPAY_TESTURL', 'https://cardpay.billmate.se/pay/test');
-define('BANKPAY_LIVEURL', 'https://cardpay.billmate.se/pay');;
+define('BANKPAY_LIVEURL', 'https://cardpay.billmate.se/pay');
 
 class BillmateBank extends PaymentModule
 {
-    private $_html = '';
+	private $_html = '';
 
-    private $_postErrors = array();
-    public $billmate;
-    public $kitt;
-    public $core;
-    public $settings;
-    public $billmate_merchant_id;
-    public $billmate_secret;
-    public $billmate_pending_status;
-    public $billmate_accepted_status;
-    public $billmate_countries;
+	private $_postErrors = array();
+	public $billmate;
+	public $kitt;
+	public $core;
+	public $settings;
+	public $billmate_merchant_id;
+	public $billmate_secret;
+	public $billmate_pending_status;
+	public $billmate_accepted_status;
+	public $billmate_countries;
 	public $allowed_currencies = array('SEK');
-    
+
 	private $_postValidations = array();
 	
-	private $countries = array(
-		//'SE' => array('name' => $this->l('Sweden'), 'code' => BillmateCountry::SE, 'langue' => BillmateLanguage::SV, 'currency' => BillmateCurrency::SEK)
-	);
+	private $countries = array();
 
 	const RESERVED = 1;
 	const SHIPPED = 2;
 	const CANCEL = 3;
 	
-    /**
-     * Constructor for BillmateBank
-     */
-    public function __construct()
-    {
+	/**
+	 * Constructor for BillmateBank
+	 */
+	public function __construct()
+	{
 		$this->countries = array(
 			'SE' => array('name' => 'SWEDEN', 'code' => BillmateCountry::SE, 'langue' => BillmateLanguage::SV, 'currency' => BillmateCurrency::SEK)
 		);
-        $this->name = 'billmatebank';
-        $this->moduleName='billmatebank';
-        $this->tab = 'payments_gateways';
-        $this->version = '1.34';
-        $this->author  = 'eFinance Nordic AB';
+		$this->name = 'billmatebank';
+		$this->moduleName = 'billmatebank';
+		$this->tab = 'payments_gateways';
+		$this->version = '1.35';
+		$this->author  = 'Billmate AB';
 
-        $this->currencies = true;
-        $this->currencies_mode = 'radio';
+		$this->currencies = true;
+		$this->currencies_mode = 'radio';
 
-        parent::__construct();
+		parent::__construct();
 		require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
-        $this->core = null;
-        $this->billmate = null;
-        $this->country = null;
+		$this->core = null;
+		$this->billmate = null;
+		$this->country = null;
 		$this->limited_countries = array('se'); //, 'no', 'fi', 'dk', 'de', 'nl'
 
-        /* The parent construct is required for translations */
-        $this->page = basename(__FILE__, '.php');
-        $this->displayName = $this->l('Billmate Bank');
-        $this->description = $this->l('Accepts bank payments by Billmate');
-        $this->confirmUninstall = $this->l(
-            'Are you sure you want to delete your settings?'
-        );
-        $this->billmate_merchant_id = Configuration::get('BBANK_MERCHANT_ID');
-        $this->billmate_secret = Configuration::get('BBANK_SECRET');
-        $this->billmate_countries = unserialize( Configuration::get('BILLMATE_ENABLED_COUNTRIES_LIST'));
-    }
+		/* The parent construct is required for translations */
+		$this->page = basename(__FILE__, '.php');
+		$this->displayName = $this->l('Billmate Bank');
+		$this->description = $this->l('Accepts bank payments by Billmate');
+		$this->confirmUninstall = $this->l(
+			'Are you sure you want to delete your settings?'
+		);
+		$this->billmate_merchant_id = Configuration::get('BBANK_MERCHANT_ID');
+		$this->billmate_secret = Configuration::get('BBANK_SECRET');
+		$this->billmate_countries = unserialize( Configuration::get('BILLMATE_ENABLED_COUNTRIES_LIST'));
+	}
 	
-    /**
-     * Get the content to display on the backend page.
-     *
-     * @return string
-     */
+	/**
+	 * Get the content to display on the backend page.
+	 *
+	 * @return string
+	 */
 	public function getContent()
 	{
 		$html = '';
-		if (version_compare(_PS_VERSION_,'1.5','>'))
+		if (version_compare(_PS_VERSION_, '1.5', '>'))
 			$this->context->controller->addJQueryPlugin('fancybox');
 		else
 			$html .= '<script type="text/javascript" src="'.__PS_BASE_URI__.'js/jquery/jquery.fancybox-1.3.4.js"></script><link type="text/css" rel="stylesheet" href="'.__PS_BASE_URI__.'css/jquery.fancybox-1.3.4.css" />';
 
 
 
-		if (!empty($_POST) && isset($_POST['submitBillmate']))
+		if (!empty($_POST) && Tools::getIsset('submitBillmate'))
 		{
 			$this->_postValidation();
-			if (sizeof($this->_postValidations))
+			if (count($this->_postValidations))
 				$html .= $this->_displayValidation();
-			if (sizeof($this->_postErrors))
+			if (count($this->_postErrors))
 				$html .= $this->_displayErrors();
 		}
 		$html .= $this->_displayAdminTpl();
 		return $html;
 	}
-    public function enable($forceAll=false){
-		parent::enable($forceAll);
+	public function enable($force_all = false)
+	{
+		parent::enable($force_all);
 		Configuration::updateValue('BBANK_ACTIVE', true );
 	}	
-    public function disable($forceAll=false){
-		parent::disable($forceAll);
+	public function disable($force_all = false)
+	{
+		parent::disable($force_all);
 		Configuration::updateValue('BBANK_ACTIVE', false );
 	}	
 	/**
@@ -161,6 +161,10 @@ class BillmateBank extends PaymentModule
 		$activateCountry = array();
 		$currency = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
 		$statuses = OrderState::getOrderStates((int)$this->context->language->id);
+		$statuses_array = array();
+		$countryNames = array();
+		$countryCodes = array();
+		$input_country = array();
 		foreach ($statuses as $status)
 			$statuses_array[$status['id_order_state']] = $status['name'];
 		foreach ($this->countries as $country)
@@ -191,7 +195,7 @@ class BillmateBank extends PaymentModule
 				'label' => $this->l('Set Order Status'),
 				'desc' => $this->l(''),
 				'value'=> Tools::safeOutput(Configuration::get('BBANK_ORDER_STATUS_'.$country['name'])),
-			    'options' => $statuses_array
+				'options' => $statuses_array
 			);
 			$input_country[$country['name']]['minimum_value_'.$country['name']] = array(
 				'name' => 'billmateMinimumValue'.$country['name'],
@@ -253,13 +257,12 @@ class BillmateBank extends PaymentModule
 
 	private function _postValidation()
 	{
-
-		if ($_POST['billmate_mod'] == 'live')
+		if (Tools::getValue('billmate_mod') == 'live')
 			Configuration::updateValue('BBANK_MOD', 0);
 		else
 			Configuration::updateValue('BBANK_MOD', 1);
 		
-		if (isset($_POST['billmate_active_bank']) && $_POST['billmate_active_bank'])
+		if (Tools::getIsset('billmate_active_bank') && Tools::getIsset('billmate_active_bank'))
 			Configuration::updateValue('BBANK_ACTIVE', true);
 		else
 			billmate_deleteConfig('BBANK_ACTIVE');
@@ -274,7 +277,7 @@ class BillmateBank extends PaymentModule
 		foreach ($this->countries as $key => $country)
 		{
 
-			if (isset($_POST['activate'.$country['name']]))
+			if (Tools::getIsset('activate'.$country['name']))
 			{
 				$storeId = (int)Tools::getValue('billmateStoreId'.$country['name']);
 				$secret = pSQL(Tools::getValue('billmateSecret'.$country['name']));
@@ -283,7 +286,7 @@ class BillmateBank extends PaymentModule
 				Configuration::updateValue('BBANK_SECRET_'.$country['name'], $secret);
 				Configuration::updateValue('BBANK_ORDER_STATUS_'.$country['name'], (int)(Tools::getValue('billmateOrderStatus'.$country['name'])));
 				Configuration::updateValue('BBANK_MIN_VALUE_'.$country['name'], (float)Tools::getValue('billmateMinimumValue'.$country['name']));
-				Configuration::updateValue('BBANK_MAX_VALUE_'.$country['name'], ($_POST['billmateMaximumValue'.$country['name']] != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
+				Configuration::updateValue('BBANK_MAX_VALUE_'.$country['name'], (Tools::getValue('billmateMaximumValue'.$country['name']) != 0 ? (float)Tools::getValue('billmateMaximumValue'.$country['name']) : 99999));
 	
 				$this->_postValidations[] = $this->l('Your account has been updated to be used in ').$country['name'];
 			}
@@ -302,8 +305,7 @@ class BillmateBank extends PaymentModule
 
 
 	private function _postProcess()
-	{   
-
+	{
 		if (Tools::isSubmit('btnSubmit'))
 		{
 			Configuration::updateValue('BBANK_MERCHANT_ID_', Tools::getValue('billmate_merchant_id'));
@@ -331,13 +333,13 @@ class BillmateBank extends PaymentModule
 		return $orderState->id;
 	}
 
-    /**
-     * Install the Billmate Bank module
-     *
-     * @return bool
-     */
-    public function install()
-    {
+	/**
+	 * Install the Billmate Bank module
+	 *
+	 * @return bool
+	 */
+	public function install()
+	{
 		if (!parent::install() || !$this->registerHook('payment') || !$this->registerHook('adminOrder') || !$this->registerHook('paymentReturn') || !$this->registerHook('orderConfirmation'))
 			return false;
 
@@ -349,6 +351,7 @@ class BillmateBank extends PaymentModule
 			Configuration::updateValue('BILLMATE_PAYMENT_ACCEPTED', $this->addState('Billmate : Payment accepted', '#DDEEFF'));
 		if (!Configuration::get('BILLMATE_PAYMENT_PENDING'))
 			Configuration::updateValue('BILLMATE_PAYMENT_PENDING', $this->addState('Billmate : payment in pending verification', '#DDEEFF'));
+
 		/*auto install currencies*/
 		$currencies = array(
 			'Euro' => array('iso_code' => 'EUR', 'iso_code_num' => 978, 'symbole' => '€', 'format' => 2),
@@ -357,14 +360,6 @@ class BillmateBank extends PaymentModule
 			'Krona' => array('iso_code' => 'SEK', 'iso_code_num' => 752, 'symbole' => 'SEK kr', 'format' => 2)
 		);
 
-		$languages = array(
-			'Swedish' => array('iso_code' => 'se', 'language_code' => 'sv', 'date_format_lite' => 'Y-m-d', 'date_format_full' => 'Y-m-d H:i:s' , 'flag' => 'sweden.png'),
-			'Deutsch' => array('iso_code' => 'de', 'language_code' => 'de', 'date_format_lite' => 'Y-m-d', 'date_format_full' => 'Y-m-d H:i:s' , 'flag' => 'germany.png'),
-			'Dutch' => array('iso_code' => 'nl', 'language_code' => 'nl', 'date_format_lite' => 'Y-m-d', 'date_format_full' => 'Y-m-d H:i:s' , 'flag' => 'netherlands.png'),
-			'Finnish' => array('iso_code' => 'fi', 'language_code' => 'fi', 'date_format_lite' => 'Y-m-d', 'date_format_full' => 'Y-m-d H:i:s' , 'flag' => 'finland.jpg'),
-			'Norwegian' => array('iso_code' => 'no', 'language_code' => 'no', 'date_format_lite' => 'Y-m-d', 'date_format_full' => 'Y-m-d H:i:s' , 'flag' => 'norway.png'),
-			'Danish' => array('iso_code' => 'da', 'language_code' => 'da', 'date_format_lite' => 'Y-m-d', 'date_format_full' => 'Y-m-d H:i:s' , 'flag' => 'denmark.png'),
-		);
 
 		foreach ($currencies as $key => $val)
 		{
@@ -390,93 +385,94 @@ class BillmateBank extends PaymentModule
 		Currency::refreshCurrencies();
 		
 		$version = str_replace('.', '', _PS_VERSION_);
-		$version = substr($version, 0, 2);
+		$version = Tools::substr($version, 0, 2);
 		
 		
 		/* The hook "displayMobileHeader" has been introduced in v1.5.x - Called separately to fail silently if the hook does not exist */
 
-      if ($ret) {
-            return false;
-        }
-        return true;
-    }
-    
-    public function hookOrderConfirmation($params){
-        global $smarty;
-    	
-    }
+
+		return true;
+	}
+
+	public function hookOrderConfirmation($params)
+	{
+		global $smarty;
+
+	}
 	
 	public function hookdisplayPayment($params)
 	{
 		return $this->hookPayment($params);
 	}
-    /**
-     * Hook the payment module to be shown in the payment selection page
-     *
-     * @param array $params The Smarty instance params
-     *
-     * @return string
-     */
-    public function hookPayment($params)
-    {
-        global $smarty, $link;
+	/**
+	 * Hook the payment module to be shown in the payment selection page
+	 *
+	 * @param array $params The Smarty instance params
+	 *
+	 * @return string
+	 */
+	public function hookPayment($params)
+	{
+		global $smarty, $link;
 
-		if ( !Configuration::get('BBANK_ACTIVE'))
+		if (!Configuration::get('BBANK_ACTIVE'))
 			return false;
 
-        $total = $this->context->cart->getOrderTotal();
+		$total = $this->context->cart->getOrderTotal();
 
-        $cart = $params['cart'];
-        $address = new Address(intval($cart->id_address_delivery));
-        $country = new Country(intval($address->id_country));
+		$cart = $params['cart'];
+		$address = new Address((int)$cart->id_address_delivery);
+		$country = new Country((int)$address->id_country);
 
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
+		$countryname = Tools::strtoupper($countryname);
 
-       $minVal = Configuration::get('BBANK_MIN_VALUE_'.$countryname);
-       $maxVal = Configuration::get('BBANK_MAX_VALUE_'.$countryname);
+	   $minVal = Configuration::get('BBANK_MIN_VALUE_'.$countryname);
+	   $maxVal = Configuration::get('BBANK_MAX_VALUE_'.$countryname);
 	   
-	   if( version_compare(_PS_VERSION_, '1.5', '>=') ){
+	   if(version_compare(_PS_VERSION_, '1.5', '>='))
 		$moduleurl = $link->getModuleLink('billmatebank', 'validation', array(), true);
-	   }else{
+	   else
 		$moduleurl = __PS_BASE_URI__.'modules/billmatebank/validation.php';
-	   }
+
 	   
 		$smarty->assign('moduleurl', $moduleurl);
 		
-        if( $total > $minVal && $total < $maxVal ){
-            $customer = new Customer(intval($cart->id_customer));
-            $currency = $this->getCurrency((int)$cart->id_currency);
-			
+		if ($total > $minVal && $total < $maxVal)
+		{
+
 			$current_currency_code = trim($this->context->currency->iso_code);
 			
-			if( !in_array($current_currency_code,$this->allowed_currencies)){
+			if (!in_array($current_currency_code, $this->allowed_currencies))
 				return false;
-			}
 
-            return $this->display(__FILE__, 'tpl/billmatebank.tpl');
-        }else{
-            return false;
-        }
-    }
+			if (version_compare(_PS_VERSION_, '1.6', '>='))
+				return $this->display(__FILE__, 'tpl/billmatebank.tpl');
+			else
+				return $this->display(__FILE__, 'tpl/billmatebank-legacy.tpl');
+		}
+		else
+			return false;
 
-    /**
-     * Hook the payment module to display its confirmation template upon
-     * a successful purchase
-     *
-     * @param array $params The Smarty instance params
-     *
-     * @return string
-     */
-    public function hookPaymentReturn($params)
-    {
-        global $cart;
+	}
 
-        //customers were to reorder an order done with billmate bank.
-        $cart->save();
-        if (!$this->active) {
-            return;
-        }
-        return $this->display(__FILE__, 'confirmation.tpl');
-    }
+	/**
+	 * Hook the payment module to display its confirmation template upon
+	 * a successful purchase
+	 *
+	 * @param array $params The Smarty instance params
+	 *
+	 * @return string
+	 */
+	public function hookPaymentReturn($params)
+	{
+		global $cart;
+
+		//customers were to reorder an order done with billmate bank.
+		$cart->save();
+		if (!$this->active)
+			return;
+
+		return $this->display(__FILE__, 'confirmation.tpl');
+	}
 }

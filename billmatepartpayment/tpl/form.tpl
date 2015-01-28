@@ -28,52 +28,10 @@
 {include file="$tpl_dir./breadcrumb.tpl"}
 <h2>{l s='Order summary' mod='billmatepartpayment'}</h2>
 <style type="text/css">
-#right_column{
+/*#right_column{
 	display:none
-}
-.billmate *{
-color: #7a7a7a!important;
-}
-.billmate p{ padding-bottom:10px; }
-#billmate_submit {
-	text-align: center;
-}
+}*/
 
-.blarge{
-font-size:1.5em;
-}
-.bsmall{
-	font-size:1.1em;
-}
-.billmate{
-text-align:center;
-line-height:1.5em;
-border-top:1px solid grey;
-}
-.bnormal{
-font-size:1.3em;
-}
-.billbutton{
-	font-weight:bold;
-	color:#56AADB!important;
-
-}
-.billfooter {
-display: block!important;
-border-top: 1px solid grey!important;
-padding-top: 13px!important;
-}
-.billdropdown{
-	max-width: 100%;
-	padding: 0.3em;
-	width: 34em;
-	font-size: 1.2em;
-}
-#billmate_pno{ margin:auto!important;display:block!important;text-align:center!important;	 }
-
-@media only screen and (min-width: 500px){
-	#billmate_pno{ width:330px!important; }
-}
 </style>
 {assign var='current_step' value='payment'}
 {include file="$tpl_dir./order-steps.tpl"}
@@ -81,7 +39,7 @@ padding-top: 13px!important;
 {if isset($nbProducts) && $nbProducts <= 0}
     					 <p class="warning">{l s='Your shopping cart is empty.'}</p>
 					 {else}
-					 {if $country->iso_code == 'NL' && $payment_type == 'account'}
+					 {if $country->iso_code == 'NL' && $payment_type == 'partpayment'}
   <img src="./img/warning.jpg" style="width:100%" alt="{l s='Warning' mod='billmatepartpayment'}"/>
   {/if}
 <div id="order_area">
@@ -99,11 +57,12 @@ padding-top: 13px!important;
 		{l s='(tax incl.)' mod='billmatepartpayment'}
       {/if}
     </p>
+      <p class="bnormal"><b>{l s='Choose the payment option that best suite your needs' mod='billmatepartpayment'}</b></p>
     {if isset($accountPrice)}
-    <br/>
+
     <select name="paymentAccount" class="billdropdown">
       {foreach from=$accountPrice item=val key=k}
-	  <option value="{$k}">{$val.month}  månaders delbetalning - {displayPrice price=$val.price} per månad</option>
+	  <option value="{$k}">{$val.month} {l s='månaders delbetalning' mod='billmatepartpayment'} - {displayPrice|regex_replace:'/[.,]0+/':'' price=$val.price} {l s='per månad' mod='billmatepartpayment'}</option>
       {/foreach}
     </select>
     <br/>
@@ -112,17 +71,18 @@ padding-top: 13px!important;
     <p class="blarge">
 
       <label>{l s='Personal Number:' mod='billmatepartpayment'}</label>
-      <input type="text" name="billmate_pno" id="billmate_pno" value="" style="border:1px solid #D3D3D3;padding:0.2em;" required />
-      <br /><br/>
+      <input type="text" name="billmate_pno" id="billmate_pno" value="" required />
 	</p>
 	<p class="bsmall">
 		<input type="checkbox" checked="checked" value="" id="confirm_my_age" name="confirm_my_age" required />
 		<label for="phone">{$customer_email}</label>
 	</p>
-	<input type="button" name="submit" id="billmate_submit" style="width:26em!important" value="{l s='I confirm my order' mod='billmatepartpayment'}" class="exclusive_large blarge" />
+
     <p class="cart_navigation billfooter">
-      <a href="{$link->getPageLink('order.php', true)}?step=3" class="billbutton blarge" style="float:left;line-height:1em;">{l s='Other payment methods' mod='billmatepartpayment'}</a>
-	  <a id="terms-delbetalning" class="billbutton blarge" style="cursor:pointer!important;float:right">{l s='Conditions of payment' mod='billmatepartpayment'}</a>
+      <a href="{$link->getPageLink('order.php', true)}?step=3" class="billbutton blarge" style="float:left;line-height:1em;">
+          <input type="button" class="exclusive_large hideOnSubmit" value="{l s='Other payment methods' mod='billmatepartpayment'}"></a>
+        <input type="button" name="submit" id="billmate_submit" value="{l s='I confirm my order' mod='billmatepartpayment'}" class="exclusive_large hideOnSubmit" />
+
     </p>
   </form>
   <script type="text/javascript">
@@ -143,8 +103,8 @@ function closeIframe(id)
 <script src="{$smarty.const._MODULE_DIR_}billmateinvoice/js/billmatepopup.js"></script>
 
 <script type="text/javascript">
-var success = "{$ajaxurl.this_path_ssl}payment.php?type={$payment_type}";
-var ajaxurl = "{$ajaxurl.this_path_ssl}payment.php?type={$payment_type}";
+var success = "{$ajaxurl.this_path_ssl}validation.php?type={$payment_type}";
+var ajaxurl = "{$ajaxurl.this_path_ssl}validation.php?type={$payment_type}";
 
 {if $opc|default:FALSE}
 var carrierurl = "{$link->getPageLink("order-opc", true)}";
@@ -193,9 +153,9 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
         });
     }
     jQuery(document).ready(function(){
-		setTimeout(function(){
-			if(typeof $.uniform == 'object')	$.uniform.restore();
-		},5000);
+		//setTimeout(function(){
+		//	if(typeof $.uniform == 'object')	$.uniform.restore();
+		//},5000);
 
         jQuery('#billmate_submit').click(function(){
             if( $.trim( $('#billmate_pno').val()) == '' ){
@@ -206,7 +166,7 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
 				
 				getData( '' );
 			}else{
-				alert(checkbox_required);
+				alert($('<textarea/>').html(checkbox_required).text());
 			}
         });
     });

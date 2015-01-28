@@ -25,9 +25,9 @@
 		<p><input type="checkbox" id="billmate_active_cardpay" name="billmate_active_cardpay" {if $billmate_active_cardpay == 1}checked='checked'{/if} value="1" /> <label for="billmate_active_cardpay">{l s='Billmate Cardpay' mod='billmatecardpay'}</label><br>
 		<small><img src="{$smarty.const._MODULE_DIR_}billmatecardpay/bm_kort_l.png"/></small></p>
 
-		<h4>{l s='Set the mode authentication' mod='billmatecardpay'}</h4>
-		<input type="radio" id="billmate_authmod-sale" name="billmate_authmod" {if $billmate_authmod == 'sale'}checked='checked'{/if} value="sale" /> <label for="billmate_authmod-sale">{l s='Sale' mod='billmatecardpay'}</label>
-		<input type="radio" id="billmate_authmod-authorization" name="billmate_authmod" {if $billmate_authmod == 'auth'}checked='checked'{/if} value="auth" /> <label for="billmate_authmod-authorization">{l s='Authorization' mod='billmatecardpay'}</label>
+		<h4 style="margin: 1em 0; margin-top: 0;">{l s='Set the mode authentication' mod='billmatecardpay'}</h4>
+		<span style="display:block"><input type="radio" id="billmate_authmod-sale" name="billmate_authmod" {if $billmate_authmod == 'sale'}checked='checked'{/if} value="sale" /> <label for="billmate_authmod-sale">{l s='Sale' mod='billmatecardpay'}</label></span>
+		<span style="display:block"><input type="radio" id="billmate_authmod-authorization" name="billmate_authmod" {if $billmate_authmod == 'auth'}checked='checked'{/if} value="auth" /> <label for="billmate_authmod-authorization">{l s='Authorization' mod='billmatecardpay'}</label></span>
 		</fieldset>
 	<div class="clear"></div>	
 	<fieldset>
@@ -35,14 +35,14 @@
 		<h4>{$billmatecardpayCredentialText}</h4>
 		<ul class="billmate_list_click_country" style="margin-bottom:0px">
 			{foreach from=$credentialInputVar key=name item=c}
-			<li class="billmate_flag_{$name}">{$name|lower|capitalize}</li>
+			<li class="billmate_flag_{$name}"><img src="{$countryNames[$name].flag}" alt=""/>{$name|lower|capitalize}</li>
 			{/foreach}
 		</ul>
 		<ul class="billmate_list_country">
 			{foreach from=$credentialInputVar key=country_name item=country}
 			<li class="billmate_form_{$country_name}">
 				<fieldset>
-					<p class="title">{$country_name|lower|capitalize}</p>
+					<p class="title"><img src="{$countryNames[$name].flag}" alt=""/>{$country_name|lower|capitalize}</p>
 					<div class="fieldset-wrap">						
 						{foreach from=$country item=input}
 						{if $input.type == 'text'}
