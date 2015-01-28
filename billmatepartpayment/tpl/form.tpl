@@ -62,7 +62,7 @@
 
     <select name="paymentAccount" class="billdropdown">
       {foreach from=$accountPrice item=val key=k}
-	  <option value="{$k}">{$val.month} {l s='månaders delbetalning' mod='billmatepartpayment'} - {displayPrice price=$val.price} {l s='per månad' mod='billmatepartpayment'}</option>
+	  <option value="{$k}">{$val.month} {l s='månaders delbetalning' mod='billmatepartpayment'} - {displayPrice|regex_replace:'/[.,]0+/':'' price=$val.price} {l s='per månad' mod='billmatepartpayment'}</option>
       {/foreach}
     </select>
     <br/>
