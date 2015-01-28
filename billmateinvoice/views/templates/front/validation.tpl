@@ -32,11 +32,11 @@
             <br/> <a id="terms" class="terms" style="cursor:pointer!important;">{l s='I confirm the terms for invoice payment' mod='billmateinvoice'}</a></label>
 	</p>
 	<p>
-		<input type="button" name="submit" value="{l s='I confirm my order' mod='billmateinvoice'}" class="exclusive_large blarge" id="billmate_submit"/>
+		<input type="button" name="submit" value="{l s='I confirm my order' mod='billmateinvoice'}" style="width:26em!important" class="exclusive_large blarge" id="billmate_submit"/>
 	</p>
 	<p class="cart_navigation billfooter">
-		<a href="{$previouslink}" class="billbutton blarge" style="float:left;line-height:1em;">{l s='Other payment methods' mod='billmateinvoice'}</a>
-		<a id="terms" class="billbutton blarge terms" style="cursor:pointer!important;float:right">{l s='Terms of invoice' mod='billmateinvoice'}</a><script type="text/javascript">$.getScript("https://billmate.se/billmate/base.js", function(){ldelim}
+		<a href="{$previouslink}" class="billbutton blarge underine" style="float:left;line-height:1em;">{l s='Other payment methods' mod='billmateinvoice'}</a>
+		<a id="terms" class="billbutton blarge terms underline" style="cursor:pointer!important;float:right">{l s='Terms of invoice' mod='billmateinvoice'}</a><script type="text/javascript">$.getScript("https://billmate.se/billmate/base.js", function(){ldelim}
 		$(".terms").Terms("villkor",{ldelim}invoicefee: {$fee}{rdelim});
 {rdelim});</script>
 	</p>
