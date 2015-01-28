@@ -70,7 +70,7 @@ $_MODULE['<{billmatepartpayment}prestashop>order-confirmation_c4d6e59e655785c00b
 $_MODULE['<{billmatepartpayment}prestashop>order-confirmation_e6dc7945b557a1cd949bea92dd58963e'] = 'Din beställning kommer att skickas inom kort.';
 $_MODULE['<{billmatepartpayment}prestashop>order-confirmation_0db71da7150c27142eef9d22b843b4a9'] = 'För eventuella frågor eller för ytterligare information, vänligen kontakta vår';
 $_MODULE['<{billmatepartpayment}prestashop>order-confirmation_64430ad2835be8ad60c59e7d44e4b0b1'] = 'kundsupport';
-$_MODULE['<{billmatepartpayment}prestashop>payment-legacy_001350cf4eb59df4d5f51f9a825c4a4b'] = 'Betala från';
+$_MODULE['<{billmatepartpayment}prestashop>payment-legacy_001350cf4eb59df4d5f51f9a825c4a4b'] = 'Delbetala från';
 $_MODULE['<{billmatepartpayment}prestashop>payment-legacy_8f2893f3cd125064b9d62a7d75026b71'] = '/ månad';
 $_MODULE['<{billmatepartpayment}prestashop>payment_001350cf4eb59df4d5f51f9a825c4a4b'] = 'Delbetala från';
 $_MODULE['<{billmatepartpayment}prestashop>payment_8f2893f3cd125064b9d62a7d75026b71'] = '/ månad';
