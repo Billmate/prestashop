@@ -11,7 +11,6 @@ When the order is passed to Billmate a credit record of the customer is made. If
 
 Billmate is a great payment alternative for merchants and customers in Sweden.
 
-
 ## Important Note
 
 This plugin does not currently support campaigns.
