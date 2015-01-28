@@ -36,7 +36,7 @@ extract zip file under prestashop_root/modules
 ## Changelog
 
 ### 1.35
-Total of 61 issues closed, the biggest release yet.
+Total of 61 issues closed and 75 commits the biggest release yet.
 
 * Fix - Made the styling better overall through the plugin
 * Fix - Improved compatibility with Prestashop 1.4
