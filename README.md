@@ -1,12 +1,8 @@
-Billmate Payment Gateway for Prestashop
-==========
+# Billmate Payment Gateway for Prestashop
+By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
+Documentation with instructions on how to setup the plugin can be found [here](https://billmate.se/plugins/prestashop/Instruktionsmanual_Prestashop_Billmate_Plugin.pdf).
 
-By Billmate AB - http://billmate.se/
-
-Documentation with instructions on how to setup the plugin can be found at https://billmate.se/plugins/prestashop/Instruktionsmanual_Prestashop_Billmate_Plugin.pdf
-
-
-== Description ==
+## Description
 
 Billmate Gateway is a plugin that extends Prestashop, allowing your customers to get their products first and pay by invoice to Billmate later (http://www.billmate.com/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
 
@@ -15,20 +11,20 @@ When the order is passed to Billmate a credit record of the customer is made. If
 Billmate is a great payment alternative for merchants and customers in Sweden.
 
 
-== Important Note ==
+## Important Note
 
 This plugin does not currently support Campaigns.
 
-INVOICE FEE HANDLING
+### Invoice Fee Handling
 Since of version 1.31 the Invoice Fee for Billmate Invoice are added as a simple (hidden) product. This is to match order total in Prestashop and your billmate part payment (in earlier versions the invoice fee only were added to Billmate).
 
 To create a Invoice fee product: 
-- Add a simple (hidden) product. Mark it as a taxable product.
-- Go to the Billmate Gateway settings page and add the ID of the Invoice Fee product. The ID can be found by hovering the Invoice Fee product on the Products page in Prestashop.
+* Add a simple (hidden) product. Mark it as a taxable product.
+* Go to the Billmate Gateway settings page and add the ID of the Invoice Fee product. The ID can be found by hovering the Invoice Fee product on the Products page in Prestashop.
 
 
 
-== Installation	 ==
+## Installation
 
 Read following information to install these plugins
 
@@ -36,10 +32,9 @@ You will find three plugins billmateInvoice, BillmateCardpay, BillmatePartpaymen
 
 extract zip file under prestashop_root/modules
 
-== Changelog ==
+## Changelog
 
-= 1.35 =
-
+### 1.35
 Total of 61 issues closed, the biggest release yet.
 
 * Fix - Made the styling better overall through the plugin
