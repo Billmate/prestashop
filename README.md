@@ -1,4 +1,4 @@
-prestashop
+Billmate Prestashop Plugin
 ==========
 
 Billmate payment plugin for Prestashop
