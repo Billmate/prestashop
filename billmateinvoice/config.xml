@@ -2,9 +2,9 @@
 <module>
 	<name>billmateinvoice</name>
 	<displayName><![CDATA[BillMate Invoice]]></displayName>
-	<version><![CDATA[1.34]]></version>
+	<version><![CDATA[1.35]]></version>
 	<description><![CDATA[Accepts invoice payments by BillMate]]></description>
-	<author><![CDATA[eFinance Nordic AB]]></author>
+	<author><![CDATA[Billmate AB]]></author>
 	<tab><![CDATA[payments_gateways]]></tab>
 	<confirmUninstall><![CDATA[Are you sure you want to delete your settings?]]></confirmUninstall>
 	<is_configurable>1</is_configurable>

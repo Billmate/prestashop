@@ -259,7 +259,7 @@ class BillmateCalc
             $value = $payarr[0];
         }
         if (BillmateFlags::CHECKOUT_PAGE == $flags) {
-            return round($value, 2);
+            return round($value, 0);
         }
         return self::pRound($value, $pclass['country']);
     }

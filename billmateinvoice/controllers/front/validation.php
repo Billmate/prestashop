@@ -34,20 +34,20 @@ class BillmateInvoiceValidationModuleFrontController extends ModuleFrontControll
 	 */
 	public function initContent()
 	{
-	    global $link;
+		global $link;
 		$this->display_column_left = false;
 		parent::initContent();
-        $adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
+		$adrsDelivery = new Address((int)$this->context->cart->id_address_delivery);
 
-        $country = new Country(intval($adrsDelivery->id_country));
-        
-        $countryname = BillmateCountry::getContryByNumber( BillmateCountry::fromCode($country->iso_code)  );
-        $countryname = Tools::strtoupper($countryname);
-        
+		$country = new Country((int)$adrsDelivery->id_country);
+
+		$countryname = BillmateCountry::getContryByNumber(BillmateCountry::fromCode($country->iso_code));
+		$countryname = Tools::strtoupper($countryname);
+
 		$id_product = Configuration::get('BM_INV_FEE_ID_'.$countryname);
 		$product = new Product($id_product);
 		$price   = $product->price;
-		$price_wt = $price * (1 + (($product->getTaxesRate($adrsDelivery)) * 0.01));		
+		$price_wt = $price * (1 + (($product->getTaxesRate($adrsDelivery)) * 0.01));
 		$customer = new Customer($this->context->cart->id_customer);
 		
 		if(version_compare(_PS_VERSION_,'1.5','>=')){
@@ -58,6 +58,7 @@ class BillmateInvoiceValidationModuleFrontController extends ModuleFrontControll
 		$this->context->smarty->assign('previouslink', $previouslink);
 
 		$this->context->smarty->assign(array(
+			'ps_version' => _PS_VERSION_,
 			'total' => $this->context->cart->getOrderTotal(true, Cart::BOTH) + (float)$price_wt,
 			'fee' =>(float)$price_wt,
 			'customer_email' => $customer->email,
@@ -65,7 +66,7 @@ class BillmateInvoiceValidationModuleFrontController extends ModuleFrontControll
 			'this_path' => $this->module->getPathUri(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->module->name.'/'
 		));
-        
+
 		$extra = '.tpl';
 		if( $this->context->getMobileDevice() ) $extra = '-mobile.tpl';
 
