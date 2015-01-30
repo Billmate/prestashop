@@ -34,8 +34,12 @@ extract zip file under prestashop_root/modules
 
 ## Changelog
 
-### 1.35
-Total of 61 issues closed and 75 commits the biggest release yet.
+### 1.35.1 (2015-01-30)
+1 issue closed and 4 commits
+* Fix - Updated how auto activate card & bankpayments are processed to contain the correct order id.
+
+### 1.35 (2015-01-28)
+Total of 61 issues closed and 80 commits the biggest release yet.
 
 * Fix - Made the styling better overall through the plugin
 * Fix - Improved compatibility with Prestashop 1.4
