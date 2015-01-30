@@ -109,8 +109,10 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 							Db::getInstance()->update('order_payment', $extra, 'order_reference="'.$this->module->currentOrderReference.'"');
 
 						$timestart = microtime(true);
-						$api->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
+                        $result = $api->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
 
+                        if (is_array($result))
+                            $api->ActivateInvoice($result[1]);
 						$measurements['update_order_no'] = microtime(true) - $timestart;
 						$duration = ( microtime(true) - $timetotalstart ) * 1000;
 
@@ -368,7 +370,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			'language'	 => $languageCode,
 			'accept_url' => $accept_url,
 			'callback_url'=> $callback_url,
-			'capture_now' => 'YES',
+			'capture_now' => 'NO',
 			'cancel_url' => $cancel_url,
 			'total'      => $total,
 			'this_path'  => $this->module->getPathUri(),
@@ -559,7 +561,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 			'extraInfo'=>array(array('cust_no'=>'0' ,'creditcard_data'=> $_REQUEST))
 		);
 
-		$transaction['extraInfo'][0]['status'] = 'Paid';
+
 
 		if (empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
 

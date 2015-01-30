@@ -45,8 +45,9 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
 				$debug = false;
 
 				$k = new BillMate($eid, $secret, $ssl, $debug, Configuration::get('BCARDPAY_MOD'));
-				$k->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
-
+				$result = $k->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
+                if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale' && is_array($result))
+                    $k->ActivateInvoice((string)$result[1]);
 
 				//$order = new Order($_POST['order_id']);
 				if (!empty($extra))
@@ -250,7 +251,7 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
 
 		//$transaction["extraInfo"][0]["status"] = 'Paid';
 		
-		if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale') $transaction['extraInfo'][0]['status'] = 'Paid';
+		//if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale') $transaction['extraInfo'][0]['status'] = 'Paid';
 
 		if (empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
 		
