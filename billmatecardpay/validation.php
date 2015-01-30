@@ -107,7 +107,9 @@ class BillmateCardpayController extends FrontController
 
 			        $billmatecard->validateOrder((int)self::$cart->id, Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS'), $total, $billmatecard->displayName, null, array(), null, false, $customer->secure_key);
 
-					$data['api']->updateOrderNo((string)$data['invoiceid'], (string)$billmatecard->currentOrder);
+					$result = $data['api']->updateOrderNo((string)$data['invoiceid'], (string)$billmatecard->currentOrder);
+                    if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale')
+                        $data['api']->ActivateInvoice((string)$data['invoiceid']);
                     unlink($lockfile);
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatecard->id.'&id_order='.(int)$billmatecard->currentOrder);
 					die();
@@ -163,7 +165,7 @@ class BillmateCardpayController extends FrontController
 		    'accept_url' => $accept_url,
 			'callback_url'=> $callback_url,
 			'return_method'=> $return_method,
-			'capture_now' => Configuration::get('BCARDPAY_AUTHMOD') == 'sale'? 'YES': 'NO',
+			'capture_now' => 'NO',//Configuration::get('BCARDPAY_AUTHMOD') == 'sale'? 'YES': 'NO',
 			'do_3d_secure' => $do_3d_secure,
 			'prompt_name_entry' => $prompt_name_entry,
 		    'cancel_url' => $cancel_url,
@@ -356,7 +358,7 @@ class BillmateCardpayController extends FrontController
 			'extraInfo'=>array(array('cust_no'=>'0' ,'creditcard_data'=> $_REQUEST))
 		);
 
-		if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale' ) $transaction['extraInfo'][0]['status'] = 'Paid';
+		//if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale' ) $transaction['extraInfo'][0]['status'] = 'Paid';
 
 		if($method == 'invoice')
 			$result1 = $k->AddInvoice('', $bill_address, $ship_address, $goods_list, $transaction);

@@ -117,15 +117,13 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
 						$timestart = microtime(true);
 						//$api = $this->getBillmate();
-						$api->UpdateOrderNo((string)$invoiceid,(string) $this->module->currentOrder);
-						//unset($_SESSION["uniqueId"]);
-						//$measurements['update_order_no'] = microtime(true) - $timestart;
-						//$duration = ( microtime(true)-$timetotalstart ) * 1000;
-						//$api->stat("client_card_order_measurements", json_encode(array('order_id'=>$this->module->currentOrder, 'measurements'=>$measurements)), '', $duration);
-					//} else {
-					//	$customer = new Customer((int)$this->context->cart->id_customer);
-					//}
-					//$this->module->currentOrder = $_REQUEST['order_id'];
+						$result = $api->UpdateOrderNo((string)$invoiceid,(string) $this->module->currentOrder);
+
+                        if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale')
+                            $res = $api->ActivateInvoice((string)$invoiceid);
+
+
+
 					if( isset($_SESSION['billmate_order_id'])){
 						unset($_SESSION['billmate_order_id']);
 					}
@@ -198,7 +196,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			'accept_url' => $accept_url,
 			'callback_url'=> $callback_url,
 			'return_method'=> $return_method,
-			'capture_now' => Configuration::get('BCARDPAY_AUTHMOD') == 'sale'? 'YES': 'NO',
+			'capture_now' => 'NO',//Configuration::get('BCARDPAY_AUTHMOD') == 'sale'? 'YES': 'NO',
 			'do_3d_secure' => $do_3d_secure,
 			'prompt_name_entry' => $prompt_name_entry,
 			'cancel_url' => $cancel_url,
@@ -381,7 +379,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			'extraInfo'=>array(array('cust_no'=>'0' ,'creditcard_data'=> $_REQUEST))
 		);
 
-		if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale') $transaction['extraInfo'][0]['status'] = 'Paid';
+		//if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale') $transaction['extraInfo'][0]['status'] = 'Paid';
 
 		$timestart = microtime(true);
 		$measurements = array();
@@ -578,7 +576,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 			'extraInfo'=>array(array('cust_no'=>'0' ,'creditcard_data'=> $_REQUEST))
 		);
 
-		if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale' ) $transaction['extraInfo'][0]['status'] = 'Paid';
+		//if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale' ) $transaction['extraInfo'][0]['status'] = 'Paid';
 		if (empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;
 
 		if (isset($_SESSION['INVOICE_CREATED_CARD']))

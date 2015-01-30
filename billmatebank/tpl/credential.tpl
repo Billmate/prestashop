@@ -1,6 +1,6 @@
 <style type="text/css">
 .billmate-blockSmall.R{
-	height:143.625px!important;
+	min-height:143.625px!important;
 }
 </style>
 <form action="{$billmatebankFormCredential}" method="POST">
@@ -15,8 +15,11 @@
 		<input type="hidden" name="submitBillmate" value="1"/>
 		<p><input type="checkbox" id="billmate_active_bank" name="billmate_active_bank" {if $billmate_active_bank == 1}checked='checked'{/if} value="1" /> <label for="billmate_active_bank">{l s='Billmate Bank' mod='billmatebank'}</label><br>
 		<small><img src="{$smarty.const._MODULE_DIR_}billmatebank/billmate_bank_l.png"/></small></p>
+        <h4 style="margin: 1em 0; margin-top: 0;">{l s='Set the mode authentication' mod='billmatecardpay'}</h4>
+        <span style="display:block"><input type="radio" id="billmate_authmod-sale" name="billmate_authmod" {if $billmate_authmod == 'sale'}checked='checked'{/if} value="sale" /> <label for="billmate_authmod-sale">{l s='Sale' mod='billmatebank'}</label></span>
+        <span style="display:block"><input type="radio" id="billmate_authmod-authorization" name="billmate_authmod" {if $billmate_authmod == 'auth'}checked='checked'{/if} value="auth" /> <label for="billmate_authmod-authorization">{l s='Authorization' mod='billmatebank'}</label></span>
 
-		</fieldset>
+    </fieldset>
 	<div class="clear"></div>	
 	<fieldset>
 	<legend><img src="{$module_dir}img/icon-countries.gif" alt="" /> {$billmatebankCredentialTitle}</legend>

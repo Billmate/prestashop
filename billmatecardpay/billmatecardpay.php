@@ -59,7 +59,7 @@ class BillmateCardpay extends PaymentModule
 		$this->name = 'billmatecardpay';
 		$this->moduleName='billmatecardpay';
 		$this->tab = 'payments_gateways';
-		$this->version = '1.35';
+		$this->version = '1.35.1';
 		$this->author  = 'Billmate AB';
 
 		$this->currencies = true;
