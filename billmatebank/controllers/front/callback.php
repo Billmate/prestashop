@@ -50,8 +50,10 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 												false,
 												$customer->secure_key);
 
-				$api->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
+				$result = $api->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
 
+                if(Configuration::get('BBANK_AUTHMOD') == 'sale')
+                    $api->ActivateInvoice((string)$invoiceid);
 
 				if (!empty($extra))
 					Db::getInstance()->update('order_payment', $extra, 'order_reference="'.$this->module->currentOrderReference.'"');
@@ -254,7 +256,6 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 			'extraInfo'=>array(array('cust_no'=>'0' ,'creditcard_data'=> $_REQUEST))
 		);
 
-		$transaction['extraInfo'][0]['status'] = 'Paid';
 		
 
 		if (empty($bill_address) || empty($ship_address) || empty($goods_list)) return false;

@@ -104,7 +104,9 @@ class BillmateBankController extends FrontController
 					$total = self::$cart->getOrderTotal();
 					$billmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $billmatebank->displayName, null, $extra, null, false, $customer->secure_key);
 
-					$data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatebank->currentOrder);
+					$result = $data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatebank->currentOrder);
+                    if(Configuration::get('BBANK_AUTMOD') == 'sale')
+                        $data['api']->ActivateInvoice((string)$data['invoiceid']);
 					unlink($lockfile);
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatebank->id.'&id_order='.(int)$billmatebank->currentOrder);
 
@@ -160,7 +162,7 @@ class BillmateBankController extends FrontController
 			'accept_url' => $accept_url,
 			'callback_url'=> $callback_url,
 			'return_method'=> $return_method,
-			'capture_now' => 'YES',
+			'capture_now' => 'NO',
 			'cancel_url' => $cancel_url,
 			'total'      => self::$cart->getOrderTotal(),
 			'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/billmatebank/'
@@ -346,7 +348,7 @@ class BillmateBankController extends FrontController
 			'extraInfo'=>array(array('cust_no'=>'0' ,'creditcard_data'=> $_REQUEST))
 		);
 
-		$transaction['extraInfo'][0]['status'] = 'Paid';
+		//$transaction['extraInfo'][0]['status'] = 'Paid';
 		if ($method == 'invoice')
 			$result1 = $k->AddInvoice('', $bill_address, $ship_address, $goods_list, $transaction);
 		else

@@ -2,7 +2,7 @@
 <module>
 	<name>billmatebank</name>
 	<displayName><![CDATA[Billmate Bank]]></displayName>
-	<version><![CDATA[1.35]]></version>
+	<version><![CDATA[1.35.1]]></version>
 	<description><![CDATA[Accepts bank payments by Billmate]]></description>
 	<author><![CDATA[Billmate AB]]></author>
 	<tab><![CDATA[payments_gateways]]></tab>

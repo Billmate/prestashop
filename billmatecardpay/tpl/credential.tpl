@@ -1,6 +1,6 @@
 <style type="text/css">
 .billmate-blockSmall.R{
-	height:143.625px!important;
+	min-height:143.625px!important;
 }
 </style>
 

@@ -70,8 +70,10 @@ class BillmateCallbackController extends FrontController {
 					$extra = array('transaction_id' => $data['invoiceid']);
 					$billmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $billmatebank->displayName, null, $extra, null, false, $customer->secure_key);
 
-					$data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatebank->currentOrder);
+					$result = $data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatebank->currentOrder);
 
+                    if(Configuration::get('BBANK_AUTHMOD') == 'sale')
+                        $data['api']->ActivateInvoice($data['invoiceid']);
 					unlink($lockfile);
 
 				}catch(Exception $ex){
@@ -228,7 +230,7 @@ class BillmateCallbackController extends FrontController {
 					'price'    => $cart_details[$total] * 100,
 					'vat'      => (float)$vatrate,
 					'discount' => 0.0,
-					'flags'    => $flag,
+					'flags'    => $flags,
 				)
 			);
 		}
@@ -254,8 +256,6 @@ class BillmateCallbackController extends FrontController {
 			'sid'=>array('time'=>microtime(true)),
 			'extraInfo'=>array(array('cust_no'=>'0' ,'creditcard_data'=> $_REQUEST))
 		);
-
-		$transaction['extraInfo'][0]['status'] = 'Paid';
 
 		$result1 = $k->AddInvoice('', $bill_address, $ship_address, $goods_list, $transaction);
 

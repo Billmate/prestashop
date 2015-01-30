@@ -70,7 +70,10 @@ class BillmateCallbackController extends FrontController {
 					$extra = array('transaction_id' => $data['invoiceid']);
 					$billmatecardpay->validateOrder((int)self::$cart->id, Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS'), $total, $billmatecardpay->displayName, null, $extra, null, false, $customer->secure_key);
 
-					$data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatecardpay->currentOrder);
+					$result = $data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatecardpay->currentOrder);
+
+                    if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale')
+                        $data['api']->ActivateInvoice((string)$data['invoiceid']);
 
 					unlink($lockfile);
 
@@ -254,7 +257,7 @@ class BillmateCallbackController extends FrontController {
 			'extraInfo'=>array(array('cust_no'=>'0' ,'creditcard_data'=> $_REQUEST))
 		);
 
-		$transaction['extraInfo'][0]['status'] = 'Paid';
+		//$transaction['extraInfo'][0]['status'] = 'Paid';
 
 		$result1 = $k->AddInvoice('', $bill_address, $ship_address, $goods_list, $transaction);
 

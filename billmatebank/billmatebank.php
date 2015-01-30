@@ -62,7 +62,7 @@ class BillmateBank extends PaymentModule
 		$this->name = 'billmatebank';
 		$this->moduleName = 'billmatebank';
 		$this->tab = 'payments_gateways';
-		$this->version = '1.35';
+		$this->version = '1.35.1';
 		$this->author  = 'Billmate AB';
 
 		$this->currencies = true;
@@ -231,6 +231,7 @@ class BillmateBank extends PaymentModule
 				'credentialInputVar' => $input_country,
 				'countryNames' => $countryNames,
 				'billmatebankCredentialTitle' => $this->l('Location'),
+                'billmate_authmod' => Configuration::get('BBANK_AUTHMOD'),
 				'countryCodes' => $countryCodes,
 				'img' => '../modules/'.$this->moduleName.'/img/',
 				'activateCountry' => $activateCountry));
@@ -261,7 +262,8 @@ class BillmateBank extends PaymentModule
 			Configuration::updateValue('BBANK_MOD', 0);
 		else
 			Configuration::updateValue('BBANK_MOD', 1);
-		
+
+        Configuration::updateValue('BBANK_AUTHMOD', Tools::getValue('billmate_authmod'));
 		if (Tools::getIsset('billmate_active_bank') && Tools::getIsset('billmate_active_bank'))
 			Configuration::updateValue('BBANK_ACTIVE', true);
 		else
