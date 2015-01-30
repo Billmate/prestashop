@@ -105,8 +105,8 @@ class BillmateBankController extends FrontController
 					$billmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $billmatebank->displayName, null, $extra, null, false, $customer->secure_key);
 
 					$result = $data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatebank->currentOrder);
-
-                    $data['api']->ActivateInvoice((string)$result[1]);
+                    if(Configuration::get('BBANK_AUTMOD') == 'sale')
+                        $data['api']->ActivateInvoice((string)$data['invoiceid']);
 					unlink($lockfile);
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatebank->id.'&id_order='.(int)$billmatebank->currentOrder);
 

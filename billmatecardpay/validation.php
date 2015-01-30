@@ -110,7 +110,7 @@ class BillmateCardpayController extends FrontController
 					$result = $data['api']->updateOrderNo((string)$data['invoiceid'], (string)$billmatecard->currentOrder);
 
                     if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale')
-                        $data['api']->ActivateInvoice((string)$result[1]);
+                        $data['api']->ActivateInvoice((string)$data['invoiceid']);
 
                     unlink($lockfile);
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)self::$cart->id.'&id_module='.(int)$billmatecard->id.'&id_order='.(int)$billmatecard->currentOrder);

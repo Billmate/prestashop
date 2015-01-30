@@ -73,7 +73,7 @@ class BillmateCallbackController extends FrontController {
 					$result = $data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatecardpay->currentOrder);
 
                     if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale')
-                        $data['api']->ActivateInvoice((string)$result[1]);
+                        $data['api']->ActivateInvoice((string)$data['invoiceid']);
 
 					unlink($lockfile);
 

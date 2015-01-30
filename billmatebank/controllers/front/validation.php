@@ -111,8 +111,8 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 						$timestart = microtime(true);
                         $result = $api->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
 
-                        if (is_array($result))
-                            $api->ActivateInvoice($result[1]);
+                        if (Configuration::get('BBANK_AUTHMOD') == 'sale')
+                            $api->ActivateInvoice($invoiceid);
 						$measurements['update_order_no'] = microtime(true) - $timestart;
 						$duration = ( microtime(true) - $timetotalstart ) * 1000;
 

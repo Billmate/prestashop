@@ -52,8 +52,8 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 
 				$result = $api->UpdateOrderNo((string)$invoiceid, (string)$this->module->currentOrder);
 
-                if(is_array($result))
-                    $api->ActivateInvoice((string)$result[1]);
+                if(Configuration::get('BBANK_AUTHMOD') == 'sale')
+                    $api->ActivateInvoice((string)$invoiceid);
 
 				if (!empty($extra))
 					Db::getInstance()->update('order_payment', $extra, 'order_reference="'.$this->module->currentOrderReference.'"');

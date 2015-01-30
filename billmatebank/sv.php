@@ -2,7 +2,6 @@
 
 global $_MODULE;
 $_MODULE = array();
-$_MODULE['<{billmatebank}prestashop>billmatebank_c8f4261f9f46e6465709e17ebea7a92b'] = 'Sverige';
 $_MODULE['<{billmatebank}prestashop>billmatebank_72591b0379b1b01aa1a5682eed7b7699'] = 'Billmate Bank';
 $_MODULE['<{billmatebank}prestashop>billmatebank_571c3abd682f081ab6b29d473995177e'] = 'Ta emot bankbetalningar via Billmate';
 $_MODULE['<{billmatebank}prestashop>billmatebank_f4f70727dc34561dfde1a3c529b6205c'] = 'Inställningar';
@@ -35,6 +34,9 @@ $_MODULE['<{billmatebank}prestashop>credential_0cbc6611f5540bd0809a388dc95a615b'
 $_MODULE['<{billmatebank}prestashop>credential_955ad3298db330b5ee880c2c9e6f23a0'] = 'Live ';
 $_MODULE['<{billmatebank}prestashop>credential_b54cae027174159a78c651b2875617cf'] = 'Betalningsalternativ';
 $_MODULE['<{billmatebank}prestashop>credential_72591b0379b1b01aa1a5682eed7b7699'] = 'Billmate Bank aktiverad';
+$_MODULE['<{billmatebank}prestashop>credential_a51c2c458d6da36b6b142361d9e49c1f'] = 'Transaction method';
+$_MODULE['<{billmatebank}prestashop>credential_f2cd171bd42220283b7a595c3ff2aaaf'] = 'Debitera belopp direkt';
+$_MODULE['<{billmatebank}prestashop>credential_9cd8a2455b1839ff98ef70c05b9b5983'] = 'Reservera belopp (debitera i Billmate)';
 $_MODULE['<{billmatebank}prestashop>credential_961f2247a2070bedff9f9cd8d64e2650'] = 'Välj';
 $_MODULE['<{billmatebank}prestashop>credential_b39ce3657fdce8a871c6b37797e65be5'] = 'Spara / Uppdatera';
 $_MODULE['<{billmatebank}prestashop>form_835464c618db4bc2f642c985efa98718'] = 'Billmate Bank Betalning';

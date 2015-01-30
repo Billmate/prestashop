@@ -118,8 +118,11 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 						$timestart = microtime(true);
 						//$api = $this->getBillmate();
 						$result = $api->UpdateOrderNo((string)$invoiceid,(string) $this->module->currentOrder);
-                    if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale')
-                        $api->ActivateInvoice((string)$result[1]);
+
+                        if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale')
+                            $res = $api->ActivateInvoice((string)$invoiceid);
+
+
 
 					if( isset($_SESSION['billmate_order_id'])){
 						unset($_SESSION['billmate_order_id']);
