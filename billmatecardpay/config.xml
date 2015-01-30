@@ -2,7 +2,7 @@
 <module>
 	<name>billmatecardpay</name>
 	<displayName><![CDATA[BillMate Cardpay]]></displayName>
-	<version><![CDATA[1.35]]></version>
+	<version><![CDATA[1.35.1]]></version>
 	<description><![CDATA[Accepts cardpay payments by BillMate]]></description>
 	<author><![CDATA[Billmate AB]]></author>
 	<tab><![CDATA[payments_gateways]]></tab>
