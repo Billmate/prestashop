@@ -35,12 +35,12 @@ extract zip file under prestashop_root/modules
 ## Changelog
 
 ### 1.35.2 (2015-02-02)
-2 issues closed and 6 commits
-* Fix - If no order status was set, the module will default to the Prestashop default.
+2 issues closed and 7 commits.
+* Fix - If no order status was set, the module would stop working. Now it will default to the Prestashop standard order accepted status.
 * Fix - Fixed a bug if minify was enabled the invoice & part payment module would not work.
 
 ### 1.35.1 (2015-01-30)
-1 issue closed and 4 commits
+1 issue closed and 4 commits.
 * Fix - Updated how auto activate card & bankpayments are processed to contain the correct order id.
 
 ### 1.35 (2015-01-28)
