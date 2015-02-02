@@ -28,14 +28,13 @@ To create a Invoice fee product:
 
 Read following information to install these plugins
 
-You will find three plugins billmateInvoice, BillmateCardpay, BillmatePartpayment
-
-extract zip file under prestashop_root/modules
+* You will find three plugins billmateinvoice, billmatepartpayment, billmatecardpay & billmatebank
+* Extract zip file under prestashop_root/modules
 
 ## Changelog
 
 ### 1.35.2 (2015-02-02)
-2 issues closed and 8 commits.
+2 issues closed and 9 commits.
 * Fix - If no order status was set, the module would stop working. Now it will default to the Prestashop standard order accepted status.
 * Fix - Fixed a bug if minify was enabled the invoice & part payment module would not work.
 
