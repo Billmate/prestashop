@@ -36,7 +36,7 @@ class BillmateCardpayCallbackModuleFrontController extends ModuleFrontController
 				$data_return = $this->processReserveInvoice(strtoupper($this->context->country->iso_code), $_REQUEST['order_id']);
 				extract($data_return);
 				$extra = array('transaction_id' => $invoiceid);
-				$this->module->validateOrder((int)$this->context->cart->id, (Configuration::get('BBANK_ORDER_STATUS_SWEDEN')) ? Configuration::get('BBANK_ORDER_STATUS_SWEDEN') : Configuration::get('PS_OS_PAYMENT'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+				$this->module->validateOrder((int)$this->context->cart->id, (Configuration::get('BCARDPAY_ORDER_STATUS_SWEDEN')) ? Configuration::get('BCARDPAY_ORDER_STATUS_SWEDEN') : Configuration::get('PS_OS_PAYMENT'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 
 				$eid = (int)Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
 				$secret = Configuration::get('BCARDPAY_SECRET_SETTINGS');
