@@ -346,7 +346,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 					$this->module = new BillmateInvoice();
 
 				$extra = array('transaction_id'=>$invoiceid);
-				$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BM_INV_ORDER_STATUS_SWEDEN'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+				$this->module->validateOrder((int)$this->context->cart->id, (Configuration::get('BM_INV_ORDER_STATUS_SWEDEN')) ? Configuration::get('BM_INV_ORDER_STATUS_SWEDEN') : Configuration::get('PS_OS_PAYMENT'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$order_id = $this->module->currentOrder;
 				$measurements['validateorder'] = microtime(true) - $timestart;
 				

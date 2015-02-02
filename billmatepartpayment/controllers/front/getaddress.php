@@ -347,7 +347,7 @@ class BillmatePartpaymentGetaddressModuleFrontController extends ModuleFrontCont
 				if ((version_compare(_PS_VERSION_, '1.5', '<')))
 					$this->module = new BillmatePartpayment();
 
-				$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BILLMATE_ORDER_STATUS_SWEDEN'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+				$this->module->validateOrder((int)$this->context->cart->id, (Configuration::get('BILLMATE_ORDER_STATUS_SWEDEN')) ? Configuration::get('BILLMATE_ORDER_STATUS_SWEDEN') : Configuration::get('PS_OS_PAYMENT'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$order_id = $this->module->currentOrder;
 				$measurements['validateorder'] = microtime(true) - $timestart;
 				

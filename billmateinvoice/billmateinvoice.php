@@ -89,7 +89,7 @@ class BillmateInvoice extends PaymentModule
 		$this->name = 'billmateinvoice';
 		$this->moduleName='billmateinvoice';
 		$this->tab = 'payments_gateways';
-		$this->version = '1.35.1';
+		$this->version = '1.35.2';
 		$this->author  = 'Billmate AB';
 
 		$this->currencies = true;
@@ -189,6 +189,7 @@ class BillmateInvoice extends PaymentModule
 		$countryNames = array();
 		foreach ($statuses as $status)
 			$statuses_array[$status['id_order_state']] = $status['name'];
+
 		foreach ($this->countries as $country)
 		{
 			$countryNames[$country['name']] = array('flag' => '../modules/'.$this->moduleName.'/img/flag_'.$country['name'].'.png', 'country_name' => $country['name']);
@@ -224,7 +225,7 @@ class BillmateInvoice extends PaymentModule
 				'type' => 'select',
 				'label' => $this->l('Set Order Status'),
 				'desc' => $this->l(''),
-				'value'=> Tools::safeOutput(Configuration::get('BM_INV_ORDER_STATUS_'.$country['name'])),
+				'value'=> (Tools::safeOutput(Configuration::get('BM_INV_ORDER_STATUS_'.$country['name']))) ? Tools::safeOutput(Configuration::get('BM_INV_ORDER_STATUS_'.$country['name'])) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
 				'options' => $statuses_array
 			);
 			$input_country[$country['name']]['minimum_value_'.$country['name']] = array(
