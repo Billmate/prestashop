@@ -68,7 +68,7 @@ class BillmateCallbackController extends FrontController {
 					$total = self::$cart->getOrderTotal();
 
 					$extra = array('transaction_id' => $data['invoiceid']);
-					$billmatebank->validateOrder((int)self::$cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $billmatebank->displayName, null, $extra, null, false, $customer->secure_key);
+					$billmatebank->validateOrder((int)self::$cart->id, (Configuration::get('BBANK_ORDER_STATUS_SWEDEN')) ? Configuration::get('BBANK_ORDER_STATUS_SWEDEN') : Configuration::get('PS_OS_PAYMENT'), $total, $billmatebank->displayName, null, $extra, null, false, $customer->secure_key);
 
 					$result = $data['api']->UpdateOrderNo((string)$data['invoiceid'], (string)$billmatebank->currentOrder);
 

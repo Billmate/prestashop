@@ -41,7 +41,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 				$api = $data_return['api'];
 				$extra = array('transaction_id' => $invoiceid);
 				$this->module->validateOrder((int)$this->context->cart->id,
-												Configuration::get('BBANK_ORDER_STATUS_SWEDEN'),
+                    (Configuration::get('BBANK_ORDER_STATUS_SWEDEN')) ? Configuration::get('BBANK_ORDER_STATUS_SWEDEN') : Configuration::get('PS_OS_PAYMENT'),
 												$total,
 												$this->module->displayName,
 												null,
