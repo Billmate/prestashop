@@ -37,7 +37,7 @@ Read following information to install these plugins
 3 issues closed and 13 commits.
 * Fix - If no order status was set, the module would stop working. Now it will default to the Prestashop standard order accepted status.
 * Fix - Fixed a bug if minify was enabled the invoice & part payment module would not work.
-* Increased the z-index of the billmatepopup to 9999, it should now always be on top undepening on the theme in use.
+* Fix - Increased the z-index of the billmatepopup to 9999, it should now always be on top undepening on the theme in use.
 
 ### 1.35.1 (2015-01-30)
 1 issue closed and 4 commits.
