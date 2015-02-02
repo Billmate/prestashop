@@ -109,7 +109,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 						$timestart = microtime(true);
 						$extra = array('transaction_id'=>$invoiceid);
 						//$t->id = $_REQUEST['order_id'];
-						$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+						$this->module->validateOrder((int)$this->context->cart->id, (Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS')) ? Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS') : Configuration::get('PS_OS_PAYMENT'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 						if( !empty($extra)){
 							Db::getInstance()->update('order_payment',$extra,'order_reference="'.$this->module->currentOrderReference.'"');
 						}

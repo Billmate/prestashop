@@ -43,8 +43,9 @@
 </form>
 <link rel="stylesheet" href="{$smarty.const._MODULE_DIR_}billmateinvoice/style.css" />
 <script src="{$smarty.const._MODULE_DIR_}billmateinvoice/js/billmatepopup.js"></script>
-<script id="version" type="text/template">{$ps_version}</script>
+
 <script type="text/javascript">
+var version = "{$ps_version}"
 var ajaxurl = "{$link->getModuleLink('billmateinvoice', 'getaddress', ['ajax'=> 0], true)}";
 var emptypersonerror = "{l s='PNO/SSN missing' mod='billmateinvoice'}";
 var checkbox_required = "{l s='Please check the checkbox for confirm this e-mail address is correct and can be used for invoicing.' mod='billmateinvoice'}";
@@ -86,7 +87,7 @@ $('#right_column').remove();
 		}
 	});
     function getData( param ){
-		var version =  $('#version').html();
+
 		ShowMessage('',loadingWindowTitle);
 		if(versionCompare(version,'1.6') == 1){
 			$('div.alert-danger').remove();

@@ -2,7 +2,7 @@
 <module>
 	<name>billmatepartpayment</name>
 	<displayName><![CDATA[Billmate Part Payment]]></displayName>
-	<version><![CDATA[1.35.1]]></version>
+	<version><![CDATA[1.35.2]]></version>
 	<description><![CDATA[Billmate provides a revolutionary payment solution for online merchants.]]></description>
 	<author><![CDATA[Billmate AB]]></author>
 	<tab><![CDATA[payments_gateways]]></tab>

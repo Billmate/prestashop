@@ -121,7 +121,7 @@ var windowtitlebillmate= "{l s='Pay by invoice can be made only to the address l
 
    {literal}
     $.getScript("https://billmate.se/billmate/base.js", function(){
-		    $("#terms-delbetalning").Terms("villkor_delbetalning",{eid: eid,effectiverate:34});
+		    $("#terms").Terms("villkor_delbetalning",{eid: eid,effectiverate:34});
     });
 
     function getData( param ){

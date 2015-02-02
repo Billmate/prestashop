@@ -59,7 +59,7 @@ class BillmateCardpay extends PaymentModule
 		$this->name = 'billmatecardpay';
 		$this->moduleName='billmatecardpay';
 		$this->tab = 'payments_gateways';
-		$this->version = '1.35.1';
+		$this->version = '1.35.2';
 		$this->author  = 'Billmate AB';
 
 		$this->currencies = true;
@@ -211,7 +211,7 @@ class BillmateCardpay extends PaymentModule
 				'type' => 'select',
 				'label' => $this->l('Set Order Status'),
 				'desc' => $this->l(''),
-				'value'=> Tools::safeOutput(Configuration::get('BCARDPAY_ORDER_STATUS_'.$country['name'])),
+				'value'=> (Tools::safeOutput(Configuration::get('BCARDPAY_ORDER_STATUS_'.$country['name']))) ? Tools::safeOutput(Configuration::get('BCARDPAY_ORDER_STATUS_'.$country['name'])) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
 				'options' => $statuses_array
 			);			
 			$input_country[$country['name']]['minimum_value_'.$country['name']] = array(

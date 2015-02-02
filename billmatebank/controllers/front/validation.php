@@ -102,7 +102,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 						$timestart = microtime(true);
 						$extra = array('transaction_id'=>$invoiceid);
 
-						$this->module->validateOrder((int)$this->context->cart->id, Configuration::get('BBANK_ORDER_STATUS_SWEDEN'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+						$this->module->validateOrder((int)$this->context->cart->id, (Configuration::get('BBANK_ORDER_STATUS_SWEDEN')) ? Configuration::get('BBANK_ORDER_STATUS_SWEDEN') : Configuration::get('PS_OS_PAYMENT'), $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 						$measurements['validateorder'] = microtime(true) - $timestart;
 
 						if (!empty($extra))

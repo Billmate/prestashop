@@ -91,7 +91,7 @@ class BillmatePartpayment extends PaymentModule
 		$this->name = 'billmatepartpayment';
 		$this->moduleName='billmatepartpayment';
 		$this->tab = 'payments_gateways';
-		$this->version = '1.35.1';
+		$this->version = '1.35.2';
 		$this->author = 'Billmate AB';
 
 		$this->currencies = true;
@@ -111,7 +111,7 @@ class BillmatePartpayment extends PaymentModule
 			'Are you sure you want to delete your settings?'
 		);
 
-        $this->verifyEmail = $this->l('Min e-postadress %1$s är korrekt och kan användas för fakturering.').'<a id="terms terms-delbetalning" style="cursor:pointer!important"> '.$this->l('I confirm the terms for partpayment').'</a>';
+        $this->verifyEmail = $this->l('Min e-postadress %1$s är korrekt och kan användas för fakturering.').'<a id="terms" style="cursor:pointer!important"> '.$this->l('I confirm the terms for partpayment').'</a>';
 		$this->billmate_merchant_id = Configuration::get('BILLMATE_MERCHANT_ID');
 		$this->billmate_secret = Configuration::get('BILLMATE_SECRET');
 		$this->billmate_countries = unserialize( Configuration::get('BILLMATE_ENABLED_COUNTRIES_LIST'));
@@ -212,7 +212,7 @@ class BillmatePartpayment extends PaymentModule
 				'type' => 'select',
 				'label' => $this->l('Set Order Status'),
 				'desc' => $this->l(''),
-				'value'=> Tools::safeOutput(Configuration::get('BILLMATE_ORDER_STATUS_'.$country['name'])),
+				'value'=> (Tools::safeOutput(Configuration::get('BILLMATE_ORDER_STATUS_'.$country['name']))) ? Tools::safeOutput(Configuration::get('BILLMATE_ORDER_STATUS_'.$country['name'])) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
 				'options' => $statuses_array
 			);
 			$input_country[$country['name']]['minimum_value_'.$country['name']] = array(

@@ -105,7 +105,7 @@ class BillmateCardpayController extends FrontController
 					$customer = new Customer((int)$cookie->id_customer);
 					$total = self::$cart->getOrderTotal();
 
-			        $billmatecard->validateOrder((int)self::$cart->id, Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS'), $total, $billmatecard->displayName, null, array(), null, false, $customer->secure_key);
+			        $billmatecard->validateOrder((int)self::$cart->id, (Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS')) ? Configuration::get('BCARDPAY_ORDER_STATUS_SETTINGS') : Configuration::get('PS_OS_PAYMENT'), $total, $billmatecard->displayName, null, array(), null, false, $customer->secure_key);
 
 					$result = $data['api']->updateOrderNo((string)$data['invoiceid'], (string)$billmatecard->currentOrder);
                     if (Configuration::get('BCARDPAY_AUTHMOD') == 'sale')

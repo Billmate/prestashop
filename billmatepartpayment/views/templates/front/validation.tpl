@@ -147,8 +147,9 @@ function closeIframe(id)
 {/if}
 <link rel="stylesheet" href="{$smarty.const._MODULE_DIR_}billmateinvoice/style.css" />
 <script src="{$smarty.const._MODULE_DIR_}billmateinvoice/js/billmatepopup.js"></script>
-	<script id="version" type="text/template">{$ps_version}</script>
+
 <script type="text/javascript">
+var version = "{$ps_version}";
 var success = "{*$ajaxurl.this_path_ssl*}payment.php?type={*$payment_type*}";
 var ajaxurl = "{$link->getModuleLink('billmatepartpayment', 'getaddress', ['ajax'=> 0], true)}";
 
@@ -189,7 +190,7 @@ versionCompare = function(left, right) {
 }
 	function getData( param ){
 		ShowMessage('',loadingWindowTitle);
-		var version =  $('#version').html();
+
 		if(versionCompare(version,'1.6') == 1){
 			$('div.alert-danger').remove();
 		} else {
