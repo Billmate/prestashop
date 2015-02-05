@@ -9,7 +9,16 @@
 		<h4>{l s='Set the mode of your module' mod='billmatebank'}</h4>
 		<input type="radio" id="billmate_mod-beta" name="billmate_mod" {if $billmate_mod == 1}checked='checked'{/if} value="beta" /> <label for="billmate_mod-beta">{l s='Test' mod='billmatebank'}</label>
 		<input type="radio" id="billmate_mod-live" name="billmate_mod" {if $billmate_mod == 0}checked='checked'{/if} value="live" /> <label for="billmate_mod-live">{l s='Live' mod='billmatebank'}</label>
-	</fieldset>
+        <div class="input-row">
+            <span>{$status_activate.label}</span>
+            <select {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if}>
+                <option>{l s='Choose' mod='billmatebank'}</option>
+                {html_options options=$status_activate.options selected=$status_activate.value}
+            </select>
+        </div>
+    </fieldset>
+
+
 	<fieldset class="billmate-blockSmall R">
 		<legend><img src="{$module_dir}img/icon-modules.gif" alt="" /> {l s='Payment Options' mod='billmatebank'}</legend>
 		<input type="hidden" name="submitBillmate" value="1"/>
@@ -36,23 +45,23 @@
 					<p class="title"><img src="{$countryNames[$name].flag}" alt=""/>{$country_name|lower|capitalize}</p>
 					<div class="fieldset-wrap">						
 						{foreach from=$country item=input}
-						{if $input.type == 'text'}
-						<div id="billmateInput{$input.name}" class="input-row">
-							<span>{$input.label}</span>
-							<input type="{$input.type}" name="{$input.name}" id="{$input.name}" value="{$input.value}" />{$input.desc}
-						</div>
-						{elseif $input.type == 'hidden'}
-							<input type="{$input.type}" name="{$input.name}" id="{$input.name}" value="{$input.value}" />
-						{elseif $input.type == 'select'}
-							<div class="input-row">
-								<span>{$input.label}</span>
-								<select {if isset($input.id)}id="{$input.id}"{/if} {if isset($input.name)}name="{$input.name}"{/if}>
-									<option>{l s='Choose' mod='billmatebank'}</option>
-									{html_options options=$input.options selected=$input.value}
-								</select>
-							</div>
-						{/if}
-						{/foreach}
+                            {if $input.type == 'text'}
+                                <div id="billmateInput{$input.name}" class="input-row">
+                                    <span>{$input.label}</span>
+                                    <input type="{$input.type}" name="{$input.name}" id="{$input.name}" value="{$input.value}" />{$input.desc}
+                                </div>
+                            {elseif $input.type == 'hidden'}
+                                <input type="{$input.type}" name="{$input.name}" id="{$input.name}" value="{$input.value}" />
+                            {elseif $input.type == 'select'}
+                                <div class="input-row">
+                                    <span>{$input.label}</span>
+                                    <select {if isset($input.id)}id="{$input.id}"{/if} {if isset($input.name)}name="{$input.name}"{/if}>
+                                        <option>{l s='Choose' mod='billmatebank'}</option>
+                                        {html_options options=$input.options selected=$input.value}
+                                    </select>
+                                </div>
+                            {/if}
+                        {/foreach}
 					</div>
 				</fieldset>
 			</li>

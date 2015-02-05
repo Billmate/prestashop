@@ -29,7 +29,14 @@
 		<h4>{l s='Set the mode of your module' mod='billmateinvoice'}</h4>
 		<input type="radio" id="billmate_mod-beta" name="billmate_mod" {if $billmate_mod == 1}checked='checked'{/if} value="beta" /> <label for="billmate_mod-beta">{l s='Test' mod='billmateinvoice'}</label>
 		<input type="radio" id="billmate_mod-live" name="billmate_mod" {if $billmate_mod == 0}checked='checked'{/if} value="live" /> <label for="billmate_mod-live">{l s='Live' mod='billmateinvoice'}</label>
-	</fieldset>
+        <div class="input-row">
+            <span>{$status_activate.label}</span>
+            <select {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if}>
+                <option>{l s='Choose' mod='billmatebank'}</option>
+                {html_options options=$status_activate.options selected=$status_activate.value}
+            </select>
+        </div>
+    </fieldset>
 	<fieldset class="billmate-blockSmall R">
 		<legend><img src="{$module_dir}img/icon-modules.gif" alt="" /> {l s='Payment Options' mod='billmateinvoice'}</legend>
 		<input type="hidden" name="submitBillmate" value="1"/>

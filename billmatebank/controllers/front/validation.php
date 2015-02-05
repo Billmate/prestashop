@@ -120,7 +120,7 @@ class BillmateBankValidationModuleFrontController extends ModuleFrontController
 
 					if (isset($_SESSION['billmate_order_id']))
 						unset($_SESSION['billmate_order_id']);
-
+                    unlink($lockfile);
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);
 					die;
 				}catch(Exception $ex){

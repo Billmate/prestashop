@@ -17,6 +17,13 @@
 		</p><p>
 		<input type="checkbox" id="billmate_3dsecure" name="billmate_3dsecure" {if $billmate_3dsecure == 'YES'}checked='checked'{/if} value="YES" /> <label for="billmate_3dsecure">{l s='Enable 3d Secure' mod='billmatecardpay'}</label>
 		</p>
+        <div class="input-row">
+            <span>{$status_activate.label}</span>
+            <select {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if}>
+                <option>{l s='Choose' mod='billmatebank'}</option>
+                {html_options options=$status_activate.options selected=$status_activate.value}
+            </select>
+        </div>
 
 	</fieldset>
 	<fieldset class="billmate-blockSmall R">

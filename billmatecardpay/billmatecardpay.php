@@ -102,6 +102,38 @@ class BillmateCardpay extends PaymentModule
 		</form>';
 	}
 
+    public function hookActionOrderStatusUpdate($params){
+        $orderStatus = Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS');
+        if($orderStatus && $orderStatus != 0) {
+            $order_id = $params['id_order'];
+
+            $id_status = $params['newOrderStatus']->id;
+            $order = new Order($order_id);
+
+            $payment = OrderPayment::getByOrderId($order_id);
+
+            if ($order->module == $this->moduleName && Configuration::get('BCARDPAY_AUTHMOD') != 'sale' && $orderStatus == $id_status) {
+                $eid = Configuration::get('BCARDPAY_STORE_ID_SWEDEN');
+                $secret = Configuration::get('BCARDPAY_SECRET_SWEDEN');
+                $testMode = Configuration::get('BCARDPAY_MOD');
+                $ssl = true;
+                $debug = false;
+
+                $k = new BillMate((int)$eid, $secret, $ssl, $debug, $testMode);
+                $invoice = $k->CheckInvoiceStatus((string)$payment[0]->transaction_id);
+                if (Tools::strtolower($invoice) == 'created'){
+                    $result = $k->ActivateInvoice((string)$payment[0]->transaction_id);
+
+                }
+                elseif (Tools::strtolower($invoice) == 'pending'){
+                    $this->context->controller->errors[] = $this->l('Couldn`t activate the invoice, the invoice is manually checked for fraud');
+                }
+
+            }
+        }
+        //Logger::AddLog(print_r($params,true));
+    }
+
 	/**
 	 * Get the content to display on the backend page.
 	 *
@@ -234,7 +266,18 @@ class BillmateCardpay extends PaymentModule
 			if (Configuration::get('BCARDPAY_STORE_ID_'.$country['name']))
 				$activateCountry[] = $country['name'];
 		}
-
+        $activateStatuses = array();
+        $activateStatuses[0] = $this->l('Inactivated');
+        $activateStatuses = $activateStatuses + $statuses_array;
+        $status_activate = array(
+            'name' => 'billmateActivateOnOrderStatus',
+            'required' => true,
+            'type' => 'select_activate',
+            'label' => $this->l('Set Order Status for AutoActivate'),
+            'desc' => $this->l(''),
+            'value'=> (Tools::safeOutput(Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS'))) ? Tools::safeOutput(Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS')) : 0,
+            'options' => $activateStatuses
+        );
 		$smarty->assign($this->moduleName.'FormCredential',	'./index.php?tab=AdminModules&configure='.$this->name.'&token='.Tools::getAdminTokenLite('AdminModules').'&tab_module='.$this->tab.'&module_name='.$this->name);
 		$smarty->assign($this->moduleName.'CredentialTitle', $this->l('Location'));
 		$smarty->assign($this->moduleName.'CredentialText', $this->l('In order to use the Billmate module, please select your host country and supply the appropriate credentials.'));
@@ -243,6 +286,7 @@ class BillmateCardpay extends PaymentModule
 			$this->l('In order for your customers to use Billmate, your customers must be located in the same country in which your e-store is registered.'));
 
 		$smarty->assign(array(
+                'status_activate' => $status_activate,
 				'billmate_mod' => Configuration::get('BCARDPAY_MOD'),
 				'billmate_prompt_name' => Configuration::get('BILL_PRNAME'),
 				'billmate_3dsecure' => strlen(Configuration::get('BILL_3DSECURE'))?Configuration::get('BILL_3DSECURE'):'YES',
@@ -297,9 +341,11 @@ class BillmateCardpay extends PaymentModule
 			Configuration::updateValue('BCARDPAY_ACTIVE_CARDPAY', true);
 		else
 			billmate_deleteConfig('BCARDPAY_ACTIVE_CARDPAY');
-		
 
-		foreach ($this->countries as $country)
+        Configuration::updateValue('BCARDPAY_ACTIVATE_ON_STATUS',Tools::getValue('billmateActivateOnOrderStatus'));
+
+
+        foreach ($this->countries as $country)
 		{
 			billmate_deleteConfig('BCARDPAY_STORE_ID_'.$country['name']);
 			billmate_deleteConfig('BCARDPAY_SECRET_'.$country['name']);
@@ -378,6 +424,7 @@ class BillmateCardpay extends PaymentModule
 
 		$this->registerHook('displayPayment');
 		$this->registerHook('header');
+        $this->registerHook('actionOrderStatusUpdate');
 		if (!Configuration::get('BILLMATE_PAYMENT_ACCEPTED'))
 			Configuration::updateValue('BILLMATE_PAYMENT_ACCEPTED', $this->addState('Billmate : Payment accepted', '#DDEEFF'));
 		if (!Configuration::get('BILLMATE_PAYMENT_PENDING'))

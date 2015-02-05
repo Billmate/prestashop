@@ -113,6 +113,36 @@ class BillmateBank extends PaymentModule
 		$html .= $this->_displayAdminTpl();
 		return $html;
 	}
+
+    public function hookActionOrderStatusUpdate($params){
+        $orderStatus = Configuration::get('BBANK_ACTIVATE_ON_STATUS');
+        if($orderStatus && $orderStatus != 0) {
+            $order_id = $params['id_order'];
+
+            $id_status = $params['newOrderStatus']->id;
+            $order = new Order($order_id);
+
+            $payment = OrderPayment::getByOrderId($order_id);
+
+            if ($order->module == $this->moduleName && Configuration::get('BBANK_AUTHMOD') != 'sale' && $orderStatus == $id_status) {
+                $eid = Configuration::get('BBANK_STORE_ID_SWEDEN');
+                $secret = Configuration::get('BBANK_SECRET_SWEDEN');
+                $testMode = Configuration::get('BBANK_MOD');
+                $ssl = true;
+                $debug = false;
+
+                $k = new BillMate((int)$eid, $secret, $ssl, $debug, $testMode);
+                $invoice = $k->CheckInvoiceStatus((string)$payment[0]->transaction_id);
+                if (Tools::strtolower($invoice) == 'created'){
+                    $result = $k->ActivateInvoice((string)$payment[0]->transaction_id);
+                }
+                elseif (Tools::strtolower($invoice) == 'pending'){
+                    $this->context->controller->errors[] = $this->l('Couldn`t activate the invoice, the invoice is manually checked for fraud');
+                }
+            }
+        }
+        //Logger::AddLog(print_r($params,true));
+    }
 	public function enable($force_all = false)
 	{
 		parent::enable($force_all);
@@ -214,9 +244,23 @@ class BillmateBank extends PaymentModule
 				'desc' => $this->l(''),
 			);
 
+
 			if (Configuration::get('BBANK_STORE_ID_'.$country['name']))
 				$activateCountry[] = $country['name'];
 		}
+
+        $activateStatuses = array();
+        $activateStatuses[0] = $this->l('Inactivated');
+        $activateStatuses = $activateStatuses + $statuses_array;
+        $status_activate = array(
+            'name' => 'billmateActivateOnOrderStatus',
+            'required' => true,
+            'type' => 'select_activate',
+            'label' => $this->l('Set Order Status for AutoActivate'),
+            'desc' => $this->l(''),
+            'value'=> (Tools::safeOutput(Configuration::get('BBANK_ACTIVATE_ON_STATUS'))) ? Tools::safeOutput(Configuration::get('BBANK_ACTIVATE_ON_STATUS')) : 0,
+            'options' => $activateStatuses
+        );
 
 		$smarty->assign($this->moduleName.'FormCredential',	'./index.php?tab=AdminModules&configure='.$this->name.'&token='.Tools::getAdminTokenLite('AdminModules').'&tab_module='.$this->tab.'&module_name='.$this->name);
 		$smarty->assign($this->moduleName.'CredentialTitle', $this->l('Location'));
@@ -226,6 +270,7 @@ class BillmateBank extends PaymentModule
 			$this->l('In order for your customers to use Billmate, your customers must be located in the same country in which your e-store is registered.'));
 
 		$smarty->assign(array(
+                'status_activate' => $status_activate,
 				'billmate_mod' => Configuration::get('BBANK_MOD'),
 				'billmate_active_bank' => Configuration::get('BBANK_ACTIVE'),
 				'credentialInputVar' => $input_country,
@@ -268,7 +313,8 @@ class BillmateBank extends PaymentModule
 			Configuration::updateValue('BBANK_ACTIVE', true);
 		else
 			billmate_deleteConfig('BBANK_ACTIVE');
-		
+
+        Configuration::updateValue('BBANK_ACTIVATE_ON_STATUS',Tools::getValue('billmateActivateOnOrderStatus'));
 
 		foreach ($this->countries as $country)
 		{
@@ -348,6 +394,7 @@ class BillmateBank extends PaymentModule
 
 		$this->registerHook('displayPayment');
 		$this->registerHook('header');
+        $this->registerHook('actionOrderStatusUpdate');
 
 		if (!Configuration::get('BILLMATE_PAYMENT_ACCEPTED'))
 			Configuration::updateValue('BILLMATE_PAYMENT_ACCEPTED', $this->addState('Billmate : Payment accepted', '#DDEEFF'));
