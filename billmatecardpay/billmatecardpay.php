@@ -104,7 +104,8 @@ class BillmateCardpay extends PaymentModule
 
     public function hookActionOrderStatusUpdate($params){
         $orderStatus = Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS');
-        if($orderStatus && $orderStatus != 0) {
+        $activated = Configuration::get('BCARDPAY_ACTIVATE');
+        if($orderStatus && $orderStatus != 0 && $activated) {
             $order_id = $params['id_order'];
 
             $id_status = $params['newOrderStatus']->id;
@@ -276,6 +277,7 @@ class BillmateCardpay extends PaymentModule
         $status_activate = array(
             'name' => 'billmateActivateOnOrderStatus',
             'required' => true,
+            'id' => 'activationSelect',
             'type' => 'select_activate',
             'label' => $this->l('Set Order Status for AutoActivate'),
             'desc' => $this->l(''),
@@ -290,6 +292,7 @@ class BillmateCardpay extends PaymentModule
 			$this->l('In order for your customers to use Billmate, your customers must be located in the same country in which your e-store is registered.'));
 
 		$smarty->assign(array(
+                'billmate_activation' => Configuration::get('BCARDPAY_ACTIVATE'),
                 'status_activate' => $status_activate,
 				'billmate_mod' => Configuration::get('BCARDPAY_MOD'),
 				'billmate_prompt_name' => Configuration::get('BILL_PRNAME'),
@@ -347,7 +350,7 @@ class BillmateCardpay extends PaymentModule
 			billmate_deleteConfig('BCARDPAY_ACTIVE_CARDPAY');
 
         Configuration::updateValue('BCARDPAY_ACTIVATE_ON_STATUS',Tools::getValue('billmateActivateOnOrderStatus'));
-
+        Configuration::updateValue('BCARDPAY_ACTIVATE', Tools::getValue('billmate_activation'));
 
         foreach ($this->countries as $country)
 		{

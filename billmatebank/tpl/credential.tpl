@@ -9,9 +9,15 @@
 		<h4>{l s='Set the mode of your module' mod='billmatebank'}</h4>
 		<input type="radio" id="billmate_mod-beta" name="billmate_mod" {if $billmate_mod == 1}checked='checked'{/if} value="beta" /> <label for="billmate_mod-beta">{l s='Test' mod='billmatebank'}</label>
 		<input type="radio" id="billmate_mod-live" name="billmate_mod" {if $billmate_mod == 0}checked='checked'{/if} value="live" /> <label for="billmate_mod-live">{l s='Live' mod='billmatebank'}</label>
+        <p>
+            <h4>{l s='Invoice Activation' mod='billmatebank'}</h4>
+            <input type="radio" id="billmate_activation_on" name="billmate_activation" {if $billmate_activation == 1}checked="checked"{/if} value="1"/><label for="billmate_activation">{l s='Activated' mod='billmatebank'}</label>
+            <input type="radio" id="billmate_activation_off" name="billmate_activation" {if $billmate_activation == 0}checked="checked"{/if} value="1"/><label for="billmate_activation">{l s='Inactivated' mod='billmatebank'}</label>
+
+        </p>
         <div class="input-row">
             <span>{$status_activate.label}</span>
-            <select {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if}>
+            <select {if $billmate_activation == 0} disabled="disabled" {/if} {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if}>
                 <option>{l s='Choose' mod='billmatebank'}</option>
                 {html_options options=$status_activate.options selected=$status_activate.value}
             </select>
@@ -94,6 +100,13 @@
 	$(document).ready(
 	    function()
 	    {
+
+            $('#billmate_activation_on').click(function(){
+                $('#activationSelect').prop('disabled',false);
+            });
+            $('#billmate_activation_off').click(function(){
+                $('#activationSelect').prop('disabled',true);
+            })
 		$('li[class^="billmate_form_"]').hide();
 		$("li[class^='billmate_form']").each(
 		    function()

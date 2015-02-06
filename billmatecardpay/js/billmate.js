@@ -7,7 +7,12 @@ $('li[class^="billmate_flag_"]').click(function()
 	else
 		$('#billmate_activate'+country).remove();
 });
-
+$('#billmate_activation_on').click(function(){
+    $('#activationSelect').prop('disabled',false);
+});
+$('#billmate_activation_off').click(function(){
+    $('#activationSelect').prop('disabled',true);
+})
 $(document).ready(function(){
     var height = 0;
     $('.billmate-blockSmall').each(function(){

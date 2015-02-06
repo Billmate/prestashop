@@ -122,7 +122,8 @@ class BillmatePartpayment extends PaymentModule
 
     public function hookActionOrderStatusUpdate($params){
         $orderStatus = Configuration::get('BILLMATE_ACTIVATE_ON_STATUS');
-        if($orderStatus && $orderStatus != 0) {
+        $activated = Configuration::get('BILLMATE_ACTIVATE');
+        if($orderStatus && $orderStatus != 0 && $activated) {
             $order_id = $params['id_order'];
 
             $id_status = $params['newOrderStatus']->id;
@@ -470,6 +471,7 @@ class BillmatePartpayment extends PaymentModule
         $activateStatuses[0] = $this->l('Inactivated');
         $activateStatuses = $activateStatuses + $statuses_array;
         $status_activate = array(
+            'id' => 'activationSelect',
             'name' => 'billmateActivateOnOrderStatus',
             'required' => true,
             'type' => 'select_activate',
@@ -487,6 +489,7 @@ class BillmatePartpayment extends PaymentModule
 			$this->l('In order for your customers to use Billmate, your customers must be located in the same country in which your e-store is registered.'));
 
 		$smarty->assign(array(
+                'billmate_activation' => Configuration::get('BILLMATE_ACTIVATE'),
                 'status_activate' => $status_activate,
 				'billmate_pclass' => Db::getInstance()->ExecuteS('SELECT * FROM `'._DB_PREFIX_.'billmate_payment_pclasses`'),
 				'billmate_mod' => Configuration::get('BILLMATE_MOD'),
@@ -530,6 +533,7 @@ class BillmatePartpayment extends PaymentModule
 			billmate_deleteConfig('BILLMATE_ACTIVE_PARTPAYMENT');
 
         Configuration::updateValue('BILLMATE_ACTIVATE_ON_STATUS',Tools::getValue('billmateActivateOnOrderStatus'));
+        Configuration::updateValue('BILLMATE_ACTIVATE',Tools::getValue('billmate_activation'));
 
 		foreach ($this->countries as $country)
 		{
