@@ -123,10 +123,14 @@ class BillmateCardpay extends PaymentModule
                 $invoice = $k->CheckInvoiceStatus((string)$payment[0]->transaction_id);
                 if (Tools::strtolower($invoice) == 'created'){
                     $result = $k->ActivateInvoice((string)$payment[0]->transaction_id);
+                    if(is_string($result) || !is_array($result) || isset($result['error']))
+                        $this->context->controller->errors[] = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
 
                 }
                 elseif (Tools::strtolower($invoice) == 'pending'){
                     $this->context->controller->errors[] = $this->l('Couldn`t activate the invoice, the invoice is manually checked for fraud');
+                } else {
+                    $this->context->controller->errors[] = $this->l('Couldn`t activate the invoice, please check Billmate Online');
                 }
 
             }
