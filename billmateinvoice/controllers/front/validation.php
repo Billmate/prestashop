@@ -59,8 +59,8 @@ class BillmateInvoiceValidationModuleFrontController extends ModuleFrontControll
 
 		$this->context->smarty->assign(array(
 			'ps_version' => _PS_VERSION_,
-			'total' => $this->context->cart->getOrderTotal(true, Cart::BOTH) + (float)$price_wt,
-			'fee' =>(float)$price_wt,
+			'total' => $this->context->cart->getOrderTotal(true, Cart::BOTH) + (float)Tools::convertPrice($price_wt,Currency::getCurrencyInstance((int)$this->context->cart->id_currency),true),
+			'fee' =>(float)Tools::convertPrice($price_wt,Currency::getCurrencyInstance((int)$this->context->cart->id_currency),true),
 			'customer_email' => $customer->email,
 			'opc'=> (bool)Configuration::get('PS_ORDER_PROCESS_TYPE'),
 			'this_path' => $this->module->getPathUri(),

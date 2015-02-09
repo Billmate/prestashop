@@ -20,5 +20,5 @@ $(document).ready(function(){
 	    height = $(this).height();
     });
 
-    $('.billmate-blockSmall').css({'height' : $('.billmate-blockSmall').css('height', height+'px')});
+    $('.billmate-blockSmall').css({'height' : $('.billmate-blockSmall').css('height', 10 +height+'px')});
 });
