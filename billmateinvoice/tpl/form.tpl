@@ -26,10 +26,10 @@
         {/if}
     </p>
 	<p class="bnormal">
-	    <b>{l s='Please fill following fields for complete order' mod='billmateinvoice'}</b>
+	    <b>{l s='Please fill following fields to complete your order' mod='billmateinvoice'}</b>
     </p>
 	<p class="blarge">
-	    <label for="pno">{l s='Personal Number' mod='billmateinvoice'}:</label>
+	    <label for="pno">{l s='Personal Number / Organization Number' mod='billmateinvoice'}:</label>
 	    <input type="text" value="" id="billmate_pno" name="pno" required  />
 	</p>
 	<p class="bsmall">

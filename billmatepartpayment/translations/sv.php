@@ -64,7 +64,7 @@ $_MODULE['<{billmatepartpayment}prestashop>form_1f87346a16cf80c372065de3c54c86d9
 $_MODULE['<{billmatepartpayment}prestashop>form_24abd1364be2fadd8c07e5508f3f8cfd'] = 'Välj det delbetalningsalternativ som passar bäst';
 $_MODULE['<{billmatepartpayment}prestashop>form_3fef1ab48eb8ad371bf9635a23c37b0f'] = 'månaders delbetalning';
 $_MODULE['<{billmatepartpayment}prestashop>form_777067d542dcb8dc9fd45bdb92b0e91d'] = '/ månad';
-$_MODULE['<{billmatepartpayment}prestashop>form_a19913198c22eb3ebaf4e18f1a28835a'] = 'Personnummer/Organisationsnummer';
+$_MODULE['<{billmatepartpayment}prestashop>form_e91f7864eda394f112f0b903bb6ae11d'] = 'Personnummer /Organisationsnummer';
 $_MODULE['<{billmatepartpayment}prestashop>form_569fd05bdafa1712c4f6be5b153b8418'] = 'Andra betalningsmetoder';
 $_MODULE['<{billmatepartpayment}prestashop>form_46b9e3665f187c739c55983f757ccda0'] = 'Jag bekräftar min beställning';
 $_MODULE['<{billmatepartpayment}prestashop>form_e580a2735b1cf3339f84cf1028d4e99b'] = 'Personnummer krävs.';
@@ -102,7 +102,7 @@ $_MODULE['<{billmatepartpayment}prestashop>validation_1f87346a16cf80c372065de3c5
 $_MODULE['<{billmatepartpayment}prestashop>validation_24abd1364be2fadd8c07e5508f3f8cfd'] = 'Välj det delbetalningsalternativ som passar bäst';
 $_MODULE['<{billmatepartpayment}prestashop>validation_d3489b3a4ff77c903dd8ffaf452f1ece'] = 'månaders delbetalning - ';
 $_MODULE['<{billmatepartpayment}prestashop>validation_777067d542dcb8dc9fd45bdb92b0e91d'] = '/ månad';
-$_MODULE['<{billmatepartpayment}prestashop>validation_a19913198c22eb3ebaf4e18f1a28835a'] = 'Personnummer/Organisationsnummer:';
+$_MODULE['<{billmatepartpayment}prestashop>validation_e91f7864eda394f112f0b903bb6ae11d'] = 'Personnummer / Organisationsnummer';
 $_MODULE['<{billmatepartpayment}prestashop>validation_c3051d2f277689e707b09e1d2ab3c20c'] = 'Min e-postadress %1$s är korrekt och får användas för fakturering.';
 $_MODULE['<{billmatepartpayment}prestashop>validation_6d407537150d110c7e79dff8e0b61466'] = 'Jag godkänner även köpvillkor för delbetalning';
 $_MODULE['<{billmatepartpayment}prestashop>validation_46b9e3665f187c739c55983f757ccda0'] = 'Jag bekräftar min beställning';

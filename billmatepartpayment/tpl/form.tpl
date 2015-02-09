@@ -70,7 +70,7 @@
     <br />
     <p class="blarge">
 
-      <label>{l s='Personal Number:' mod='billmatepartpayment'}</label>
+      <label>{l s='Personal Number / Organization Number:' mod='billmatepartpayment'}</label>
       <input type="text" name="billmate_pno" id="billmate_pno" value="" required />
 	</p>
 	<p class="bsmall">

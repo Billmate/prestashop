@@ -115,7 +115,7 @@ padding-top: 13px!important;
 	<br />
 	<p class="blarge">
 
-	  <label>{l s='Personal Number:' mod='billmatepartpayment'}</label>
+	  <label>{l s='Personal Number / Organization Number:' mod='billmatepartpayment'}</label>
 	  <input type="text" name="billmate_pno" id="billmate_pno" value="" style="border:1px solid #D3D3D3;padding:0.2em;" required />
 	</p>
 	<p class="bsmall">

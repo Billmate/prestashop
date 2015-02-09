@@ -23,9 +23,9 @@ $_MODULE['<{billmatepartpayment}prestashop>credential_a892b3c019c81f51e51245603b
 $_MODULE['<{billmatepartpayment}prestashop>credential_e690a3d3da27111ea8831cce5a1048c6'] = 'Modulens läge';
 $_MODULE['<{billmatepartpayment}prestashop>credential_0cbc6611f5540bd0809a388dc95a615b'] = 'Test';
 $_MODULE['<{billmatepartpayment}prestashop>credential_955ad3298db330b5ee880c2c9e6f23a0'] = 'Live';
+$_MODULE['<{billmatepartpayment}prestashop>credential_961f2247a2070bedff9f9cd8d64e2650'] = 'Välj';
 $_MODULE['<{billmatepartpayment}prestashop>credential_b54cae027174159a78c651b2875617cf'] = 'Betalningsalternativ';
 $_MODULE['<{billmatepartpayment}prestashop>credential_bf5fbd0fbe450e0f7b21352210ee7653'] = 'Billmate Delbetalning aktiverad';
-$_MODULE['<{billmatepartpayment}prestashop>credential_961f2247a2070bedff9f9cd8d64e2650'] = 'Välj';
 $_MODULE['<{billmatepartpayment}prestashop>credential_b39ce3657fdce8a871c6b37797e65be5'] = 'Spara / Uppdatera';
 $_MODULE['<{billmatepartpayment}prestashop>credential_ddf37517c5334556f276ea954eecf446'] = 'Delbetalningsalternativ';
 $_MODULE['<{billmatepartpayment}prestashop>credential_490aa6e856ccf208a054389e47ce0d06'] = 'ID';
@@ -62,7 +62,7 @@ $_MODULE['<{billmatepartpayment}prestashop>form_1f87346a16cf80c372065de3c54c86d9
 $_MODULE['<{billmatepartpayment}prestashop>form_24abd1364be2fadd8c07e5508f3f8cfd'] = 'Välj det delbetalningsalternativ som passar bäst.';
 $_MODULE['<{billmatepartpayment}prestashop>form_3fef1ab48eb8ad371bf9635a23c37b0f'] = 'månaders delbetalning';
 $_MODULE['<{billmatepartpayment}prestashop>form_777067d542dcb8dc9fd45bdb92b0e91d'] = '/ månad ';
-$_MODULE['<{billmatepartpayment}prestashop>form_a19913198c22eb3ebaf4e18f1a28835a'] = 'Personnummer/Organisationsnummer: ';
+$_MODULE['<{billmatepartpayment}prestashop>form_e91f7864eda394f112f0b903bb6ae11d'] = 'Personnummer / Organisationsnummer';
 $_MODULE['<{billmatepartpayment}prestashop>form_569fd05bdafa1712c4f6be5b153b8418'] = 'Andra betalningsmetoder';
 $_MODULE['<{billmatepartpayment}prestashop>form_46b9e3665f187c739c55983f757ccda0'] = 'Jag bekräftar min beställning';
 $_MODULE['<{billmatepartpayment}prestashop>form_e580a2735b1cf3339f84cf1028d4e99b'] = 'Personnummer krävs.';
@@ -133,7 +133,7 @@ $_MODULE['<{billmatepartpayment}prestashop>validation_1f87346a16cf80c372065de3c5
 $_MODULE['<{billmatepartpayment}prestashop>validation_24abd1364be2fadd8c07e5508f3f8cfd'] = 'Välj det delbetalningsalternativ som passar dej bäst.';
 $_MODULE['<{billmatepartpayment}prestashop>validation_d3489b3a4ff77c903dd8ffaf452f1ece'] = 'månaders delbetalning -';
 $_MODULE['<{billmatepartpayment}prestashop>validation_777067d542dcb8dc9fd45bdb92b0e91d'] = '/ månad';
-$_MODULE['<{billmatepartpayment}prestashop>validation_a19913198c22eb3ebaf4e18f1a28835a'] = 'Personnummer/organisationsnummer';
+$_MODULE['<{billmatepartpayment}prestashop>validation_e91f7864eda394f112f0b903bb6ae11d'] = 'Personnummer / Organisationsnummer';
 $_MODULE['<{billmatepartpayment}prestashop>validation_e496e35ffd795136d9359819b55da4db'] = 'Min e-postadress %1$s är korrekt och kan användas för fakturering. Jag godkänner även köpvillkor för faktura betalning.';
 $_MODULE['<{billmatepartpayment}prestashop>validation_6d407537150d110c7e79dff8e0b61466'] = 'Jag godkänner även köpvillkor för delbetalning';
 $_MODULE['<{billmatepartpayment}prestashop>validation_46b9e3665f187c739c55983f757ccda0'] = 'Jag bekräftar min order';
