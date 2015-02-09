@@ -592,7 +592,7 @@ class BillmateInvoice extends PaymentModule
 			$price   = $product->price;
 			$price_wt = $price * (1 + ((Tax::getProductTaxRate($product->id, $cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')})) * 0.01));
 		}
-		$this->context->smarty->assign('invoiceFee',$price_wt);
+		$this->context->smarty->assign('invoiceFee',Tools::convertPrice($price_wt,Currency::getCurrencyInstance((int)$this->context->cart->id_currency),true));
 		$this->context->smarty->assign('moduleurl', $moduleurl);
 
 		if ($total > $minVal && $total < $maxVal)
