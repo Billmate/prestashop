@@ -9,6 +9,7 @@
 		<h4>{l s='Set the mode of your module' mod='billmatebank'}</h4>
 		<input type="radio" id="billmate_mod-beta" name="billmate_mod" {if $billmate_mod == 1}checked='checked'{/if} value="beta" /> <label for="billmate_mod-beta">{l s='Test' mod='billmatebank'}</label>
 		<input type="radio" id="billmate_mod-live" name="billmate_mod" {if $billmate_mod == 0}checked='checked'{/if} value="live" /> <label for="billmate_mod-live">{l s='Live' mod='billmatebank'}</label>
+        {if $show_activate == true}
         <p>
             <h4>{l s='Invoice Activation' mod='billmatebank'}</h4>
             <input type="radio" id="billmate_activation_on" name="billmate_activation" {if $billmate_activation == 1}checked="checked"{/if} value="1"/><label for="billmate_activation">{l s='Activated' mod='billmatebank'}</label>
@@ -22,6 +23,7 @@
                 {html_options options=$status_activate.options selected=$status_activate.value}
             </select>
         </div>
+        {/if}
     </fieldset>
 
 

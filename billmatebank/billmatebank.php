@@ -275,7 +275,13 @@ class BillmateBank extends PaymentModule
 			$this->l('E.g. Swedish customer, SEK, Sweden and Swedish.').'<br/>'.
 			$this->l('In order for your customers to use Billmate, your customers must be located in the same country in which your e-store is registered.'));
 
+        if(version_compare(_PS_VERSION_, '1.5', '>='))
+            $showActivate = true;
+        else
+            $showActivate = false;
+
 		$smarty->assign(array(
+                'show_activate' => $showActivate,
                 'billmate_activation' => Configuration::get('BBANK_ACTIVATE'),
                 'status_activate' => $status_activate,
 				'billmate_mod' => Configuration::get('BBANK_MOD'),

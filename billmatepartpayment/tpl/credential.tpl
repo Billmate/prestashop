@@ -29,6 +29,7 @@
 		<h4>{l s='Set the mode of your module' mod='billmatepartpayment'}</h4>
 		<input type="radio" id="billmate_mod-beta" name="billmate_mod" {if $billmate_mod == 1}checked='checked'{/if} value="beta" /> <label for="billmate_mod-beta">{l s='Test' mod='billmatepartpayment'}</label>
 		<input type="radio" id="billmate_mod-live" name="billmate_mod" {if $billmate_mod == 0}checked='checked'{/if} value="live" /> <label for="billmate_mod-live">{l s='Live' mod='billmatepartpayment'}</label>
+        {if $show_activate == true}
         <p>
             <h4>{l s='Invoice Activation' mod='billmatebank'}</h4>
             <input type="radio" id="billmate_activation_on" name="billmate_activation" {if $billmate_activation == 1}checked="checked"{/if} value="1"/><label for="billmate_activation">{l s='Activated' mod='billmatebank'}</label>
@@ -37,11 +38,12 @@
         </p>
         <div class="input-row">
             <span>{$status_activate.label}</span>
-            <select {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if}>
+            <select {if $billmate_activation == 0} disabled="disabled" {/if} {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if}>
                 <option>{l s='Choose' mod='billmatebank'}</option>
                 {html_options options=$status_activate.options selected=$status_activate.value}
             </select>
         </div>
+        {/if}
     </fieldset>
 	<fieldset class="billmate-blockSmall R">
 		<legend><img src="{$module_dir}img/icon-modules.gif" alt="" /> {l s='Payment Options' mod='billmatepartpayment'}</legend>
