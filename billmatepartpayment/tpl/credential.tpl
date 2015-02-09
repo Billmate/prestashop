@@ -31,7 +31,7 @@
 		<input type="radio" id="billmate_mod-live" name="billmate_mod" {if $billmate_mod == 0}checked='checked'{/if} value="live" /> <label for="billmate_mod-live">{l s='Live' mod='billmatepartpayment'}</label>
         {if $show_activate == true}
         <p>
-            <h4>{l s='Invoice Activation' mod='billmatebank'}</h4>
+            <h4>{l s='Invoice Activation on Orderstatus' mod='billmatebank'}</h4>
             <input type="radio" id="billmate_activation_on" name="billmate_activation" {if $billmate_activation == 1}checked="checked"{/if} value="1"/><label for="billmate_activation">{l s='Activated' mod='billmatebank'}</label>
             <input type="radio" id="billmate_activation_off" name="billmate_activation" {if $billmate_activation == 0}checked="checked"{/if} value="1"/><label for="billmate_activation">{l s='Inactivated' mod='billmatebank'}</label>
 

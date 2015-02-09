@@ -12,12 +12,16 @@ $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_8510ea822171a0937844cdf71
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_4900277fff3afc0461ef35ed8e4dfc8d'] = 'Billmate ID:';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_0f17536f393ba847ab61c6d007fe58d7'] = 'Billmate nyckel:';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_b17f3f4dcf653a5776792498a9b44d6a'] = 'Uppdatera inställningar';
+$_MODULE['<{billmatecardpay}prestashop>billmatecardpay_11d92e89798e1bab1e2d337f94e169cb'] = 'Kunde inte aktivera fakturan, fakturan är under granskning av Billmate';
+$_MODULE['<{billmatecardpay}prestashop>billmatecardpay_18e8a247909ac9ac3fe5577d2538b586'] = 'Kunde inte aktivera fakturan, vänligen kolla Billmate Online';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_f4f70727dc34561dfde1a3c529b6205c'] = 'Inställningar';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_d5d34c4bfac28b72867ef29b8430a6c1'] = 'Billmate ID';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_1e6947ac7fb3a9529a9726eb692c8cc5'] = 'Nyckel';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_57336e9fc16799e8a0a59811bd615809'] = 'Orderstatus';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_0f3b6306a7efddf2ecf85698370d4762'] = 'Minimum värde';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_b836c068c07a63081cee72070653b056'] = 'Maximum värde';
+$_MODULE['<{billmatecardpay}prestashop>billmatecardpay_406515cfd5fa14e00f4d3c51f4abc19a'] = 'Inaktiverad';
+$_MODULE['<{billmatecardpay}prestashop>billmatecardpay_7fe0cee95c3b55ebb88c9869a4766ee0'] = 'Välj orderstatus för faktura aktivering';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_ce5bf551379459c1c61d2a204061c455'] = 'Plats';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_c983f9ce866ed476e3597fbdc5b3b084'] = 'För att använda Billmatemodulen, ange dina kontouppgifter';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_553e273389202dfdbbda58bdfde8bd7f'] = ' Vänligen notera: Det valda landet och valutan måste matcha kundens address';

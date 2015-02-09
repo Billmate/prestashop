@@ -279,7 +279,7 @@ class BillmateCardpay extends PaymentModule
             'required' => true,
             'id' => 'activationSelect',
             'type' => 'select_activate',
-            'label' => $this->l('Set Order Status for AutoActivate'),
+            'label' => $this->l('Set Order Status for Invoice Activation'),
             'desc' => $this->l(''),
             'value'=> (Tools::safeOutput(Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS'))) ? Tools::safeOutput(Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS')) : 0,
             'options' => $activateStatuses

@@ -262,7 +262,7 @@ class BillmateBank extends PaymentModule
             'id' => 'activationSelect',
             'required' => true,
             'type' => 'select_activate',
-            'label' => $this->l('Set Order Status for AutoActivate'),
+            'label' => $this->l('Set Order Status for Invoice Activation'),
             'desc' => $this->l(''),
             'value'=> (Tools::safeOutput(Configuration::get('BBANK_ACTIVATE_ON_STATUS'))) ? Tools::safeOutput(Configuration::get('BBANK_ACTIVATE_ON_STATUS')) : 0,
             'options' => $activateStatuses
