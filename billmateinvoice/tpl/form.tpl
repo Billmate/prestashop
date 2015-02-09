@@ -22,7 +22,7 @@
     <p class="bnormal">
         {if $fee != 0} <span id="amount">{l s=' This includes the invoice cost' mod='billmateinvoice'} {displayPrice price=$fee}</span>{/if}
         {if $use_taxes == 1}
-            ({l s='tax' mod='billmateinvoice'} {l s='incl.' mod='billmateinvoice'})<br/>
+            ({l s='incl.' mod='billmateinvoice'} {l s='tax' mod='billmateinvoice'})<br/>
         {/if}
     </p>
 	<p class="bnormal">

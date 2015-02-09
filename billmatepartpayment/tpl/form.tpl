@@ -54,7 +54,7 @@
       {l s='The total amount of your order is' mod='billmatepartpayment'}
       <span id="amount">{displayPrice price=$total_fee}</span>
       {if $use_taxes == 1}
-		{l s='(tax incl.)' mod='billmatepartpayment'}
+		{l s='(incl. tax)' mod='billmatepartpayment'}
       {/if}
     </p>
       <p class="bnormal"><b>{l s='Choose the payment option that best suite your needs' mod='billmatepartpayment'}</b></p>

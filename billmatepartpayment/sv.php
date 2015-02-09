@@ -6,6 +6,7 @@ $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_77baef15c1ac1e8b8
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_45f948b71b06f85a1761175d87e98323'] = 'Billmate erbjuder en komplett betallösning för webbutiker';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_dcc28c3998e740c922f9d8da89df0a09'] = 'Min e-postaddress %1$s är korrekt och kan användas för fakturering.';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_6d407537150d110c7e79dff8e0b61466'] = 'Jag godkänner även köpvillkor för delbetalning.';
+$_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_f4330541bca1fd370209600ae3785f0d'] = 'Rabatt';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_f4f70727dc34561dfde1a3c529b6205c'] = 'Inställningar';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_d5d34c4bfac28b72867ef29b8430a6c1'] = 'Billmate ID';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_1e6947ac7fb3a9529a9726eb692c8cc5'] = 'Nyckel';
@@ -58,7 +59,7 @@ $_MODULE['<{billmatepartpayment}prestashop>form_879f6b8877752685a966564d072f498f
 $_MODULE['<{billmatepartpayment}prestashop>form_0eaadb4fcb48a0a0ed7bc9868be9fbaa'] = 'Varning';
 $_MODULE['<{billmatepartpayment}prestashop>form_1aad76502b13db1736d1641f033cf46b'] = 'billmate delbetalning';
 $_MODULE['<{billmatepartpayment}prestashop>form_e2867a925cba382f1436d1834bb52a1c'] = 'Totalsumman av din order är';
-$_MODULE['<{billmatepartpayment}prestashop>form_1f87346a16cf80c372065de3c54c86d9'] = '(inkl. moms).';
+$_MODULE['<{billmatepartpayment}prestashop>form_256d268da5f338a5cfecf1b08b1d84c4'] = '(Inkl. moms)';
 $_MODULE['<{billmatepartpayment}prestashop>form_24abd1364be2fadd8c07e5508f3f8cfd'] = 'Välj det delbetalningsalternativ som passar bäst.';
 $_MODULE['<{billmatepartpayment}prestashop>form_3fef1ab48eb8ad371bf9635a23c37b0f'] = 'månaders delbetalning';
 $_MODULE['<{billmatepartpayment}prestashop>form_777067d542dcb8dc9fd45bdb92b0e91d'] = '/ månad ';
@@ -129,7 +130,7 @@ $_MODULE['<{billmatepartpayment}prestashop>validation_f1d3b424cd68795ecaa5528837
 $_MODULE['<{billmatepartpayment}prestashop>validation_879f6b8877752685a966564d072f498f'] = 'Din varukorg är tom';
 $_MODULE['<{billmatepartpayment}prestashop>validation_1aad76502b13db1736d1641f033cf46b'] = 'Billmate Delbetalning';
 $_MODULE['<{billmatepartpayment}prestashop>validation_e2867a925cba382f1436d1834bb52a1c'] = 'Totalsumman av din order är';
-$_MODULE['<{billmatepartpayment}prestashop>validation_1f87346a16cf80c372065de3c54c86d9'] = '(inkl moms)';
+$_MODULE['<{billmatepartpayment}prestashop>validation_256d268da5f338a5cfecf1b08b1d84c4'] = '(inkl. moms)';
 $_MODULE['<{billmatepartpayment}prestashop>validation_24abd1364be2fadd8c07e5508f3f8cfd'] = 'Välj det delbetalningsalternativ som passar dej bäst.';
 $_MODULE['<{billmatepartpayment}prestashop>validation_d3489b3a4ff77c903dd8ffaf452f1ece'] = 'månaders delbetalning -';
 $_MODULE['<{billmatepartpayment}prestashop>validation_777067d542dcb8dc9fd45bdb92b0e91d'] = '/ månad';

@@ -8,6 +8,7 @@ $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_c3051d2f277689e707b09e1d2
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_12ec406d37a4fec3d685f8964b3c4f63'] = 'Jag godkänner även köpvillkor för faktura betalning.';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_c79f3b0a3c5936107bfd51556e2d3dd5'] = 'Billmate Faktura';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_e9da97b4a3456c52bf101d4b7c5431ae'] = 'Ta emot fakturabetalningar via Billmate';
+$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_f4330541bca1fd370209600ae3785f0d'] = 'Rabatt';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_f4f70727dc34561dfde1a3c529b6205c'] = 'Inställningar';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_d5d34c4bfac28b72867ef29b8430a6c1'] = 'Billmate ID';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_1e6947ac7fb3a9529a9726eb692c8cc5'] = 'Nyckel';
@@ -51,8 +52,8 @@ $_MODULE['<{billmateinvoice}prestashop>form_0c25b529b4d690c39b0831840d0ed01c'] =
 $_MODULE['<{billmateinvoice}prestashop>form_bdbaf840bae85f563f456e6815bb0e50'] = 'Billmate Fakturabetalning';
 $_MODULE['<{billmateinvoice}prestashop>form_e2867a925cba382f1436d1834bb52a1c'] = 'Det totala beloppet för din beställning är';
 $_MODULE['<{billmateinvoice}prestashop>form_2fd82751bde655a78a9f066d3ac2b86e'] = 'Detta inkluderar fakturaavgiften';
-$_MODULE['<{billmateinvoice}prestashop>form_06565e5611f23fdf8cc43e5077b92b54'] = 'moms';
 $_MODULE['<{billmateinvoice}prestashop>form_0e5c759bb4b58bc494d7c58f3e453397'] = 'inkl.';
+$_MODULE['<{billmateinvoice}prestashop>form_06565e5611f23fdf8cc43e5077b92b54'] = 'moms';
 $_MODULE['<{billmateinvoice}prestashop>form_e8534d2e7a84c466b8f3e42fa9d49db6'] = 'Vänligen fyll i följande fält för att slutföra din order';
 $_MODULE['<{billmateinvoice}prestashop>form_8e7c56172119b9bcb435184607c7cdbc'] = 'Personnummer / Organisationsnummer:';
 $_MODULE['<{billmateinvoice}prestashop>form_569fd05bdafa1712c4f6be5b153b8418'] = 'Andra betalningsmetoder';
@@ -90,8 +91,8 @@ $_MODULE['<{billmateinvoice}prestashop>validation_0c25b529b4d690c39b0831840d0ed0
 $_MODULE['<{billmateinvoice}prestashop>validation_bdbaf840bae85f563f456e6815bb0e50'] = 'Billmate Faktura';
 $_MODULE['<{billmateinvoice}prestashop>validation_e2867a925cba382f1436d1834bb52a1c'] = 'Totalsumman av din order är';
 $_MODULE['<{billmateinvoice}prestashop>validation_2fd82751bde655a78a9f066d3ac2b86e'] = ' Detta inkluderar fakturaavgiften på';
-$_MODULE['<{billmateinvoice}prestashop>validation_06565e5611f23fdf8cc43e5077b92b54'] = 'inkl.';
 $_MODULE['<{billmateinvoice}prestashop>validation_0e5c759bb4b58bc494d7c58f3e453397'] = 'moms';
+$_MODULE['<{billmateinvoice}prestashop>validation_06565e5611f23fdf8cc43e5077b92b54'] = 'inkl.';
 $_MODULE['<{billmateinvoice}prestashop>validation_e8534d2e7a84c466b8f3e42fa9d49db6'] = 'Vänligen fyll i följande fält för att slutföra din order';
 $_MODULE['<{billmateinvoice}prestashop>validation_8e7c56172119b9bcb435184607c7cdbc'] = 'Personnummer / Organisationsnummer:';
 $_MODULE['<{billmateinvoice}prestashop>validation_330de429fba9166f2a7caaa649275749'] = 'Min e-postadress %1$s är korrekt och kan användas för fakturering.';
