@@ -32,8 +32,8 @@
         {if $show_activate == true}
         <p>
             <h4>{l s='Invoice Activation on Orderstatus' mod='billmatebank'}</h4>
-            <input type="radio" id="billmate_activation_on" name="billmate_activation" {if $billmate_activation == 1}checked="checked"{/if} value="1"/><label for="billmate_activation">{l s='Activated' mod='billmatebank'}</label>
-            <input type="radio" id="billmate_activation_off" name="billmate_activation" {if $billmate_activation == 0}checked="checked"{/if} value="0"/><label for="billmate_activation">{l s='Inactivated' mod='billmatebank'}</label>
+            <input type="radio" id="billmate_activation_on" name="billmate_activation" {if $billmate_activation == 1}checked="checked"{/if} value="1"/> <label for="billmate_activation">{l s='Activated' mod='billmatebank'}</label>
+            <input type="radio" id="billmate_activation_off" name="billmate_activation" {if $billmate_activation == 0}checked="checked"{/if} value="0"/> <label for="billmate_activation">{l s='Inactivated' mod='billmatebank'}</label>
 
         </p>
         <div class="input-row">
