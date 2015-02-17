@@ -114,8 +114,8 @@ class BillmateCardpay extends PaymentModule
             $payment = OrderPayment::getByOrderId($order_id);
 
             if ($order->module == $this->moduleName && Configuration::get('BCARDPAY_AUTHMOD') != 'sale' && $orderStatus == $id_status) {
-                $eid = Configuration::get('BCARDPAY_STORE_ID_SWEDEN');
-                $secret = Configuration::get('BCARDPAY_SECRET_SWEDEN');
+                $eid = Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
+                $secret = Configuration::get('BCARDPAY_SECRET_SETTINGS');
                 $testMode = Configuration::get('BCARDPAY_MOD');
                 $ssl = true;
                 $debug = false;
