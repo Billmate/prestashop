@@ -93,7 +93,7 @@ class BillmateInvoice extends PaymentModule
 		$this->author  = 'Billmate AB';
 
 		$this->currencies = true;
-		$this->currencies_mode = 'radio';
+		$this->currencies_mode = 'checkbox';
 
 		parent::__construct();
 		$this->core = null;
@@ -148,48 +148,65 @@ class BillmateInvoice extends PaymentModule
                     $isocode = $country->iso_code;
                     $cart = Cart::getCartByOrderId($order->id);
 
+                    switch($this->context->currency->iso_code){
+                        case 'EUR':
+                            $currency = 2;
+                            break;
+                        case 'DKK':
+                            $currency = 3;
+                            break;
+                        case 'SEK':
+                            $currency = 0;
+                            break;
+                        case 'NOK':
+                            $currency = 1;
+                            break;
+                        default:
+                            throw new Exception('Not a guilty currency for Billmate Invoice');
+                            break;
+                    }
                     switch ($isocode) {
                         // Sweden
                         case 'SE':
                             $country = 209;
                             $language = 138;
                             $encoding = 2;
-                            $currency = 0;
+                            //$currency = 0;
                             break;
                         // Finland
                         case 'FI':
                             $country = 73;
                             $language = 37;
                             $encoding = 4;
-                            $currency = 2;
+                            //$currency = 2;
                             break;
                         // Denmark
                         case 'DK':
                             $country = 59;
                             $language = 27;
                             $encoding = 5;
-                            $currency = 3;
+                            //$currency = 3;
                             break;
                         // Norway
                         case 'NO':
                             $country = 164;
                             $language = 97;
                             $encoding = 3;
-                            $currency = 1;
+                            //$currency = 1;
                             break;
                         // Germany
                         case 'DE':
                             $country = 81;
                             $language = 28;
                             $encoding = 6;
-                            $currency = 2;
+                            //$currency = 2;
                             break;
                         // Netherlands
                         case 'NL':
                             $country = 154;
                             $language = 101;
                             $encoding = 7;
-                            $currency = 2;
+                            //$currency = 2;
                             break;
                     }
 

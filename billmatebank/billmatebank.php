@@ -66,7 +66,7 @@ class BillmateBank extends PaymentModule
 		$this->author  = 'Billmate AB';
 
 		$this->currencies = true;
-		$this->currencies_mode = 'radio';
+		$this->currencies_mode = 'checkbox';
 
 		parent::__construct();
 		require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');

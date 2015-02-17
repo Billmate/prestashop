@@ -95,7 +95,7 @@ class BillmatePartpayment extends PaymentModule
 		$this->author = 'Billmate AB';
 
 		$this->currencies = true;
-		$this->currencies_mode = 'radio';
+		$this->currencies_mode = 'checkbox';
 
 		parent::__construct();
 		$this->core = null;
