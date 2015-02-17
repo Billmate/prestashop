@@ -255,7 +255,6 @@ class BillmateBank extends PaymentModule
 		}
 
         $activateStatuses = array();
-        $activateStatuses[0] = $this->l('Inactivated');
         $activateStatuses = $activateStatuses + $statuses_array;
         $status_activate = array(
             'name' => 'billmateActivateOnOrderStatus',
