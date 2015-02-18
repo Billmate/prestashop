@@ -149,7 +149,7 @@ class BillmatePartpayment extends PaymentModule
                     $country = new Country($adrsBilling->id_country);
                     $isocode = $country->iso_code;
                     $cart = Cart::getCartByOrderId($order->id);
-
+                    $this->context->cart = $cart;
                     switch ($isocode) {
                         // Sweden
                         case 'SE':
@@ -337,17 +337,26 @@ class BillmatePartpayment extends PaymentModule
                     );
 
                     $result = $k->ActivateReservation((string)$payment[0]->transaction_id,'',$bill_address, $ship_address, $goods_list, $transaction);
-                    if(is_string($result) || !is_array($result) || isset($result['error']))
+                    if(is_string($result) || !is_array($result) || isset($result['error'])) {
                         $this->context->cookie->error = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
+                        $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+                    }
+                    $this->context->cookie->confirmation = $this->l('The following orders is activated');
+                    $this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->onfirmation_orders.', '.$order_id : $order_id;
 
                 }
-                elseif (Tools::strtolower($invoice) == 'pending')
+                elseif (Tools::strtolower($invoice) == 'pending'){
                     $this->context->cookie->error = $this->l('Couldn`t activate the invoice, the invoice is manually checked for fraud');
-                elseif (Tools::strtolower($invoice) == 'partpayment')
-                    $this->context->cookie->error = $this->l('The invoice is already activated');
-                else
+                    $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
+                }
+                elseif(Tools::strtolower($invoice) == 'partpayment'){
+                    $this->context->cookie->information = $this->l('This invoice is already activated');
+                    $this->context->cookie->information_orders = isset($this->context->cookie->information_orders) ? $this->context->cookie->information_orders . ', ' . $order_id : $order_id;
+                }
+                else {
                     $this->context->cookie->error = $this->l('Couldn`t activate the invoice, please check Billmate Online');
-
+                    $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+                }
 
             }
         }

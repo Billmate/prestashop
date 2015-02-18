@@ -135,16 +135,27 @@ class BillmateBank extends PaymentModule
 
                 if (Tools::strtolower($invoice) == 'created'){
                     $result = $k->ActivateInvoice((string)$payment[0]->transaction_id);
-                    if(is_string($result) || !is_array($result) || isset($result['error']))
+                    if(is_string($result) || !is_array($result) || isset($result['error'])) {
                         $this->context->cookie->error = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
-                }
-                elseif (Tools::strtolower($invoice) == 'pending')
-                    $this->context->cookie->error = $this->l('Couldn`t activate the invoice, the invoice is manually checked for fraud');
-                elseif(Tools::strtolower($invoice) == 'paid')
-                    $this->context->cookie->error = $this->l('This invoice is already activated');
-                else
-                    $this->context->cookie->error = $this->l('Couldn`t activate the invoice, please check Billmate Online');
+                        $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+                    }
+                    $this->context->cookie->confirmation = $this->l('The following orders is activated');
+                    $this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->onfirmation_orders.', '.$order_id : $order_id;
 
+                }
+                elseif (Tools::strtolower($invoice) == 'pending') {
+                    $this->context->cookie->error = $this->l('Couldn`t activate the invoice, the invoice is manually checked for fraud');
+                    $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
+
+                }
+                elseif(Tools::strtolower($invoice) == 'paid') {
+                    $this->context->cookie->information = $this->l('This invoice is already activated');
+                    $this->context->cookie->information_orders = isset($this->context->cookie->information_orders) ? $this->context->cookie->information_orders . ', ' . $order_id : $order_id;
+                }
+                else {
+                    $this->context->cookie->error = $this->l('Couldn`t activate the invoice, please check Billmate Online');
+                    $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+                }
             }
         }
         //Logger::AddLog(print_r($params,true));
@@ -152,12 +163,31 @@ class BillmateBank extends PaymentModule
 
     public function hookDisplayBackOfficeHeader()
     {
-        if (isset($this->context->cookie->error))
+        if (isset($this->context->cookie->error) && strlen($this->context->cookie->error) > 2)
         {
             if (get_class($this->context->controller) == "AdminOrdersController")
             {
-                $this->context->controller->errors[] = $this->context->cookie->error;
+                $this->context->controller->errors[] = $this->context->cookie->error.': '.$this->context->cookie->error_orders;
                 unset($this->context->cookie->error);
+                unset($this->context->cookie->error_orders);
+            }
+        }
+        if (isset($this->context->cookie->information) && strlen($this->context->cookie->information) > 2)
+        {
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->informations[] = $this->context->cookie->information.': '.$this->context->cookie->information_orders;
+                unset($this->context->cookie->information);
+                unset($this->context->cookie->information_orders);
+            }
+        }
+        if (isset($this->context->cookie->confirmation) && strlen($this->context->cookie->confirmation) > 2)
+        {
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->confirmations[] = $this->context->cookie->confirmation.': '.$this->context->cookie->confirmation_orders;
+                unset($this->context->cookie->confirmation);
+                unset($this->context->cookie->confirmation_orders);
             }
         }
     }
