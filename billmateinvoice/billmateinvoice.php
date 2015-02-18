@@ -465,7 +465,7 @@ class BillmateInvoice extends PaymentModule
 				'required' => false,
 				'value' => Tools::safeOutput(Configuration::get('BM_INV_FEE_'.$country['name'])),
 				'type' => 'text',
-				'label' => $this->l('Invoice Fee ').'('.$currency['sign'].')',
+				'label' => $this->l('Invoice Fee ex. tax').'('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 			$input_country[$country['name']]['order_status_'.$country['name']] = array(
