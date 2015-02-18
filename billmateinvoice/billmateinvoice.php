@@ -119,15 +119,15 @@ class BillmateInvoice extends PaymentModule
     public function hookActionOrderStatusUpdate($params){
         $orderStatus = Configuration::get('BILLMATEINV_ACTIVATE_ON_STATUS');
         $activated = Configuration::get('BILLMATEINV_ACTIVATE');
-        if($orderStatus && $orderStatus != 0 && $activated) {
+        if($orderStatus && $activated) {
             $order_id = $params['id_order'];
 
             $id_status = $params['newOrderStatus']->id;
             $order = new Order($order_id);
 
             $payment = OrderPayment::getByOrderId($order_id);
-
-            if ($order->module == $this->moduleName && $orderStatus == $id_status) {
+            $orderStatus = unserialize($orderStatus);
+            if ($order->module == $this->moduleName && in_array($id_status,$orderStatus)) {
                 $eid = Configuration::get('BM_INV_STORE_ID_SWEDEN');
                 $secret = Configuration::get('BM_INV_SECRET_SWEDEN');
                 $testMode = Configuration::get('BMILLMATEINV_MOD');
@@ -512,13 +512,13 @@ class BillmateInvoice extends PaymentModule
         $activateStatuses = array();
         $activateStatuses = $activateStatuses + $statuses_array;
         $status_activate = array(
-            'name' => 'billmateActivateOnOrderStatus',
+            'name' => 'billmateActivateOnOrderStatus[]',
             'id' => 'activationSelect',
             'required' => true,
             'type' => 'select_activate',
             'label' => $this->l('Set Order Status for Invoice Activation'),
             'desc' => $this->l(''),
-            'value'=> (Tools::safeOutput(Configuration::get('BILLMATEINV_ACTIVATE_ON_STATUS'))) ? Tools::safeOutput(Configuration::get('BILLMATEINV_ACTIVATE_ON_STATUS')) : 0,
+            'value'=> (Tools::safeOutput(Configuration::get('BILLMATEINV_ACTIVATE_ON_STATUS'))) ? unserialize(Configuration::get('BILLMATEINV_ACTIVATE_ON_STATUS')) : 0,
             'options' => $activateStatuses
         );
 
@@ -580,7 +580,7 @@ class BillmateInvoice extends PaymentModule
 		else
 			billmate_deleteConfig('BILLMATEINV_ACTIVE_INVOICE');
 
-        Configuration::updateValue('BILLMATEINV_ACTIVATE_ON_STATUS',Tools::getValue('billmateActivateOnOrderStatus'));
+        Configuration::updateValue('BILLMATEINV_ACTIVATE_ON_STATUS',serialize(Tools::getValue('billmateActivateOnOrderStatus')));
         Configuration::updateValue('BILLMATEINV_ACTIVATE',Tools::getValue('billmate_activation'));
 
 		foreach ($this->countries as $country)

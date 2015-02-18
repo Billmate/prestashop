@@ -39,7 +39,7 @@
 
         <div class="input-row">
             <span>{$status_activate.label}</span>
-            <select {if $billmate_activation == 0} style="display: none;" {/if} {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if}>
+            <select {if $billmate_activation == 0} style="display: none;" {/if} {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if} multiple="multiple">
                 <option>{l s='Choose' mod='billmatebank'}</option>
                 {html_options options=$status_activate.options selected=$status_activate.value}
             </select>

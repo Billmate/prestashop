@@ -105,15 +105,15 @@ class BillmateCardpay extends PaymentModule
     public function hookActionOrderStatusUpdate($params){
         $orderStatus = Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS');
         $activated = Configuration::get('BCARDPAY_ACTIVATE');
-        if($orderStatus && $orderStatus != 0 && $activated) {
+        if($orderStatus && $activated) {
             $order_id = $params['id_order'];
 
             $id_status = $params['newOrderStatus']->id;
             $order = new Order($order_id);
 
             $payment = OrderPayment::getByOrderId($order_id);
-
-            if ($order->module == $this->moduleName && Configuration::get('BCARDPAY_AUTHMOD') != 'sale' && $orderStatus == $id_status) {
+            $orderStatus = unserialize($orderStatus);
+            if ($order->module == $this->moduleName && Configuration::get('BCARDPAY_AUTHMOD') != 'sale' && in_array($id_status,$orderStatus)) {
                 $eid = Configuration::get('BCARDPAY_STORE_ID_SETTINGS');
                 $secret = Configuration::get('BCARDPAY_SECRET_SETTINGS');
                 $testMode = Configuration::get('BCARDPAY_MOD');
@@ -286,13 +286,13 @@ class BillmateCardpay extends PaymentModule
         $activateStatuses = array();
         $activateStatuses = $activateStatuses + $statuses_array;
         $status_activate = array(
-            'name' => 'billmateActivateOnOrderStatus',
+            'name' => 'billmateActivateOnOrderStatus[]',
             'required' => true,
             'id' => 'activationSelect',
             'type' => 'select_activate',
             'label' => $this->l('Set Order Status for Invoice Activation'),
             'desc' => $this->l(''),
-            'value'=> (Tools::safeOutput(Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS'))) ? Tools::safeOutput(Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS')) : 0,
+            'value'=> (Tools::safeOutput(Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS'))) ? unserialize(Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS')) : 0,
             'options' => $activateStatuses
         );
 		$smarty->assign($this->moduleName.'FormCredential',	'./index.php?tab=AdminModules&configure='.$this->name.'&token='.Tools::getAdminTokenLite('AdminModules').'&tab_module='.$this->tab.'&module_name='.$this->name);
@@ -367,7 +367,7 @@ class BillmateCardpay extends PaymentModule
 		else
 			billmate_deleteConfig('BCARDPAY_ACTIVE_CARDPAY');
 
-        Configuration::updateValue('BCARDPAY_ACTIVATE_ON_STATUS',Tools::getValue('billmateActivateOnOrderStatus'));
+        Configuration::updateValue('BCARDPAY_ACTIVATE_ON_STATUS',serialize(Tools::getValue('billmateActivateOnOrderStatus')));
         Configuration::updateValue('BCARDPAY_ACTIVATE', Tools::getValue('billmate_activation'));
 
         foreach ($this->countries as $country)

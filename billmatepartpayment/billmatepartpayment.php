@@ -123,15 +123,15 @@ class BillmatePartpayment extends PaymentModule
     public function hookActionOrderStatusUpdate($params){
         $orderStatus = Configuration::get('BILLMATE_ACTIVATE_ON_STATUS');
         $activated = Configuration::get('BILLMATE_ACTIVATE');
-        if($orderStatus && $orderStatus != 0 && $activated) {
+        if($orderStatus && $activated) {
             $order_id = $params['id_order'];
 
             $id_status = $params['newOrderStatus']->id;
             $order = new Order($order_id);
 
             $payment = OrderPayment::getByOrderId($order_id);
-
-            if ($order->module == $this->moduleName && $orderStatus == $id_status) {
+            $orderStatus = unserialize($orderStatus);
+            if ($order->module == $this->moduleName && in_array($id_status,$orderStatus)) {
                 $eid = Configuration::get('BILLMATE_STORE_ID_SWEDEN');
                 $secret = Configuration::get('BILLMATE_SECRET_SWEDEN');
                 $testMode = Configuration::get('BMILLMATE_MOD');
@@ -482,12 +482,12 @@ class BillmatePartpayment extends PaymentModule
         $activateStatuses = $activateStatuses + $statuses_array;
         $status_activate = array(
             'id' => 'activationSelect',
-            'name' => 'billmateActivateOnOrderStatus',
+            'name' => 'billmateActivateOnOrderStatus[]',
             'required' => true,
             'type' => 'select_activate',
             'label' => $this->l('Set Order Status for Invoice Activation'),
             'desc' => $this->l(''),
-            'value'=> (Tools::safeOutput(Configuration::get('BILLMATE_ACTIVATE_ON_STATUS'))) ? Tools::safeOutput(Configuration::get('BILLMATE_ACTIVATE_ON_STATUS')) : 0,
+            'value'=> (Tools::safeOutput(Configuration::get('BILLMATE_ACTIVATE_ON_STATUS'))) ? unserialize(Configuration::get('BILLMATE_ACTIVATE_ON_STATUS')) : 0,
             'options' => $activateStatuses
         );
 
@@ -549,7 +549,7 @@ class BillmatePartpayment extends PaymentModule
 		else
 			billmate_deleteConfig('BILLMATE_ACTIVE_PARTPAYMENT');
 
-        Configuration::updateValue('BILLMATE_ACTIVATE_ON_STATUS',Tools::getValue('billmateActivateOnOrderStatus'));
+        Configuration::updateValue('BILLMATE_ACTIVATE_ON_STATUS',serialize(Tools::getValue('billmateActivateOnOrderStatus')));
         Configuration::updateValue('BILLMATE_ACTIVATE',Tools::getValue('billmate_activation'));
 
 		foreach ($this->countries as $country)

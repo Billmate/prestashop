@@ -117,14 +117,16 @@ class BillmateBank extends PaymentModule
     public function hookActionOrderStatusPostUpdate($params){
         $orderStatus = Configuration::get('BBANK_ACTIVATE_ON_STATUS');
         $activated = Configuration::get('BBANK_ACTIVATE');
-        if($orderStatus && $orderStatus != 0 && $activated) {
+
+        if($orderStatus && $activated) {
             $order_id = $params['id_order'];
 
             $id_status = $params['newOrderStatus']->id;
             $order = new Order($order_id);
 
             $payment = OrderPayment::getByOrderId($order_id);
-            if ($order->module == $this->moduleName && Configuration::get('BBANK_AUTHMOD') != 'sale' && $orderStatus == $id_status) {
+            $orderStatus = unserialize($orderStatus);
+            if ($order->module == $this->moduleName && Configuration::get('BBANK_AUTHMOD') != 'sale' && in_array($id_status,$orderStatus)) {
                 $eid = Configuration::get('BBANK_STORE_ID_SWEDEN');
                 $secret = Configuration::get('BBANK_SECRET_SWEDEN');
                 $testMode = Configuration::get('BBANK_MOD');
@@ -149,7 +151,7 @@ class BillmateBank extends PaymentModule
 
                 }
                 elseif(Tools::strtolower($invoice) == 'paid') {
-                    $this->context->cookie->information = $this->l('This invoice is already activated');
+                    $this->context->cookie->information = $this->l('This invoice is already activated').'<a href="http://www.billmateonline.se">Billmate</a>';
                     $this->context->cookie->information_orders = isset($this->context->cookie->information_orders) ? $this->context->cookie->information_orders . ', ' . $order_id : $order_id;
                 }
                 else {
@@ -300,13 +302,13 @@ class BillmateBank extends PaymentModule
         $activateStatuses = array();
         $activateStatuses = $activateStatuses + $statuses_array;
         $status_activate = array(
-            'name' => 'billmateActivateOnOrderStatus',
+            'name' => 'billmateActivateOnOrderStatus[]',
             'id' => 'activationSelect',
             'required' => true,
             'type' => 'select_activate',
             'label' => $this->l('Set Order Status for Invoice Activation'),
             'desc' => $this->l(''),
-            'value'=> (Tools::safeOutput(Configuration::get('BBANK_ACTIVATE_ON_STATUS'))) ? Tools::safeOutput(Configuration::get('BBANK_ACTIVATE_ON_STATUS')) : 0,
+            'value'=> (Tools::safeOutput(Configuration::get('BBANK_ACTIVATE_ON_STATUS'))) ? unserialize(Configuration::get('BBANK_ACTIVATE_ON_STATUS')) : 0,
             'options' => $activateStatuses
         );
 
@@ -369,7 +371,7 @@ class BillmateBank extends PaymentModule
 		else
 			billmate_deleteConfig('BBANK_ACTIVE');
 
-        Configuration::updateValue('BBANK_ACTIVATE_ON_STATUS', Tools::getValue('billmateActivateOnOrderStatus'));
+        Configuration::updateValue('BBANK_ACTIVATE_ON_STATUS', serialize(Tools::getValue('billmateActivateOnOrderStatus')));
         Configuration::updateValue('BBANK_ACTIVATE', Tools::getValue('billmate_activation'));
 
 		foreach ($this->countries as $country)
