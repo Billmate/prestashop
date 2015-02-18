@@ -338,14 +338,16 @@ class BillmatePartpayment extends PaymentModule
 
                     $result = $k->ActivateReservation((string)$payment[0]->transaction_id,'',$bill_address, $ship_address, $goods_list, $transaction);
                     if(is_string($result) || !is_array($result) || isset($result['error']))
-                        $this->context->controller->errors[] = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
+                        $this->context->cookie->error = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
 
                 }
-                elseif (Tools::strtolower($invoice) == 'pending'){
-                    $this->context->controller->errors[] = $this->l('Couldn`t activate the invoice, the invoice is manually checked for fraud');
-                } else {
-                    $this->context->controller->errors[] = $this->l('Couldn`t activate the invoice, please check Billmate Online');
-                }
+                elseif (Tools::strtolower($invoice) == 'pending')
+                    $this->context->cookie->error = $this->l('Couldn`t activate the invoice, the invoice is manually checked for fraud');
+                elseif (Tools::strtolower($invoice) == 'partpayment')
+                    $this->context->cookie->error = $this->l('The invoice is already activated');
+                else
+                    $this->context->cookie->error = $this->l('Couldn`t activate the invoice, please check Billmate Online');
+
 
             }
         }

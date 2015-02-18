@@ -114,7 +114,7 @@ class BillmateBank extends PaymentModule
 		return $html;
 	}
 
-    public function hookActionOrderStatusUpdate($params){
+    public function hookActionOrderStatusPostUpdate($params){
         $orderStatus = Configuration::get('BBANK_ACTIVATE_ON_STATUS');
         $activated = Configuration::get('BBANK_ACTIVATE');
         if($orderStatus && $orderStatus != 0 && $activated) {
@@ -124,29 +124,42 @@ class BillmateBank extends PaymentModule
             $order = new Order($order_id);
 
             $payment = OrderPayment::getByOrderId($order_id);
-
             if ($order->module == $this->moduleName && Configuration::get('BBANK_AUTHMOD') != 'sale' && $orderStatus == $id_status) {
                 $eid = Configuration::get('BBANK_STORE_ID_SWEDEN');
                 $secret = Configuration::get('BBANK_SECRET_SWEDEN');
                 $testMode = Configuration::get('BBANK_MOD');
                 $ssl = true;
                 $debug = false;
-
                 $k = new BillMate((int)$eid, $secret, $ssl, $debug, $testMode);
                 $invoice = $k->CheckInvoiceStatus((string)$payment[0]->transaction_id);
+
                 if (Tools::strtolower($invoice) == 'created'){
                     $result = $k->ActivateInvoice((string)$payment[0]->transaction_id);
                     if(is_string($result) || !is_array($result) || isset($result['error']))
-                        $this->context->controller->errors[] = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
+                        $this->context->cookie->error = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
                 }
-                elseif (Tools::strtolower($invoice) == 'pending'){
-                    $this->context->controller->errors[] = $this->l('Couldn`t activate the invoice, the invoice is manually checked for fraud');
-                } else {
-                    $this->context->controller->errors[] = $this->l('Couldn`t activate the invoice, please check Billmate Online');
-                }
+                elseif (Tools::strtolower($invoice) == 'pending')
+                    $this->context->cookie->error = $this->l('Couldn`t activate the invoice, the invoice is manually checked for fraud');
+                elseif(Tools::strtolower($invoice) == 'paid')
+                    $this->context->cookie->error = $this->l('This invoice is already activated');
+                else
+                    $this->context->cookie->error = $this->l('Couldn`t activate the invoice, please check Billmate Online');
+
             }
         }
         //Logger::AddLog(print_r($params,true));
+    }
+
+    public function hookDisplayBackOfficeHeader()
+    {
+        if (isset($this->context->cookie->error))
+        {
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->errors[] = $this->context->cookie->error;
+                unset($this->context->cookie->error);
+            }
+        }
     }
 	public function enable($force_all = false)
 	{
@@ -407,7 +420,8 @@ class BillmateBank extends PaymentModule
 
 		$this->registerHook('displayPayment');
 		$this->registerHook('header');
-        $this->registerHook('actionOrderStatusUpdate');
+        $this->registerHook('actionOrderStatusPostUpdate');
+        $this->registerHook('displayBackOfficeHeader');
 
 		if (!Configuration::get('BILLMATE_PAYMENT_ACCEPTED'))
 			Configuration::updateValue('BILLMATE_PAYMENT_ACCEPTED', $this->addState('Billmate : Payment accepted', '#DDEEFF'));
