@@ -24,8 +24,9 @@ if (!class_exists('Billmate'))
 	require(_PS_MODULE_DIR_.'/billmateinvoice/Billmate.php');
 
 
-require_once BILLMATE_BASE. '/utf8.php';
+require_once BILLMATE_BASE.'/utf8.php';
 require dirname(__FILE__).'/lib/pclasses.php';
+require_once(BILLMATE_BASE.'/lib/BillmateNew.php');
 
 class BillmatePartpayment extends PaymentModule
 {
@@ -130,6 +131,14 @@ class BillmatePartpayment extends PaymentModule
                 unset($this->context->cookie->error_orders);
             }
         }
+        if(isset($this->context->cookie->diff) && strlen($this->context->cookie->diff) > 2){
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->errors[] = $this->context->cookie->diff.':'. $this->context->cookie->diff_orders;
+                unset($this->context->cookie->diff);
+                unset($this->context->cookie->diff_orders);
+            }
+        }
         if (isset($this->context->cookie->information) && strlen($this->context->cookie->information) > 2)
         {
             if (get_class($this->context->controller) == "AdminOrdersController")
@@ -170,211 +179,219 @@ class BillmatePartpayment extends PaymentModule
 
                 $k = new BillMate((int)$eid, $secret, $ssl, $debug, $testMode);
                 $invoice = $k->CheckInvoiceStatus((string)$payment[0]->transaction_id);
-                if (Tools::strtolower($invoice) == 'created' || Tools::strtolower($invoice) == 'pending'){
-
-
-                    $adrsBilling = new Address($order->id_address_invoice);
-                    $adrsDelivery = new Address($order->id_address_delivery);
-                    $customer = new Customer($order->id_customer);
-                    $country = new Country($adrsBilling->id_country);
-                    $isocode = $country->iso_code;
-                    $cart = Cart::getCartByOrderId($order->id);
-                    $this->context->cart = $cart;
-                    switch ($isocode) {
-                        // Sweden
-                        case 'SE':
-                            $country = 209;
-                            $language = 138;
-                            $encoding = 2;
-                            $currency = 0;
-                            break;
-                        // Finland
-                        case 'FI':
-                            $country = 73;
-                            $language = 37;
-                            $encoding = 4;
-                            $currency = 2;
-                            break;
-                        // Denmark
-                        case 'DK':
-                            $country = 59;
-                            $language = 27;
-                            $encoding = 5;
-                            $currency = 3;
-                            break;
-                        // Norway
-                        case 'NO':
-                            $country = 164;
-                            $language = 97;
-                            $encoding = 3;
-                            $currency = 1;
-                            break;
-                        // Germany
-                        case 'DE':
-                            $country = 81;
-                            $language = 28;
-                            $encoding = 6;
-                            $currency = 2;
-                            break;
-                        // Netherlands
-                        case 'NL':
-                            $country = 154;
-                            $language = 101;
-                            $encoding = 7;
-                            $currency = 2;
-                            break;
-                    }
-
-                    $ship_address = array(
-                        'email'           => $customer->email,
-                        'telno'           => $adrsDelivery->phone,
-                        'cellno'          => $adrsDelivery->phone_mobile,
-                        'fname'           => $adrsDelivery->firstname,
-                        'lname'           => $adrsDelivery->lastname,
-                        'company'         => $adrsDelivery->company,
-                        'careof'          => '',
-                        'street'          => $adrsDelivery->address1,
-                        'house_number'    => '',
-                        'house_extension' => '',
-                        'zip'             => $adrsDelivery->postcode,
-                        'city'            => $adrsDelivery->city,
-                        'country'         => $adrsDelivery->country,
-                    );
-
-                    $bill_address = array(
-                        'email'           => $customer->email,
-                        'telno'           => $adrsBilling->phone,
-                        'cellno'          => $adrsBilling->phone_mobile,
-                        'fname'           => $adrsBilling->firstname,
-                        'lname'           => $adrsBilling->lastname,
-                        'company'         => $adrsBilling->company,
-                        'careof'          => '',
-                        'street'          => $adrsBilling->address1,
-                        'house_number'    => '',
-                        'house_extension' => '',
-                        'zip'             => $adrsBilling->postcode,
-                        'city'            => $adrsBilling->city,
-                        'country'         => $adrsBilling->country,
-                    );
-
-                    foreach ($ship_address as $key => $col)
+                $api = new BillMateNew($eid, $secret, $ssl, $testMode, $debug);
+                if (Tools::strtolower($invoice) == 'created' || Tools::strtolower($invoice) == 'pending')
+                {
+                    $resultCheck = $api->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+                    $total = $resultCheck['Cart']['Total']['withtax'];
+                    $orderTotal = $order->getTotalPaid();
+                    $diff = $total - $orderTotal;
+                    $diff = abs($diff);
+                    if ($diff <= 1)
                     {
-                        if (!is_array($col))
-                            $ship_address[$key] = utf8_decode( Encoding::fixUTF8($col));
-                    }
-                    foreach ($bill_address as $key => $col)
-                    {
-                        if (!is_array($col))
-                            $bill_address[$key] = utf8_decode( Encoding::fixUTF8($col));
-                    }
-                    $cart_details = $this->context->cart->getSummaryDetails(null, true);
-                    $this->context->cart->update();
 
-                    $products = $this->context->cart->getProducts();
-                    $taxrate = 0;
-                    $goods_list = array();
-                    foreach ($products as $product)
-                    {
-                        if (!empty($product['price']))
-                        {
-                            $taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
-                            $goods_list[] = array(
-                                'qty'   => (int)$product['cart_quantity'],
-                                'goods' => array(
-                                    'artno'    => $product['reference'],
-                                    'title'    => $product['name'],
-                                    'price'    => $product['price'] * 100,
-                                    'vat'      => (float)$taxrate,
-                                    'discount' => 0.0,
-                                    'flags'    => ($product['id_product'] == Configuration::get('BM_INV_FEE_ID_SWEDEN')) ? 16 : 0,
-                                )
-
-                            );
+                        $adrsBilling = new Address($order->id_address_invoice);
+                        $adrsDelivery = new Address($order->id_address_delivery);
+                        $customer = new Customer($order->id_customer);
+                        $country = new Country($adrsBilling->id_country);
+                        $isocode = $country->iso_code;
+                        $cart = Cart::getCartByOrderId($order->id);
+                        $this->context->cart = $cart;
+                        switch ($isocode) {
+                            // Sweden
+                            case 'SE':
+                                $country = 209;
+                                $language = 138;
+                                $encoding = 2;
+                                $currency = 0;
+                                break;
+                            // Finland
+                            case 'FI':
+                                $country = 73;
+                                $language = 37;
+                                $encoding = 4;
+                                $currency = 2;
+                                break;
+                            // Denmark
+                            case 'DK':
+                                $country = 59;
+                                $language = 27;
+                                $encoding = 5;
+                                $currency = 3;
+                                break;
+                            // Norway
+                            case 'NO':
+                                $country = 164;
+                                $language = 97;
+                                $encoding = 3;
+                                $currency = 1;
+                                break;
+                            // Germany
+                            case 'DE':
+                                $country = 81;
+                                $language = 28;
+                                $encoding = 6;
+                                $currency = 2;
+                                break;
+                            // Netherlands
+                            case 'NL':
+                                $country = 154;
+                                $language = 101;
+                                $encoding = 7;
+                                $currency = 2;
+                                break;
                         }
-                    }
 
-                    $carrier = $cart_details['carrier'];
-                    if (!empty($cart_details['total_discounts']))
-                    {
-                        $discountamount = $cart_details['total_discounts'] / (($taxrate + 100) / 100);
-                        if (!empty($discountamount))
+                        $ship_address = array(
+                            'email' => $customer->email,
+                            'telno' => $adrsDelivery->phone,
+                            'cellno' => $adrsDelivery->phone_mobile,
+                            'fname' => $adrsDelivery->firstname,
+                            'lname' => $adrsDelivery->lastname,
+                            'company' => $adrsDelivery->company,
+                            'careof' => '',
+                            'street' => $adrsDelivery->address1,
+                            'house_number' => '',
+                            'house_extension' => '',
+                            'zip' => $adrsDelivery->postcode,
+                            'city' => $adrsDelivery->city,
+                            'country' => $adrsDelivery->country,
+                        );
+
+                        $bill_address = array(
+                            'email' => $customer->email,
+                            'telno' => $adrsBilling->phone,
+                            'cellno' => $adrsBilling->phone_mobile,
+                            'fname' => $adrsBilling->firstname,
+                            'lname' => $adrsBilling->lastname,
+                            'company' => $adrsBilling->company,
+                            'careof' => '',
+                            'street' => $adrsBilling->address1,
+                            'house_number' => '',
+                            'house_extension' => '',
+                            'zip' => $adrsBilling->postcode,
+                            'city' => $adrsBilling->city,
+                            'country' => $adrsBilling->country,
+                        );
+
+                        foreach ($ship_address as $key => $col)
                         {
-                            $goods_list[] = array(
-                                'qty'   => (int)1,
-                                'goods' => array(
-                                    'artno'    => '',
-                                    'title'    => $this->context->controller->module->l('Rabatt'),
-                                    'price'    => 0 - abs($discountamount * 100),
-                                    'vat'      => $taxrate,
-                                    'discount' => 0.0,
-                                    'flags'    => 0,
-                                )
-
-                            );
+                            if (!is_array($col))
+                                $ship_address[$key] = utf8_decode(Encoding::fixUTF8($col));
                         }
-                    }
-                    $notfree = !(isset($cart_details['free_ship']) && $cart_details['free_ship'] == 1);
-
-                    if ($carrier->active && $notfree)
-                    {
-
-                        if(version_compare(_PS_VERSION_, '1.5', '<'))
-                            $shippingPrice = $cart->getOrderShippingCost();
-                        else
-                            $shippingPrice = $cart->getTotalShippingCost();
-
-                        $carrier = new Carrier($cart->id_carrier, $this->context->cart->id_lang);
-                        if (version_compare(_PS_VERSION_, '1.5', '>='))
-                            $taxrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
-                        else
-                            $taxrate = Tax::getCarrierTaxRate($cart->id_carrier, Configuration::get('PS_TAX_ADDRESS_TYPE'));
-
-                        if (!empty($shippingPrice))
+                        foreach ($bill_address as $key => $col)
                         {
-                            $shippingPrice = $shippingPrice / (1 + $taxrate / 100);
-                            $goods_list[] = array(
-                                'qty'   => 1,
-                                'goods' => array(
-                                    'artno'    => (string)$carrier->name.$cart->id_carrier,
-                                    'title'    => $carrier->name,
-                                    'price'    => $shippingPrice * 100,
-                                    'vat'      => (float)$taxrate,
-                                    'discount' => 0.0,
-                                    'flags'    => 8, //16|32
-                                )
-                            );
+                            if (!is_array($col))
+                                $bill_address[$key] = utf8_decode(Encoding::fixUTF8($col));
                         }
+                        $cart_details = $this->context->cart->getSummaryDetails(null, true);
+                        $this->context->cart->update();
+
+                        $products = $this->context->cart->getProducts();
+                        $taxrate = 0;
+                        $goods_list = array();
+                        foreach ($products as $product) {
+                            if (!empty($product['price'])) {
+                                $taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
+                                $goods_list[] = array(
+                                    'qty' => (int)$product['cart_quantity'],
+                                    'goods' => array(
+                                        'artno' => $product['reference'],
+                                        'title' => $product['name'],
+                                        'price' => $product['price'] * 100,
+                                        'vat' => (float)$taxrate,
+                                        'discount' => 0.0,
+                                        'flags' => ($product['id_product'] == Configuration::get('BM_INV_FEE_ID_SWEDEN')) ? 16 : 0,
+                                    )
+
+                                );
+                            }
+                        }
+
+                        $carrier = $cart_details['carrier'];
+                        if (!empty($cart_details['total_discounts'])) {
+                            $discountamount = $cart_details['total_discounts'] / (($taxrate + 100) / 100);
+                            if (!empty($discountamount)) {
+                                $goods_list[] = array(
+                                    'qty' => (int)1,
+                                    'goods' => array(
+                                        'artno' => '',
+                                        'title' => $this->context->controller->module->l('Rabatt'),
+                                        'price' => 0 - abs($discountamount * 100),
+                                        'vat' => $taxrate,
+                                        'discount' => 0.0,
+                                        'flags' => 0,
+                                    )
+
+                                );
+                            }
+                        }
+                        $notfree = !(isset($cart_details['free_ship']) && $cart_details['free_ship'] == 1);
+
+                        if ($carrier->active && $notfree)
+                        {
+
+                            if (version_compare(_PS_VERSION_, '1.5', '<'))
+                                $shippingPrice = $cart->getOrderShippingCost();
+                            else
+                                $shippingPrice = $cart->getTotalShippingCost();
+
+                            $carrier = new Carrier($cart->id_carrier, $this->context->cart->id_lang);
+                            if (version_compare(_PS_VERSION_, '1.5', '>='))
+                                $taxrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
+                            else
+                                $taxrate = Tax::getCarrierTaxRate($cart->id_carrier, Configuration::get('PS_TAX_ADDRESS_TYPE'));
+
+                            if (!empty($shippingPrice)) {
+                                $shippingPrice = $shippingPrice / (1 + $taxrate / 100);
+                                $goods_list[] = array(
+                                    'qty' => 1,
+                                    'goods' => array(
+                                        'artno' => (string)$carrier->name . $cart->id_carrier,
+                                        'title' => $carrier->name,
+                                        'price' => $shippingPrice * 100,
+                                        'vat' => (float)$taxrate,
+                                        'discount' => 0.0,
+                                        'flags' => 8, //16|32
+                                    )
+                                );
+                            }
+                        }
+                        $pclass = -1;
+                        $transaction = array(
+                            'order1' => (string)$order_id,
+                            'order2' => '',
+                            'comment' => '',
+                            'flags' => ($testMode) ? 2 : 8,
+                            'gender' => (string)1,
+                            'reference' => '',
+                            'reference_code' => '',
+                            'currency' => $currency,
+                            'country' => $country,
+                            'language' => $language,
+                            'pclass' => $pclass,
+                            'shipInfo' => array('delay_adjust' => '1'),
+                            'travelInfo' => array(),
+                            'incomeInfo' => array(),
+                            'bankInfo' => array(),
+                            'sid' => array('time' => microtime(true)),
+                            'extraInfo' => array(array('cust_no' => (int)$this->context->cart->id_customer))
+                        );
+
+                        $result = $k->ActivateReservation((string)$payment[0]->transaction_id, '', $bill_address, $ship_address, $goods_list, $transaction);
+                        if (is_string($result) || !is_array($result) || isset($result['error'])) {
+                            $this->context->cookie->error = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
+                            $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+                        }
+
+                        $this->context->cookie->confirmation = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'), $order_id) . ' (<a href="http://online.billmate.se/faktura">' . $this->l('Open Billmate Online') . '</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s', $this->context->cookie->information_orders . ', ' . $order_id)) . ' (<a href="http://online.billmate.se">' . $this->l('Open Billmate Online') . '</a>)';
+                        $this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->onfirmation_orders . ', ' . $order_id : $order_id;
                     }
-                    $pclass = -1;
-                    $transaction = array(
-                        'order1'=>(string)$order_id,
-                        'order2' => '',
-                        'comment'=>'',
-                        'flags'=> ($testMode) ? 2 :8,
-                        'gender'=>(string)1,
-                        'reference'=>'',
-                        'reference_code'=>'',
-                        'currency'=>$currency,
-                        'country'=>$country,
-                        'language'=>$language,
-                        'pclass'=>$pclass,
-                        'shipInfo'=>array('delay_adjust'=>'1'),
-                        'travelInfo'=>array(),
-                        'incomeInfo'=>array(),
-                        'bankInfo'=>array(),
-                        'sid'=>array('time'=>microtime(true)),
-                        'extraInfo'=>array(array('cust_no'=>(int)$this->context->cart->id_customer))
-                    );
-
-                    $result = $k->ActivateReservation((string)$payment[0]->transaction_id,'',$bill_address, $ship_address, $goods_list, $transaction);
-                    if(is_string($result) || !is_array($result) || isset($result['error'])) {
-                        $this->context->cookie->error = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
-                        $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+                    else
+                    {
+                        $this->context->cookie->diff = !isset($this->context->cookie->diff_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The amounts don\'t match %s, %s. Activate manually in Billmate Online.'),$order_id, $orderTotal, $total).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The amounts don\'t match. Activate manually in Billmate Online.'),$this->context->cookie->diff_orders.', '.$order_id) . $this->l('Open Billmate Online') . '</a>)';
+                        $this->context->cookie->diff_orders = isset($this->context->cookie->diff_orders) ? $this->context->cookie->diff_orders.', '.$order_id : $order_id;
                     }
-
-                    $this->context->cookie->confirmation = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'),$order_id).' (<a href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s',$this->context->cookie->information_orders.', '.$order_id)).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
-                    $this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->onfirmation_orders.', '.$order_id : $order_id;
-
                 }
                 elseif(Tools::strtolower($invoice) == 'paid') {
                     $this->context->cookie->information = !isset($this->context->cookie->information_orders) ? sprintf($this->l('Order %s has Already been activated through Billmate.',$order_id)).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders has already been activated through Billmate: %s',$this->context->cookie->confirmation_orders.', '.$order_id)).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';

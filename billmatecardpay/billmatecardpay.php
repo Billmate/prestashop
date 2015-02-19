@@ -15,6 +15,7 @@ if (!defined('_CAN_LOAD_FILES_'))
 define('BCARDPAY_BASE', dirname(dirname(__FILE__)).'/billmateinvoice');
 include_once(BCARDPAY_BASE . '/Billmate.php');
 include_once(_PS_MODULE_DIR_.'/billmateinvoice/commonfunctions.php');
+require_once(BCARDPAY_BASE.'/lib/BillmateNew.php');
 
 /**
  * BillmateCardpay class
@@ -112,6 +113,14 @@ class BillmateCardpay extends PaymentModule
                 unset($this->context->cookie->error_orders);
             }
         }
+        if(isset($this->context->cookie->diff) && strlen($this->context->cookie->diff) > 2){
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->errors[] = $this->context->cookie->diff.':'. $this->context->cookie->diff_orders;
+                unset($this->context->cookie->diff);
+                unset($this->context->cookie->diff_orders);
+            }
+        }
         if (isset($this->context->cookie->information) && strlen($this->context->cookie->information) > 2)
         {
             if (get_class($this->context->controller) == "AdminOrdersController")
@@ -150,17 +159,30 @@ class BillmateCardpay extends PaymentModule
                 $debug = false;
 
                 $k = new BillMate((int)$eid, $secret, $ssl, $debug, $testMode);
+                $api = new BillMateNew($eid, $secret, $ssl, $testMode, $debug);
                 $invoice = $k->CheckInvoiceStatus((string)$payment[0]->transaction_id);
                 if (Tools::strtolower($invoice) == 'created'){
-                    $result = $k->ActivateInvoice((string)$payment[0]->transaction_id);
-                    if(is_string($result) || !is_array($result) || isset($result['error'])) {
-                        $this->context->cookie->error = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
-                        $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+                    $resultCheck = $api->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+                    $total = $resultCheck['Cart']['Total']['withtax'];
+                    $orderTotal = $order->getTotalPaid();
+                    $diff = $total - $orderTotal;
+                    $diff = abs($diff);
+                    if($diff <= 1)
+                    {
+                        $result = $k->ActivateInvoice((string)$payment[0]->transaction_id);
+                        if (is_string($result) || !is_array($result) || isset($result['error'])) {
+                            $this->context->cookie->error = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
+                            $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+                        }
+
+                        $this->context->cookie->confirmation = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'), $order_id) . ' (<a href="http://online.billmate.se/faktura">' . $this->l('Open Billmate Online') . '</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s'), $this->context->cookie->information_orders . ', ' . $order_id) . ' (<a href="http://online.billmate.se">' . $this->l('Open Billmate Online') . '</a>)';
+                        $this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->onfirmation_orders . ', ' . $order_id : $order_id;
                     }
-
-                    $this->context->cookie->confirmation = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'),$order_id).' (<a href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s',$this->context->cookie->information_orders.', '.$order_id)).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
-                    $this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->onfirmation_orders.', '.$order_id : $order_id;
-
+                    else
+                    {
+                        $this->context->cookie->diff = !isset($this->context->cookie->diff_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The amounts don\'t match: %s, %s. Activate manually in Billmate Online.'),$order_id,$orderTotal,$total).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The amounts don\'t match. Activate manually in Billmate Online.'),$this->context->cookie->diff_orders.', '.$order_id) . $this->l('Open Billmate Online') . '</a>)';
+                        $this->context->cookie->diff_orders = isset($this->context->cookie->diff_orders) ? $this->context->cookie->diff_orders.', '.$order_id : $order_id;
+                    }
                 }
                 elseif(Tools::strtolower($invoice) == 'paid') {
                     $this->context->cookie->information = !isset($this->context->cookie->information_orders) ? sprintf($this->l('Order %s has Already been activated through Billmate.',$order_id)).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders has already been activated through Billmate: %s',$this->context->cookie->confirmation_orders.', '.$order_id)).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
