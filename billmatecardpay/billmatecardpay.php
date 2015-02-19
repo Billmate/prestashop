@@ -101,7 +101,36 @@ class BillmateCardpay extends PaymentModule
 			</fieldset>
 		</form>';
 	}
-
+    public function hookDisplayBackOfficeHeader()
+    {
+        if (isset($this->context->cookie->error) && strlen($this->context->cookie->error) > 2)
+        {
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->errors[] = $this->context->cookie->error.': '.$this->context->cookie->error_orders;
+                unset($this->context->cookie->error);
+                unset($this->context->cookie->error_orders);
+            }
+        }
+        if (isset($this->context->cookie->information) && strlen($this->context->cookie->information) > 2)
+        {
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->warnings[] = $this->context->cookie->information.': '.$this->context->cookie->information_orders;
+                unset($this->context->cookie->information);
+                unset($this->context->cookie->information_orders);
+            }
+        }
+        if (isset($this->context->cookie->confirmation) && strlen($this->context->cookie->confirmation) > 2)
+        {
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->confirmations[] = $this->context->cookie->confirmation.': '.$this->context->cookie->confirmation_orders;
+                unset($this->context->cookie->confirmation);
+                unset($this->context->cookie->confirmation_orders);
+            }
+        }
+    }
     public function hookActionOrderStatusUpdate($params){
         $orderStatus = Configuration::get('BCARDPAY_ACTIVATE_ON_STATUS');
         $activated = Configuration::get('BCARDPAY_ACTIVATE');
@@ -128,21 +157,17 @@ class BillmateCardpay extends PaymentModule
                         $this->context->cookie->error = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
                         $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
                     }
-                    $this->context->cookie->confirmation = $this->l('The following orders is activated');
+
+                    $this->context->cookie->confirmation = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'),$order_id).' (<a href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s',$this->context->cookie->information_orders.', '.$order_id)).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
                     $this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->onfirmation_orders.', '.$order_id : $order_id;
 
                 }
-                elseif (Tools::strtolower($invoice) == 'pending') {
-                    $this->context->cookie->error = $this->l('Couldn`t activate the invoice, the invoice is manually checked for fraud');
-                    $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
-
-                }
                 elseif(Tools::strtolower($invoice) == 'paid') {
-                    $this->context->cookie->information = $this->l('This invoice is already activated');
+                    $this->context->cookie->information = !isset($this->context->cookie->information_orders) ? sprintf($this->l('Order %s has Already been activated through Billmate.',$order_id)).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders has already been activated through Billmate: %s',$this->context->cookie->confirmation_orders.', '.$order_id)).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
                     $this->context->cookie->information_orders = isset($this->context->cookie->information_orders) ? $this->context->cookie->information_orders . ', ' . $order_id : $order_id;
                 }
                 else {
-                    $this->context->cookie->error = $this->l('Couldn`t activate the invoice, please check Billmate Online');
+                    $this->context->cookie->error = !isset($this->context->cookie->error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate.',$order_id)).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s.',$this->context->cookie->error_orders.', '.$order_id)).' (<a href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';;
                     $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
                 }
 
@@ -455,6 +480,16 @@ class BillmateCardpay extends PaymentModule
 		if (!Configuration::get('BILLMATE_PAYMENT_PENDING'))
 			Configuration::updateValue('BILLMATE_PAYMENT_PENDING', $this->addState('Billmate : payment in pending verification', '#DDEEFF'));
 
+        $include = array();
+        $hooklists = Hook::getHookModuleExecList('displayBackOfficeHeader');
+        foreach($hooklists as $hooklist)
+        {
+            if(!in_array($hooklist['module'],array('billmatebank','billmateinvoice','billmatepartpayment'))){
+                $include[] = true;
+            }
+        }
+        if(in_array(true,$include))
+            $this->registerHook('displayBackOfficeHeader');
 		/*auto install currencies*/
 		$currencies = array(
 			'Euro' => array('iso_code' => 'EUR', 'iso_code_num' => 978, 'symbole' => '€', 'format' => 2),

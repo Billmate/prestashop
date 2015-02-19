@@ -9,8 +9,13 @@ $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_12ec406d37a4fec3d685f8964
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_c79f3b0a3c5936107bfd51556e2d3dd5'] = 'Billmate Faktura';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_e9da97b4a3456c52bf101d4b7c5431ae'] = 'Ta betalt med faktura via Billmate';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_f4330541bca1fd370209600ae3785f0d'] = 'Rabatt';
-$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_11d92e89798e1bab1e2d337f94e169cb'] = 'Kunde inte aktivera fakturan, fakturan är under granskning av Billmate';
-$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_18e8a247909ac9ac3fe5577d2538b586'] = 'Kunde inte aktivera fakturan, vänligen kolla Billmate Online';
+$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_80fc44199fb97d9047a162507c56cb69'] = 'Order %s aktiverades via Billmate.';
+$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_e61b7bedf48e37f687b83b4b95c91797'] = 'Öppna Billmate Online';
+$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_afc5902f28d51f2df6782e8faec7962e'] = 'Följande ordrar aktiverades via Billmate: %s';
+$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_5a253d199b7c08bdb26cdf4f5c53507f'] = 'Order %s är redan aktiverad via Billmate.';
+$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_37929d7a0a4466ce4c0c378d100d4adc'] = 'Följande ordar är redan aktiverade via Billmate: %s';
+$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_24c4f68246a06b21ec3e7261db2f1553'] = 'Order %s misslyckades att aktiveras via Billmate.';
+$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_d0bedde4d0b3b5cfe60a43f747956d63'] = 'Följande ordrar misslyckades att aktiveras via Billmate: %s';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_f4f70727dc34561dfde1a3c529b6205c'] = 'Inställningar';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_d5d34c4bfac28b72867ef29b8430a6c1'] = 'Billmate ID';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_1e6947ac7fb3a9529a9726eb692c8cc5'] = 'Nyckel';
