@@ -404,7 +404,7 @@ class BillmateCardpay extends PaymentModule
 		//$prompt = !empty($_POST['billmate_prompt_name']) ? $_POST['billmate_prompt_name'] : 'NO';
 		//$p3dsecure = !empty($_POST['billmate_3dsecure']) ? $_POST['billmate_3dsecure'] : 'NO';
 		$prompt = Tools::getValue('billmate_prompt_name','NO');
-		$p3dsecure = Tools::getValue('billmate_3dsecure');
+		$p3dsecure = Tools::getValue('billmate_3dsecure','NO');
 		
 		Configuration::updateValue('BILL_PRNAME', $prompt);
 		Configuration::updateValue('BILL_3DSECURE', $p3dsecure );
