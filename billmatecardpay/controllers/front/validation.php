@@ -284,7 +284,7 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		}
 		$products = $this->context->cart->getProducts();
 		$cart_details = $this->context->cart->getSummaryDetails(null, true);
-
+		file_put_contents(_PS_CACHE_DIR_.'debug_products',print_r($products,true));
 		$vatrate = 0;
 		$goods_list = array();
 		foreach ($products as $product)
@@ -326,9 +326,36 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 				);
 			}
 		}
+		// Do we have any gift products in cart
+		if (isset($cart_details['gift_products']) && !empty($cart_details['gift_products']))
+		{
+			foreach ($cart_details['gift_products'] as $gift_product)
+			{
+				$discountamount = 0;
+				foreach ($products as $product){
+					if($gift_product['id_product'] == $product['id_product']){
+						$taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
+						$discountamount = $product['price'];
+					}
+
+				}
+				$goods_list[] = array(
+					'qty' => (int) $gift_product['cart_quantity'],
+					'goods' => array(
+						'artno' => $this->context->controller->module->l('Rabatt'),
+						'title' => $gift_product['name'],
+						'price' => $gift_product['price'] - round($discountamount * 100,0),
+						'vat' => $taxrate,
+						'discount' => 0.0,
+						'flags' => 0
+					)
+				);
+			}
+		}
 
 		$totals = array('total_shipping','total_handling');
 		$label =  array();
+		file_put_contents(_PS_CACHE_DIR_.'debug_discount',print_r($cart_details,true));
 		//array('total_tax' => 'Tax :'. $cart_details['products'][0]['tax_name']);
 		foreach ($totals as $total)
 		{
@@ -519,6 +546,32 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 						'flags'    => 0,
 					)
 					
+				);
+			}
+		}
+		// Do we have any gift products in cart
+		if (isset($cart_details['gift_products']) && !empty($cart_details['gift_products']))
+		{
+			foreach ($cart_details['gift_products'] as $gift_product)
+			{
+				$discountamount = 0;
+				foreach ($products as $product){
+					if($gift_product['id_product'] == $product['id_product']){
+						$taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
+						$discountamount = $product['price'];
+					}
+
+				}
+				$goods_list[] = array(
+					'qty' => (int) $gift_product['cart_quantity'],
+					'goods' => array(
+						'artno' => $this->context->controller->module->l('Rabatt'),
+						'title' => $gift_product['name'],
+						'price' => $gift_product['price'] - round($discountamount * 100,0),
+						'vat' => $taxrate,
+						'discount' => 0.0,
+						'flags' => 0
+					)
 				);
 			}
 		}
