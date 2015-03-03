@@ -16,7 +16,7 @@ $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_7a6edacb3cad7b78347fac03c
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_c2922b79aebc2c94b08b3cb3f27fc41d'] = 'Följande ordrar kunde ej aktiveras via Billmate, ordrarna finns ej i Billmate Online: %s. Ordern finns i (%s) läge däremot. Prova att ändra läge i modulens inställningar.';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_488a7419ee9ddbd2a6e74cafd2f2a9da'] = 'Order %s kunde ej aktiveras via Billmate, belopp matchar inte: %s, %s. Aktivera manuellt i Billmate Online.';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_9e0d8e53d9f7be13522aa8e578c5821b'] = 'Följande ordrar kunde ej aktiveras via Billmate: %s, beloppen matchar inte. Aktivera manuellt i Billmate Online';
-$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_5a253d199b7c08bdb26cdf4f5c53507f'] = 'Order %s är redan aktiverad via Billmate.';
+$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_d5b1be00373ab1df27fcc57a5ff0f6b3'] = 'Order %s är redan aktiverad via Billmate.';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_37929d7a0a4466ce4c0c378d100d4adc'] = 'Följande ordar är redan aktiverade via Billmate: %s';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_24c4f68246a06b21ec3e7261db2f1553'] = 'Order %s misslyckades att aktiveras via Billmate.';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_d0bedde4d0b3b5cfe60a43f747956d63'] = 'Följande ordrar misslyckades att aktiveras via Billmate: %s';
