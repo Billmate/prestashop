@@ -27,7 +27,7 @@ $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_1e6947ac7fb3a9529a9726eb6
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_57336e9fc16799e8a0a59811bd615809'] = 'Orderstatus';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_0f3b6306a7efddf2ecf85698370d4762'] = 'Minimum värde';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_b836c068c07a63081cee72070653b056'] = 'Maximum värde';
-$_MODULE['<{billmatecardpay}prestashop>billmatecardpay_7fe0cee95c3b55ebb88c9869a4766ee0'] = 'Välj orderstatus för faktura aktivering';
+$_MODULE['<{billmatecardpay}prestashop>billmatecardpay_4b534e271a8f95a880f2717a4da89d96'] = 'Välj orderstatusar för automatisk order aktivering i Billmate Online';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_ce5bf551379459c1c61d2a204061c455'] = 'Plats';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_c983f9ce866ed476e3597fbdc5b3b084'] = 'För att använda Billmatemodulen, ange dina kontouppgifter';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_553e273389202dfdbbda58bdfde8bd7f'] = ' Vänligen notera: Det valda landet och valutan måste matcha kundens address';

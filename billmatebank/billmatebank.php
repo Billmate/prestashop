@@ -301,7 +301,7 @@ class BillmateBank extends PaymentModule
 				'required' => false,
 				'value' => (float)Configuration::get('BBANK_MIN_VALUE_'.$country['name']),
 				'type' => 'text',
-				'label' => $this->l('Minimum Value ').'('.$currency['sign'].')',
+				'label' => $this->l('Minimum Value ').'( '.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 			$input_country[$country['name']]['maximum_value_'.$country['name']] = array(
@@ -309,7 +309,7 @@ class BillmateBank extends PaymentModule
 				'required' => false,
 				'value' => Configuration::get('BBANK_MAX_VALUE_'.$country['name']) != 0 ? (float)Configuration::get('BBANK_MAX_VALUE_'.$country['name']) : 99999,
 				'type' => 'text',
-				'label' => $this->l('Maximum Value ').'('.$currency['sign'].')',
+				'label' => $this->l('Maximum Value ').'( '.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 
@@ -325,7 +325,7 @@ class BillmateBank extends PaymentModule
             'id' => 'activationSelect',
             'required' => true,
             'type' => 'select_activate',
-            'label' => $this->l('Set Order Status for Invoice Activation'),
+            'label' => $this->l('Order statuses for automatic order activation in Billmate Online'),
             'desc' => $this->l(''),
             'value'=> (Tools::safeOutput(Configuration::get('BBANK_ACTIVATE_ON_STATUS'))) ? unserialize(Configuration::get('BBANK_ACTIVATE_ON_STATUS')) : 0,
             'options' => $activateStatuses

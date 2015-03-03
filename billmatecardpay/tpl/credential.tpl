@@ -19,17 +19,16 @@
 		</p>
         {if $show_activate == true}
         <p>
-            <h4>{l s='Invoice Activation on Orderstatus' mod='billmatebank'}</h4>
-            <input type="radio" id="billmate_activation_on" name="billmate_activation" {if $billmate_activation == 1}checked="checked"{/if} value="1"/> <label for="billmate_activation">{l s='Activated' mod='billmatebank'}</label>
-            <input type="radio" id="billmate_activation_off" name="billmate_activation" {if $billmate_activation == 0}checked="checked"{/if} value="0"/> <label for="billmate_activation">{l s='Inactivated' mod='billmatebank'}</label>
+            <h4>{l s='Automatic order activation in Billmate Online on order status update' mod='billmatebank'}</h4>
+            <input type="radio" id="billmate_activation_on" name="billmate_activation" {if $billmate_activation == 1}checked="checked"{/if} value="1"/> <label for="billmate_activation">{l s='Enabled' mod='billmatebank'}</label>
+            <input type="radio" id="billmate_activation_off" name="billmate_activation" {if $billmate_activation == 0}checked="checked"{/if} value="0"/> <label for="billmate_activation">{l s='Disabled' mod='billmatebank'}</label>
 
         </p>
         <p></p>
-        <h4>{$status_activate.label}</h4>
+        <h4 id="activate_title" {if $billmate_activation == 0} style="display:none;"{/if}>{$status_activate.label}</h4>
         <div class="input-row">
 
             <select {if $billmate_activation == 0} style="display:none;" {/if} {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if} multiple="multiple">
-                <option>{l s='Choose' mod='billmatebank'}</option>
                 {html_options options=$status_activate.options selected=$status_activate.value}
             </select>
         </div>
@@ -112,9 +111,12 @@
 	    {
             $('#billmate_activation_on').click(function(){
                 $('#activationSelect').show();
+                $('#activate_title').show();
             });
             $('#billmate_activation_off').click(function(){
                 $('#activationSelect').hide();
+                $('#activate_title').hide();
+
             })
             $('li[class^="billmate_form_"]').hide();
             $("li[class^='billmate_form']").each(

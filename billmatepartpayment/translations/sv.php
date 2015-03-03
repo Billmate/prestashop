@@ -10,7 +10,7 @@ $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_f4330541bca1fd370
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_80fc44199fb97d9047a162507c56cb69'] = 'Order %s aktiverades via Billmate.';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_e61b7bedf48e37f687b83b4b95c91797'] = 'Öppna Billmate Online';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_afc5902f28d51f2df6782e8faec7962e'] = 'Följande ordrar aktiverades via Billmate: %s';
-$_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_8dbf3763ac5dfae90e6d297d9fa974bc'] = 'Order %s kunde ej aktiveras via Billmate, belopp matchar inte: %s, %s. Aktivera manuellt i Billmate Online.';
+$_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_488a7419ee9ddbd2a6e74cafd2f2a9da'] = 'Order %s kunde ej aktiveras via Billmate, belopp matchar inte: %s, %s. Aktivera manuellt i Billmate Online.';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_9e0d8e53d9f7be13522aa8e578c5821b'] = 'Följande ordrar kunde ej aktiveras via Billmate: %s, beloppen matchar inte. Aktivera manuellt i Billmate Online';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_5a253d199b7c08bdb26cdf4f5c53507f'] = 'Order %s är redan aktiverad via Billmate.';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_37929d7a0a4466ce4c0c378d100d4adc'] = 'Följande ordar är redan aktiverade via Billmate: %s';
@@ -22,7 +22,7 @@ $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_1e6947ac7fb3a9529
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_57336e9fc16799e8a0a59811bd615809'] = 'Orderstatus';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_0f3b6306a7efddf2ecf85698370d4762'] = 'Minimum belopp';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_b836c068c07a63081cee72070653b056'] = 'Maximum belopp';
-$_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_7fe0cee95c3b55ebb88c9869a4766ee0'] = 'Välj orderstatus för faktura aktivering';
+$_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_4b534e271a8f95a880f2717a4da89d96'] = 'Välj orderstatusar för automatisk order aktivering i Billmate Online';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_ce5bf551379459c1c61d2a204061c455'] = 'Plats';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_c983f9ce866ed476e3597fbdc5b3b084'] = 'För att använda Billmatemodulen, ange land och kontoinställningar.';
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_553e273389202dfdbbda58bdfde8bd7f'] = 'Obs: Det valda landet måste matcha kundens land ';

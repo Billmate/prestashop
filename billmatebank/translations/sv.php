@@ -19,7 +19,7 @@ $_MODULE['<{billmatebank}prestashop>billmatebank_1e6947ac7fb3a9529a9726eb692c8cc
 $_MODULE['<{billmatebank}prestashop>billmatebank_57336e9fc16799e8a0a59811bd615809'] = 'Orderstatus';
 $_MODULE['<{billmatebank}prestashop>billmatebank_0f3b6306a7efddf2ecf85698370d4762'] = 'Minimum värde';
 $_MODULE['<{billmatebank}prestashop>billmatebank_b836c068c07a63081cee72070653b056'] = 'Maximum värde';
-$_MODULE['<{billmatebank}prestashop>billmatebank_7fe0cee95c3b55ebb88c9869a4766ee0'] = 'Välj orderstatus för faktura aktivering';
+$_MODULE['<{billmatebank}prestashop>billmatebank_4b534e271a8f95a880f2717a4da89d96'] = 'Välj orderstatusar för automatisk order aktivering i Billmate Online';
 $_MODULE['<{billmatebank}prestashop>billmatebank_ce5bf551379459c1c61d2a204061c455'] = 'Plats';
 $_MODULE['<{billmatebank}prestashop>billmatebank_c983f9ce866ed476e3597fbdc5b3b084'] = 'För att använda Billmatemodulen, ange dina kontouppgifter';
 $_MODULE['<{billmatebank}prestashop>billmatebank_553e273389202dfdbbda58bdfde8bd7f'] = 'Observera: Det valda valutan och landet måste matcha kundens registreringsnummer';
@@ -42,14 +42,14 @@ $_MODULE['<{billmatebank}prestashop>credential_a892b3c019c81f51e51245603b3a9786'
 $_MODULE['<{billmatebank}prestashop>credential_e690a3d3da27111ea8831cce5a1048c6'] = 'Modulens läge (i test kommer du till simulerade banksidor)';
 $_MODULE['<{billmatebank}prestashop>credential_0cbc6611f5540bd0809a388dc95a615b'] = 'Test';
 $_MODULE['<{billmatebank}prestashop>credential_955ad3298db330b5ee880c2c9e6f23a0'] = 'Live ';
-$_MODULE['<{billmatebank}prestashop>credential_a8da6b908a956d741e5f5d36f1aef4c5'] = 'Faktura aktivering vid Orderstatus';
-$_MODULE['<{billmatebank}prestashop>credential_cb456215c3333db0551bd0788bc258c7'] = 'Aktiverad';
-$_MODULE['<{billmatebank}prestashop>credential_406515cfd5fa14e00f4d3c51f4abc19a'] = 'Inaktiverad';
-$_MODULE['<{billmatebank}prestashop>credential_961f2247a2070bedff9f9cd8d64e2650'] = 'Välj';
+$_MODULE['<{billmatebank}prestashop>credential_ad95a08336859193e8ed6dc380c89220'] = 'Automatisk order aktivering i Billmate Online vid orderstatus uppdatering';
+$_MODULE['<{billmatebank}prestashop>credential_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
+$_MODULE['<{billmatebank}prestashop>credential_b9f5c797ebbf55adccdd8539a65a0241'] = 'Inaktiverad';
 $_MODULE['<{billmatebank}prestashop>credential_b54cae027174159a78c651b2875617cf'] = 'Betalningsalternativ';
 $_MODULE['<{billmatebank}prestashop>credential_72591b0379b1b01aa1a5682eed7b7699'] = 'Billmate Bank aktiverad';
 $_MODULE['<{billmatebank}prestashop>credential_f2cd171bd42220283b7a595c3ff2aaaf'] = 'Debitera belopp direkt';
 $_MODULE['<{billmatebank}prestashop>credential_9cd8a2455b1839ff98ef70c05b9b5983'] = 'Reservera belopp (debitera i billmateonline)';
+$_MODULE['<{billmatebank}prestashop>credential_961f2247a2070bedff9f9cd8d64e2650'] = 'Välj';
 $_MODULE['<{billmatebank}prestashop>credential_b39ce3657fdce8a871c6b37797e65be5'] = 'Spara / Uppdatera';
 $_MODULE['<{billmatebank}prestashop>form_835464c618db4bc2f642c985efa98718'] = 'Billmate Kort';
 $_MODULE['<{billmatebank}prestashop>form_971c02fae98f237b833335c653598a2c'] = 'Du har valt att betala med Billmate Bank.';
