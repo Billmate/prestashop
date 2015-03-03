@@ -12,8 +12,8 @@ When the order is passed to Billmate a credit record of the customer is made. If
 Billmate is a great payment alternative for merchants and customers in Sweden.
 
 ## Important Note
-*This plugin does not currently support campaigns.
-*The automatic order activation on status change is supported from PrestaShop version 1.5 and above.
+* This plugin does not currently support campaigns.
+* The automatic order activation on status change is supported from PrestaShop version 1.5 and above.
 
 ### Invoice Fee Handling
 Since of version 1.31 the Invoice Fee for Billmate Invoice are added as a simple (hidden) product. This is to match order total in Prestashop and your billmate part payment (in earlier versions the invoice fee only were added to Billmate).
