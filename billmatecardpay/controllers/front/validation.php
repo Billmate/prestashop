@@ -284,7 +284,6 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 		}
 		$products = $this->context->cart->getProducts();
 		$cart_details = $this->context->cart->getSummaryDetails(null, true);
-		file_put_contents(_PS_CACHE_DIR_.'debug_products',print_r($products,true));
 		$vatrate = 0;
 		$goods_list = array();
 		foreach ($products as $product)
@@ -355,7 +354,6 @@ class BillmateCardpayValidationModuleFrontController extends ModuleFrontControll
 
 		$totals = array('total_shipping','total_handling');
 		$label =  array();
-		file_put_contents(_PS_CACHE_DIR_.'debug_discount',print_r($cart_details,true));
 		//array('total_tax' => 'Tax :'. $cart_details['products'][0]['tax_name']);
 		foreach ($totals as $total)
 		{
