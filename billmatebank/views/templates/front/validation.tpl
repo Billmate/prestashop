@@ -1,7 +1,6 @@
 
 
 {capture name=path}{l s='Shipping' mod='billmatebank'}{/capture}
-{include file="$tpl_dir./breadcrumb.tpl"}
 <div id="order_area">
 <h2>{l s='Order summation' mod='billmatebank'}</h2>
 
