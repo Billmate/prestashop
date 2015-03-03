@@ -15,7 +15,7 @@
 		<p>
 		<input type="checkbox" id="billmate_prompt_name" name="billmate_prompt_name" {if $billmate_prompt_name == 'YES'}checked='checked'{/if} value="YES" /> <label for="billmate_prompt_name">{l s='Enable Prompt Name' mod='billmatecardpay'}</label>
 		</p><p>
-		<input type="checkbox" id="billmate_3dsecure" name="billmate_3dsecure" {if $billmate_3dsecure == 'YES'}checked='checked'{/if} value="YES" /> <label for="billmate_3dsecure">{l s='Enable 3d Secure' mod='billmatecardpay'}</label>
+		<input type="checkbox" id="billmate_3dsecure" name="billmate_3dsecure" {if $billmate_3dsecure == 'YES'}checked='checked'{/if} value="YES" /> <label for="billmate_3dsecure">{l s='Enable 3D Secure (Recommended for fraud protection)' mod='billmatecardpay'}</label>
 		</p>
         {if $show_activate == true}
         <p>

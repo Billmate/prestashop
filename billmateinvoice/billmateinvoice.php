@@ -648,7 +648,9 @@ class BillmateInvoice extends PaymentModule
 		else
 			billmate_deleteConfig('BILLMATEINV_ACTIVE_INVOICE');
 
-        Configuration::updateValue('BILLMATEINV_ACTIVATE_ON_STATUS',serialize(Tools::getValue('billmateActivateOnOrderStatus')));
+		if(Tools::getValue('billmate_activation') == 1)
+			Configuration::updateValue('BILLMATEINV_ACTIVATE_ON_STATUS',serialize(Tools::getValue('billmateActivateOnOrderStatus')));
+
         Configuration::updateValue('BILLMATEINV_ACTIVATE',Tools::getValue('billmate_activation'));
 
 		foreach ($this->countries as $country)

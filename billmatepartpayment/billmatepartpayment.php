@@ -613,7 +613,9 @@ class BillmatePartpayment extends PaymentModule
 		else
 			billmate_deleteConfig('BILLMATE_ACTIVE_PARTPAYMENT');
 
-        Configuration::updateValue('BILLMATE_ACTIVATE_ON_STATUS',serialize(Tools::getValue('billmateActivateOnOrderStatus')));
+		if(Tools::getValue('billmate_activation') == 1)
+			Configuration::updateValue('BILLMATE_ACTIVATE_ON_STATUS',serialize(Tools::getValue('billmateActivateOnOrderStatus')));
+
         Configuration::updateValue('BILLMATE_ACTIVATE',Tools::getValue('billmate_activation'));
 
 		foreach ($this->countries as $country)

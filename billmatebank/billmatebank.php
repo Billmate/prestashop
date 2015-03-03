@@ -411,7 +411,9 @@ class BillmateBank extends PaymentModule
 		else
 			billmate_deleteConfig('BBANK_ACTIVE');
 
-        Configuration::updateValue('BBANK_ACTIVATE_ON_STATUS', serialize(Tools::getValue('billmateActivateOnOrderStatus')));
+		if(Tools::getValue('billmate_activation') == 1)
+            Configuration::updateValue('BBANK_ACTIVATE_ON_STATUS', serialize(Tools::getValue('billmateActivateOnOrderStatus')));
+
         Configuration::updateValue('BBANK_ACTIVATE', Tools::getValue('billmate_activation'));
 
 		foreach ($this->countries as $country)

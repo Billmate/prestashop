@@ -434,8 +434,10 @@ class BillmateCardpay extends PaymentModule
 		else
 			billmate_deleteConfig('BCARDPAY_ACTIVE_CARDPAY');
 
-        Configuration::updateValue('BCARDPAY_ACTIVATE_ON_STATUS',serialize(Tools::getValue('billmateActivateOnOrderStatus')));
-        Configuration::updateValue('BCARDPAY_ACTIVATE', Tools::getValue('billmate_activation'));
+		if (Tools::getValue('billmate_activation') == 1)
+			Configuration::updateValue('BCARDPAY_ACTIVATE_ON_STATUS',serialize(Tools::getValue('billmateActivateOnOrderStatus')));
+
+		Configuration::updateValue('BCARDPAY_ACTIVATE', Tools::getValue('billmate_activation'));
 
         foreach ($this->countries as $country)
 		{
