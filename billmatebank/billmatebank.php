@@ -140,6 +140,7 @@ class BillmateBank extends PaymentModule
                 if (Tools::strtolower($invoice) == 'created')
                 {
                     $resultCheck = $api->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+
                     $total = $resultCheck['Cart']['Total']['withtax'] / 100;
                     $orderTotal = $order->getTotalPaid();
                     $diff = $total - $orderTotal;
@@ -301,7 +302,7 @@ class BillmateBank extends PaymentModule
 				'required' => false,
 				'value' => (float)Configuration::get('BBANK_MIN_VALUE_'.$country['name']),
 				'type' => 'text',
-				'label' => $this->l('Minimum Value ').'( '.$currency['sign'].')',
+				'label' => $this->l('Minimum Value ').' ('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 			$input_country[$country['name']]['maximum_value_'.$country['name']] = array(
@@ -309,7 +310,7 @@ class BillmateBank extends PaymentModule
 				'required' => false,
 				'value' => Configuration::get('BBANK_MAX_VALUE_'.$country['name']) != 0 ? (float)Configuration::get('BBANK_MAX_VALUE_'.$country['name']) : 99999,
 				'type' => 'text',
-				'label' => $this->l('Maximum Value ').'( '.$currency['sign'].')',
+				'label' => $this->l('Maximum Value ').' ('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 

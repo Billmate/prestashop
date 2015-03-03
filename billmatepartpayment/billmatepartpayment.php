@@ -506,7 +506,7 @@ class BillmatePartpayment extends PaymentModule
 				'required' => false,
 				'value' => (float)Configuration::get('BILLMATE_MIN_VALUE_'.$country['name']),
 				'type' => 'text',
-				'label' => $this->l('Minimum Value ').'( '.$currency['sign'].')',
+				'label' => $this->l('Minimum Value ').' ('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 			$input_country[$country['name']]['maximum_value_'.$country['name']] = array(
@@ -514,7 +514,7 @@ class BillmatePartpayment extends PaymentModule
 				'required' => false,
 				'value' => Configuration::get('BILLMATE_MAX_VALUE_'.$country['name']) != 0 ? (float)Configuration::get('BILLMATE_MAX_VALUE_'.$country['name']) : 99999,
 				'type' => 'text',
-				'label' => $this->l('Maximum Value ').'( '.$currency['sign'].')',
+				'label' => $this->l('Maximum Value ').' ('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 

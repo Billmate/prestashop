@@ -525,7 +525,7 @@ class BillmateInvoice extends PaymentModule
 				'required' => false,
 				'value' => Tools::safeOutput(Configuration::get('BM_INV_FEE_'.$country['name'])),
 				'type' => 'text',
-				'label' => $this->l('Invoice Fee ex. tax').'( '.$currency['sign'].')',
+				'label' => $this->l('Invoice Fee ex. tax').' ('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 			$input_country[$country['name']]['order_status_'.$country['name']] = array(
@@ -542,7 +542,7 @@ class BillmateInvoice extends PaymentModule
 				'required' => false,
 				'value' => (float)Configuration::get('BM_INV_MIN_VALUE_'.$country['name']),
 				'type' => 'text',
-				'label' => $this->l('Minimum Value ').'( '.$currency['sign'].')',
+				'label' => $this->l('Minimum Value ').' ('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 			$input_country[$country['name']]['maximum_value_'.$country['name']] = array(
@@ -550,7 +550,7 @@ class BillmateInvoice extends PaymentModule
 				'required' => false,
 				'value' => Configuration::get('BM_INV_MAX_VALUE_'.$country['name']) != 0 ? (float)Configuration::get('BM_INV_MAX_VALUE_'.$country['name']) : 99999,
 				'type' => 'text',
-				'label' => $this->l('Maximum Value ').'( '.$currency['sign'].')',
+				'label' => $this->l('Maximum Value ').' ('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 
@@ -588,7 +588,6 @@ class BillmateInvoice extends PaymentModule
                 'show_activate' => $showActivate,
                 'billmate_activation' => Configuration::get('BILLMATEINV_ACTIVATE'),
                 'status_activate' => $status_activate,
-				'billmate_pclass' => Db::getInstance()->ExecuteS('SELECT * FROM `'._DB_PREFIX_.'billmate_payment_pclasses`'),
 				'billmate_mod' => Configuration::get('BILLMATEINV_MOD'),
 				'billmate_active_invoice' => Configuration::get('BILLMATEINV_ACTIVE_INVOICE'),
 				'credentialInputVar' => $input_country,

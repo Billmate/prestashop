@@ -315,7 +315,7 @@ class BillmateCardpay extends PaymentModule
 				'required' => false,
 				'value' => (float)Configuration::get('BCARDPAY_MIN_VALUE_'.$country['name']),
 				'type' => 'text',
-				'label' => $this->l('Minimum Value ').'( '.$currency['sign'].')',
+				'label' => $this->l('Minimum Value ').' ('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 			$input_country[$country['name']]['maximum_value_'.$country['name']] = array(
@@ -323,7 +323,7 @@ class BillmateCardpay extends PaymentModule
 				'required' => false,
 				'value' => Configuration::get('BCARDPAY_MAX_VALUE_'.$country['name']) != 0 ? (float)Configuration::get('BCARDPAY_MAX_VALUE_'.$country['name']) : 99999,
 				'type' => 'text',
-				'label' => $this->l('Maximum Value ').'( '.$currency['sign'].')',
+				'label' => $this->l('Maximum Value ').' ('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 
@@ -576,7 +576,7 @@ class BillmateCardpay extends PaymentModule
 	{
 		global $smarty, $link;
 
-		if ( !Configuration::get('BCARDPAY_ACTIVE_CARDPAY') || !Configuration::get('PS_SHOP_COUNTRY'))
+		if ( !Configuration::get('BCARDPAY_ACTIVE_CARDPAY'))
 			return false;
 		//Rabatt($this->context->language);
 		//die;
