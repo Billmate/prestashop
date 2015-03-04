@@ -61,7 +61,7 @@ $_MODULE['<{billmatecardpay}prestashop>credential_0cbc6611f5540bd0809a388dc95a61
 $_MODULE['<{billmatecardpay}prestashop>credential_955ad3298db330b5ee880c2c9e6f23a0'] = 'Live ';
 $_MODULE['<{billmatecardpay}prestashop>credential_7832d405e69ad22a93e930ba92862b8a'] = 'Valfria inställningar';
 $_MODULE['<{billmatecardpay}prestashop>credential_4e30c61ec21e70f1ec1b5e4abf98116e'] = 'Aktivera Namn i betalfönster ';
-$_MODULE['<{billmatecardpay}prestashop>credential_570fdec6064d1283203a4e74cf9a6e4b'] = 'Aktivera 3D secure (Rekommenderas för bedrägeriskydd)';
+$_MODULE['<{billmatecardpay}prestashop>credential_754ce83ac1580acea9d2cfc485edc922'] = 'Aktivera 3D Secure (Rekommenderas för bedrägeriskydd)';
 $_MODULE['<{billmatecardpay}prestashop>credential_b54cae027174159a78c651b2875617cf'] = 'Betalningsalternativ';
 $_MODULE['<{billmatecardpay}prestashop>credential_ac9b4cabc8547bf458da836da847c84a'] = 'Billmate Kort aktiverad';
 $_MODULE['<{billmatecardpay}prestashop>credential_a51c2c458d6da36b6b142361d9e49c1f'] = 'Ange betalningsmetod';

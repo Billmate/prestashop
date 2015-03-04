@@ -109,6 +109,9 @@
 	$(document).ready(
 	    function()
 	    {
+            var length = $("#activationSelect option").length;
+            length = length > 19 ? 20 : length
+            $('#activationSelect').attr('size',length);
             $('#billmate_activation_on').click(function(){
                 $('#activationSelect').show();
                 $('#activate_title').show();

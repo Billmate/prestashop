@@ -7,18 +7,3 @@ $('li[class^="billmate_flag_"]').click(function()
 	else
 		$('#billmate_activate'+country).remove();
 });
-$('#billmate_activation_on').click(function(){
-    $('#activationSelect').prop('disabled',false);
-});
-$('#billmate_activation_off').click(function(){
-    $('#activationSelect').prop('disabled',true);
-})
-$(document).ready(function(){
-    var height = 0;
-    $('.billmate-blockSmall').each(function(){
-	if (height < $(this).height())
-	    height = $(this).height();
-    });
-
-    $('.billmate-blockSmall').css({'height' : $('.billmate-blockSmall').css('height', 10 +height+'px')});
-});

@@ -9,8 +9,6 @@ $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_12ec406d37a4fec3d685f8964
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_c79f3b0a3c5936107bfd51556e2d3dd5'] = 'Billmate Faktura';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_e9da97b4a3456c52bf101d4b7c5431ae'] = 'Ta emot fakturabetalningar via Billmate';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_f4330541bca1fd370209600ae3785f0d'] = 'Rabatt';
-$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_11d92e89798e1bab1e2d337f94e169cb'] = 'Kunde inte aktivera fakturan, fakturan är under granskning av Billmate';
-$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_18e8a247909ac9ac3fe5577d2538b586'] = 'Kunde inte aktivera fakturan, vänligen kolla Billmate Online';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_f4f70727dc34561dfde1a3c529b6205c'] = 'Inställningar';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_d5d34c4bfac28b72867ef29b8430a6c1'] = 'Billmate ID';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_1e6947ac7fb3a9529a9726eb692c8cc5'] = 'Nyckel';
@@ -18,7 +16,6 @@ $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_02d7e9b7014dc3e9867af3265
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_57336e9fc16799e8a0a59811bd615809'] = 'Orderstatus';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_0f3b6306a7efddf2ecf85698370d4762'] = 'Minimum belopp ';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_b836c068c07a63081cee72070653b056'] = 'Maximum (belopp)';
-$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_7fe0cee95c3b55ebb88c9869a4766ee0'] = 'Välj orderstatus för fakturaaktivering';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_ce5bf551379459c1c61d2a204061c455'] = 'Plats';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_c983f9ce866ed476e3597fbdc5b3b084'] = 'För att använda Billmatemodulen, ange ditt land och dina kontouppgifter';
 $_MODULE['<{billmateinvoice}prestashop>billmateinvoice_553e273389202dfdbbda58bdfde8bd7f'] = 'Obs: Den valda valutan, språk och landet måste matcha kundens land';
@@ -32,6 +29,7 @@ $_MODULE['<{billmateinvoice}prestashop>confirmation_75fbf512d744977d62599cc3f0ae
 $_MODULE['<{billmateinvoice}prestashop>confirmation_498cd895eb5a102c5aeb977e2b928dee'] = 'Tack!';
 $_MODULE['<{billmateinvoice}prestashop>confirmation_096b4517a3a434d019f249e70f999094'] = 'Du har valt Billmate Faktura.';
 $_MODULE['<{billmateinvoice}prestashop>confirmation_e6dc7945b557a1cd949bea92dd58963e'] = 'Din beställning kommer att skickas inom kort.';
+$_MODULE['<{billmateinvoice}prestashop>billmateinvoice_7fe0cee95c3b55ebb88c9869a4766ee0'] = 'Välj orderstatus för fakturaaktivering';
 $_MODULE['<{billmateinvoice}prestashop>getaddress_f4330541bca1fd370209600ae3785f0d'] = 'Rabatt';
 $_MODULE['<{billmateinvoice}prestashop>adminorder_4623bdd79fb625fe8b877072a1d3e44d'] = 'Välj en ny orderstatus';
 $_MODULE['<{billmateinvoice}prestashop>adminorder_6ea33cd7f98d16478509bbfeadb4007f'] = 'Betalning från Billmate';
@@ -95,6 +93,8 @@ $_MODULE['<{billmateinvoice}prestashop>validation_c79f3b0a3c5936107bfd51556e2d3d
 $_MODULE['<{billmateinvoice}prestashop>validation_0c25b529b4d690c39b0831840d0ed01c'] = 'Ordersummering';
 $_MODULE['<{billmateinvoice}prestashop>validation_bdbaf840bae85f563f456e6815bb0e50'] = 'Billmate Faktura';
 $_MODULE['<{billmateinvoice}prestashop>validation_e2867a925cba382f1436d1834bb52a1c'] = 'Totalsumman av din order är';
+$_MODULE['<{billmateinvoice}prestashop>validation_558114bfdfa2596988d22cd7d6324c30'] = 'Inkluderar fakturaavgiften på';
+$_MODULE['<{billmateinvoice}prestashop>validation_55b090625e8d4484bd223751acb21775'] = 'inklusive moms';
 $_MODULE['<{billmateinvoice}prestashop>validation_e8534d2e7a84c466b8f3e42fa9d49db6'] = 'Vänligen fyll i följande fält för att slutföra din order';
 $_MODULE['<{billmateinvoice}prestashop>validation_8e7c56172119b9bcb435184607c7cdbc'] = 'Personnummer / Organisationsnummer:';
 $_MODULE['<{billmateinvoice}prestashop>validation_330de429fba9166f2a7caaa649275749'] = 'Min e-postadress %1$s är korrekt och kan användas för fakturering.';
