@@ -84,7 +84,7 @@
 		</p>
 		<div>
 			<div class="totalsumma">{l s='TOTAL' mod='billmateinvoice'}: <span id="amount_{$currencies.0.id_currency}" class="price">{convertPrice price=$total}.</span></div>
-			<span class="descr">{l s='Including Invoice fee' mod='billmateinvoice'} {displayPrice price=$fee} :)</span>
+			<span class="descr">{l s='Including Invoice fee' mod='billmateinvoice'} {displayPrice price=$fee} )</span>
 		</div>
 		<p class="clear"></p>
 		<p class="">
