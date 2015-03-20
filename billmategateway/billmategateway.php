@@ -131,6 +131,7 @@ class BillmateGateway extends PaymentModule{
 		Configuration::updateValue('BCARDPAY_3DSECURE', (Tools::getIsset('cardpay3dsecure')) ? 1 : 0);
 		Configuration::updateValue('BCARDPAY_PROMPT', (Tools::getIsset('cardpayPromptname')) ? 1 : 0);
 		Configuration::updateValue('BCARDPAY_ORDER_STATUS',Tools::getValue('cardpayBillmateOrderStatus'));
+		Configuration::updateValue('BCARDPAY_AUTHORIZATION_METHOD',Tools::getValue('cardpayAuthorization'));
 		Configuration::updateValue('BCARDPAY_MIN_VALUE',Tools::getValue('cardpayBillmateMinimumValue'));
 		Configuration::updateValue('BCARDPAY_MAX_VALUE',Tools::getValue('cardpayBillmateMaximumValue'));
 

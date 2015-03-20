@@ -495,7 +495,7 @@ class BillmategatewayBillmateapiModuleFrontController extends ModuleFrontControl
 						'number' => $result['number'],
 						'orderid' =>(Configuration::get('BILLMATE_SEND_REFERENCE')) ? $this->module->currentOrderReference : $this->module->currentOrder
 					);
-					$this->billmate->updateOrder($values);
+					$this->billmate->updatePayment($values);
 
 					$url = 'order-confirmation&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder.'&key='.$customer->secure_key;
 					$return['success'] = true;
