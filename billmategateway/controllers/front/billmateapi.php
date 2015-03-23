@@ -382,9 +382,6 @@
 
 					if (Configuration::get('PS_ORDER_PROCESS_TYPE') == 1)
 					{
-
-						$carrierurl = $this->context->link->getPageLink('order-opc', true);
-
 						$return = array(
 							'success' => true,
 							'action'  => array(
@@ -401,8 +398,6 @@
 					}
 					else
 					{
-						$carrierurl = $this->context->link->getPageLink('order', true);
-
 						$return = array(
 							'success' => true,
 							'action'  => array(

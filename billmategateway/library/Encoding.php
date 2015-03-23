@@ -98,7 +98,7 @@
 			"\xc5\xb8"     => "\x9f"
 		);
 
-		static function toUTF8($text)
+		public static function toUTF8($text)
 		{
 			/**
 			 * Function Encoding::toUTF8
@@ -225,7 +225,7 @@
 			}
 		}
 
-		static function toWin1252($text)
+		public static function toWin1252($text)
 		{
 			if (is_array($text))
 			{
@@ -246,17 +246,17 @@
 			}
 		}
 
-		static function toISO8859($text)
+		public static function toISO8859($text)
 		{
 			return self::toWin1252($text);
 		}
 
-		static function toLatin1($text)
+		public static function toLatin1($text)
 		{
 			return self::toWin1252($text);
 		}
 
-		static function fixUTF8($text)
+		public static function fixUTF8($text)
 		{
 			if (is_array($text))
 			{
@@ -279,7 +279,7 @@
 			return $text;
 		}
 
-		static function UTF8FixWin1252Chars($text)
+		public static function UTF8FixWin1252Chars($text)
 		{
 			// If you received an UTF-8 string that was converted from Windows-1252 as it was ISO8859-1
 			// (ignoring Windows-1252 chars from 80 to 9F) use this function to fix it.
@@ -288,7 +288,7 @@
 			return str_replace(array_keys(self::$brokenUtf8ToUtf8), array_values(self::$brokenUtf8ToUtf8), $text);
 		}
 
-		static function removeBOM($str = "")
+		public static function removeBOM($str = "")
 		{
 			if (substr($str, 0, 3) == pack("CCC", 0xef, 0xbb, 0xbf))
 			{
@@ -301,7 +301,6 @@
 		public static function normalizeEncoding($encodingLabel)
 		{
 			$encoding     = strtoupper($encodingLabel);
-			$enc          = preg_replace('/[^a-zA-Z0-9\s]/', '', $encoding);
 			$equivalences = array(
 				'ISO88591'    => 'ISO-8859-1',
 				'ISO8859'     => 'ISO-8859-1',

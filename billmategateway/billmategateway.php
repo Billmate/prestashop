@@ -239,8 +239,6 @@
 		 * */
 		public function update()
 		{
-			$filesArrSorted = array();
-
 			$files = new ArrayObject(iterator_to_array(new FilesystemIterator(_PS_MODULE_DIR_.'/billmategateway/setup/updates', FilesystemIterator::SKIP_DOTS)));
 			$files->natsort();
 			if (count($files) == 0)
@@ -287,7 +285,6 @@
 
 			$order = new Order($order_id);
 
-			$payment = OrderPayment::getByOrderId($order_id);
 			if ($order->module != 'billmateinvoice')
 				return;
 
