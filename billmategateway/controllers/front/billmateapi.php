@@ -103,7 +103,7 @@ class BillmategatewayBillmateapiModuleFrontController extends ModuleFrontControl
 			'street2' => '',
 			'zip' => $billingAddress->postcode,
 			'city' => $billingAddress->city,
-			'country' => $billingAddress->country,
+			'country' => Country::getNameById($this->context->language->id,$billingAddress->id_country),
 			'phone' => $billingAddress->phone,
 			'email' => $this->context->customer->email
 		);
@@ -115,7 +115,7 @@ class BillmategatewayBillmateapiModuleFrontController extends ModuleFrontControl
 			'street2' => '',
 			'zip' => $shippingAddress->postcode,
 			'city' => $shippingAddress->city,
-			'country' => $shippingAddress->country,
+			'country' => Country::getNameById($this->context->language->id,$shippingAddress->id_country),
 			'phone' => $shippingAddress->phone,
 		);
 		return $customer;
