@@ -6,9 +6,9 @@
 	 * Time: 13:03
 	 */
 
-	require_once "Billmate.php";
-	require_once "Encoding.php";
-	require_once "Utf8.php";
+	require_once 'Billmate.php';
+	require_once 'Encoding.php';
+	require_once 'Utf8.php';
 
 	class Common {
 
@@ -28,24 +28,22 @@
 
 		public static function matchstr($string1, $string2)
 		{
-			$string1 = explode(" ", utf8_strtolower(Encoding::fixUTF8($string1)));
-			$string2 = explode(" ", utf8_strtolower(Encoding::fixUTF8($string2)));
+			$string1 = explode(' ', utf8_strtolower(Encoding::fixUTF8($string1)));
+			$string2 = explode(' ', utf8_strtolower(Encoding::fixUTF8($string2)));
 
 			$filterStr1 = array();
 			foreach ($string1 as $str1)
 			{
 				if (trim($str1, '.') == $str1)
-				{
 					$filterStr1[] = $str1;
-				}
+
 			}
 			$filterStr2 = array();
 			foreach ($string2 as $str2)
 			{
 				if (trim($str2, '.') == $str2)
-				{
 					$filterStr2[] = $str2;
-				}
+
 			}
 			$foundName = array_intersect($filterStr1, $filterStr2);
 

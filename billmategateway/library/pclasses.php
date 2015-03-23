@@ -10,7 +10,6 @@
 
 		public function __construct($eid = '', $secret = '', $country = '', $language = '', $currency = '', $mode = 'live')
 		{
-
 			$this->config['eid']      = $eid;
 			$this->_eid               = $eid;
 			$this->config['secret']   = $secret;
@@ -36,27 +35,26 @@
 
 			$values                = array();
 			$values['PaymentData'] = array(
-				"currency" => $currency,//SEK
-				"country"  => $country,//Sweden
-				"language" => $language,//Swedish
+				'currency' => $currency,//SEK
+				'country'  => $country,//Sweden
+				'language' => $language,//Swedish
 			);
 			$data                  = $billmate->getPaymentplans($values);
 
 			$db = Db::getInstance();
 			//$db->Execute('TRUNCATE TABLE `'._DB_PREFIX_.'billmate_payment_pclasses`');
 			$db->Execute('DELETE FROM `'.DB_PREFIX_.'billmate_payment_pclasses` WHERE language = "'.$language.'"');
+
 			if (!is_array($data))
-			{
 				throw new Exception(strip_tags($data));
-			}
 			else
 			{
 				array_walk($data, array($this, 'correct_lang_billmate'));
-				foreach ($data as $_row)
+				foreach ($data as $row)
 				{
-					$_row['eid'] = $eid;
+					$row['eid'] = $eid;
 
-					Db::getInstance()->insert('billmate_payment_pclasses', $_row);
+					Db::getInstance()->insert('billmate_payment_pclasses', $row);
 
 				}
 			}
@@ -74,7 +72,6 @@
 
 		public function getCheapestPClass($sum, $flags, $language)
 		{
-
 			$lowest_pp = $lowest = false;
 
 			$pclasses = $this->getPClasses('', $language);
@@ -111,8 +108,9 @@
 			if (!empty($eid))
 				$this->_eid = $eid;
 
-			$data = Db::getInstance()
-			          ->ExecuteS('SELECT * FROM `'._DB_PREFIX_.'billmate_payment_pclasses` where eid="'.$this->_eid.'" AND language="'.$language.'" AND expirydate > NOW()');
+			$data = Db::getInstance()->ExecuteS('SELECT * FROM `'._DB_PREFIX_.
+			                                    'billmate_payment_pclasses` where eid="'.$this->_eid.
+			                                    '" AND language="'.$language.'" AND expirydate > NOW()');
 			if (!$prepare)
 			{
 				if (!is_array($data))
@@ -136,8 +134,9 @@
 
 		public static function hasPclasses($language)
 		{
-			$data = Db::getInstance()
-			          ->ExecuteS('SELECT count(*) FROM '._DB_PREFIX_.'billmate_payment_pclasses WHERE language = "'.$language.'" AND expirydate > NOW()');
+			$data = Db::getInstance()->ExecuteS('SELECT count(*) FROM '._DB_PREFIX_.
+			                                    'billmate_payment_pclasses WHERE language = "'.$language.
+			                                    '" AND expirydate > NOW()');
 
 			if ($data == 0)
 				return false;

@@ -17,7 +17,7 @@
 			$this->limited_countries    = array('sv');
 			$this->allowed_currencies   = array('SEK');
 			$this->authorization_method = false;
-			$this->validationController = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'partpay'));
+			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'partpay'));
 			$this->icon                 = 'billmategateway/views/img/billmate_partpayment_l.png';
 		}
 
@@ -27,14 +27,12 @@
 		public function getPaymentInfo($cart)
 		{
 			if (!pClasses::hasPclasses(Language::getIsoById($cart->id_lang)) || Configuration::get('BPARTPAY_ENABLED') == 0)
-			{
 				return false;
-			}
 
 			return array(
 				'name'         => $this->displayName,
 				'type'         => $this->name,
-				'controller'   => $this->validationController,
+				'controller'   => $this->validation_controller,
 				'icon'         => $this->icon,
 				'agreements'   => $this->l('test'),
 				'pClasses'     => $this->getPclasses($cart),
@@ -50,9 +48,7 @@
 			$currency       = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
 			$statuses_array = array();
 			foreach ($statuses as $status)
-			{
 				$statuses_array[$status['id_order_state']] = $status['name'];
-			}
 
 			$settings['activated'] = array(
 				'name'     => 'partpayActivated',

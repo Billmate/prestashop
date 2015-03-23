@@ -17,7 +17,7 @@
 			$this->limited_countries    = array('sv');
 			$this->allowed_currencies   = array('SEK');
 			$this->authorization_method = false;
-			$this->validationController = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'invoice'));
+			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'invoice'));
 			$this->icon                 = 'billmategateway/views/img/billmate_invoice_l.png';
 		}
 
@@ -27,14 +27,12 @@
 		public function getPaymentInfo($cart)
 		{
 			if (Configuration::get('BINVOICE_ENABLED') == 0)
-			{
 				return false;
-			}
 
 			return array(
 				'name'       => $this->displayName,
 				'type'       => $this->name,
-				'controller' => $this->validationController,
+				'controller' => $this->validation_controller,
 				'icon'       => $this->icon,
 				'agreements' => $this->l('test'),
 				'invoiceFee' => $this->getFee()
@@ -50,14 +48,11 @@
 
 			$taxes_array = array();
 			foreach ($taxes as $tax)
-			{
 				$taxes_array[$tax['id_tax']] = $tax['name'];
-			}
+
 			$statuses_array = array();
 			foreach ($statuses as $status)
-			{
 				$statuses_array[$status['id_order_state']] = $status['name'];
-			}
 
 			$settings['activated'] = array(
 				'name'     => 'invoiceActivated',

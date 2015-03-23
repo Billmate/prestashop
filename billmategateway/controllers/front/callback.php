@@ -10,7 +10,7 @@
 
 		public $billmate;
 		protected $method;
-		protected $cartId;
+		protected $cart_id;
 		public $module;
 
 		public function postProcess()
@@ -20,7 +20,7 @@
 			$secret       = Configuration::get('BILLMATE_SECRET');
 			$ssl          = true;
 			$debug        = false;
-			require_once(_PS_MODULE_DIR_.'billmategateway/methods/'.'Billmate'.Tools::ucfirst($this->method).'.php');
+			require_once(_PS_MODULE_DIR_.'billmategateway/methods/Billmate'.Tools::ucfirst($this->method).'.php');
 
 			$class        = 'Billmate'.Tools::ucfirst($this->method);
 			$this->module = new $class;
@@ -36,22 +36,21 @@
 				$lockfile   = _PS_CACHE_DIR_.Tools::getValue('order_id');
 				$processing = file_exists($lockfile);
 				if ($this->context->cart->orderExists() || $processing)
-				{
 					die('OK');
-				}
 
 				file_put_contents($lockfile, 1);
 				$order        = $data['orderid'];
 				$order        = explode('-', $order);
-				$this->cartId = $order[0];
+				$this->cart_id = $order[0];
 
 
-				$this->context->cart = new Cart($this->cartId);
+				$this->context->cart = new Cart($this->cart_id);
 				$customer            = new Customer($this->context->cart->id_customer);
 				$total               = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 				$extra               = array('transaction_id' => $data['number']);
 				$status              = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
-				$this->module->validateOrder((int)$this->context->cart->id, $status, $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+				$this->module->validateOrder((int)$this->context->cart->id, $status, $total,
+					$this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$values = array();
 				if ($this->module->authorization_method != 'sale' && ($this->method == 'cardpay' || $this->method == 'bankpay'))
 				{

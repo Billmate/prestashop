@@ -18,8 +18,8 @@
 		 * @var $totals
 		 */
 		protected $totals = 0;
-		/** @var int $paidAmount for use with Billmate Invoice to sett correct amount */
-		protected $paidAmount = 0;
+		/** @var int $paid_amount for use with Billmate Invoice to sett correct amount */
+		protected $paid_amount = 0;
 		/**
 		 * The total tax amount
 		 * @var $tax
@@ -27,7 +27,7 @@
 		protected $tax = 0;
 
 		/** @var array with the format array('taxrate' => 'totalamount') */
-		protected $prepareDicsount = array();
+		protected $prepare_discount = array();
 		/** @var  pno | The personal number if invoice or Partpay */
 		protected $pno;
 		protected $billmate;
@@ -50,7 +50,7 @@
 			$secret = Configuration::get('BILLMATE_SECRET');
 			$ssl    = true;
 			$debug  = false;
-			require_once(_PS_MODULE_DIR_.'billmategateway/methods/'.'Billmate'.Tools::ucfirst($this->method).'.php');
+			require_once(_PS_MODULE_DIR_.'billmategateway/methods/Billmate'.Tools::ucfirst($this->method).'.php');
 
 			$class        = 'Billmate'.Tools::ucfirst($this->method);
 			$this->module = new $class;
@@ -88,7 +88,6 @@
 					break;
 			}
 
-
 			// Populate Data with the Customer Data and Cart stuff
 			$data['Customer'] = $this->prepareCustomer();
 			$data['Articles'] = $this->prepareArticles();
@@ -108,30 +107,30 @@
 			$customer             = array();
 			$customer['nr']       = $this->context->cart->id_customer;
 			$customer['pno']      = ($this->method == 'invoice' || $this->method == 'partpay') ? $this->pno : '';
-			$billingAddress       = new Address($this->context->cart->id_address_invoice);
-			$shippingAddress      = new Address($this->context->cart->id_address_delivery);
+			$billing_address       = new Address($this->context->cart->id_address_invoice);
+			$shipping_address      = new Address($this->context->cart->id_address_delivery);
 			$customer['Billing']  = array(
-				'firstname' => $billingAddress->firstname,
-				'lastname'  => $billingAddress->lastname,
-				'company'   => $billingAddress->company,
-				'street'    => $billingAddress->address1,
+				'firstname' => $billing_address->firstname,
+				'lastname'  => $billing_address->lastname,
+				'company'   => $billing_address->company,
+				'street'    => $billing_address->address1,
 				'street2'   => '',
-				'zip'       => $billingAddress->postcode,
-				'city'      => $billingAddress->city,
-				'country'   => Country::getNameById($this->context->language->id, $billingAddress->id_country),
-				'phone'     => $billingAddress->phone,
+				'zip'       => $billing_address->postcode,
+				'city'      => $billing_address->city,
+				'country'   => Country::getNameById($this->context->language->id, $billing_address->id_country),
+				'phone'     => $billing_address->phone,
 				'email'     => $this->context->customer->email
 			);
 			$customer['Shipping'] = array(
-				'firstname' => $shippingAddress->firstname,
-				'lastname'  => $shippingAddress->lastname,
-				'company'   => $shippingAddress->company,
-				'street'    => $shippingAddress->address1,
+				'firstname' => $shipping_address->firstname,
+				'lastname'  => $shipping_address->lastname,
+				'company'   => $shipping_address->company,
+				'street'    => $shipping_address->address1,
 				'street2'   => '',
-				'zip'       => $shippingAddress->postcode,
-				'city'      => $shippingAddress->city,
-				'country'   => Country::getNameById($this->context->language->id, $shippingAddress->id_country),
-				'phone'     => $shippingAddress->phone,
+				'zip'       => $shipping_address->postcode,
+				'city'      => $shipping_address->city,
+				'country'   => Country::getNameById($this->context->language->id, $shipping_address->id_country),
+				'phone'     => $shipping_address->phone,
 			);
 
 			return $customer;
@@ -143,12 +142,12 @@
 		 */
 		public function prepareArticles()
 		{
-			$articlesArr = array();
+			$articles_arr = array();
 			$articles    = $this->context->cart->getProducts();
 			foreach ($articles as $article)
 			{
 				$taxrate       = ($article['price_wt'] == $article['price']) ? 0 : $article['rate'];
-				$articlesArr[] = array(
+				$articles_arr[] = array(
 					'quantity'   => $article['cart_quantity'],
 					'title'      => $article['name'],
 					'artnr'      => $article['reference'],
@@ -158,18 +157,17 @@
 					'withouttax' => $article['price'] * 100
 
 				);
-				if (!isset($this->prepareDiscount))
-					$this->prepareDiscount[$taxrate] = $article['price'];
+				if (!isset($this->prepare_discount))
+					$this->prepare_discount[$taxrate] = $article['price'];
 				else
-					$this->prepareDiscount[$taxrate] += $article['price'];
-
+					$this->prepare_discount[$taxrate] += $article['price'];
 
 				$this->totals += $article['price'] * 100;
 				$this->tax += ($article['price'] * ($taxrate / 100)) * 100;
 
 			}
 
-			return $articlesArr;
+			return $articles_arr;
 		}
 
 		public function prepareDiscounts()
@@ -179,24 +177,24 @@
 			$discounts = array();
 			if (!empty($details['total_discounts']))
 			{
-				foreach ($this->prepareDicsount as $key => $value)
+				foreach ($this->prepare_discount as $key => $value)
 				{
-					$amountInclTax   = $value * ($key / 100);
-					$percentDiscount = $amountInclTax / $this->context->cart->getOrderTotal();
+					$amount_incl_tax   = $value * ($key / 100);
+					$percent_discount = $amount_incl_tax / $this->context->cart->getOrderTotal();
 
-					$discountAmount = ($percentDiscount * $details['total_discount']) / (1 + ($key / 100));
+					$discount_amount = ($percent_discount * $details['total_discount']) / (1 + ($key / 100));
 					$discounts[]    = array(
 						'quantity'   => 1,
 						'artnr'      => 'discount-'.$key,
 						'title'      => sprintf($this->module->l('Discount $1%s% VAT'), $key),
-						'aprice'     => -($discountAmount * 100),
+						'aprice'     => -($discount_amount * 100),
 						'taxrate'    => $key,
 						'discount'   => 0,
-						'withouttax' => -$discountAmount * 100
+						'withouttax' => -$discount_amount * 100
 					);
 
-					$this->totals -= $discountAmount * 100;
-					$this->tax -= $discountAmount * ($key / 100) * 100;
+					$this->totals -= $discount_amount * 100;
+					$this->tax -= $discount_amount * ($key / 100) * 100;
 
 				}
 
@@ -205,21 +203,21 @@
 			{
 				foreach ($details['gift_products'] as $gift)
 				{
-					$discountAmount = 0;
+					$discount_amount = 0;
 					$taxrate        = 0;
 					foreach ($this->context->cart->getProducts() as $product)
 					{
 						$taxrate        = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
-						$discountAmount = $product['price'];
+						$discount_amount = $product['price'];
 					}
 					$price          = $gift['price'] / $gift['cart_quantity'];
-					$discountAmount = $discountAmount / $gift['cart_quantity'];
-					$total          = $discountAmount * $gift['cart_quantity'] * 100;
+					$discount_amount = $discount_amount / $gift['cart_quantity'];
+					$total          = $discount_amount * $gift['cart_quantity'] * 100;
 					$discounts[]    = array(
 						'quantity'   => $gift['cart_quantity'],
 						'artnr'      => $this->module->l('Discount'),
 						'title'      => $gift['name'],
-						'aprice'     => $price - round($discountAmount * 100, 0),
+						'aprice'     => $price - round($discount_amount * 100, 0),
 						'taxrate'    => $taxrate,
 						'discount'   => 0,
 						'withouttax' => $total
@@ -242,46 +240,46 @@
 			$totals     = array();
 			$details    = $this->context->cart->getSummaryDetails(null, true);
 			$carrier    = $details['carrier'];
-			$orderTotal = $this->context->cart->getOrderTotal();
+			$order_total = $this->context->cart->getOrderTotal();
 			$notfree    = !(isset($details['free_ship']) && $details['free_ship'] == 1);
 
 			if ($carrier->active && $notfree)
 			{
-				$carrierObj = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
-				$taxrate    = $carrierObj->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
+				$carrier_obj = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
+				$taxrate    = $carrier_obj->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
 
-				$totalShippingCost  = $this->context->cart->getTotalShippingCost();
+				$total_shipping_cost  = $this->context->cart->getTotalShippingCost();
 				$totals['Shipping'] = array(
-					'withouttax' => $totalShippingCost * 100,
+					'withouttax' => $total_shipping_cost * 100,
 					'taxrate'    => $taxrate
 				);
-				$this->totals += $totalShippingCost * 100;
-				$this->tax += ($totalShippingCost * ($taxrate / 100)) * 100;
+				$this->totals += $total_shipping_cost * 100;
+				$this->tax += ($total_shipping_cost * ($taxrate / 100)) * 100;
 			}
 			if (Configuration::get('BINVOICE_FEE') > 0 && $this->method == 'invoice')
 			{
 				$fee           = Configuration::get('BINVOICE_FEE');
-				$invoiceFeeTax = Configuration::get('BINVOICE_FEE_TAX');
+				$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
 
-				$tax                = new Tax($invoiceFeeTax);
-				$taxCalculator      = new TaxCalculator(array($tax));
-				$taxRate            = $taxCalculator->getTotalRate();
+				$tax                = new Tax($invoice_fee_tax);
+				$tax_calculator      = new TaxCalculator(array($tax));
+				$tax_rate            = $tax_calculator->getTotalRate();
 				$totals['Handling'] = array(
 					'withouttax' => $fee * 100,
-					'taxrate'    => $taxRate
+					'taxrate'    => $tax_rate
 				);
-				$orderTotal += $fee * (1 + ($taxRate / 100));
+				$order_total += $fee * (1 + ($tax_rate / 100));
 				$this->totals += $fee * 100;
-				$this->tax += (($taxRate / 100) * $fee) * 100;
+				$this->tax += (($tax_rate / 100) * $fee) * 100;
 			}
-			$rounding         = ($orderTotal * 100) - $this->tax - $this->totals;
+			$rounding         = ($order_total * 100) - $this->tax - $this->totals;
 			$totals['Total']  = array(
 				'withouttax' => $this->totals,
 				'tax'        => $this->tax,
 				'rounding'   => $rounding,
 				'withtax'    => $this->totals + $this->tax + $rounding
 			);
-			$this->paidAmount = $totals['Total']['withtax'];
+			$this->paid_amount = $totals['Total']['withtax'];
 
 			return $totals;
 		}
@@ -304,34 +302,32 @@
 			$billing  = new Address($this->context->cart->id_address_invoice);
 			$shipping = new Address($this->context->cart->id_address_delivery);
 
-			$userShip = $shipping->firstname.' '.$shipping->lastname;
-			$userBill = $billing->firstname.' '.$billing->lastname;
+			$user_ship = $shipping->firstname.' '.$shipping->lastname;
+			$user_bill = $billing->firstname.' '.$billing->lastname;
 
-
-			$firstArr = explode(' ', $shipping->firstname);
-			$lastArr  = explode(' ', $shipping->lastname);
+			$first_arr = explode(' ', $shipping->firstname);
+			$last_arr  = explode(' ', $shipping->lastname);
 
 			$apifirst = explode(' ', $address['firstname']);
 			$apilast  = explode(' ', $address['lastname']);
 
-			$matchedFirst = array_intersect($firstArr, $apifirst);
-			$matchedLast  = array_intersect($lastArr, $apilast);
+			$matched_first = array_intersect($first_arr, $apifirst);
+			$matched_last  = array_intersect($last_arr, $apilast);
 
-			$apiMatchedName = !empty($matchedFirst) && !empty($matchedLast);
+			$api_matched_name = !empty($matched_first) && !empty($matched_last);
 
-			$address_same = Common::matchstr($userShip, $userBill) &&
+			$address_same = Common::matchstr($user_ship, $user_bill) &&
 			                Common::matchstr($billing->city, $shipping->city) &&
 			                Common::matchstr($billing->postcode, $shipping->postcode) &&
 			                Common::matchstr($billing->address1, $shipping->address1);
 			if (!(
-				$apiMatchedName
+				$api_matched_name
 				&& Common::matchstr($shipping->address1, $address['street'])
 				&& Common::matchstr($shipping->postcode, $address['zip'])
 				&& Common::matchstr($shipping->city, $address['city'])
 				&& Common::matchstr($address['country'], $shipping->country)
 				&& $address_same
-			)
-			)
+			))
 			{
 				if (Tools::getValue('geturl') == 'yes')
 				{
@@ -341,23 +337,22 @@
 
 					$carrier = Carrier::getCarrierByReference($cart_details['carrier']->id_reference);
 
-					$customerAddresses = $this->context->customer->getAddresses($this->context->language->id);
+					$customer_addresses = $this->context->customer->getAddresses($this->context->language->id);
 
-					if (count($customerAddresses) == 1)
-						$customerAddresses[] = $customerAddresses;
+					if (count($customer_addresses) == 1)
+						$customer_addresses[] = $customer_addresses;
 
-					$matchedAddressId = false;
-					foreach ($customerAddresses as $customerAddress)
+					$matched_address_id = false;
+					foreach ($customer_addresses as $customer_address)
 					{
-						if (Common::matchstr($customerAddress['address1'], $address['street']) &&
-						    Common::matchstr($customerAddress['postcode'], $address['zip']) &&
-						    Common::matchstr($customerAddress['city'], $address['city']) &&
-						    Common::matchstr($customerAddress['country'], $address['country'])
-						)
-							$matchedAddressId = $customerAddress['id'];
+						if (Common::matchstr($customer_address['address1'], $address['street']) &&
+						    Common::matchstr($customer_address['postcode'], $address['zip']) &&
+						    Common::matchstr($customer_address['city'], $address['city']) &&
+						    Common::matchstr($customer_address['country'], $address['country']))
+							$matched_address_id = $customer_address['id'];
 
 					}
-					if (!$matchedAddressId)
+					if (!$matched_address_id)
 					{
 						$addressnew              = new Address();
 						$addressnew->id_customer = (int)$this->context->customer->id;
@@ -377,19 +372,18 @@
 
 						$addressnew->id_country = Country::getIdByName($this->context->language->id, $address['country']);
 						$addressnew->save();
-						$matchedAddressId = $addressnew->id;
+						$matched_address_id = $addressnew->id;
 					}
-					$this->context->cart->updateAddressId($this->context->cart->id_address_delivery, $matchedAddressId);
+					$this->context->cart->updateAddressId($this->context->cart->id_address_delivery, $matched_address_id);
 
-					$this->context->cart->id_address_invoice  = (int)$matchedAddressId;
-					$this->context->cart->id_address_delivery = (int)$matchedAddressId;
+					$this->context->cart->id_address_invoice  = (int)$matched_address_id;
+					$this->context->cart->id_address_delivery = (int)$matched_address_id;
 					$this->context->cart->update();
 
 					if (Configuration::get('PS_ORDER_PROCESS_TYPE') == 1)
 					{
 
-						$carrierurl = $this->context->link->getPageLink("order-opc", true);
-
+						$carrierurl = $this->context->link->getPageLink('order-opc', true);
 
 						$return = array(
 							'success' => true,
@@ -399,7 +393,7 @@
 								'gift'                                   => 0,
 								'gift_message'                           => '',
 								'recyclable'                             => 0,
-								'delivery_option['.$matchedAddressId.']' => $carrier->id.',',
+								'delivery_option['.$matched_address_id.']' => $carrier->id.',',
 								'ajax'                                   => true,
 								'token'                                  => Tools::getToken(false),
 							)
@@ -407,14 +401,14 @@
 					}
 					else
 					{
-						$carrierurl = $this->context->link->getPageLink("order", true);
+						$carrierurl = $this->context->link->getPageLink('order', true);
 
 						$return = array(
 							'success' => true,
 							'action'  => array(
 								'method'             => 'updateExtraCarrier',
 								'id_delivery_option' => $carrier_id.',',
-								'id_address'         => $matchedAddressId,
+								'id_address'         => $matched_address_id,
 								'allow_refresh'      => 1,
 								'ajax'               => true,
 								'token'              => Tools::getToken(false),
@@ -435,7 +429,7 @@
 					$this->context->smarty->assign('city', $address['city']);
 					$this->context->smarty->assign('country', $address['country']);
 
-					$previouslink = $this->context->link->getPageLink("order.php", true).'?step=3';
+					$previouslink = $this->context->link->getPageLink('order.php', true).'?step=3';
 					$this->context->smarty->assign('previousLink', $previouslink);
 
 					$html   = $this->context->smarty->fetch(_PS_MODULE_DIR_.'billmategateway/views/templates/front/wrongaddress.tpl');
@@ -447,7 +441,6 @@
 			else
 				return true;
 
-
 		}
 
 		/**
@@ -456,8 +449,8 @@
 		 */
 		public function prepareInvoice($method)
 		{
-			$paymentData                = array();
-			$paymentData['PaymentData'] = array(
+			$payment_data                = array();
+			$payment_data['PaymentData'] = array(
 				'method'        => ($method == 'invoice') ? 1 : 4,
 				'paymentplanid' => ($method == 'partpay') ? Tools::getValue('paymentAccount') : '',
 				'currency'      => Tools::strtoupper($this->context->currency->iso_code),
@@ -466,11 +459,11 @@
 				'orderid'       => Tools::substr($this->context->cart->id.'-'.time(), 0, 10)
 			);
 
-			$paymentData['PaymentInfo'] = array(
+			$payment_data['PaymentInfo'] = array(
 				'paymentdate' => date('Y-m-d')
 			);
 
-			return $paymentData;
+			return $payment_data;
 
 		}
 
@@ -479,19 +472,19 @@
 		 */
 		public function prepareDirect($method)
 		{
-			$paymentData                = array();
-			$paymentData['PaymentData'] = array(
+			$payment_data                = array();
+			$payment_data['PaymentData'] = array(
 				'method'   => ($method == 'cardpay') ? 8 : 16,
 				'currency' => Tools::strtoupper($this->context->currency->iso_code),
 				'language' => Tools::strtolower($this->context->language->iso_code),
 				'country'  => Tools::strtolower($this->context->country->iso_code),
 				'orderid'  => Tools::substr($this->context->cart->id.'-'.time(), 0, 10)
 			);
-			$paymentData['PaymentInfo'] = array(
+			$payment_data['PaymentInfo'] = array(
 				'paymentdate' => date('Y-m-d')
 			);
 
-			$paymentData['Card'] = array(
+			$payment_data['Card'] = array(
 				'promptname'   => ($method == 'cardpay' && Configuration::get('BILLMATE_CARD_PROMPT')) ? 1 : 0,
 				'3dsecure'     => ($method == 'cardpay' && Configuration::get('BILLMATE_CARD_3DSECURE')) ? 1 : 0,
 				'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method)),
@@ -500,7 +493,7 @@
 				'returnmethod' => 'POST'
 			);
 
-			return $paymentData;
+			return $payment_data;
 		}
 
 		public function sendResponse($result)
@@ -516,7 +509,11 @@
 						$extra    = array('transaction_id' => $result['number']);
 						$total    = $this->context->cart->getOrderTotal();
 						$customer = new Customer((int)$this->context->cart->id_customer);
-						$this->module->validateOrder((int)$this->context->cart->id, $status, ($this->method == 'invoice') ? $this->paidAmount : $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+						$this->module->validateOrder((int)$this->context->cart->id,
+								$status,
+								($this->method == 'invoice') ? $this->paid_amount : $total,
+								$this->module->displayName,
+								null, $extra, null, false, $customer->secure_key);
 						$values                = array();
 						$values['PaymentData'] = array(
 							'number'  => $result['number'],
@@ -524,13 +521,14 @@
 						);
 						$this->billmate->updatePayment($values);
 
-						$url                = 'order-confirmation&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder.'&key='.$customer->secure_key;
+						$url                = 'order-confirmation&id_cart='.(int)$this->context->cart->id.
+						                      '&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder.
+						                      '&key='.$customer->secure_key;
 						$return['success']  = true;
 						$return['redirect'] = $this->context->link->getPageLink($url);
 					}
 					else
 						$return = array('success' => false, 'content' => utf8_encode($result['message']));
-
 
 					break;
 				case 'bankpay':

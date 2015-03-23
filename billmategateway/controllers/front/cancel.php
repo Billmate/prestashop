@@ -15,7 +15,7 @@
 		{
 			$this->context = Context::getContext();
 
-			$orderUrl = $this->context->link->getPageLink('order.php', true);
-			Tools::redirectLink($orderUrl);
+			$order_url = $this->context->link->getPageLink('order.php', true);
+			Tools::redirectLink($order_url);
 		}
 	}

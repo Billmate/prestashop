@@ -16,7 +16,6 @@
 
 		public function __construct($db)
 		{
-
 			$this->db = $db;
 		}
 
@@ -24,7 +23,6 @@
 		{
 			try
 			{
-
 				$this->db->execute('DROP TABLE IF EXISTS '._DB_PREFIX_.'billmate_rno');
 				$this->db->execute('DROP TABLE IF EXISTS '._DB_PREFIX_.'billmate_payment_classes');
 				$this->db->execute('CREATE TABLE IF NOT EXISTS '._DB_PREFIX_.'billmate_payment_pclasses (
@@ -45,7 +43,6 @@
 			`language` varchar(255),
 			currency varchar(10),
 			PRIMARY KEY(id))');
-
 
 			}
 			catch (Exception $e)

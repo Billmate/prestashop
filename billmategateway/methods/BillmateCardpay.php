@@ -17,7 +17,7 @@
 			$this->limited_countries    = array('sv');
 			$this->allowed_currencies   = array('SEK');
 			$this->authorization_method = Configuration::get('BCARDPAY_AUTHORIZATION_METHOD');
-			$this->validationController = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'cardpay'));
+			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'cardpay'));
 			$this->icon                 = 'billmategateway/views/img/billmate_cardpay_l.png';
 		}
 
@@ -27,14 +27,12 @@
 		public function getPaymentInfo($cart)
 		{
 			if (Configuration::get('BCARDPAY_ENABLED') == 0)
-			{
 				return false;
-			}
 
 			return array(
 				'name'       => $this->displayName,
 				'type'       => $this->name,
-				'controller' => $this->validationController,
+				'controller' => $this->validation_controller,
 				'icon'       => $this->icon
 			);
 		}
@@ -46,9 +44,8 @@
 			$currency       = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
 			$statuses_array = array();
 			foreach ($statuses as $status)
-			{
 				$statuses_array[$status['id_order_state']] = $status['name'];
-			}
+
 
 			$settings['activated'] = array(
 				'name'     => 'cardpayActivated',

@@ -43,7 +43,7 @@
 			$secret       = Configuration::get('BILLMATE_SECRET');
 			$ssl          = true;
 			$debug        = false;
-			require_once(_PS_MODULE_DIR_.'billmategateway/methods/'.'Billmate'.Tools::ucfirst($this->method).'.php');
+			require_once(_PS_MODULE_DIR_.'billmategateway/methods/Billmate'.Tools::ucfirst($this->method).'.php');
 
 			$class        = 'Billmate'.Tools::ucfirst($this->method);
 			$this->module = new $class;
@@ -65,25 +65,18 @@
 				$processing = file_exists($lockfile);
 				if ($this->context->cart->orderExists() || $processing)
 				{
-					$orderId = 0;
+					$order_id = 0;
 					if ($processing)
-					{
-						$orderId = $this->checkOrder($this->context->cart->id);
-					}
+						$order_id = $this->checkOrder($this->context->cart->id);
 					else
-					{
-						$orderId = Order::getOrderByCartId($this->context->cart->id);
-
-					}
+						$order_id = Order::getOrderByCartId($this->context->cart->id);
 
 
-					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$orderId);
+					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id);
 					die;
 				}
 
-
 				file_put_contents($lockfile, 1);
-
 
 				$total  = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 				$extra  = array('transaction_id' => $data['number']);
@@ -107,7 +100,9 @@
 					$this->billmate->activatePayment($values);
 				}
 				unlink($lockfile);
-				Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);
+				Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.
+				                    '&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.
+				                    '&id_order='.(int)$this->module->currentOrder);
 				die();
 			}
 		}

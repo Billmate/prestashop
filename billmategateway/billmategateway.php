@@ -52,9 +52,7 @@
 			$installedVersion           = Configuration::get('BILLMATE_VERSION');
 			// Is the module installed and need to be updated?
 			if ($installedVersion && version_compare($installedVersion, $this->version, '<'))
-			{
 				$this->update();
-			}
 
 			$this->context->smarty->assign('base_dir', __PS_BASE_URI__);
 		}
@@ -62,13 +60,9 @@
 		protected function _is_curl_installed()
 		{
 			if (in_array('curl', get_loaded_extensions()))
-			{
 				return true;
-			}
 			else
-			{
 				return false;
-			}
 		}
 
 		public function getContent()
@@ -79,14 +73,11 @@
 			{
 				$this->_postValidation();
 				if (count($this->postValidations))
-				{
 					$html .= $this->displayValidations();
-				}
 
 				if (count($this->postErrors))
-				{
 					$html .= $this->displayErrors();
-				}
+
 			}
 
 			$html .= $this->displayAdminTemplate();
@@ -185,9 +176,8 @@
 				$pclasses  = new pClasses();
 				$languages = Language::getLanguages();
 				foreach ($languages as $language)
-				{
 					$pclasses->Save($this->billmate_merchant_id, $this->billmate_secret, 'se', $language['iso_code'], 'SEK');
-				}
+
 			}
 		}
 
@@ -226,9 +216,8 @@
 		public function install()
 		{
 			if (!parent::install())
-			{
 				return false;
-			}
+
 			// Inactivate status for modules
 			Configuration::updateValue('BPARTPAY_ENABLED', 0);
 			Configuration::updateValue('BINVOICE_ENABLED', 0);
@@ -241,14 +230,10 @@
 			$installer->install();
 
 			if (!$this->registerHooks())
-			{
 				return false;
-			}
 
 			if (!$this->_is_curl_installed())
-			{
 				return false;
-			}
 
 			return true;
 		}
@@ -302,36 +287,30 @@
 		{
 			$order_id = 0;
 			if (array_key_exists('id_order', $hook))
-			{
 				$order_id = (int)$hook['id_order'];
-			}
+
 
 			$order = new Order($order_id);
 
 			$payment = OrderPayment::getByOrderId($order_id);
 			if ($order->module != 'billmateinvoice')
-			{
 				return;
-			}
-			$invoiceFee = Configuration::get('BINVOICE_FEE');
-			if ($invoiceFee == 0)
-			{
+
+			$invoice_fee = Configuration::get('BINVOICE_FEE');
+			if ($invoice_fee == 0)
 				return;
-			}
-			$invoiceFeeTax = Configuration::get('BINVOICE_FEE_TAX');
-			if (!$invoiceFee)
-			{
-				$invoiceFeeTaxRate = 0;
-			}
-			$tax           = new Tax($invoiceFeeTax);
-			$taxCalculator = new TaxCalculator(array($tax));
 
-			$taxAmount = $taxCalculator->getTaxesAmount($invoiceFee);
+			$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
 
-			$totalFee = $invoiceFee + $taxAmount[1];
+			$tax           = new Tax($invoice_fee_tax);
+			$tax_calculator = new TaxCalculator(array($tax));
 
-			$this->smarty->assign('invoiceFeeIncl', $totalFee);
-			$this->smarty->assign('invoiceFeeTax', $taxAmount[1]);
+			$tax_amount = $tax_calculator->getTaxesAmount($invoice_fee);
+
+			$total_fee = $invoice_fee + $tax_amount[1];
+
+			$this->smarty->assign('invoiceFeeIncl', $total_fee);
+			$this->smarty->assign('invoiceFeeTax', $tax_amount[1]);
 
 			return $this->display(__FILE__, 'invoicefee.tpl');
 		}
@@ -340,7 +319,7 @@
 		{
 			if (isset($this->context->cookie->error) && Tools::strlen($this->context->cookie->error) > 2)
 			{
-				if (get_class($this->context->controller) == "AdminOrdersController")
+				if (get_class($this->context->controller) == 'AdminOrdersController')
 				{
 					$this->context->controller->errors[] = $this->context->cookie->error;
 					unset($this->context->cookie->error);
@@ -349,7 +328,7 @@
 			}
 			if (isset($this->context->cookie->diff) && Tools::strlen($this->context->cookie->diff) > 2)
 			{
-				if (get_class($this->context->controller) == "AdminOrdersController")
+				if (get_class($this->context->controller) == 'AdminOrdersController')
 				{
 					$this->context->controller->errors[] = $this->context->cookie->diff;
 					unset($this->context->cookie->diff);
@@ -358,7 +337,7 @@
 			}
 			if (isset($this->context->cookie->api_error) && Tools::strlen($this->context->cookie->api_error) > 2)
 			{
-				if (get_class($this->context->controller) == "AdminOrdersController")
+				if (get_class($this->context->controller) == 'AdminOrdersController')
 				{
 					$this->context->controller->errors[] = $this->context->cookie->api_error;
 					unset($this->context->cookie->api_error);
@@ -367,7 +346,7 @@
 			}
 			if (isset($this->context->cookie->information) && Tools::strlen($this->context->cookie->information) > 2)
 			{
-				if (get_class($this->context->controller) == "AdminOrdersController")
+				if (get_class($this->context->controller) == 'AdminOrdersController')
 				{
 					$this->context->controller->warnings[] = $this->context->cookie->information;
 					unset($this->context->cookie->information);
@@ -376,7 +355,7 @@
 			}
 			if (isset($this->context->cookie->confirmation) && Tools::strlen($this->context->cookie->confirmation) > 2)
 			{
-				if (get_class($this->context->controller) == "AdminOrdersController")
+				if (get_class($this->context->controller) == 'AdminOrdersController')
 				{
 					$this->context->controller->confirmations[] = $this->context->cookie->confirmation;
 					unset($this->context->cookie->confirmation);
@@ -414,15 +393,15 @@
 
 					$testMode      = $this->getMethodInfo($order->module, 'testMode');
 					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
-					$paymentInfo   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
-					$paymentStatus = Tools::strtolower($paymentInfo['PaymentData']['status']);
-					if ($paymentStatus == 'created')
+					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
+					if ($payment_status == 'created')
 					{
-						$total      = $paymentInfo['Cart']['Total']['withtax'] / 100;
+						$total      = $payment_info['Cart']['Total']['withtax'] / 100;
 						$orderTotal = $order->getTotalPaid();
 						$diff       = $total - $orderTotal;
 						$diff       = abs($diff);
-						if (diff < 1)
+						if ($diff < 1)
 						{
 							$result = $billmate->activatePayment(array('PaymentData' => array('number' => $payment[0]->transaction_id)));
 
@@ -434,16 +413,16 @@
 							$this->context->cookie->confirmation        = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s'), $this->context->cookie->confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 							$this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->confirmation_orders.', '.$order_id : $order_id;
 						}
-						elseif (isset($paymentInfo['code']))
+						elseif (isset($payment_info['code']))
 						{
-							if ($paymentInfo['code'] == 5220)
+							if ($payment_info['code'] == 5220)
 							{
 								$mode                             = $testMode ? 'test' : 'live';
 								$this->context->cookie->api_error = !isset($this->context->cookie->api_error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The order does not exist in Billmate Online. The order exists in (%s) mode however. Try changing the mode in the modules settings.'), $order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The orders does not exist in Billmate Online. The orders exists in (%s) mode however. Try changing the mode in the modules settings.'), $this->context->cookie->api_error_orders, '. '.$order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 							}
 							else
 							{
-								$this->context->cookie->api_error = $paymentInfo['message'];
+								$this->context->cookie->api_error = $payment_info['message'];
 							}
 
 							$this->context->cookie->api_error_orders = isset($this->context->cookie->api_error_orders) ? $this->context->cookie->api_error_orders.', '.$order_id : $order_id;
@@ -455,7 +434,7 @@
 							$this->context->cookie->diff_orders = isset($this->context->cookie->diff_orders) ? $this->context->cookie->diff_orders.', '.$order_id : $order_id;
 						}
 					}
-					elseif ($paymentStatus == 'paid')
+					elseif ($payment_status == 'paid')
 					{
 						$this->context->cookie->information        = !isset($this->context->cookie->information_orders) ? sprintf($this->l('Order %s is already activated through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders has already been activated through Billmate: %s'), $this->context->cookie->information_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 						$this->context->cookie->information_orders = isset($this->context->cookie->information_orders) ? $this->context->cookie->information_orders.', '.$order_id : $order_id;
@@ -476,14 +455,11 @@
 
 		public function hookDisplayPayment($params)
 		{
-
 			return $this->hookPayment($params);
 		}
 
 		public function hookPayment($params)
 		{
-
-
 			$methods = $this->getMethods($params['cart']);
 
 
@@ -585,9 +561,8 @@
 			$statuses       = OrderState::getOrderStates((int)$this->context->language->id);
 			$statuses_array = array();
 			foreach ($statuses as $status)
-			{
 				$statuses_array[$status['id_order_state']] = $status['name'];
-			}
+
 			$settings['billmateid'] = array(
 				'name'     => 'billmateId',
 				'required' => true,
