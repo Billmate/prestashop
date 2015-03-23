@@ -8,6 +8,7 @@
 
 	require_once(_PS_MODULE_DIR_.'billmategateway/library/Billmate.php');
 
+
 class BillmategatewayBillmateapiModuleFrontController extends ModuleFrontController {
 
 	protected $method;
@@ -17,6 +18,7 @@ class BillmategatewayBillmateapiModuleFrontController extends ModuleFrontControl
 	 * @var $totals
 	 */
 	protected $totals = 0;
+	/** @var int $paidAmount for use with Billmate Invoice to sett correct amount */
 	protected $paidAmount = 0;
 	/**
 	 * The total tax amount
@@ -29,6 +31,12 @@ class BillmategatewayBillmateapiModuleFrontController extends ModuleFrontControl
 	/** @var  pno | The personal number if invoice or Partpay */
 	protected $pno;
 	protected $billmate;
+
+	public function __construct()
+	{
+		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',$this->context->language->iso_code);
+		if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','PrestaShop:2.0');
+	}
 
 	public function postProcess()
 	{
