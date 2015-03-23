@@ -1,5 +1,4 @@
 <?php
-
 	/**
 	 * Billmate
 	 *
@@ -28,6 +27,7 @@
 	 * 2.1.6 20150129 Yuksel Findik: Language is added as an optional paramater in credentials, version_compare is
 	 * added for Curl setup
 	 */
+
 	/*
 	 * Billmate Core API
 	 */

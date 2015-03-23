@@ -6,6 +6,7 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+
 	/*
 	 * Class for BillmateBankpay related stuff
 	 */

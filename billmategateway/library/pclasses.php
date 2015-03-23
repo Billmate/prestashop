@@ -6,6 +6,7 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+
 	/*
 	 * The class that handles the paymentplans
 	 */
