@@ -6,6 +6,7 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+
 	require_once(_PS_MODULE_DIR_.'/billmategateway/interfaces/SetupFileInterface.php');
 
 	class InitInstall implements SetupFileInterface {
