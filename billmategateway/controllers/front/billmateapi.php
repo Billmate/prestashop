@@ -1,9 +1,11 @@
 <?php
-	/**
+	/*
 	 * Created by PhpStorm.
 	 * User: jesper
 	 * Date: 15-03-17
 	 * Time: 15:09
+	 * @author Jesper Johansson jesper@boxedlogistics.se
+	 * @copyright Billmate AB 2015
 	 */
 
 	require_once(_PS_MODULE_DIR_.'billmategateway/library/Billmate.php');

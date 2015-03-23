@@ -1,10 +1,12 @@
 <?php
-	/**
-	 * Created by PhpStorm.
-	 * User: jesper
-	 * Date: 15-03-19
-	 * Time: 13:03
-	 */
+	/*
+     * Created by PhpStorm.
+     * User: jesper
+     * Date: 15-03-20
+     * Time: 17:02
+     * @author Jesper Johansson jesper@boxedlogistics.se
+     * @copyright Billmate AB 2015
+     */
 
 	require_once 'Billmate.php';
 	require_once 'Encoding.php';

@@ -1,3 +1,12 @@
+/*
+ * Created by PhpStorm.
+ * User: jesper
+ * Date: 15-03-17
+ * Time: 13:01
+ * @author Jesper Johansson jesper@boxedlogistics.se
+ * @copyright Billmate AB 2015
+ */
+
 if (navigator.appName != 'Microsoft Internet Explorer') {
 //https://github.com/paulirish/matchMedia.js/
     window.matchMedia || (window.matchMedia = function () {

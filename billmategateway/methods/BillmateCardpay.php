@@ -1,10 +1,12 @@
 <?php
 
-	/**
+	/*
 	 * Created by PhpStorm.
 	 * User: jesper
 	 * Date: 15-03-17
-	 * Time: 13:02
+	 * Time: 13:01
+	 * @author Jesper Johansson jesper@boxedlogistics.se
+	 * @copyright Billmate AB
 	 */
 	class BillmateCardpay extends BillmateGateway {
 

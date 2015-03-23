@@ -1,9 +1,11 @@
 <?php
-	/**
+	/*
 	 * Created by PhpStorm.
 	 * User: jesper
 	 * Date: 15-03-20
 	 * Time: 17:02
+	 * @author Jesper Johansson jesper@boxedlogistics.se
+	 * @copyright Billmate AB 2015
 	 */
 
 	function utf8_strlen($string)

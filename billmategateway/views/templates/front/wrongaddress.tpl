@@ -1,3 +1,11 @@
+{*
+* Created by PhpStorm.
+* User: jesper
+* Date: 15-03-17
+* Time: 13:01
+* @author Jesper Johansson jesper@boxedlogistics.se
+* @copyright Billmate AB 2015
+*}
 <form action="javascript://">
 	<span style="font-size: 1.3em;line-height: 1.4em;">
 		{$firstname|escape:'html'} {$lastname|escape:'html'}

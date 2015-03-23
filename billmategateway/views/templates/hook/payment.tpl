@@ -1,3 +1,11 @@
+{*
+* Created by PhpStorm.
+* User: jesper
+* Date: 15-03-17
+* Time: 13:01
+* @author Jesper Johansson jesper@boxedlogistics.se
+* @copyright Billmate AB 2015
+*}
 {foreach $methods as $method}
     <p class="payment_module">
         {if $method.type != 'billmateinvoice' && $method.type != 'billmatepartpay'}
