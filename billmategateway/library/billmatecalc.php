@@ -134,31 +134,32 @@ class BillmateCalc
             throw new Exception('sum', 'numeric');
         }
         if (is_numeric($sum) && (!is_int($sum) || !is_float($sum))) {
-            $sum = floatval($sum);
+            $sum = (float) $sum;
         }
 
         if (!is_numeric($free)) {
             throw new Exception('free',  'integer');
         }
         if (is_numeric($free) && !is_int($free)) {
-            $free = intval($free);
+            $free = (int) $free;
         }
         if ($free < 0) {
-            throw new BillmateException(
+            throw new Exception(
                 'Error in ' . __METHOD__ .
                 ': Number of free months must be positive or zero!'
             );
         }
-        if (is_numeric($flags) && !is_int($flags)) {
-            $flags = intval($flags);
-        }
+        if (is_numeric($flags) && !is_int($flags))
+            $flags = (int) $flags;
+
         if (!is_numeric($flags)
             || !in_array(
                 $flags, array(
                     BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE
                 )
             )
-        ) {
+        )
+        {
             throw new Exception(
                 'flags',
                 BillmateFlags::CHECKOUT_PAGE . ' or ' . BillmateFlags::PRODUCT_PAGE
@@ -201,13 +202,12 @@ class BillmateCalc
         if (!is_numeric($sum)) {
             throw new Exception('sum', 'numeric');
         }
-        if (is_numeric($sum) && (!is_int($sum) || !is_float($sum))) {
-            $sum = floatval($sum);
-        }
+        if (is_numeric($sum) && (!is_int($sum) || !is_float($sum)))
+            $sum = (float) $sum;
 
-        if (is_numeric($flags) && !is_int($flags)) {
-            $flags = intval($flags);
-        }
+        if (is_numeric($flags) && !is_int($flags))
+            $flags = (int) $flags;
+
         if (!is_numeric($flags)
             || !in_array(
                 $flags,
@@ -230,16 +230,15 @@ class BillmateCalc
     }
     public static function calc_monthly_cost($sum, $pclass, $flags)
     {
-        if (!is_numeric($sum)) {
+        if (!is_numeric($sum))
             throw new Exception('sum', 'numeric');
-        }
-        if (is_numeric($sum) && (!is_int($sum) || !is_float($sum))) {
-            $sum = floatval($sum);
-        }
 
-        if (is_numeric($flags) && !is_int($flags)) {
-            $flags = intval($flags);
-        }
+        if (is_numeric($sum) && (!is_int($sum) || !is_float($sum)))
+            $sum = (float) $sum;
+
+        if (is_numeric($flags) && !is_int($flags))
+            $flags = (int) $flags;
+
         if (!is_numeric($flags)
             || !in_array(
                 $flags,
@@ -247,12 +246,12 @@ class BillmateCalc
                     BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE
                 )
             )
-        ) {
+        )
             throw new Exception(
                 'flags',
                 BillmateFlags::CHECKOUT_PAGE . ' or ' . BillmateFlags::PRODUCT_PAGE
             );
-        }
+
         $payarr = self::_getPayArray($sum, $pclass, $flags);
         $value = 0;
         if (isset($payarr[0])) {

@@ -3,7 +3,7 @@
         {if $method.type != 'billmateinvoice' && $method.type != 'billmatepartpay'}
             <a href="{$method.controller}"><img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{$method.name}</a>
         {else}
-            <a href="{$method.controller}" id="{$method.type}"><img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{$method.name} {if $method.type == 'billmatepartpay'} - {l s='Pay from'} {displayPrice price=$method.monthly_cost.monthlycost} {else} - {displayPrice price=$method.invoiceFee.fee_incl_tax}  {l s='invoice fee is added to the order sum' mod='billmategateway'}{/if}</a>
+            <a href="{$method.controller}" id="{$method.type}"><img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{$method.name} {if $method.type == 'billmatepartpay'} - {l s='Pay from' mod='billmategateway'} {displayPrice price=$method.monthly_cost.monthlycost} {else} - {displayPrice price=$method.invoiceFee.fee_incl_tax}  {l s='invoice fee is added to the order sum' mod='billmategateway'}{/if}</a>
             <div style="display:none;" id="{$method.type}-fields">
                 <form action="javascript://" class="{$method.type}">
                     {if $method.type == 'billmatepartpay'}

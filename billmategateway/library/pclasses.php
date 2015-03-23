@@ -27,7 +27,7 @@ class pClasses{
 
         $billmate = new BillMate($eid, $secret, $ssl, $testmode, $debug);
 
-
+		$values = array();
         $values['PaymentData'] = array(
 	        "currency"=>$currency,//SEK
 	        "country"=>$country,//Sweden
@@ -51,7 +51,7 @@ class pClasses{
 		}
 	}
 
-    function correct_lang_billmate(&$item, $index){
+    public function correct_lang_billmate(&$item, $index){
         $item['description'] = utf8_encode($item['description']);
         $item['startfee'] = $item['startfee'] / 100;
         $item['handlingfee'] = $item['handlingfee'] / 100;

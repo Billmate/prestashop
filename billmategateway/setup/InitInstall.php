@@ -1,31 +1,33 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jesper
- * Date: 15-03-20
- * Time: 11:23
- */
-require_once(_PS_MODULE_DIR_.'/billmategateway/interfaces/SetupFileInterface.php');
-class InitInstall implements SetupFileInterface{
-
 	/**
-	 * @var
+	 * Created by PhpStorm.
+	 * User: jesper
+	 * Date: 15-03-20
+	 * Time: 11:23
 	 */
-	private $db;
+	require_once(_PS_MODULE_DIR_.'/billmategateway/interfaces/SetupFileInterface.php');
 
-	public function __construct($db)
-	{
+	class InitInstall implements SetupFileInterface {
 
-		$this->db = $db;
-	}
-	public function install()
-	{
-		try
+		/**
+		 * @var
+		 */
+		private $db;
+
+		public function __construct($db)
 		{
 
-			$this->db->execute( 'DROP TABLE IF EXISTS ' . _DB_PREFIX_ . 'billmate_rno' );
-			$this->db->execute( 'DROP TABLE IF EXISTS ' . _DB_PREFIX_ . 'billmate_payment_classes' );
-			$this->db->execute( 'CREATE TABLE IF NOT EXISTS ' . _DB_PREFIX_ . 'billmate_payment_pclasses (
+			$this->db = $db;
+		}
+
+		public function install()
+		{
+			try
+			{
+
+				$this->db->execute('DROP TABLE IF EXISTS '._DB_PREFIX_.'billmate_rno');
+				$this->db->execute('DROP TABLE IF EXISTS '._DB_PREFIX_.'billmate_payment_classes');
+				$this->db->execute('CREATE TABLE IF NOT EXISTS '._DB_PREFIX_.'billmate_payment_pclasses (
 			id int AUTO_INCREMENT,
 			eid int,
 			paymentplanid int,
@@ -42,13 +44,15 @@ class InitInstall implements SetupFileInterface{
 			country varchar(255),
 			`language` varchar(255),
 			currency varchar(10),
-			PRIMARY KEY(id))' );
+			PRIMARY KEY(id))');
 
 
-		} catch(Exception $e){
-			echo $e;
-			die();
+			}
+			catch (Exception $e)
+			{
+				echo $e;
+				die();
+			}
+
 		}
-
 	}
-}
