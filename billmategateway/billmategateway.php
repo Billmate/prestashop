@@ -57,14 +57,6 @@
 			$this->context->smarty->assign('base_dir', __PS_BASE_URI__);
 		}
 
-		protected function _is_curl_installed()
-		{
-			if (in_array('curl', get_loaded_extensions()))
-				return true;
-			else
-				return false;
-		}
-
 		public function getContent()
 		{
 			$html = '';
@@ -232,8 +224,11 @@
 			if (!$this->registerHooks())
 				return false;
 
-			if (!$this->_is_curl_installed())
+			if (!function_exists('curl_version'))
+			{
+				$this->_errors[] = $this->l('Sorry, this module requires the cURL PHP Extension (http://www.php.net/curl), which is not enabled on your server. Please ask your hosting provider for assistance.');
 				return false;
+			}
 
 			return true;
 		}
