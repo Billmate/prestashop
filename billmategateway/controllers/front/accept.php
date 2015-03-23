@@ -16,18 +16,18 @@
 		/**
 		 * A recursive method which delays order-confirmation until order is processed
 		 *
-		 * @param $cartId Cart Id
+		 * @param $cart_id Cart Id
 		 *
 		 * @return integer OrderId
 		 */
 
-		private function checkOrder($cartId)
+		private function checkOrder($cart_id)
 		{
-			$order = Order::getOrderByCartId($cartId);
+			$order = Order::getOrderByCartId($cart_id);
 			if (!$order)
 			{
 				sleep(1);
-				$this->checkOrder($cartId);
+				$this->checkOrder($cart_id);
 			}
 			else
 				return $order;
@@ -98,8 +98,8 @@
 				}
 				unlink($lockfile);
 				Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.
-				                    '&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.
-				                    '&id_order='.(int)$this->module->currentOrder);
+									'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.
+									'&id_order='.(int)$this->module->currentOrder);
 				die();
 			}
 		}

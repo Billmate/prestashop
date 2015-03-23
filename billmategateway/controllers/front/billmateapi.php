@@ -317,9 +317,9 @@
 			$api_matched_name = !empty($matched_first) && !empty($matched_last);
 
 			$address_same = Common::matchstr($user_ship, $user_bill) &&
-			                Common::matchstr($billing->city, $shipping->city) &&
-			                Common::matchstr($billing->postcode, $shipping->postcode) &&
-			                Common::matchstr($billing->address1, $shipping->address1);
+							Common::matchstr($billing->city, $shipping->city) &&
+							Common::matchstr($billing->postcode, $shipping->postcode) &&
+							Common::matchstr($billing->address1, $shipping->address1);
 			if (!(
 				$api_matched_name
 				&& Common::matchstr($shipping->address1, $address['street'])
@@ -346,9 +346,9 @@
 					foreach ($customer_addresses as $customer_address)
 					{
 						if (Common::matchstr($customer_address['address1'], $address['street']) &&
-						    Common::matchstr($customer_address['postcode'], $address['zip']) &&
-						    Common::matchstr($customer_address['city'], $address['city']) &&
-						    Common::matchstr($customer_address['country'], $address['country']))
+							Common::matchstr($customer_address['postcode'], $address['zip']) &&
+							Common::matchstr($customer_address['city'], $address['city']) &&
+							Common::matchstr($customer_address['country'], $address['country']))
 							$matched_address_id = $customer_address['id'];
 
 					}
@@ -517,8 +517,8 @@
 						$this->billmate->updatePayment($values);
 
 						$url                = 'order-confirmation&id_cart='.(int)$this->context->cart->id.
-						                      '&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder.
-						                      '&key='.$customer->secure_key;
+											  '&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder.
+											  '&key='.$customer->secure_key;
 						$return['success']  = true;
 						$return['redirect'] = $this->context->link->getPageLink($url);
 					}

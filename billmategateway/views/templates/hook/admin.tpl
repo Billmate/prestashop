@@ -11,7 +11,7 @@
 
             {foreach $tab as $div}
                 <div id="menuTab{$div.tab}Sheet" class="tabItem {if $div.selected}selected{/if}">
-                    {$div.content}
+                    {$div.content|escape:'html'}
                 </div>
             {/foreach}
         </div>

@@ -128,8 +128,6 @@
 			}
 
 			return $pclasses;
-
-
 		}
 
 		public static function hasPclasses($language)

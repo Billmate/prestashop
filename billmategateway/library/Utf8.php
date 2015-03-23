@@ -153,9 +153,8 @@
 				// negative length requires a captured group
 				// of length characters
 				if ($Lx)
-				{
 					$Lp = '(?:.{65535}){'.$Lx.'}';
-				}
+
 
 				$Lp = '('.$Lp.'.{'.$Ly.'})';
 			}
