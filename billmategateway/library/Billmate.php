@@ -1,6 +1,6 @@
 <?php
 
-	/*
+	/**
 	 * Billmate
 	 *
 	 * Billmate API - PHP Class
