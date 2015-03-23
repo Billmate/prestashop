@@ -4,7 +4,7 @@
 	 *
 	 * @author    Jesper Johansson jesper@boxedlogistics.se
 	 * @copyright Billmate AB 2015
-	 * @licence MIT
+	 * @license OpenSource
 	 */
 
 	require_once(_PS_MODULE_DIR_.'billmategateway/library/Billmate.php');
