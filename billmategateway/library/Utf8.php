@@ -18,9 +18,7 @@
 			$data = explode($needle, $string, 2);
 
 			if (count($data) > 1)
-			{
 				return utf8_strlen($data[0]);
-			}
 
 			return false;
 		}
@@ -36,9 +34,8 @@
 			$string = utf8_substr($string, $offset);
 
 			if (false !== ($position = utf8_strpos($string, $needle)))
-			{
 				return $position + $offset;
-			}
+
 
 			return false;
 		}
@@ -73,9 +70,8 @@
 			$string = utf8_substr($string, $offset);
 
 			if (false !== ($position = utf8_strrpos($string, $needle)))
-			{
 				return $position + $offset;
-			}
+
 
 			return false;
 		}
@@ -89,20 +85,17 @@
 		$offset = (int)$offset;
 
 		if (!is_null($length))
-		{
 			$length = (int)$length;
-		}
+
 
 		// handle trivial cases
 		if ($length === 0)
-		{
 			return '';
-		}
+
 
 		if ($offset < 0 && $length < 0 && $length < $offset)
-		{
 			return '';
-		}
+
 
 		// normalise negative offsets (we could use a tail
 		// anchored pattern, but they are horribly slow!)
@@ -112,9 +105,7 @@
 			$offset = $strlen + $offset;
 
 			if ($offset < 0)
-			{
 				$offset = 0;
-			}
 		}
 
 		$Op = '';
@@ -128,34 +119,29 @@
 			$Oy = $offset % 65535;
 
 			if ($Ox)
-			{
 				$Op = '(?:.{65535}){'.$Ox.'}';
-			}
+
 
 			$Op = '^(?:'.$Op.'.{'.$Oy.'})';
 		}
 		else
-		{
 			$Op = '^';
-		}
+
 
 		// establish a pattern for length
 		if (is_null($length))
-		{
 			$Lp = '(.*)$';
-		}
+
 		else
 		{
 			if (!isset($strlen))
-			{
 				$strlen = strlen(utf8_decode($string));
-			}
+
 
 			// another trivial case
 			if ($offset > $strlen)
-			{
 				return '';
-			}
+
 
 			if ($length > 0)
 			{
@@ -176,9 +162,8 @@
 			elseif ($length < 0)
 			{
 				if ($length < ($offset - $strlen))
-				{
 					return '';
-				}
+
 
 				$Lx = (int)((-$length) / 65535);
 				$Ly = (-$length) % 65535;
@@ -187,18 +172,15 @@
 				// except a group of  -length characters
 				// anchored at the tail-end of the string
 				if ($Lx)
-				{
 					$Lp = '(?:.{65535}){'.$Lx.'}';
-				}
 
 				$Lp = '(.*)(?:'.$Lp.'.{'.$Ly.'})$';
 			}
 		}
 
 		if (!preg_match('#'.$Op.$Lp.'#us', $string, $match))
-		{
 			return '';
-		}
+
 
 		return $match[1];
 
@@ -430,18 +412,15 @@
 		$unicode = utf8_to_unicode($string);
 
 		if (!$unicode)
-		{
 			return false;
-		}
 
 		$count = count($unicode);
 
 		for ($i = 0; $i < $count; $i++)
 		{
 			if (isset($UTF8_UPPER_TO_LOWER[$unicode[$i]]))
-			{
 				$unicode[$i] = $UTF8_UPPER_TO_LOWER[$unicode[$i]];
-			}
+
 		}
 
 		return utf8_from_unicode($unicode);
@@ -673,18 +652,14 @@
 		$unicode = utf8_to_unicode($string);
 
 		if (!$unicode)
-		{
 			return false;
-		}
 
 		$count = count($unicode);
 
 		for ($i = 0; $i < $count; $i++)
 		{
 			if (isset($UTF8_LOWER_TO_UPPER[$unicode[$i]]))
-			{
 				$unicode[$i] = $UTF8_LOWER_TO_UPPER[$unicode[$i]];
-			}
 		}
 
 		return utf8_from_unicode($unicode);
@@ -806,14 +781,13 @@
 						*/
 						// From Unicode 3.1, non-shortest form is illegal
 						if (((2 == $mBytes) && ($mUcs4 < 0x0080)) ||
-						    ((3 == $mBytes) && ($mUcs4 < 0x0800)) ||
-						    ((4 == $mBytes) && ($mUcs4 < 0x10000)) ||
-						    (4 < $mBytes) ||
-						    // From Unicode 3.2, surrogate characters are illegal
-						    (($mUcs4 & 0xFFFFF800) == 0xD800) ||
-						    // Codepoints outside the Unicode range are illegal
-						    ($mUcs4 > 0x10FFFF)
-						)
+							((3 == $mBytes) && ($mUcs4 < 0x0800)) ||
+							((4 == $mBytes) && ($mUcs4 < 0x10000)) ||
+							(4 < $mBytes) ||
+							// From Unicode 3.2, surrogate characters are illegal
+							(($mUcs4 & 0xFFFFF800) == 0xD800) ||
+							// Codepoints outside the Unicode range are illegal
+							($mUcs4 > 0x10FFFF))
 						{
 
 							trigger_error('utf8_to_unicode: Illegal sequence or codepoint in UTF-8 at byte '.$i, E_USER_WARNING);
@@ -858,9 +832,8 @@
 		foreach (array_keys($data) as $key)
 		{
 			if (($data[$key] >= 0) && ($data[$key] <= 0x007f))
-			{
 				echo chr($data[$key]);
-			}
+
 			elseif ($data[$key] <= 0x07ff)
 			{
 				echo chr(0xc0 | ($data[$key] >> 6));

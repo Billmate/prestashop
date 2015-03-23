@@ -109,8 +109,8 @@
 				$this->_eid = $eid;
 
 			$data = Db::getInstance()->ExecuteS('SELECT * FROM `'._DB_PREFIX_.
-			                                    'billmate_payment_pclasses` where eid="'.$this->_eid.
-			                                    '" AND language="'.$language.'" AND expirydate > NOW()');
+												'billmate_payment_pclasses` where eid="'.$this->_eid.
+												'" AND language="'.$language.'" AND expirydate > NOW()');
 			if (!$prepare)
 			{
 				if (!is_array($data))
@@ -135,8 +135,8 @@
 		public static function hasPclasses($language)
 		{
 			$data = Db::getInstance()->ExecuteS('SELECT count(*) FROM '._DB_PREFIX_.
-			                                    'billmate_payment_pclasses WHERE language = "'.$language.
-			                                    '" AND expirydate > NOW()');
+												'billmate_payment_pclasses WHERE language = "'.$language.
+												'" AND expirydate > NOW()');
 
 			if ($data == 0)
 				return false;

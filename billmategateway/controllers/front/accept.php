@@ -11,7 +11,7 @@
 		public $module;
 		protected $method;
 		protected $billmate;
-		protected $cartId;
+		protected $cart_id;
 
 		/**
 		 * A recursive method which delays order-confirmation until order is processed
@@ -30,14 +30,12 @@
 				$this->checkOrder($cartId);
 			}
 			else
-			{
 				return $order;
-			}
+
 		}
 
 		public function postProcess()
 		{
-
 			$this->method = Tools::getValue('method');
 			$eid          = Configuration::get('BILLMATE_ID');
 			$secret       = Configuration::get('BILLMATE_SECRET');
@@ -55,8 +53,8 @@
 			$data                = $this->billmate->verify_hash($_POST);
 			$order               = $data['orderid'];
 			$order               = explode('-', $order);
-			$this->cartId        = $order[0];
-			$this->context->cart = new Cart($this->cartId);
+			$this->cart_id        = $order[0];
+			$this->context->cart = new Cart($this->cart_id);
 			$customer            = new Customer($this->context->cart->id_customer);
 
 			if (!isset($data['code']) && !isset($data['error']))
@@ -70,7 +68,6 @@
 						$order_id = $this->checkOrder($this->context->cart->id);
 					else
 						$order_id = Order::getOrderByCartId($this->context->cart->id);
-
 
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id);
 					die;

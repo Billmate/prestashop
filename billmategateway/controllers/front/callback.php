@@ -43,7 +43,6 @@
 				$order        = explode('-', $order);
 				$this->cart_id = $order[0];
 
-
 				$this->context->cart = new Cart($this->cart_id);
 				$customer            = new Customer($this->context->cart->id_customer);
 				$total               = $this->context->cart->getOrderTotal(true, Cart::BOTH);
