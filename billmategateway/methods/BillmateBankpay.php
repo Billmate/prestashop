@@ -6,6 +6,10 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+	/*
+	 * Class for BillmateBankpay related stuff
+	 */
+
 	class BillmateBankpay extends BillmateGateway {
 
 		public function __construct()

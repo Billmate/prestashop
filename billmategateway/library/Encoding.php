@@ -7,6 +7,11 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+	/*
+	 * Encoding class
+	 */
+
+
 	class Encoding {
 
 		protected static $win1252ToUtf8 = array(

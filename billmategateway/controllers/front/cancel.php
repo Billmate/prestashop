@@ -7,6 +7,10 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+	/*
+	 * The controller for canceled payments
+	 */
+
 	class BillmategatewayCancelModuleFrontController extends ModuleFrontController {
 
 		public $ssl = true;

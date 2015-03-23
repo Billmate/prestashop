@@ -7,6 +7,11 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+
+	/*
+	 * The controller for accept payment
+	 */
+
 	class BillmatepgatewayAcceptModuleFrontController extends ModuleFrontController {
 
 		public $module;

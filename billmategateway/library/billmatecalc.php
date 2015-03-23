@@ -6,6 +6,9 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+	/*
+	 * Calculation for PaymentPlans
+	 */
 
 	require_once('BillmateCountry.php');
 

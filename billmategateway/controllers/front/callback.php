@@ -7,6 +7,10 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+	/*
+	 * The controller for Callbacks
+	 */
+
 	class BillmategatewayCallbackModuleFrontController extends ModuleFrontController {
 
 		public $billmate;

@@ -6,6 +6,9 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+	/*
+	 * Utf 8 based stuff
+	 */
 
 	function utf8_strlen($string)
 	{

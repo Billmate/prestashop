@@ -6,6 +6,9 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+	/*
+	 * Different Flag defined
+	 */
 
 	class BillmateFlags {
 

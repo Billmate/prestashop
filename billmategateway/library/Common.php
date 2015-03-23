@@ -6,6 +6,9 @@
 	 * @copyright Billmate AB 2015
 	 * @license   OpenSource
 	 */
+	/*
+	 * Class for Common billmate stuff
+	 */
 
 	require_once 'Billmate.php';
 	require_once 'Encoding.php';

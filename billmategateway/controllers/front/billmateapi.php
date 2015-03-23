@@ -7,6 +7,10 @@
 	 * @license   OpenSource
 	 */
 
+	/*
+	 * The controller that does the main integration
+	 */
+
 	require_once(_PS_MODULE_DIR_.'billmategateway/library/Billmate.php');
 
 

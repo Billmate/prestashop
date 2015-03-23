@@ -9,6 +9,7 @@
 	/*
 	 * The class that handles the paymentplans
 	 */
+
 	require_once 'Flags.php';
 	require_once 'billmatecalc.php';
 
