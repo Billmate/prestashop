@@ -33,6 +33,8 @@ Read following information to install these plugins
 
 ## Changelog
 
+### 2.0.0
+
 ### 1.35.2 (2015-02-02)
 3 issues closed and 13 commits.
 * Fix - If no order status was set, the module would stop working. Now it will default to the Prestashop standard order accepted status if no status is defined.
