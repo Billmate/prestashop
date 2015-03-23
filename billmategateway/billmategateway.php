@@ -75,7 +75,7 @@
 		{
 			$html = '';
 
-			if ( ! empty($_POST) && Tools::getIsset('billmateSubmit'))
+			if (!empty($_POST) && Tools::getIsset('billmateSubmit'))
 			{
 				$this->_postValidation();
 				if (count($this->postValidations))
@@ -114,7 +114,7 @@
 					'title'    => $setting['title'],
 					'content'  => $setting['content'],
 					'icon'     => '../modules/'.$this->moduleName.'/views/img/icon-settings.gif',
-					'tab'      => $i ++,
+					'tab'      => $i++,
 					'selected' => false
 				);
 
@@ -225,7 +225,7 @@
 
 		public function install()
 		{
-			if ( ! parent::install())
+			if (!parent::install())
 			{
 				return false;
 			}
@@ -240,12 +240,12 @@
 			$installer = new InitInstall(Db::getInstance());
 			$installer->install();
 
-			if ( ! $this->registerHooks())
+			if (!$this->registerHooks())
 			{
 				return false;
 			}
 
-			if ( ! $this->_is_curl_installed())
+			if (!$this->_is_curl_installed())
 			{
 				return false;
 			}
@@ -303,7 +303,7 @@
 			$order_id = 0;
 			if (array_key_exists('id_order', $hook))
 			{
-				$order_id = (int) $hook['id_order'];
+				$order_id = (int)$hook['id_order'];
 			}
 
 			$order = new Order($order_id);
@@ -319,7 +319,7 @@
 				return;
 			}
 			$invoiceFeeTax = Configuration::get('BINVOICE_FEE_TAX');
-			if ( ! $invoiceFee)
+			if (!$invoiceFee)
 			{
 				$invoiceFeeTaxRate = 0;
 			}
@@ -431,7 +431,7 @@
 								$this->context->cookie->error        = (isset($result['message'])) ? utf8_encode($result['message']) : utf8_encode($result);
 								$this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
 							}
-							$this->context->cookie->confirmation        = ! isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s'), $this->context->cookie->confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+							$this->context->cookie->confirmation        = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s'), $this->context->cookie->confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 							$this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->confirmation_orders.', '.$order_id : $order_id;
 						}
 						elseif (isset($paymentInfo['code']))
@@ -439,7 +439,7 @@
 							if ($paymentInfo['code'] == 5220)
 							{
 								$mode                             = $testMode ? 'test' : 'live';
-								$this->context->cookie->api_error = ! isset($this->context->cookie->api_error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The order does not exist in Billmate Online. The order exists in (%s) mode however. Try changing the mode in the modules settings.'), $order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The orders does not exist in Billmate Online. The orders exists in (%s) mode however. Try changing the mode in the modules settings.'), $this->context->cookie->api_error_orders, '. '.$order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+								$this->context->cookie->api_error = !isset($this->context->cookie->api_error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The order does not exist in Billmate Online. The order exists in (%s) mode however. Try changing the mode in the modules settings.'), $order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The orders does not exist in Billmate Online. The orders exists in (%s) mode however. Try changing the mode in the modules settings.'), $this->context->cookie->api_error_orders, '. '.$order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 							}
 							else
 							{
@@ -451,18 +451,18 @@
 						}
 						else
 						{
-							$this->context->cookie->diff        = ! isset($this->context->cookie->diff_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The amounts don\'t match: %s, %s. Activate manually in Billmate Online.'), $order_id, $orderTotal, $total).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The amounts don\'t match. Activate manually in Billmate Online.'), $this->context->cookie->diff_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+							$this->context->cookie->diff        = !isset($this->context->cookie->diff_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The amounts don\'t match: %s, %s. Activate manually in Billmate Online.'), $order_id, $orderTotal, $total).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The amounts don\'t match. Activate manually in Billmate Online.'), $this->context->cookie->diff_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 							$this->context->cookie->diff_orders = isset($this->context->cookie->diff_orders) ? $this->context->cookie->diff_orders.', '.$order_id : $order_id;
 						}
 					}
 					elseif ($paymentStatus == 'paid')
 					{
-						$this->context->cookie->information        = ! isset($this->context->cookie->information_orders) ? sprintf($this->l('Order %s is already activated through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders has already been activated through Billmate: %s'), $this->context->cookie->information_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+						$this->context->cookie->information        = !isset($this->context->cookie->information_orders) ? sprintf($this->l('Order %s is already activated through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders has already been activated through Billmate: %s'), $this->context->cookie->information_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 						$this->context->cookie->information_orders = isset($this->context->cookie->information_orders) ? $this->context->cookie->information_orders.', '.$order_id : $order_id;
 					}
 					else
 					{
-						$this->context->cookie->error        = ! isset($this->context->cookie->error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s.'), $this->context->cookie->error_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+						$this->context->cookie->error        = !isset($this->context->cookie->error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s.'), $this->context->cookie->error_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 						$this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
 					}
 				}
@@ -522,7 +522,7 @@
 
 				$method = new $class();
 				$result = $method->getPaymentInfo($cart);
-				if ( ! $result)
+				if (!$result)
 				{
 					continue;
 				}
@@ -567,7 +567,7 @@
 
 				$method = new $class();
 				$result = $method->getSettings();
-				if ( ! $result)
+				if (!$result)
 				{
 					continue;
 				}
@@ -582,7 +582,7 @@
 		public function getGeneralSettings()
 		{
 			$settings       = array();
-			$statuses       = OrderState::getOrderStates((int) $this->context->language->id);
+			$statuses       = OrderState::getOrderStates((int)$this->context->language->id);
 			$statuses_array = array();
 			foreach ($statuses as $status)
 			{

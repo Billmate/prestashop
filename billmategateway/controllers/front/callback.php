@@ -31,7 +31,7 @@
 
 			$data = $this->billmate->verify_hash(Tools::jsonDecode(Tools::file_get_contents('php://input')));
 
-			if ( ! isset($data['code']) && ! isset($data['error']))
+			if (!isset($data['code']) && !isset($data['error']))
 			{
 				$lockfile   = _PS_CACHE_DIR_.Tools::getValue('order_id');
 				$processing = file_exists($lockfile);
@@ -51,7 +51,7 @@
 				$total               = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 				$extra               = array('transaction_id' => $data['number']);
 				$status              = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
-				$this->module->validateOrder((int) $this->context->cart->id, $status, $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+				$this->module->validateOrder((int)$this->context->cart->id, $status, $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$values = array();
 				if ($this->module->authorization_method != 'sale' && ($this->method == 'cardpay' || $this->method == 'bankpay'))
 				{

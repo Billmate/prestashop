@@ -26,7 +26,7 @@
 		 */
 		public function getPaymentInfo($cart)
 		{
-			if ( ! pClasses::hasPclasses(Language::getIsoById($cart->id_lang)) || Configuration::get('BPARTPAY_ENABLED') == 0)
+			if (!pClasses::hasPclasses(Language::getIsoById($cart->id_lang)) || Configuration::get('BPARTPAY_ENABLED') == 0)
 			{
 				return false;
 			}
@@ -46,8 +46,8 @@
 		public function getSettings()
 		{
 			$settings       = array();
-			$statuses       = OrderState::getOrderStates((int) $this->context->language->id);
-			$currency       = Currency::getCurrency((int) Configuration::get('PS_CURRENCY_DEFAULT'));
+			$statuses       = OrderState::getOrderStates((int)$this->context->language->id);
+			$currency       = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
 			$statuses_array = array();
 			foreach ($statuses as $status)
 			{
@@ -85,7 +85,7 @@
 			$settings['minimum_value'] = array(
 				'name'     => 'partpayBillmateMinimumValue',
 				'required' => false,
-				'value'    => (float) Configuration::get('BPARTPAY_MIN_VALUE'),
+				'value'    => (float)Configuration::get('BPARTPAY_MIN_VALUE'),
 				'type'     => 'text',
 				'label'    => $this->l('Minimum Value ').' ('.$currency['sign'].')',
 				'desc'     => $this->l(''),
@@ -93,7 +93,7 @@
 			$settings['maximum_value'] = array(
 				'name'     => 'partpayBillmateMaximumValue',
 				'required' => false,
-				'value'    => Configuration::get('BPARTPAY_MAX_VALUE') != 0 ? (float) Configuration::get('BPARTPAY_MAX_VALUE') : 99999,
+				'value'    => Configuration::get('BPARTPAY_MAX_VALUE') != 0 ? (float)Configuration::get('BPARTPAY_MAX_VALUE') : 99999,
 				'type'     => 'text',
 				'label'    => $this->l('Maximum Value ').' ('.$currency['sign'].')',
 				'desc'     => $this->l(''),

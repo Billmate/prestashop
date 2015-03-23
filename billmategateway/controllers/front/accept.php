@@ -24,7 +24,7 @@
 		private function checkOrder($cartId)
 		{
 			$order = Order::getOrderByCartId($cartId);
-			if ( ! $order)
+			if (!$order)
 			{
 				sleep(1);
 				$this->checkOrder($cartId);
@@ -51,7 +51,7 @@
 			$testmode = $this->module->testMode;
 
 			$this->billmate      = Common::getBillmate($eid, $secret, $testmode, $ssl, $debug);
-			$_POST               = ! empty($_POST) ? $_POST : $_GET;
+			$_POST               = !empty($_POST) ? $_POST : $_GET;
 			$data                = $this->billmate->verify_hash($_POST);
 			$order               = $data['orderid'];
 			$order               = explode('-', $order);
@@ -59,7 +59,7 @@
 			$this->context->cart = new Cart($this->cartId);
 			$customer            = new Customer($this->context->cart->id_customer);
 
-			if ( ! isset($data['code']) && ! isset($data['error']))
+			if (!isset($data['code']) && !isset($data['error']))
 			{
 				$lockfile   = _PS_CACHE_DIR_.Tools::getValue('order_id');
 				$processing = file_exists($lockfile);
@@ -77,7 +77,7 @@
 					}
 
 
-					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int) $this->context->cart->id.'&id_module='.(int) $this->module->id.'&id_order='.(int) $orderId);
+					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$orderId);
 					die;
 				}
 
@@ -88,7 +88,7 @@
 				$total  = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 				$extra  = array('transaction_id' => $data['number']);
 				$status = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
-				$this->module->validateOrder((int) $this->context->cart->id, $status, $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+				$this->module->validateOrder((int)$this->context->cart->id, $status, $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$values = array();
 				if ($this->module->authorization_method != 'sale' && ($this->method == 'cardpay' || $this->method == 'bankpay'))
 				{
@@ -107,7 +107,7 @@
 					$this->billmate->activatePayment($values);
 				}
 				unlink($lockfile);
-				Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int) $this->context->cart->id.'&id_module='.(int) $this->module->id.'&id_order='.(int) $this->module->currentOrder);
+				Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);
 				die();
 			}
 		}

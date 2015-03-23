@@ -42,8 +42,8 @@
 		public function getSettings()
 		{
 			$settings       = array();
-			$statuses       = OrderState::getOrderStates((int) $this->context->language->id);
-			$currency       = Currency::getCurrency((int) Configuration::get('PS_CURRENCY_DEFAULT'));
+			$statuses       = OrderState::getOrderStates((int)$this->context->language->id);
+			$currency       = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
 			$statuses_array = array();
 			foreach ($statuses as $status)
 			{
@@ -107,7 +107,7 @@
 			$settings['minimum_value'] = array(
 				'name'     => 'cardpayBillmateMinimumValue',
 				'required' => false,
-				'value'    => (float) Configuration::get('BCARDPAY_MIN_VALUE'),
+				'value'    => (float)Configuration::get('BCARDPAY_MIN_VALUE'),
 				'type'     => 'text',
 				'label'    => $this->l('Minimum Value ').' ('.$currency['sign'].')',
 				'desc'     => $this->l(''),
@@ -115,7 +115,7 @@
 			$settings['maximum_value'] = array(
 				'name'     => 'cardpayBillmateMaximumValue',
 				'required' => false,
-				'value'    => Configuration::get('BCARDPAY_MAX_VALUE') != 0 ? (float) Configuration::get('BCARDPAY_MAX_VALUE') : 99999,
+				'value'    => Configuration::get('BCARDPAY_MAX_VALUE') != 0 ? (float)Configuration::get('BCARDPAY_MAX_VALUE') : 99999,
 				'type'     => 'text',
 				'label'    => $this->l('Maximum Value ').' ('.$currency['sign'].')',
 				'desc'     => $this->l(''),

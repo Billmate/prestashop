@@ -44,8 +44,8 @@
 		public function getSettings()
 		{
 			$settings = array();
-			$statuses = OrderState::getOrderStates((int) $this->context->language->id);
-			$currency = Currency::getCurrency((int) Configuration::get('PS_CURRENCY_DEFAULT'));
+			$statuses = OrderState::getOrderStates((int)$this->context->language->id);
+			$currency = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
 			$taxes    = Tax::getTaxes($this->context->language->id);
 
 			$taxes_array = array();
@@ -81,7 +81,7 @@
 			$settings['invoice_fee'] = array(
 				'name'     => 'invoiceFee',
 				'required' => false,
-				'value'    => (float) Configuration::get('BINVOICE_FEE'),
+				'value'    => (float)Configuration::get('BINVOICE_FEE'),
 				'type'     => 'text',
 				'label'    => $this->l('Invoice Fee ').' ('.$currency['sign'].')',
 				'desc'     => $this->l(''),
@@ -110,7 +110,7 @@
 			$settings['minimum_value'] = array(
 				'name'     => 'invoiceBillmateMinimumValue',
 				'required' => false,
-				'value'    => (float) Configuration::get('BINVOICE_MIN_VALUE'),
+				'value'    => (float)Configuration::get('BINVOICE_MIN_VALUE'),
 				'type'     => 'text',
 				'label'    => $this->l('Minimum Value ').' ('.$currency['sign'].')',
 				'desc'     => $this->l(''),
@@ -118,7 +118,7 @@
 			$settings['maximum_value'] = array(
 				'name'     => 'invoiceBillmateMaximumValue',
 				'required' => false,
-				'value'    => Configuration::get('BINVOICE_MAX_VALUE') != 0 ? (float) Configuration::get('BINVOICE_MAX_VALUE') : 99999,
+				'value'    => Configuration::get('BINVOICE_MAX_VALUE') != 0 ? (float)Configuration::get('BINVOICE_MAX_VALUE') : 99999,
 				'type'     => 'text',
 				'label'    => $this->l('Maximum Value ').' ('.$currency['sign'].')',
 				'desc'     => $this->l(''),
