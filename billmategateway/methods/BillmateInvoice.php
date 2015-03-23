@@ -16,6 +16,7 @@ class BillmateInvoice  extends BillmateGateway{
 		$this->testMode = Configuration::get('BILLMATE_INVOICE_MOD');
 		$this->limited_countries = array('sv');
 		$this->allowed_currencies = array('SEK');
+		$this->authorization_method = false;
 		$this->validationController = $this->context->link->getModuleLink('billmategateway','billmateapi',array('method' => 'invoice'));
 		$this->icon = 'billmategateway/images/billmate_invoice_l.png';
 	}

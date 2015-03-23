@@ -16,6 +16,7 @@ class BillmatePartpay extends BillmateGateway{
 		$this->testMode = Configuration::get('BILLMATE_PARTPAY_MOD');
 		$this->limited_countries = array('sv');
 		$this->allowed_currencies = array('SEK');
+		$this->authorization_method  = false;
 		$this->validationController = $this->context->link->getModuleLink('billmategateway','billmateapi',array('method' => 'partpay'));
 		$this->icon = 'billmategateway/images/billmate_partpayment_l.png';
 	}

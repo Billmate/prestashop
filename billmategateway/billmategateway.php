@@ -121,6 +121,7 @@ class BillmateGateway extends PaymentModule{
 		// Bankpay Settings
 		Configuration::updateValue('BBANKPAY_ENABLED', (Tools::getIsset('bankpayActivated')) ? 1 : 0);
 		Configuration::updateValue('BBANKPAY_MOD', (Tools::getIsset('bankpayTestmode')) ? 1 : 0);
+		Configuration::updateValue('BBANKPAY_AUTHORIZATION_METHOD',Tools::getValue('bankpayAuthorization'));
 		Configuration::updateValue('BBANKPAY_ORDER_STATUS',Tools::getValue('bankpayBillmateOrderStatus'));
 		Configuration::updateValue('BBANKPAY_MIN_VALUE',Tools::getValue('bankpayBillmateMinimumValue'));
 		Configuration::updateValue('BBANKPAY_MAX_VALUE',Tools::getValue('bankpayBillmateMaximumValue'));
@@ -287,12 +288,130 @@ class BillmateGateway extends PaymentModule{
 
 	public function hookDisplayBackOfficeHeader()
 	{
-		if (!Tools::getValue('controller') == 'AdminModules' && !Tools::getValue('configure') == 'billmategateway')
-			return;
+		if (isset($this->context->cookie->error) && strlen($this->context->cookie->error) > 2)
+		{
+			if (get_class($this->context->controller) == "AdminOrdersController")
+			{
+				$this->context->controller->errors[] = $this->context->cookie->error;
+				unset($this->context->cookie->error);
+				unset($this->context->cookie->error_orders);
+			}
+		}
+		if(isset($this->context->cookie->diff) && strlen($this->context->cookie->diff) > 2){
+			if (get_class($this->context->controller) == "AdminOrdersController")
+			{
+				$this->context->controller->errors[] = $this->context->cookie->diff;
+				unset($this->context->cookie->diff);
+				unset($this->context->cookie->diff_orders);
+			}
+		}
+		if (isset($this->context->cookie->api_error) && strlen($this->context->cookie->api_error) > 2){
+			if (get_class($this->context->controller) == "AdminOrdersController")
+			{
+				$this->context->controller->errors[] = $this->context->cookie->api_error;
+				unset($this->context->cookie->api_error);
+				unset($this->context->cookie->api_error_orders);
+			}
+		}
+		if (isset($this->context->cookie->information) && strlen($this->context->cookie->information) > 2)
+		{
+			if (get_class($this->context->controller) == "AdminOrdersController")
+			{
+				$this->context->controller->warnings[] = $this->context->cookie->information;
+				unset($this->context->cookie->information);
+				unset($this->context->cookie->information_orders);
+			}
+		}
+		if (isset($this->context->cookie->confirmation) && strlen($this->context->cookie->confirmation) > 2)
+		{
+			if (get_class($this->context->controller) == "AdminOrdersController")
+			{
+				$this->context->controller->confirmations[] = $this->context->cookie->confirmation;
+				unset($this->context->cookie->confirmation);
+				unset($this->context->cookie->confirmation_orders);
+			}
+		}
+		if (Tools::getValue('controller') == 'AdminModules' && Tools::getValue('configure') == 'billmategateway')
+		{
+			$html = '';
+			$html = '<link href="/modules/billmategateway/views/css/billmate.css" type="text/css" rel="stylesheet"/>';
+			return $html;
+		}
 
-		$html = '';
-		$html = '<link href="/modules/billmategateway/views/css/billmate.css" type="text/css" rel="stylesheet"/>';
-		return $html;
+
+	}
+
+	public function hookActionOrderStatusUpdate($params)
+	{
+		$orderStatus = Configuration::get('BILLMATE_ACTIVATE_STATUS');
+		$activate = Configuration::get('BILLMATE_ACTIVATE');
+		if ($activate && $orderStatus)
+		{
+			$order_id = $params['id_order'];
+
+			$id_status = $params['newOrderStatus']->id;
+			$order = new Order($order_id);
+
+			$payment = OrderPayment::getByOrderId($order_id);
+			$orderStatus = unserialize($orderStatus);
+			$modules = array('billmatecardpay', 'billmatebankpay', 'billmateinvoice', 'billmatepartpay');
+
+			if (in_array($order->module,$modules) && in_array($id_status,$orderStatus) && $this->getMethodInfo($order->module,'authorization_method') != 'sale')
+			{
+
+				$testMode = $this->getMethodInfo( $order->module, 'testMode' );
+				$billmate = Common::getBillmate($this->billmate_merchant_id,$this->billmate_secret, $testMode );
+				$paymentInfo = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+				$paymentStatus = Tools::strtolower( $paymentInfo['PaymentData']['status'] );
+				if ($paymentStatus == 'created')
+				{
+					$total = $paymentInfo['Cart']['Total']['withtax'] / 100;
+					$orderTotal = $order->getTotalPaid();
+					$diff = $total - $orderTotal;
+					$diff = abs($diff);
+					if (diff < 1)
+					{
+						$result = $billmate->activatePayment(array('PaymentData' => array('number' => $payment[0]->transaction_id)));
+
+						if (isset($result['code']))
+						{
+							$this->context->cookie->error = (isset($result['message'])) ? utf8_encode($result['message']) : utf8_encode($result);
+							$this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+						}
+						$this->context->cookie->confirmation = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'), $order_id) . ' (<a target="_blank" href="http://online.billmate.se/faktura">' . $this->l('Open Billmate Online') . '</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s'), $this->context->cookie->confirmation_orders . ', ' . $order_id) . ' (<a target="_blank" href="http://online.billmate.se">' . $this->l('Open Billmate Online') . '</a>)';
+						$this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->confirmation_orders . ', ' . $order_id : $order_id;
+					}
+					elseif (isset($resultCheck['code']))
+					{
+						if ($resultCheck['code'] == 5220) {
+							$mode                             = $testMode ? 'test' : 'live';
+							$this->context->cookie->api_error = ! isset( $this->context->cookie->api_error_orders ) ? sprintf( $this->l('Order %s failed to activate through Billmate. The order does not exist in Billmate Online. The order exists in (%s) mode however. Try changing the mode in the modules settings.'), $order_id, $mode ) . ' (<a target="_blank" href="http://online.billmate.se">' . $this->l('Open Billmate Online') . '</a>)' : sprintf( $this->l('The following orders failed to activate through Billmate: %s. The orders does not exist in Billmate Online. The orders exists in (%s) mode however. Try changing the mode in the modules settings.'), $this->context->cookie->api_error_orders, '. ' . $order_id, $mode ) . ' (<a target="_blank" href="http://online.billmate.se">' . $this->l('Open Billmate Online') . '</a>)';
+						}
+						else
+							$this->context->cookie->api_error = $resultCheck['message'];
+
+						$this->context->cookie->api_error_orders = isset($this->context->cookie->api_error_orders) ? $this->context->cookie->api_error_orders.', '.$order_id : $order_id;
+
+					}
+					else
+					{
+						$this->context->cookie->diff = !isset($this->context->cookie->diff_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The amounts don\'t match: %s, %s. Activate manually in Billmate Online.'),$order_id, $orderTotal, $total).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The amounts don\'t match. Activate manually in Billmate Online.'),$this->context->cookie->diff_orders.', '.$order_id) . ' (<a target="_blank" href="http://online.billmate.se">' . $this->l('Open Billmate Online') . '</a>)';
+						$this->context->cookie->diff_orders = isset($this->context->cookie->diff_orders) ? $this->context->cookie->diff_orders.', '.$order_id : $order_id;
+					}
+				}
+				elseif($paymentStatus == 'paid') {
+					$this->context->cookie->information = !isset($this->context->cookie->information_orders) ? sprintf($this->l('Order %s is already activated through Billmate.'),$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders has already been activated through Billmate: %s'),$this->context->cookie->information_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+					$this->context->cookie->information_orders = isset($this->context->cookie->information_orders) ? $this->context->cookie->information_orders . ', ' . $order_id : $order_id;
+				}
+				else {
+					$this->context->cookie->error = !isset($this->context->cookie->error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate.'),$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s.'),$this->context->cookie->error_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+					$this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+				}
+			}
+
+		}
+		else
+			return;
 	}
 
 	public function hookDisplayPayment($params)
@@ -350,6 +469,20 @@ class BillmateGateway extends PaymentModule{
 		return $data;
 	}
 
+	public function getMethodInfo($name,$key){
+		$data = array();
+		$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'billmategateway/methods',FilesystemIterator::SKIP_DOTS);
+		foreach($methodFiles as $file){
+			$class = $file->getBasename('.php');
+			include_once($file->getPathname());
+			$method = new $class();
+			if($method->name == $name){
+				if(property_exists($class,$key))
+					return $method->{$key};
+			}
+		}
+	}
+
 	public function getMethodSettings()
 	{
 		$data = array();
@@ -376,6 +509,11 @@ class BillmateGateway extends PaymentModule{
 	}
 
 	public function getGeneralSettings(){
+
+		$statuses = OrderState::getOrderStates((int)$this->context->language->id);
+		$statuses_array = array();
+		foreach ($statuses as $status)
+			$statuses_array[$status['id_order_state']] = $status['name'];
 		$settings['billmateid'] = array(
 			'name' => 'billmateId',
 			'required' => true,
@@ -403,7 +541,27 @@ class BillmateGateway extends PaymentModule{
 		    'value' => Configuration::get('BILLMATE_SEND_REFERENCE')
 		);
 
+		$activate_status      = Configuration::get( 'BILLMATE_ACTIVATE' );
+		$settings['activate'] = array(
+			'name' => 'activate',
+			'required' => true,
+			'type' => 'checkbox',
+			'label' => $this->l('Activate Invoices'),
+			'desc' => $this->l('Activate Invoices with a certain status in Billmate Online'),
+			'value' => $activate_status
+		);
 
+		$settings['activateStatuses'] = array(
+			'name' => 'activateStatuses',
+			'id' => 'activation_options',
+			'required' => true,
+			'type' => 'multiselect',
+			'label' => $this->l('Order statuses for automatic order activation in Billmate Online'),
+			'desc' => '',
+			'value' => (Tools::safeOutput(Configuration::get('BILLMATE_ACTIVATE_STATUS'))) ? unserialize(Configuration::get('BILLMATE_ACTIVATE_STATUS')) : 0,
+			'options' => $statuses_array
+		);
+		$this->smarty->assign('activation_status',$activate_status);
 		$this->smarty->assign(array('settings' => $settings, 'moduleName' => $this->l('Common Settings')));
 		return $this->display(__FILE__,'settings.tpl');
 	}

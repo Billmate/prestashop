@@ -82,13 +82,20 @@ class BillmatepgatewayAcceptModuleFrontController extends ModuleFrontController 
 			$status = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
 			$this->module->validateOrder((int)$this->context->cart->id,$status, $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 
-			if((Configuration::get('BCARDPAY_AUTHORIZATION_METHOD') != 'sale' && $this->method == 'cardpay') || $this->method == 'bankpay')
+			if($this->module->authorization_method != 'sale' && ($this->method == 'cardpay' || $this->method == 'bankpay'))
 			{
 				$values['PaymentData'] = array(
 					'number'  => $data['number'],
 					'orderid' => ( Configuration::get( 'BILLMATE_SEND_REFERENCE' ) == 1 ) ? $this->module->currentOrderReference : $this->module->currentOrder
 				);
 				$this->billmate->updatePayment($values);
+			}
+			if($this->module->authorization_method == 'sale' && ($this->method == 'cardpay' || $this->method == 'bankpay')){
+
+				$values['PaymentData'] = array(
+					'number' => $data['number']
+				);
+				$this->billmate->activatePayment($values);
 			}
 			unlink($lockfile);
 			Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder);

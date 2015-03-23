@@ -16,6 +16,7 @@ class BillmateBankpay extends BillmateGateway{
 		$this->displayName = $this->l('Billmate Bankpay');
 		$this->limited_countries = array('sv');
 		$this->allowed_currencies = array('SEK');
+		$this->authorization_method = Configuration::get('BBANKPAY_AUTHORIZATION_METHOD');
 		$this->validationController = $this->context->link->getModuleLink('billmategateway','billmateapi',array('method' => 'bankpay'));
 		$this->icon = 'billmategateway/images/billmate_bankpay_l.png';
 	}
@@ -59,6 +60,16 @@ class BillmateBankpay extends BillmateGateway{
 			'label' => $this->l('Test Mode'),
 			'desc' => $this->l('Enable Test Mode'),
 			'value' => (Tools::safeOutput(Configuration::get('BBANK_MOD'))) ? 1 : 0
+		);
+		$settings['authorization'] = array(
+			'name' => 'bankpayAuthorization',
+			'type' => 'radio',
+			'label' => $this->l('Authorization Method'),
+			'desc' => '',
+			'options' => array(
+				'authorize' => $this->l('Authorize'),
+				'sale' => $this->l('Sale')
+			)
 		);
 
 		$settings['order_status'] = array(

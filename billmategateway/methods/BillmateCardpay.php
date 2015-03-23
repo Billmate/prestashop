@@ -16,6 +16,7 @@ class BillmateCardpay  extends BillmateGateway{
 		$this->testMode = Configuration::get('BILLMATE_CARD_MOD');
 		$this->limited_countries = array('sv');
 		$this->allowed_currencies = array('SEK');
+		$this->authorization_method = Configuration::get('BCARDPAY_AUTHORIZATION_METHOD');
 		$this->validationController = $this->context->link->getModuleLink('billmategateway','billmateapi',array('method' => 'cardpay'));
 		$this->icon = 'billmategateway/images/billmate_cardpay_l.png';
 	}
