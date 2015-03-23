@@ -1,5 +1,5 @@
 <div class="error">
     {foreach $billmateError as $error}
-        {$error}</br>
+        {$error|escape:'html'}</br>
   {/foreach}
 </div>

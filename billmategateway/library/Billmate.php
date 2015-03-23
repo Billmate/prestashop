@@ -39,7 +39,7 @@
 		var $DEBUG = false;
 		var $REFERER = false;
 
-		function BillMate($id, $key, $ssl = true, $test = false, $debug = false, $referer = array())
+		public function BillMate($id, $key, $ssl = true, $test = false, $debug = false, $referer = array())
 		{
 			$this->ID  = $id;
 			$this->KEY = $key;
@@ -59,7 +59,7 @@
 			return $this->call($name, $args[0]);
 		}
 
-		function call($function, $params)
+		public function call($function, $params)
 		{
 
 			$values = array(
@@ -89,7 +89,7 @@
 			return $this->verify_hash($response);
 		}
 
-		function verify_hash($response)
+		public function verify_hash($response)
 		{
 			$response_array = is_array($response) ? $response : json_decode($response, true);
 			//If it is not decodable, the actual response will be returnt.
@@ -117,7 +117,7 @@
 			return array_map("utf8_decode", $response_array);
 		}
 
-		function curl($parameters)
+		public function curl($parameters)
 		{
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, "http".($this->SSL ? "s" : "")."://".$this->URL);
@@ -144,14 +144,14 @@
 			return $data;
 		}
 
-		function hash($args)
+		public function hash($args)
 		{
 			$this->out("TO BE HASHED DATA", $args);
 
 			return hash_hmac('sha512', $args, $this->KEY);
 		}
 
-		function out($name, $out)
+		public function out($name, $out)
 		{
 			if (!$this->DEBUG)
 				return;

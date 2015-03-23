@@ -1,13 +1,13 @@
 {foreach $methods as $method}
     <p class="payment_module">
         {if $method.type != 'billmateinvoice' && $method.type != 'billmatepartpay'}
-    <a href="{$method.controller}"><img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{$method.name}</a>
+    <a href="{$method.controller|escape:'url'}"><img src="{$smarty.const._MODULE_DIR_}{$method.icon|escape:'url'}"/>{$method.name|escape:'html'}</a>
 {else}
-    <a href="{$method.controller}" id="{$method.type}"><img
-                src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{$method.name} {if $method.type == 'billmatepartpay'} - {l s='Pay from' mod='billmategateway'} {displayPrice price=$method.monthly_cost.monthlycost} {else} - {displayPrice price=$method.invoiceFee.fee_incl_tax}  {l s='invoice fee is added to the order sum' mod='billmategateway'}{/if}
+    <a href="{$method.controller|escape:'url'}" id="{$method.type|escape:'html'}"><img
+                src="{$smarty.const._MODULE_DIR_}{$method.icon|escape:'url'}"/>{$method.name|escape:'html'} {if $method.type == 'billmatepartpay'} - {l s='Pay from' mod='billmategateway'} {displayPrice price=$method.monthly_cost.monthlycost} {else} - {displayPrice price=$method.invoiceFee.fee_incl_tax}  {l s='invoice fee is added to the order sum' mod='billmategateway'}{/if}
     </a>
-    <div style="display:none;" id="{$method.type}-fields">
-        <form action="javascript://" class="{$method.type}">
+    <div style="display:none;" id="{$method.type|escape:'html'}-fields">
+        <form action="javascript://" class="{$method.type|escape:'html'}">
             {if $method.type == 'billmatepartpay'}
                 <select name="paymentAccount">
                     {foreach $method.pClasses as $pclass}
@@ -17,14 +17,14 @@
                 </select>
             {/if}
             <div class="pno_container">
-                <label for="pno_{$method.type}">{l s='Personal / Corporate number:' mod='billmategateway'}</label>
-                <input id="pno_{$method.type}" name="pno_{$method.type}" type="text"/>
+                <label for="pno_{$method.type|escape:'html'}">{l s='Personal / Corporate number:' mod='billmategateway'}</label>
+                <input id="pno_{$method.type|escape:'html'}" name="pno_{$method.type|escape:'html'}" type="text"/>
             </div>
             <div class="agreements">
-                <input type="checkbox" checked="checked" id="agree_with_terms_{$method.type}"
-                       name="agree_with_terms_{$method.type}"/>
-                <label for="agree_with_terms_{$method.type}">{$method.agreements}</label>
-                <button id="{$method.type}Submit">{l s='Proceed' mod='billmategateway'}</button>
+                <input type="checkbox" checked="checked" id="agree_with_terms_{$method.type|escape:'html'}"
+                       name="agree_with_terms_{$method.type|escape:'html'}"/>
+                <label for="agree_with_terms_{$method.type|escape:'html'}">{$method.agreements|escape:'quotes'}</label>
+                <button id="{$method.type|escape:'html'}Submit">{l s='Proceed' mod='billmategateway'}</button>
 
             </div>
         </form>
