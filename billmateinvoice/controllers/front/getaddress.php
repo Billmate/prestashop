@@ -574,14 +574,15 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 					if($gift_product['id_product'] == $product['id_product']){
 						$taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
 						$discountamount = $product['price'];
+						$ref = $product['reference'];
 					}
 
 				}
 				$goods_list[] = array(
 					'qty' => (int) $gift_product['cart_quantity'],
 					'goods' => array(
-						'artno' => $this->context->controller->module->l('Rabatt'),
-						'title' => $gift_product['name'],
+						'artno' => $ref,
+						'title' => $this->context->controller->module->l('Gift :').$gift_product['name'],
 						'price' => $gift_product['price'] - round($discountamount * 100,0),
 						'vat' => $taxrate,
 						'discount' => 0.0,

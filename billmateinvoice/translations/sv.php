@@ -41,6 +41,7 @@ $_MODULE['<{billmateinvoice}prestashop>confirmation_498cd895eb5a102c5aeb977e2b92
 $_MODULE['<{billmateinvoice}prestashop>confirmation_096b4517a3a434d019f249e70f999094'] = 'Du har valt att betala med Billmate faktura.';
 $_MODULE['<{billmateinvoice}prestashop>confirmation_e6dc7945b557a1cd949bea92dd58963e'] = 'Din beställning kommer att skickas inom kort.';
 $_MODULE['<{billmateinvoice}prestashop>getaddress_f4330541bca1fd370209600ae3785f0d'] = 'Rabatt';
+$_MODULE['<{billmateinvoice}prestashop>getaddress_e4716772e3a28fd3f878a8cb498c9259'] = 'Gåva :';
 $_MODULE['<{billmateinvoice}prestashop>adminorder_4623bdd79fb625fe8b877072a1d3e44d'] = '';
 $_MODULE['<{billmateinvoice}prestashop>adminorder_6ea33cd7f98d16478509bbfeadb4007f'] = '';
 $_MODULE['<{billmateinvoice}prestashop>adminorder_b35d55a2eb2f27a366ccfdfbbac4b6bb'] = '';

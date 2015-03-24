@@ -111,3 +111,4 @@ $_MODULE['<{billmateinvoice}prestashop>wrongaddress_040604da72e02c86f502e4d30fdf
 $_MODULE['<{billmateinvoice}prestashop>confirmation_9186781eec5ee9b68b3434638aa88c8d'] = 'Du har valt att betala med Billmate faktura.';
 $_MODULE['<{billmateinvoice}prestashop>confirmation_0db71da7150c27142eef9d22b843b4a9'] = 'För eventuella frågor eller för ytterligare information, vänligen kontakta vår';
 $_MODULE['<{billmateinvoice}prestashop>confirmation_64430ad2835be8ad60c59e7d44e4b0b1'] = 'kundsupport';
+$_MODULE['<{billmateinvoice}prestashop>getaddress_e4716772e3a28fd3f878a8cb498c9259'] = 'Gåva :';

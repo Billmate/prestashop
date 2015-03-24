@@ -32,6 +32,7 @@ $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_ff1b19ce6d095426e
 $_MODULE['<{billmatepartpayment}prestashop>billmatepartpayment_dd06c3a7cdedb70e392c134e37b74b61'] = 'För att dina kunder ska kunna använda Billmate Delbetalning, måste de vara folkbokförda i samma land som din webbutik är registrerad';
 $_MODULE['<{billmatepartpayment}prestashop>payment_dcc28c3998e740c922f9d8da89df0a09'] = 'Min e-postadress %1$s är korrekt och får användas för fakturering. Jag godkänner även köpvillkoren';
 $_MODULE['<{billmatepartpayment}prestashop>getaddress_f4330541bca1fd370209600ae3785f0d'] = 'Rabatt';
+$_MODULE['<{billmatepartpayment}prestashop>getaddress_e4716772e3a28fd3f878a8cb498c9259'] = 'Gåva :';
 $_MODULE['<{billmatepartpayment}prestashop>credential_a892b3c019c81f51e51245603b3a9786'] = 'Aktiveringsinställningar';
 $_MODULE['<{billmatepartpayment}prestashop>credential_e690a3d3da27111ea8831cce5a1048c6'] = 'Modulens läge';
 $_MODULE['<{billmatepartpayment}prestashop>credential_0cbc6611f5540bd0809a388dc95a615b'] = 'Test';

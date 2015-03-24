@@ -40,12 +40,14 @@ $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_c888438d14855d7d96a2724ee
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_06f59ee1f8b954709c476cab5e48e80d'] = 'Betala med billmate kort';
 $_MODULE['<{billmatecardpay}prestashop>billmatecardpay_7cdab2dda1adbd47b1dcb554986fb637'] = 'Betala med Visa & Mastercard';
 $_MODULE['<{billmatecardpay}prestashop>callback_f4330541bca1fd370209600ae3785f0d'] = 'Rabatt';
+$_MODULE['<{billmatecardpay}prestashop>callback_e4716772e3a28fd3f878a8cb498c9259'] = 'Gåva :';
 $_MODULE['<{billmatecardpay}prestashop>confirmation_2e2117b7c81aa9ea6931641ea2c6499f'] = 'Din beställning hos';
 $_MODULE['<{billmatecardpay}prestashop>confirmation_75fbf512d744977d62599cc3f0ae2bb4'] = 'är mottagen.';
 $_MODULE['<{billmatecardpay}prestashop>confirmation_498cd895eb5a102c5aeb977e2b928dee'] = 'Tack!';
 $_MODULE['<{billmatecardpay}prestashop>confirmation_21ec03fe4966c5559fd5fd751a3fc848'] = 'Du har valt att betala med Billmate kort.';
 $_MODULE['<{billmatecardpay}prestashop>confirmation_e6dc7945b557a1cd949bea92dd58963e'] = 'Dina varor kommer att skickas inom kort.';
 $_MODULE['<{billmatecardpay}prestashop>validation_f4330541bca1fd370209600ae3785f0d'] = 'Rabatt';
+$_MODULE['<{billmatecardpay}prestashop>validation_e4716772e3a28fd3f878a8cb498c9259'] = 'Gåva :';
 $_MODULE['<{billmatecardpay}prestashop>adminorder_4623bdd79fb625fe8b877072a1d3e44d'] = '';
 $_MODULE['<{billmatecardpay}prestashop>adminorder_6ea33cd7f98d16478509bbfeadb4007f'] = '';
 $_MODULE['<{billmatecardpay}prestashop>adminorder_b35d55a2eb2f27a366ccfdfbbac4b6bb'] = '';

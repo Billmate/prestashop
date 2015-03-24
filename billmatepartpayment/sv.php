@@ -151,3 +151,4 @@ $_MODULE['<{billmatepartpayment}prestashop>confirmation_75fbf512d744977d62599cc3
 $_MODULE['<{billmatepartpayment}prestashop>confirmation_498cd895eb5a102c5aeb977e2b928dee'] = 'Tack';
 $_MODULE['<{billmatepartpayment}prestashop>confirmation_f81bd8d8ec813f05125b09327859ccd0'] = 'Du har valt Billmate delbetalning';
 $_MODULE['<{billmatepartpayment}prestashop>confirmation_e6dc7945b557a1cd949bea92dd58963e'] = 'Dina varor skickas inom kort';
+$_MODULE['<{billmatepartpayment}prestashop>getaddress_e4716772e3a28fd3f878a8cb498c9259'] = 'Gåva :';
