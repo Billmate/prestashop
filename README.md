@@ -33,6 +33,18 @@ Read following information to install these plugins
 
 ## Changelog
 
+### 1.36 (2015-03-24)
+25 issues closed and XX commits.
+* Fix - Small translation fix for 3D Secure setting.
+* Feature - Activate the order in Billmate online by enabling the setting for it in each specific payment module.
+* Fix - No more double breadcrumbs in Billmate Bank redirect page.
+* Fix - The module now works together with the discount type of free gift.
+* Fix - Clarified that the invoice fee you enter in admin is excluding VAT.
+* Fix - Improved support for other currencies.
+* Fix - Invoice fee is sent in correct currency with auto converting.
+* Fix - Some layout improvements.
+* Fix - Some translation improvements.
+
 ### 1.35.2 (2015-02-02)
 3 issues closed and 13 commits.
 * Fix - If no order status was set, the module would stop working. Now it will default to the Prestashop standard order accepted status if no status is defined.
