@@ -244,32 +244,36 @@
 			$files->natsort();
 			if (count($files) == 0)
 			{
-				Configuration::updateValue($this->version);
+				Configuration::updateValue('BILLMATE_VERSION',$this->version);
 
 				return;
 			}
 			foreach ($files as $file)
 			{
 				$class = $file->getBasename('.php');
-
+				if($class == 'index'){
+					continue;
+				}
 				include_once($file->getPathname());
 
 				$updater = new $class();
 				$updater->install();
 			}
+			Configuration::updateValue('BILLMATE_VERSION',$this->version);
+			return;
 
 		}
 
 		public function registerHooks()
 		{
 			return $this->registerHook('displayPayment') &&
-			       $this->registerHook('payment') &&
-			       $this->registerHook('paymentReturn') &&
-			       $this->registerHook('orderConfirmation') &&
-			       $this->registerHook('actionOrderStatusUpdate') &&
-			       $this->registerHook('displayBackOfficeHeader') &&
-			       $this->registerHook('displayAdminOrder') &&
-			       $this->registerHook('displayPDFInvoice');
+				   $this->registerHook('payment') &&
+				   $this->registerHook('paymentReturn') &&
+				   $this->registerHook('orderConfirmation') &&
+				   $this->registerHook('actionOrderStatusUpdate') &&
+				   $this->registerHook('displayBackOfficeHeader') &&
+				   $this->registerHook('displayAdminOrder') &&
+				   $this->registerHook('displayPDFInvoice');
 		}
 
 		/**
@@ -414,9 +418,8 @@
 								$this->context->cookie->api_error = !isset($this->context->cookie->api_error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The order does not exist in Billmate Online. The order exists in (%s) mode however. Try changing the mode in the modules settings.'), $order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The orders does not exist in Billmate Online. The orders exists in (%s) mode however. Try changing the mode in the modules settings.'), $this->context->cookie->api_error_orders, '. '.$order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 							}
 							else
-							{
 								$this->context->cookie->api_error = $payment_info['message'];
-							}
+
 
 							$this->context->cookie->api_error_orders = isset($this->context->cookie->api_error_orders) ? $this->context->cookie->api_error_orders.', '.$order_id : $order_id;
 
@@ -441,9 +444,8 @@
 
 			}
 			else
-			{
 				return;
-			}
+
 		}
 
 		public function hookDisplayPayment($params)
@@ -485,6 +487,8 @@
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
+				if($class == 'index')
+					continue;
 
 
 				include_once($file->getPathname());
@@ -492,9 +496,8 @@
 				$method = new $class();
 				$result = $method->getPaymentInfo($cart);
 				if (!$result)
-				{
 					continue;
-				}
+
 				$data[] = $result;
 
 			}
@@ -509,14 +512,15 @@
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
+				if($class == 'index')
+					continue;
 				include_once($file->getPathname());
 				$method = new $class();
 				if ($method->name == $name)
 				{
 					if (property_exists($class, $key))
-					{
 						return $method->{$key};
-					}
+
 				}
 			}
 		}
@@ -525,21 +529,21 @@
 		{
 			$data = array();
 
-			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'/billmategateway/methods', FilesystemIterator::SKIP_DOTS);
+			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'billmategateway/methods', FilesystemIterator::SKIP_DOTS);
 
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
-
+				if($class == 'index')
+					continue;
 
 				include_once($file->getPathname());
 
 				$method = new $class();
 				$result = $method->getSettings();
 				if (!$result)
-				{
 					continue;
-				}
+
 				$this->smarty->assign(array('settings' => $result, 'moduleName' => $method->displayName));
 				$data[$method->name]['content'] = $this->display(__FILE__, 'settings.tpl');
 				$data[$method->name]['title']   = $method->displayName;

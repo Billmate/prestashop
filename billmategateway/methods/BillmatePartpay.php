@@ -39,7 +39,7 @@
 				'type'         => $this->name,
 				'controller'   => $this->validation_controller,
 				'icon'         => $this->icon,
-				'agreements'   => $this->l('test'),
+				'agreements'   => sprintf($this->l('My email is accurate and can be used for invoicing.').'<a id="terms" style="cursor:pointer!important"> '.$this->l('I confirm the terms for invoice payment').'</a>'),
 				'pClasses'     => $this->getPclasses($cart),
 				'monthly_cost' => $this->getMonthlyCost($cart)
 
@@ -106,7 +106,6 @@
 
 		public function getPclasses($cart)
 		{
-
 			$pclasses = new pClasses(Configuration::get('BILLMATE_ID'));
 
 			return $pclasses->getPClasses('', $this->context->language->iso_code, true, $this->context->cart->getOrderTotal());

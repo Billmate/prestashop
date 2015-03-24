@@ -39,7 +39,7 @@
 				'type'       => $this->name,
 				'controller' => $this->validation_controller,
 				'icon'       => $this->icon,
-				'agreements' => $this->l('test'),
+				'agreements' => sprintf($this->l('My email is accurate and can be used for invoicing.').'<a id="terms" style="cursor:pointer!important"> '.$this->l('I confirm the terms for invoice payment').'</a>'),
 				'invoiceFee' => $this->getFee()
 			);
 		}

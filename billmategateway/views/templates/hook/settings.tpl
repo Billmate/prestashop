@@ -44,10 +44,9 @@
                 </div>
             {/if}
             {if $setting.type == 'multiselect'}
-                <div class="input-row" {if isset($setting.id)} id="{$setting.id}"{/if}>
+                <div class="input-row" {if isset($setting.id)} id="{$setting.id}"{/if} {if $setting.name == 'activateStatuses' && $setting.value == 0}style="display:none;"{/if}>
                     <span>{$setting.label|escape:'html'}</span>
-                    <select multiple="multiple"
-                            {if $setting.name == 'activateStatuses' && $activation_status == 0}style="display: none;{/if} {if isset($setting.id)}id="{$setting.id}
+                    <select multiple="multiple" {if isset($setting.id)}id="{$setting.id}
                     "{/if} {if isset($setting.name)}name="{$setting.name}"{/if}>
                     {html_options options=$setting.options selected=$setting.value|escape:'html'}
                     </select>

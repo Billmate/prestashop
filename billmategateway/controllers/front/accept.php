@@ -74,7 +74,9 @@
 					else
 						$order_id = Order::getOrderByCartId($this->context->cart->id);
 
-					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$order_id);
+					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.
+					                    '&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.
+					                    '&id_order='.(int)$order_id);
 					die;
 				}
 
@@ -83,7 +85,8 @@
 				$total  = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 				$extra  = array('transaction_id' => $data['number']);
 				$status = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
-				$this->module->validateOrder((int)$this->context->cart->id, $status, $total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
+				$this->module->validateOrder((int)$this->context->cart->id, $status,
+					$total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$values = array();
 				if ($this->module->authorization_method != 'sale' && ($this->method == 'cardpay' || $this->method == 'bankpay'))
 				{

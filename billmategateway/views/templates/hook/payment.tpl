@@ -9,12 +9,12 @@
 {foreach $methods as $method}
     <p class="payment_module">
         {if $method.type != 'billmateinvoice' && $method.type != 'billmatepartpay'}
-    <a href="{$method.controller|escape:'url'}"><img src="{$smarty.const._MODULE_DIR_}{$method.icon|escape:'url'}"/>{$method.name|escape:'html'}</a>
+    <a href="{$method.controller}"><img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{$method.name|escape:'html'}</a>
 {else}
     <a href="{$method.controller|escape:'url'}" id="{$method.type|escape:'html'}"><img
-                src="{$smarty.const._MODULE_DIR_}{$method.icon|escape:'url'}"/>{$method.name|escape:'html'} {if $method.type == 'billmatepartpay'} - {l s='Pay from' mod='billmategateway'} {displayPrice price=$method.monthly_cost.monthlycost} {else} - {displayPrice price=$method.invoiceFee.fee_incl_tax}  {l s='invoice fee is added to the order sum' mod='billmategateway'}{/if}
+                src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{$method.name|escape:'html'} {if $method.type == 'billmatepartpay'} - {l s='Pay from' mod='billmategateway'} {displayPrice price=$method.monthly_cost.monthlycost} {else} - {displayPrice price=$method.invoiceFee.fee_incl_tax}  {l s='invoice fee is added to the order sum' mod='billmategateway'}{/if}
     </a>
-    <div style="display:none;" id="{$method.type|escape:'html'}-fields">
+    <div style="display:none;" id="{$method.type}-fields">
         <form action="javascript://" class="{$method.type|escape:'html'}">
             {if $method.type == 'billmatepartpay'}
                 <select name="paymentAccount">
@@ -40,7 +40,7 @@
 {/if}
     </p>
 {/foreach}
-<script type="text/javascript" src="{$smarty.const._MODULE_DIR_|escape:'url'}billmategateway/views/js/billmatepopup.js"></script>
+<script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
 <script type="text/javascript">
     var version = "{$ps_version|escape:'html'}"
     var ajaxurl = "{$link->getModuleLink('billmategateway', 'billmateapi', ['ajax'=> 0], true)|escape:'url'}";
