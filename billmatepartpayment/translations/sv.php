@@ -110,7 +110,7 @@ $_MODULE['<{billmatepartpayment}prestashop>validation_e2867a925cba382f1436d1834b
 $_MODULE['<{billmatepartpayment}prestashop>validation_256d268da5f338a5cfecf1b08b1d84c4'] = '(inkl. moms)';
 $_MODULE['<{billmatepartpayment}prestashop>validation_24abd1364be2fadd8c07e5508f3f8cfd'] = 'Välj det delbetalningsalternativ som passar bäst';
 $_MODULE['<{billmatepartpayment}prestashop>validation_d3489b3a4ff77c903dd8ffaf452f1ece'] = 'månaders delbetalning - ';
-$_MODULE['<{billmatepartpayment}prestashop>validation_777067d542dcb8dc9fd45bdb92b0e91d'] = '/ månad';
+$_MODULE['<{billmatepartpayment}prestashop>validation_8f2893f3cd125064b9d62a7d75026b71'] = 'per månad';
 $_MODULE['<{billmatepartpayment}prestashop>validation_e91f7864eda394f112f0b903bb6ae11d'] = 'Personnummer / Organisationsnummer';
 $_MODULE['<{billmatepartpayment}prestashop>validation_c3051d2f277689e707b09e1d2ab3c20c'] = 'Min e-postadress %1$s är korrekt och får användas för fakturering.';
 $_MODULE['<{billmatepartpayment}prestashop>validation_6d407537150d110c7e79dff8e0b61466'] = 'Jag godkänner även köpvillkor för delbetalning';
