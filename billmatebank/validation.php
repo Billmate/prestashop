@@ -323,7 +323,7 @@ class BillmateBankController extends FrontController
 					'qty' => (int) $gift_product['cart_quantity'],
 					'goods' => array(
 						'artno' => $ref,
-						'title' => $this->context->controller->module->l('Gift :').$gift_product['name'],
+						'title' => $this->module->l('Gift :','validation').$gift_product['name'],
 						'price' => $gift_product['price'] - round($discountamount * 100,0),
 						'vat' => $taxrate,
 						'discount' => 0.0,

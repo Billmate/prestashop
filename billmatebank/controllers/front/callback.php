@@ -194,7 +194,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 					'qty'   => 1,
 					'goods' => array(
 						'artno'    => '',
-						'title'    => $this->context->controller->module->l('Rabatt'),
+						'title'    => $this->module->l('Rabatt'),
 						'price'    => 0 - abs($discountamount * 100),
 						'vat'      => $vatrate,
 						'discount' => 0.0,
@@ -223,7 +223,7 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 					'qty' => (int) $gift_product['cart_quantity'],
 					'goods' => array(
 						'artno' => $ref,
-						'title' => $this->context->controller->module->l('Gift :').' '.$gift_product['name'],
+						'title' => $this->module->l('Gift :','validation').' '.$gift_product['name'],
 						'price' => $gift_product['price'] - round($discountamount * 100,0),
 						'vat' => $taxrate,
 						'discount' => 0.0,
