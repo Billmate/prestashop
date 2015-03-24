@@ -273,9 +273,18 @@
 				   $this->registerHook('actionOrderStatusUpdate') &&
 				   $this->registerHook('displayBackOfficeHeader') &&
 				   $this->registerHook('displayAdminOrder') &&
-				   $this->registerHook('displayPDFInvoice');
+				   $this->registerHook('displayPDFInvoice') &&
+					$this->registerHook('displayCustomerAccountFormTop');
 		}
 
+		public function hookDisplayCustomerAccountFormTop($params)
+		{
+			if (Configuration::get('BILLMATE_GETADDRESS'))
+
+				return $this->display(__FILE__,'getaddress.tpl');
+			else
+				return;
+		}
 		/**
 		 * This hook displays our invoice Fee in Admin Orders below the client information
 		 *
