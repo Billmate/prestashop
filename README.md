@@ -33,7 +33,7 @@ Read following information to install these plugins
 
 ## Changelog
 
-### 1.36 (2015-03-24)
+### 1.36 (2015-03-25)
 25 issues closed and XX commits.
 * Fix - Small translation fix for 3D Secure setting.
 * Feature - Activate the order in Billmate online by enabling the setting for it in each specific payment module.
