@@ -53,7 +53,7 @@ $_MODULE['<{billmatebank}prestashop>credential_f2cd171bd42220283b7a595c3ff2aaaf'
 $_MODULE['<{billmatebank}prestashop>credential_9cd8a2455b1839ff98ef70c05b9b5983'] = 'Reservera belopp (debitera i billmateonline)';
 $_MODULE['<{billmatebank}prestashop>credential_961f2247a2070bedff9f9cd8d64e2650'] = 'Välj';
 $_MODULE['<{billmatebank}prestashop>credential_b39ce3657fdce8a871c6b37797e65be5'] = 'Spara / Uppdatera';
-$_MODULE['<{billmatebank}prestashop>form_835464c618db4bc2f642c985efa98718'] = 'Billmate Kort';
+$_MODULE['<{billmatebank}prestashop>form_835464c618db4bc2f642c985efa98718'] = 'Billmate Bank';
 $_MODULE['<{billmatebank}prestashop>form_971c02fae98f237b833335c653598a2c'] = 'Du har valt att betala med Billmate Bank.';
 $_MODULE['<{billmatebank}prestashop>form_e2867a925cba382f1436d1834bb52a1c'] = 'Det totala beloppet för din beställning är';
 $_MODULE['<{billmatebank}prestashop>form_1f87346a16cf80c372065de3c54c86d9'] = '(inkl. moms)';
@@ -64,7 +64,7 @@ $_MODULE['<{billmatebank}prestashop>form_f0faee4fa3957e8a0af38dc9594d68c0'] = 'O
 $_MODULE['<{billmatebank}prestashop>validation_ea9cf7e47ff33b2be14e6dd07cbcefc6'] = 'Betala med Billmate Bank';
 $_MODULE['<{billmatebank}prestashop>validation_0c25b529b4d690c39b0831840d0ed01c'] = 'ORDERSUMMERING';
 $_MODULE['<{billmatebank}prestashop>validation_98012bf54b453a1638e66a2150071179'] = 'Tyvärr kunde inte din betalning genomföras. Felkod: %1$s';
-$_MODULE['<{billmatebank}prestashop>validation_835464c618db4bc2f642c985efa98718'] = 'Billmate Kort';
+$_MODULE['<{billmatebank}prestashop>validation_835464c618db4bc2f642c985efa98718'] = 'Billmate Bank';
 $_MODULE['<{billmatebank}prestashop>validation_971c02fae98f237b833335c653598a2c'] = 'Du har valt att betala med Billmate Bank.';
 $_MODULE['<{billmatebank}prestashop>validation_e2867a925cba382f1436d1834bb52a1c'] = 'Totalsumman av din order är';
 $_MODULE['<{billmatebank}prestashop>validation_1f87346a16cf80c372065de3c54c86d9'] = '(inkl. moms)';
