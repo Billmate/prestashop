@@ -34,7 +34,7 @@ Read following information to install these plugins
 ## Changelog
 
 ### 1.36 (2015-03-25)
-25 issues closed and XX commits.
+25 issues closed and 58 commits.
 * Feature - Activate the order in Billmate online by enabling the setting for it in each specific payment module.
 * Fix - Small translation fix for 3D Secure setting.
 * Fix - No more double breadcrumbs in Billmate Bank redirect page.
