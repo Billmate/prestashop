@@ -47,9 +47,11 @@
     </fieldset>
 	<fieldset class="billmate-blockSmall R">
 		<legend><img src="{$module_dir}img/icon-modules.gif" alt="" /> {l s='Payment Options' mod='billmatepartpayment'}</legend>
-		<input type="hidden" name="submitBillmate" value="1"/>
-		<img src="{$module_dir}img/billmate_account.png" alt=""/>
-		<p><input type="checkbox" id="billmate_active_partpayment" name="billmate_active_partpayment" {if $billmate_active_partpayment == 1}checked='checked'{/if} value="1" /> <label for="billmate_active_partpayment">{l s='Activate Billmate Part Payment.' mod='billmatepartpayment'}</label><br></p>
+        <input type="hidden" name="submitBillmate" value="1"/>
+        <p>
+            <input type="checkbox" id="billmate_active_partpayment" name="billmate_active_partpayment" {if $billmate_active_partpayment == 1}checked='checked'{/if} value="1" /> <label for="billmate_active_partpayment">{l s='Activate Billmate Part Payment.' mod='billmatepartpayment'}</label><br/>
+            <img src="{$module_dir}img/billmate_account.png" alt=""/>
+		</p>
 		</fieldset>
 	<div class="clear"></div>	
 	<fieldset>
@@ -141,6 +143,10 @@
 	$(document).ready(
 	    function()
 	    {
+            var length = $("#activationSelect option").length;
+            length = length > 19 ? 20 : length
+            $('#activationSelect').attr('size',length);
+
             $('#billmate_activation_on').click(function(){
                 $('#activationSelect').show();
                 $('#activate_title').show();
