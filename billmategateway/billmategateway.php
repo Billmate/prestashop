@@ -108,7 +108,8 @@
 			$this->smarty->assign('moduleName', $this->moduleName);
 			$this->smarty->assign($this->moduleName.'Logo', '../modules/'.$this->moduleName.'/views/img/logo.png');
 			$this->smarty->assign('js', array('../modules/'.$this->moduleName.'/views/js/billmate.js'));
-			$this->smarty->assign($this->moduleName.'css', '../modules/billmatebank/css/billmate.css');
+
+			$this->smarty->assign('stylecss', '../modules/billmategateway/views/css/billmate.css');
 
 			return $this->display(__FILE__, 'admin.tpl');
 		}
@@ -130,6 +131,7 @@
 				Configuration::updateValue('BILLMATE_SECRET', $billmateSecret);
 			}
 			Configuration::updateValue('BILLMATE_SEND_REFERENCE', Tools::getIsset('sendOrderReference') ? 1 : 0);
+			Configuration::updateValue('BILLMATE_GETADDRESS', Tools::getIsset('getaddress') ? 1 : 0);
 
 			// Bankpay Settings
 			Configuration::updateValue('BBANKPAY_ENABLED', (Tools::getIsset('bankpayActivated')) ? 1 : 0);
@@ -184,7 +186,7 @@
 				'country'  => 'se'
 			);
 			$result              = $billmate->getPaymentplans($data);
-			if (isset($result['code']) && $result['code'] == '9010' || $result['code'] == '9013')
+			if (isset($result['code']) && ($result['code'] == '9010' || $result['code'] == '9013'))
 			{
 				$this->postErrors[] = $result['message'];
 
@@ -368,13 +370,13 @@
 					unset($this->context->cookie->confirmation_orders);
 				}
 			}
-			if (Tools::getValue('controller') == 'AdminModules' && Tools::getValue('configure') == 'billmategateway')
+			/*if (Tools::getValue('controller') == 'AdminModules' && Tools::getValue('configure') == 'billmategateway')
 			{
 				$html = '';
 				$html = '<link href="/modules/billmategateway/views/css/billmate.css" type="text/css" rel="stylesheet"/>';
 
 				return $html;
-			}
+			}*/
 
 
 		}
@@ -615,6 +617,13 @@
 				'desc'     => '',
 				'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_ACTIVATE_STATUS'))) ? unserialize(Configuration::get('BILLMATE_ACTIVATE_STATUS')) : 0,
 				'options'  => $statuses_array
+			);
+			$settings['getaddress'] = array(
+				'name' => 'getaddress',
+				'type' => 'checkbox',
+				'label' => $this->l('Activate GetAddress'),
+				'desc' => 'Let your customer use getAddress for checkout',
+				'value' => Configuration::get('BILLMATE_GETADDRESS')
 			);
 			$this->smarty->assign('activation_status', $activate_status);
 			$this->smarty->assign(array('settings' => $settings, 'moduleName' => $this->l('Common Settings')));

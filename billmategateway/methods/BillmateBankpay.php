@@ -58,7 +58,7 @@
 				'type'     => 'checkbox',
 				'label'    => $this->l('Enabled'),
 				'desc'     => $this->l('Should Billmate Bank be Enabled'),
-				'value'    => (Tools::safeOutput(Configuration::get('BBANK_ENABLED'))) ? 1 : 0,
+				'value'    => (Tools::safeOutput(Configuration::get('BBANKPAY_ENABLED'))) ? 1 : 0,
 
 			);
 
@@ -68,13 +68,14 @@
 				'type'     => 'checkbox',
 				'label'    => $this->l('Test Mode'),
 				'desc'     => $this->l('Enable Test Mode'),
-				'value'    => (Tools::safeOutput(Configuration::get('BBANK_MOD'))) ? 1 : 0
+				'value'    => (Tools::safeOutput(Configuration::get('BBANKPAY_MOD'))) ? 1 : 0
 			);
 			$settings['authorization'] = array(
 				'name'    => 'bankpayAuthorization',
 				'type'    => 'radio',
 				'label'   => $this->l('Authorization Method'),
 				'desc'    => '',
+				'value' => Configuration::get('BBANKPAY_AUTHORIZATION_METHOD'),
 				'options' => array(
 					'authorize' => $this->l('Authorize'),
 					'sale'      => $this->l('Sale')
@@ -87,13 +88,13 @@
 				'type'     => 'select',
 				'label'    => $this->l('Set Order Status'),
 				'desc'     => $this->l(''),
-				'value'    => (Tools::safeOutput(Configuration::get('BBANK_ORDER_STATUS'))) ? Tools::safeOutput(Configuration::get('BBANK_ORDER_STATUS')) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
+				'value'    => (Tools::safeOutput(Configuration::get('BBANKPAY_ORDER_STATUS'))) ? Tools::safeOutput(Configuration::get('BBANKPAY_ORDER_STATUS')) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
 				'options'  => $statuses_array
 			);
 			$settings['minimum_value'] = array(
 				'name'     => 'bankpayBillmateMinimumValue',
 				'required' => false,
-				'value'    => (float)Configuration::get('BBANK_MIN_VALUE'),
+				'value'    => (float)Configuration::get('BBANKPAY_MIN_VALUE'),
 				'type'     => 'text',
 				'label'    => $this->l('Minimum Value ').' ('.$currency['sign'].')',
 				'desc'     => $this->l(''),
@@ -101,7 +102,7 @@
 			$settings['maximum_value'] = array(
 				'name'     => 'bankpayBillmateMaximumValue',
 				'required' => false,
-				'value'    => Configuration::get('BBANK_MAX_VALUE') != 0 ? (float)Configuration::get('BBANK_MAX_VALUE') : 99999,
+				'value'    => Configuration::get('BBANKPAY_MAX_VALUE') != 0 ? (float)Configuration::get('BBANKPAY_MAX_VALUE') : 99999,
 				'type'     => 'text',
 				'label'    => $this->l('Maximum Value ').' ('.$currency['sign'].')',
 				'desc'     => $this->l(''),

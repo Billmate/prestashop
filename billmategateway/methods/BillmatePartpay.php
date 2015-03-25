@@ -99,7 +99,13 @@
 				'label'    => $this->l('Maximum Value ').' ('.$currency['sign'].')',
 				'desc'     => $this->l(''),
 			);
-
+			$pclasses = new pClasses(Configuration::get('BILLMATE_ID'));
+			$settings['paymentplans'] = array(
+				'name' => 'paymentplans',
+				'label' => $this->l('Paymentplans'),
+				'type' => 'table',
+				'pclasses' => $pclasses->getPClasses('')
+			);
 			return $settings;
 
 		}

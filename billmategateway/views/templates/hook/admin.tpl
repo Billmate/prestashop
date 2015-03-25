@@ -6,6 +6,7 @@
 * @author Jesper Johansson jesper@boxedlogistics.se
 * @copyright Billmate AB 2015
 *}
+<link rel="stylesheet" href="{$stylecss}"/>
 <div class="billmate-wrapper">
     <ul id="menuTab">
         {foreach $tab as $li}

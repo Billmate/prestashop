@@ -3,8 +3,8 @@
 	require_once(_PS_MODULE_DIR_.'billmategateway/library/Common.php');
 
 	class BillmategatewayGetaddressModuleFrontController extends ModuleFrontController{
-		protected $ajax = true;
-		protected $ssl = true;
+		public $ajax = true;
+		public $ssl = true;
 
 		protected $pno;
 		protected $billmate;
@@ -13,6 +13,7 @@
 		{
 			$eid    = Configuration::get('BILLMATE_ID');
 			$secret = Configuration::get('BILLMATE_SECRET');
+			if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',$this->context->language->iso_code);
 			$this->billmate = Common::getBillmate($eid,$secret,false);
 
 			$this->pno = Tools::getValue('pno');
@@ -23,6 +24,9 @@
 				$response['success'] = true;
 				foreach($address as $key => $row)
 					$encoded_address[$key] = mb_convert_encoding($row,'UTF-8','auto');
+
+				$country_id = Country::getIdByName($this->context->language->id,$encoded_address['country']);
+				$encoded_address['id_country'] = $country_id;
 				$response['data'] = $encoded_address;
 
 			}

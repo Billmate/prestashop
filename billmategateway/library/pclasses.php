@@ -55,7 +55,7 @@
 
 			$db = Db::getInstance();
 			//$db->Execute('TRUNCATE TABLE `'._DB_PREFIX_.'billmate_payment_pclasses`');
-			$db->Execute('DELETE FROM `'.DB_PREFIX_.'billmate_payment_pclasses` WHERE language = "'.$language.'"');
+			$db->Execute('DELETE FROM `'._DB_PREFIX_.'billmate_payment_pclasses` WHERE language = "'.$language.'"');
 
 			if (!is_array($data))
 				throw new Exception(strip_tags($data));
@@ -115,14 +115,14 @@
 			return $lowest;
 		}
 
-		public function getPClasses($eid = '', $language, $prepare = false, $total)
+		public function getPClasses($eid = '', $language = false, $prepare = false, $total = false)
 		{
 			if (!empty($eid))
 				$this->_eid = $eid;
-
+			$langQuery = ($language) ? ' AND language="'.$language.'" ' : '';
 			$data = Db::getInstance()->ExecuteS('SELECT * FROM `'._DB_PREFIX_.
 												'billmate_payment_pclasses` where eid="'.$this->_eid.
-												'" AND language="'.$language.'" AND expirydate > NOW()');
+			                                    '"'.$langQuery.' AND expirydate > NOW()');
 			if (!$prepare)
 			{
 				if (!is_array($data))
@@ -132,11 +132,14 @@
 			}
 			$pclasses = array();
 			$key      = 0;
-			foreach ($data as $row)
+			if ($total)
 			{
-				$pclasses[$key]                = $row;
-				$pclasses[$key]['monthlycost'] = BillmateCalc::calc_monthly_cost($total, $row, BillmateFlags::CHECKOUT_PAGE);
-				$key++;
+				foreach ($data as $row)
+				{
+					$pclasses[$key]                = $row;
+					$pclasses[$key]['monthlycost'] = BillmateCalc::calc_monthly_cost($total, $row, BillmateFlags::CHECKOUT_PAGE);
+					$key++;
+				}
 			}
 
 			return $pclasses;
