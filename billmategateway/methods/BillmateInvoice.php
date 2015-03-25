@@ -18,7 +18,7 @@
 			parent::__construct();
 			$this->name                 = 'billmateinvoice';
 			$this->displayName          = $this->l('Billmate Invoice');
-			$this->testMode             = Configuration::get('BILLMATE_INVOICE_MOD');
+			$this->testMode             = Configuration::get('BINVOICE_MOD');
 			$this->limited_countries    = array('sv');
 			$this->allowed_currencies   = array('SEK');
 			$this->authorization_method = false;

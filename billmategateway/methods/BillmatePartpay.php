@@ -18,7 +18,7 @@
 			parent::__construct();
 			$this->name                 = 'billmatepartpay';
 			$this->displayName          = $this->l('Billmate Part Pay');
-			$this->testMode             = Configuration::get('BILLMATE_PARTPAY_MOD');
+			$this->testMode             = Configuration::get('BPARTPAY_MOD');
 			$this->limited_countries    = array('sv');
 			$this->allowed_currencies   = array('SEK');
 			$this->authorization_method = false;

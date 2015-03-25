@@ -18,7 +18,7 @@
 			parent::__construct();
 			$this->name                 = 'billmatecardpay';
 			$this->displayName          = $this->l('Billmate Cardpay');
-			$this->testMode             = Configuration::get('BILLMATE_CARD_MOD');
+			$this->testMode             = Configuration::get('BCARDPAY_MOD');
 			$this->limited_countries    = array('sv');
 			$this->allowed_currencies   = array('SEK');
 			$this->authorization_method = Configuration::get('BCARDPAY_AUTHORIZATION_METHOD');
@@ -37,6 +37,7 @@
 			return array(
 				'name'       => $this->displayName,
 				'type'       => $this->name,
+				'method' => 'cardpay',
 				'controller' => $this->validation_controller,
 				'icon'       => $this->icon
 			);

@@ -37,7 +37,8 @@
 		protected $pno;
 		protected $billmate;
 
-		public function __construct()
+
+		public function postProcess()
 		{
 			if (!defined('BILLMATE_LANGUAGE'))
 				define('BILLMATE_LANGUAGE', $this->context->language->iso_code);
@@ -45,10 +46,6 @@
 			if (!defined('BILLMATE_CLIENT'))
 				define('BILLMATE_CLIENT', 'PrestaShop:2.0.0');
 
-		}
-
-		public function postProcess()
-		{
 			$this->method = Tools::getValue('method');
 
 			$eid    = Configuration::get('BILLMATE_ID');
@@ -162,7 +159,7 @@
 					'withouttax' => $article['price'] * 100
 
 				);
-				if (!isset($this->prepare_discount))
+				if (!isset($this->prepare_discount[$taxrate]))
 					$this->prepare_discount[$taxrate] = $article['price'];
 				else
 					$this->prepare_discount[$taxrate] += $article['price'];

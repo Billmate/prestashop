@@ -11,7 +11,7 @@
 	 * The controller for accept payment
 	 */
 
-	class BillmatepgatewayAcceptModuleFrontController extends ModuleFrontController {
+	class BillmategatewayAcceptModuleFrontController extends ModuleFrontController {
 
 		public $module;
 		protected $method;
@@ -64,7 +64,7 @@
 
 			if (!isset($data['code']) && !isset($data['error']))
 			{
-				$lockfile   = _PS_CACHE_DIR_.Tools::getValue('order_id');
+				$lockfile   = _PS_CACHE_DIR_.$data['orderid'];
 				$processing = file_exists($lockfile);
 				if ($this->context->cart->orderExists() || $processing)
 				{

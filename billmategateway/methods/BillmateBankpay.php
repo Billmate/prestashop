@@ -17,7 +17,7 @@
 		{
 			parent::__construct();
 			$this->name                 = 'billmatebankpay';
-			$this->testMode             = Configuration::get('BILLMATE_BANK_MOD');
+			$this->testMode             = Configuration::get('BBANKPAY_MOD');
 			$this->displayName          = $this->l('Billmate Bankpay');
 			$this->limited_countries    = array('sv');
 			$this->allowed_currencies   = array('SEK');
@@ -37,6 +37,7 @@
 			return array(
 				'name'       => $this->displayName,
 				'type'       => $this->name,
+				'method'    => 'bankpay',
 				'controller' => $this->validation_controller,
 				'icon'       => $this->icon
 			);

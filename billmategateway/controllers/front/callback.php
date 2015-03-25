@@ -34,11 +34,11 @@
 
 			$this->billmate = Common::getBillmate($eid, $secret, $testmode, $ssl, $debug);
 
-			$data = $this->billmate->verify_hash(Tools::jsonDecode(Tools::file_get_contents('php://input')));
-
+			$data = $this->billmate->verify_hash(Tools::file_get_contents('php://input'));
+			file_put_contents(_PS_CACHE_DIR_.'debugcall',print_r($data,true));
 			if (!isset($data['code']) && !isset($data['error']))
 			{
-				$lockfile   = _PS_CACHE_DIR_.Tools::getValue('order_id');
+				$lockfile   = _PS_CACHE_DIR_.Tools::getValue('orderid');
 				$processing = file_exists($lockfile);
 				if ($this->context->cart->orderExists() || $processing)
 					die('OK');
