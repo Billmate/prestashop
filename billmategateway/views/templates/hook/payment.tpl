@@ -31,7 +31,7 @@
             <div class="agreements">
                 <input type="checkbox" checked="checked" id="agree_with_terms_{$method.type|escape:'html'}"
                        name="agree_with_terms_{$method.type|escape:'html'}"/>
-                <label for="agree_with_terms_{$method.type|escape:'html'}">{$method.agreements|escape:'quotes'}</label>
+                <label for="terms_{$method.type|escape:'html'}">{$method.agreements|escape:'quotes'}</label>
                 <button id="{$method.type|escape:'html'}Submit">{l s='Proceed' mod='billmategateway'}</button>
 
             </div>
@@ -43,6 +43,7 @@
 <script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
 <script type="text/javascript">
     var version = "{$ps_version|escape:'html'}"
+    var PARTPAYMENT_EID = "{$eid}";
     var ajaxurl = "{$link->getModuleLink('billmategateway', 'billmateapi', ['ajax'=> 0], true)}";
     var emptypersonerror = "{l s='PNO/SSN missing' mod='billmategateway'}";
     var checkbox_required = "{l s='Please check the checkbox for confirm this e-mail address is correct and can be used for invoicing.' mod='billmategateway'}";

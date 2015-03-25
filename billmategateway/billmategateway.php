@@ -476,7 +476,8 @@
 						'this_path_ssl' => (_PS_VERSION_ >= 1.4 ? Tools::getShopDomainSsl(true, true) : '').__PS_BASE_URI__.'modules/'.$this->moduleName.'/'
 					),
 					'methods'    => $methods,
-					'ps_version' => _PS_VERSION_
+					'ps_version' => _PS_VERSION_,
+					'eid' => $this->billmate_merchant_id
 				)
 			);
 
