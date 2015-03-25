@@ -528,6 +528,7 @@
 						$return['redirect'] = $this->context->link->getPageLink($url);
 					}
 					else
+						Logger::addLog($result['message'],1,$result['code'],'Cart',$this->context->cart->id);
 						$return = array('success' => false, 'content' => utf8_encode($result['message']));
 
 					break;
@@ -536,7 +537,11 @@
 					if (!isset($result['code']))
 						$return = array('success' => true, 'redirect' => $result['url']);
 					else
+					{
+						Logger::addLog($result['message'],1,$result['code'],'Cart',$this->context->cart->id);
 						$return = array('success' => false, 'content' => utf8_encode($result['message']));
+					}
+
 
 					break;
 			}

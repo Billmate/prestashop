@@ -110,6 +110,12 @@
 									'&id_order='.(int)$this->module->currentOrder);
 				die();
 			}
+			else
+			{
+				$order        = $data['orderid'];
+				$order        = explode('-', $order);
+				Logger::addLog($data['message'],1,$data['code'],'Cart',$order[0]);
+			}
 		}
 
 	}

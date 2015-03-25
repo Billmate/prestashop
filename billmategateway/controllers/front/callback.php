@@ -75,6 +75,11 @@
 				unlink($lockfile);
 				exit('finalize');
 			}
+			{
+				$order        = $data['orderid'];
+				$order        = explode('-', $order);
+				Logger::addLog($data['message'],1,$data['code'],'Cart',$order[0]);
+			}
 		}
 
 	}
