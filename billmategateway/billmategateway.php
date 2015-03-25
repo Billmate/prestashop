@@ -279,6 +279,31 @@
 					$this->registerHook('displayCustomerAccountFormTop');
 		}
 
+		public function hookDisplayPdfInvoice($params)
+		{
+			$order = new Order($params['object']->id_order);
+			$invoice_fee = Configuration::get('BINVOICE_FEE');
+			if($order->module == 'billmateinvoice' && $invoice_fee > 0){
+
+
+
+				$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
+
+				$tax           = new Tax($invoice_fee_tax);
+				$tax_calculator = new TaxCalculator(array($tax));
+
+				$tax_amount = $tax_calculator->getTaxesAmount($invoice_fee);
+
+				$total_fee = $invoice_fee + $tax_amount[1];
+
+				$this->smarty->assign('invoiceFeeIncl', $total_fee);
+				$this->smarty->assign('invoiceFeeTax', $tax_amount[1]);
+				$this->smarty->assign('order',$order);
+
+				return $this->display(__FILE__,'invoicefeepdf.tpl');
+			}
+		}
+
 		public function hookDisplayCustomerAccountFormTop($params)
 		{
 			if (Configuration::get('BILLMATE_GETADDRESS'))

@@ -36,6 +36,7 @@
 		/** @var  pno | The personal number if invoice or Partpay */
 		protected $pno;
 		protected $billmate;
+		protected $coremodule;
 
 
 		public function postProcess()
@@ -56,7 +57,7 @@
 
 			$class        = 'Billmate'.Tools::ucfirst($this->method);
 			$this->module = new $class;
-
+			$this->coremodule = new BillmateGateway();
 			$testmode = $this->module->testMode;
 
 			$this->billmate = Common::getBillmate($eid, $secret, $testmode, $ssl, $debug);
@@ -508,8 +509,8 @@
 						$customer = new Customer((int)$this->context->cart->id_customer);
 						$this->module->validateOrder((int)$this->context->cart->id,
 								$status,
-								($this->method == 'invoice') ? $this->paid_amount : $total,
-								$this->module->displayName,
+								($this->method == 'invoice') ? $this->paid_amount/100 : $total,
+								$this->coremodule->displayName,
 								null, $extra, null, false, $customer->secure_key);
 						$values                = array();
 						$values['PaymentData'] = array(
@@ -519,14 +520,17 @@
 						$this->billmate->updatePayment($values);
 
 						$url                = 'order-confirmation&id_cart='.(int)$this->context->cart->id.
-											  '&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder.
+											  '&id_module='.(int)$this->coremodule->id.
+						                      '&id_order='.(int)$this->module->currentOrder.
 											  '&key='.$customer->secure_key;
 						$return['success']  = true;
 						$return['redirect'] = $this->context->link->getPageLink($url);
 					}
 					else
-						Logger::addLog($result['message'],1,$result['code'],'Cart',$this->context->cart->id);
+					{
+						Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
 						$return = array('success' => false, 'content' => utf8_encode($result['message']));
+					}
 
 					break;
 				case 'bankpay':
