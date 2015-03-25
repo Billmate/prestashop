@@ -305,6 +305,34 @@ class BillmateBankController extends FrontController
 			);
 		}
 
+		// Do we have any gift products in cart
+		if (isset($cart_details['gift_products']) && !empty($cart_details['gift_products']))
+		{
+			foreach ($cart_details['gift_products'] as $gift_product)
+			{
+				$discountamount = 0;
+				foreach ($products as $product){
+					if($gift_product['id_product'] == $product['id_product']){
+						$taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
+						$discountamount = $product['price'];
+						$ref = $product['reference'];
+					}
+
+				}
+				$goods_list[] = array(
+					'qty' => (int) $gift_product['cart_quantity'],
+					'goods' => array(
+						'artno' => $ref,
+						'title' => $this->module->l('Gift :','validation').$gift_product['name'],
+						'price' => $gift_product['price'] - round($discountamount * 100,0),
+						'vat' => $taxrate,
+						'discount' => 0.0,
+						'flags' => 0
+					)
+				);
+			}
+		}
+
 		$totals = array('total_shipping','total_handling');
 		$label = array();
 		//array('total_tax' => 'Tax :'. $cart_details['products'][0]['tax_name']);

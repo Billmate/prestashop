@@ -9,7 +9,25 @@
 		<h4>{l s='Set the mode of your module' mod='billmatebank'}</h4>
 		<input type="radio" id="billmate_mod-beta" name="billmate_mod" {if $billmate_mod == 1}checked='checked'{/if} value="beta" /> <label for="billmate_mod-beta">{l s='Test' mod='billmatebank'}</label>
 		<input type="radio" id="billmate_mod-live" name="billmate_mod" {if $billmate_mod == 0}checked='checked'{/if} value="live" /> <label for="billmate_mod-live">{l s='Live' mod='billmatebank'}</label>
-	</fieldset>
+        {if $show_activate == true}
+        <p>
+            <h4>{l s='Automatic order activation in Billmate Online on order status update' mod='billmatebank'}</h4>
+            <input type="radio" id="billmate_activation_on" name="billmate_activation" {if $billmate_activation == 1}checked="checked"{/if} value="1"/> <label for="billmate_activation">{l s='Enabled' mod='billmatebank'}</label>
+            <input type="radio" id="billmate_activation_off" name="billmate_activation" {if $billmate_activation == 0}checked="checked"{/if} value="0"/> <label for="billmate_activation">{l s='Disabled' mod='billmatebank'}</label>
+
+        </p>
+        <p></p>
+        <h4 id="activate_title" {if $billmate_activation == 0} style="display: none;"{/if}>{$status_activate.label}</h4>
+        <div class="input-row">
+
+            <select {if $billmate_activation == 0} style="display: none;" {/if} {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if} multiple="multiple">
+                {html_options options=$status_activate.options selected=$status_activate.value}
+            </select>
+        </div>
+        {/if}
+    </fieldset>
+
+
 	<fieldset class="billmate-blockSmall R">
 		<legend><img src="{$module_dir}img/icon-modules.gif" alt="" /> {l s='Payment Options' mod='billmatebank'}</legend>
 		<input type="hidden" name="submitBillmate" value="1"/>
@@ -36,23 +54,23 @@
 					<p class="title"><img src="{$countryNames[$name].flag}" alt=""/>{$country_name|lower|capitalize}</p>
 					<div class="fieldset-wrap">						
 						{foreach from=$country item=input}
-						{if $input.type == 'text'}
-						<div id="billmateInput{$input.name}" class="input-row">
-							<span>{$input.label}</span>
-							<input type="{$input.type}" name="{$input.name}" id="{$input.name}" value="{$input.value}" />{$input.desc}
-						</div>
-						{elseif $input.type == 'hidden'}
-							<input type="{$input.type}" name="{$input.name}" id="{$input.name}" value="{$input.value}" />
-						{elseif $input.type == 'select'}
-							<div class="input-row">
-								<span>{$input.label}</span>
-								<select {if isset($input.id)}id="{$input.id}"{/if} {if isset($input.name)}name="{$input.name}"{/if}>
-									<option>{l s='Choose' mod='billmatebank'}</option>
-									{html_options options=$input.options selected=$input.value}
-								</select>
-							</div>
-						{/if}
-						{/foreach}
+                            {if $input.type == 'text'}
+                                <div id="billmateInput{$input.name}" class="input-row">
+                                    <span>{$input.label}</span>
+                                    <input type="{$input.type}" name="{$input.name}" id="{$input.name}" value="{$input.value}" />{$input.desc}
+                                </div>
+                            {elseif $input.type == 'hidden'}
+                                <input type="{$input.type}" name="{$input.name}" id="{$input.name}" value="{$input.value}" />
+                            {elseif $input.type == 'select'}
+                                <div class="input-row">
+                                    <span>{$input.label}</span>
+                                    <select {if isset($input.id)}id="{$input.id}"{/if} {if isset($input.name)}name="{$input.name}"{/if}>
+                                        <option>{l s='Choose' mod='billmatebank'}</option>
+                                        {html_options options=$input.options selected=$input.value}
+                                    </select>
+                                </div>
+                            {/if}
+                        {/foreach}
 					</div>
 				</fieldset>
 			</li>
@@ -85,6 +103,20 @@
 	$(document).ready(
 	    function()
 	    {
+            var length = $("#activationSelect option").length;
+            length = length > 19 ? 20 : length
+            $('#activationSelect').attr('size',length);
+
+            $('#billmate_activation_on').click(function(){
+                $('#activationSelect').show();
+                $('#activate_title').show();
+
+            });
+            $('#billmate_activation_off').click(function(){
+                $('#activationSelect').hide();
+                $('#activate_title').hide();
+
+            })
 		$('li[class^="billmate_form_"]').hide();
 		$("li[class^='billmate_form']").each(
 		    function()

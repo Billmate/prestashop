@@ -20,16 +20,16 @@
 		<span id="amount_{$currencies.0.id_currency}">{convertPrice price=$total}.</span>
 	</p>
     <p class="bnormal">
-        {if $fee != 0} <span id="amount">{l s=' This includes the invoice cost' mod='billmateinvoice'} {displayPrice price=$fee}</span>{/if}
+        {if $fee != 0} <span id="amount">{l s=' Includes an invoice fee of' mod='billmateinvoice'} {displayPrice price=$fee}</span>{/if}
         {if $use_taxes == 1}
-            ({l s='tax' mod='billmateinvoice'} {l s='incl.' mod='billmateinvoice'})<br/>
+            ({l s='tax included' mod='billmateinvoice'})<br/>
         {/if}
     </p>
 	<p class="bnormal">
-	    <b>{l s='Please fill following fields for complete order' mod='billmateinvoice'}</b>
+	    <b>{l s='Please fill following fields to complete your order' mod='billmateinvoice'}</b>
     </p>
 	<p class="blarge">
-	    <label for="pno">{l s='Personal Number' mod='billmateinvoice'}:</label>
+	    <label for="pno">{l s='Personal Number / Organization Number' mod='billmateinvoice'}:</label>
 	    <input type="text" value="" id="billmate_pno" name="pno" required  />
 	</p>
 	<p class="bsmall">

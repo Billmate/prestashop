@@ -194,13 +194,41 @@ class BillmateBankCallbackModuleFrontController extends ModuleFrontController
 					'qty'   => 1,
 					'goods' => array(
 						'artno'    => '',
-						'title'    => $this->context->controller->module->l('Rabatt'),
+						'title'    => $this->module->l('Rabatt'),
 						'price'    => 0 - abs($discountamount * 100),
 						'vat'      => $vatrate,
 						'discount' => 0.0,
 						'flags'    => 0,
 					)
 					
+				);
+			}
+		}
+
+		// Do we have any gift products in cart
+		if (isset($cart_details['gift_products']) && !empty($cart_details['gift_products']))
+		{
+			foreach ($cart_details['gift_products'] as $gift_product)
+			{
+				$discountamount = 0;
+				foreach ($products as $product){
+					if($gift_product['id_product'] == $product['id_product']){
+						$taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
+						$discountamount = $product['price'];
+						$ref = $product['reference'];
+					}
+
+				}
+				$goods_list[] = array(
+					'qty' => (int) $gift_product['cart_quantity'],
+					'goods' => array(
+						'artno' => $ref,
+						'title' => $this->module->l('Gift :','validation').' '.$gift_product['name'],
+						'price' => $gift_product['price'] - round($discountamount * 100,0),
+						'vat' => $taxrate,
+						'discount' => 0.0,
+						'flags' => 0
+					)
 				);
 			}
 		}

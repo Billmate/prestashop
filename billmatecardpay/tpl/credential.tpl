@@ -15,9 +15,24 @@
 		<p>
 		<input type="checkbox" id="billmate_prompt_name" name="billmate_prompt_name" {if $billmate_prompt_name == 'YES'}checked='checked'{/if} value="YES" /> <label for="billmate_prompt_name">{l s='Enable Prompt Name' mod='billmatecardpay'}</label>
 		</p><p>
-		<input type="checkbox" id="billmate_3dsecure" name="billmate_3dsecure" {if $billmate_3dsecure == 'YES'}checked='checked'{/if} value="YES" /> <label for="billmate_3dsecure">{l s='Enable 3d Secure' mod='billmatecardpay'}</label>
+		<input type="checkbox" id="billmate_3dsecure" name="billmate_3dsecure" {if $billmate_3dsecure == 'YES'}checked='checked'{/if} value="YES" /> <label for="billmate_3dsecure">{l s='Enable 3D Secure (Recommended for fraud protection)' mod='billmatecardpay'}</label>
 		</p>
+        {if $show_activate == true}
+        <p>
+            <h4>{l s='Automatic order activation in Billmate Online on order status update' mod='billmatebank'}</h4>
+            <input type="radio" id="billmate_activation_on" name="billmate_activation" {if $billmate_activation == 1}checked="checked"{/if} value="1"/> <label for="billmate_activation">{l s='Enabled' mod='billmatebank'}</label>
+            <input type="radio" id="billmate_activation_off" name="billmate_activation" {if $billmate_activation == 0}checked="checked"{/if} value="0"/> <label for="billmate_activation">{l s='Disabled' mod='billmatebank'}</label>
 
+        </p>
+        <p></p>
+        <h4 id="activate_title" {if $billmate_activation == 0} style="display:none;"{/if}>{$status_activate.label}</h4>
+        <div class="input-row">
+
+            <select {if $billmate_activation == 0} style="display:none;" {/if} {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if} multiple="multiple">
+                {html_options options=$status_activate.options selected=$status_activate.value}
+            </select>
+        </div>
+        {/if}
 	</fieldset>
 	<fieldset class="billmate-blockSmall R">
 		<legend><img src="{$module_dir}img/icon-modules.gif" alt="" /> {l s='Payment Options' mod='billmatecardpay'}</legend>
@@ -94,18 +109,30 @@
 	$(document).ready(
 	    function()
 	    {
-		$('li[class^="billmate_form_"]').hide();
-		$("li[class^='billmate_form']").each(
-		    function()
-		    {
-			var country = $(this).attr('class').replace('billmate_form_', '');
-			if (in_array(activated, country))
-			{
-			    $('.billmate_form_'+country).show();
-			    $('.billmate_form_'+country).append('<input type="hidden" name="activate'+country+'" value="on" id="billmate_activate'+country+'"/>');
-			}
-		    }
-		);
+            var length = $("#activationSelect option").length;
+            length = length > 19 ? 20 : length
+            $('#activationSelect').attr('size',length);
+            $('#billmate_activation_on').click(function(){
+                $('#activationSelect').show();
+                $('#activate_title').show();
+            });
+            $('#billmate_activation_off').click(function(){
+                $('#activationSelect').hide();
+                $('#activate_title').hide();
+
+            })
+            $('li[class^="billmate_form_"]').hide();
+            $("li[class^='billmate_form']").each(
+                function()
+                {
+                var country = $(this).attr('class').replace('billmate_form_', '');
+                if (in_array(activated, country))
+                {
+                    $('.billmate_form_'+country).show();
+                    $('.billmate_form_'+country).append('<input type="hidden" name="activate'+country+'" value="on" id="billmate_activate'+country+'"/>');
+                }
+                }
+            );
 	    }
 	);
 </script>

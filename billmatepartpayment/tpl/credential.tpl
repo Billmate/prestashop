@@ -29,12 +29,29 @@
 		<h4>{l s='Set the mode of your module' mod='billmatepartpayment'}</h4>
 		<input type="radio" id="billmate_mod-beta" name="billmate_mod" {if $billmate_mod == 1}checked='checked'{/if} value="beta" /> <label for="billmate_mod-beta">{l s='Test' mod='billmatepartpayment'}</label>
 		<input type="radio" id="billmate_mod-live" name="billmate_mod" {if $billmate_mod == 0}checked='checked'{/if} value="live" /> <label for="billmate_mod-live">{l s='Live' mod='billmatepartpayment'}</label>
-	</fieldset>
+        {if $show_activate == true}
+        <p>
+            <h4>{l s='Automatic order activation in Billmate Online on order status update' mod='billmatebank'}</h4>
+            <input type="radio" id="billmate_activation_on" name="billmate_activation" {if $billmate_activation == 1}checked="checked"{/if} value="1"/> <label for="billmate_activation">{l s='Enabled' mod='billmatebank'}</label>
+            <input type="radio" id="billmate_activation_off" name="billmate_activation" {if $billmate_activation == 0}checked="checked"{/if} value="0"/> <label for="billmate_activation">{l s='Disabled' mod='billmatebank'}</label>
+
+        </p>
+        <p></p>
+        <h4 id="activate_title" {if $billmate_activation == 0} style="display:none;" {/if}>{$status_activate.label}</h4>
+        <div class="input-row">
+            <select {if $billmate_activation == 0} style="display:none;" {/if} {if isset($status_activate.name)}name="{$status_activate.name}"{/if} {if isset($status_activate.id)}id="{$status_activate.id}"{/if} multiple="multiple">
+                {html_options options=$status_activate.options selected=$status_activate.value}
+            </select>
+        </div>
+        {/if}
+    </fieldset>
 	<fieldset class="billmate-blockSmall R">
 		<legend><img src="{$module_dir}img/icon-modules.gif" alt="" /> {l s='Payment Options' mod='billmatepartpayment'}</legend>
-		<input type="hidden" name="submitBillmate" value="1"/>
-		<img src="{$module_dir}img/billmate_account.png" alt=""/>
-		<p><input type="checkbox" id="billmate_active_partpayment" name="billmate_active_partpayment" {if $billmate_active_partpayment == 1}checked='checked'{/if} value="1" /> <label for="billmate_active_partpayment">{l s='Activate Billmate Part Payment.' mod='billmatepartpayment'}</label><br></p>
+        <input type="hidden" name="submitBillmate" value="1"/>
+        <p>
+            <input type="checkbox" id="billmate_active_partpayment" name="billmate_active_partpayment" {if $billmate_active_partpayment == 1}checked='checked'{/if} value="1" /> <label for="billmate_active_partpayment">{l s='Activate Billmate Part Payment.' mod='billmatepartpayment'}</label><br/>
+            <img src="{$module_dir}img/billmate_account.png" alt=""/>
+		</p>
 		</fieldset>
 	<div class="clear"></div>	
 	<fieldset>
@@ -126,18 +143,30 @@
 	$(document).ready(
 	    function()
 	    {
-		$('li[class^="billmate_form_"]').hide();
-		$("li[class^='billmate_form']").each(
-		    function()
-		    {
-			var country = $(this).attr('class').replace('billmate_form_', '');
-			if (in_array(activated, country))
-			{
-			    $('.billmate_form_'+country).show();
-			    $('.billmate_form_'+country).append('<input type="hidden" name="activate'+country+'" value="on" id="billmate_activate'+country+'"/>');
-			}
-		    }
-		);
+            var length = $("#activationSelect option").length;
+            length = length > 19 ? 20 : length
+            $('#activationSelect').attr('size',length);
+
+            $('#billmate_activation_on').click(function(){
+                $('#activationSelect').show();
+                $('#activate_title').show();
+            });
+            $('#billmate_activation_off').click(function(){
+                $('#activationSelect').hide();
+                $('#activate_title').hide();
+            })
+            $('li[class^="billmate_form_"]').hide();
+            $("li[class^='billmate_form']").each(
+                function()
+                {
+                var country = $(this).attr('class').replace('billmate_form_', '');
+                if (in_array(activated, country))
+                {
+                    $('.billmate_form_'+country).show();
+                    $('.billmate_form_'+country).append('<input type="hidden" name="activate'+country+'" value="on" id="billmate_activate'+country+'"/>');
+                }
+                }
+            );
 	    }
 	);
 </script>

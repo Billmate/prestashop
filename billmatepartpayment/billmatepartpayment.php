@@ -24,8 +24,9 @@ if (!class_exists('Billmate'))
 	require(_PS_MODULE_DIR_.'/billmateinvoice/Billmate.php');
 
 
-require_once BILLMATE_BASE. '/utf8.php';
+require_once BILLMATE_BASE.'/utf8.php';
 require dirname(__FILE__).'/lib/pclasses.php';
+require_once(BILLMATE_BASE.'/lib/BillmateNew.php');
 
 class BillmatePartpayment extends PaymentModule
 {
@@ -91,11 +92,11 @@ class BillmatePartpayment extends PaymentModule
 		$this->name = 'billmatepartpayment';
 		$this->moduleName='billmatepartpayment';
 		$this->tab = 'payments_gateways';
-		$this->version = '1.35.2';
+		$this->version = '1.36';
 		$this->author = 'Billmate AB';
 
 		$this->currencies = true;
-		$this->currencies_mode = 'radio';
+		$this->currencies_mode = 'checkbox';
 
 		parent::__construct();
 		$this->core = null;
@@ -118,8 +119,313 @@ class BillmatePartpayment extends PaymentModule
 		$this->billmate_fee = Configuration::get('BILLMATE_FEE');
 		require(_PS_MODULE_DIR_.'billmatepartpayment/backward_compatibility/backward.php');
 		$this->context->smarty->assign('base_dir', __PS_BASE_URI__);
-	  }
+    }
+    public function hookDisplayBackOfficeHeader()
+    {
+        if (isset($this->context->cookie->error) && strlen($this->context->cookie->error) > 2)
+        {
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->errors[] = $this->context->cookie->error;
+                unset($this->context->cookie->error);
+                unset($this->context->cookie->error_orders);
+            }
+        }
+        if(isset($this->context->cookie->diff) && strlen($this->context->cookie->diff) > 2){
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->errors[] = $this->context->cookie->diff;
+                unset($this->context->cookie->diff);
+                unset($this->context->cookie->diff_orders);
+            }
+        }
+	    if (isset($this->context->cookie->api_error) && strlen($this->context->cookie->api_error) > 2){
+		    if (get_class($this->context->controller) == "AdminOrdersController")
+		    {
+			    $this->context->controller->errors[] = $this->context->cookie->api_error;
+			    unset($this->context->cookie->api_error);
+			    unset($this->context->cookie->api_error_orders);
+		    }
+	    }
+        if (isset($this->context->cookie->information) && strlen($this->context->cookie->information) > 2)
+        {
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->warmimgs[] = $this->context->cookie->information;
+                unset($this->context->cookie->information);
+                unset($this->context->cookie->information_orders);
+            }
+        }
+        if (isset($this->context->cookie->confirmation) && strlen($this->context->cookie->confirmation) > 2)
+        {
+            if (get_class($this->context->controller) == "AdminOrdersController")
+            {
+                $this->context->controller->confirmations[] = $this->context->cookie->confirmation;
+                unset($this->context->cookie->confirmation);
+                unset($this->context->cookie->confirmation_orders);
+            }
+        }
+    }
 
+    public function hookActionOrderStatusUpdate($params){
+        $orderStatus = Configuration::get('BILLMATE_ACTIVATE_ON_STATUS');
+        $activated = Configuration::get('BILLMATE_ACTIVATE');
+        if($orderStatus && $activated) {
+            $order_id = $params['id_order'];
+
+            $id_status = $params['newOrderStatus']->id;
+            $order = new Order($order_id);
+
+            $payment = OrderPayment::getByOrderId($order_id);
+            $orderStatus = unserialize($orderStatus);
+            if ($order->module == $this->moduleName && in_array($id_status,$orderStatus)) {
+                $eid = Configuration::get('BILLMATE_STORE_ID_SWEDEN');
+                $secret = Configuration::get('BILLMATE_SECRET_SWEDEN');
+                $testMode = Configuration::get('BMILLMATE_MOD');
+                $ssl = true;
+                $debug = false;
+
+                $k = new BillMate((int)$eid, $secret, $ssl, $debug, $testMode);
+                $invoice = $k->CheckInvoiceStatus((string)$payment[0]->transaction_id);
+                $api = new BillMateNew($eid, $secret, $ssl, $testMode, $debug);
+                if (Tools::strtolower($invoice) == 'created' || Tools::strtolower($invoice) == 'pending')
+                {
+                    $resultCheck = $api->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+                    $total = $resultCheck['Cart']['Total']['withtax'] / 100;
+                    $orderTotal = $order->getTotalPaid();
+                    $diff = $total - $orderTotal;
+                    $diff = abs($diff);
+                    if ($diff <= 1)
+                    {
+
+                        $adrsBilling = new Address($order->id_address_invoice);
+                        $adrsDelivery = new Address($order->id_address_delivery);
+                        $customer = new Customer($order->id_customer);
+                        $country = new Country($adrsBilling->id_country);
+                        $isocode = $country->iso_code;
+                        $cart = Cart::getCartByOrderId($order->id);
+                        $this->context->cart = $cart;
+                        switch ($isocode) {
+                            // Sweden
+                            case 'SE':
+                                $country = 209;
+                                $language = 138;
+                                $encoding = 2;
+                                $currency = 0;
+                                break;
+                            // Finland
+                            case 'FI':
+                                $country = 73;
+                                $language = 37;
+                                $encoding = 4;
+                                $currency = 2;
+                                break;
+                            // Denmark
+                            case 'DK':
+                                $country = 59;
+                                $language = 27;
+                                $encoding = 5;
+                                $currency = 3;
+                                break;
+                            // Norway
+                            case 'NO':
+                                $country = 164;
+                                $language = 97;
+                                $encoding = 3;
+                                $currency = 1;
+                                break;
+                            // Germany
+                            case 'DE':
+                                $country = 81;
+                                $language = 28;
+                                $encoding = 6;
+                                $currency = 2;
+                                break;
+                            // Netherlands
+                            case 'NL':
+                                $country = 154;
+                                $language = 101;
+                                $encoding = 7;
+                                $currency = 2;
+                                break;
+                        }
+
+                        $ship_address = array(
+                            'email' => $customer->email,
+                            'telno' => $adrsDelivery->phone,
+                            'cellno' => $adrsDelivery->phone_mobile,
+                            'fname' => $adrsDelivery->firstname,
+                            'lname' => $adrsDelivery->lastname,
+                            'company' => $adrsDelivery->company,
+                            'careof' => '',
+                            'street' => $adrsDelivery->address1,
+                            'house_number' => '',
+                            'house_extension' => '',
+                            'zip' => $adrsDelivery->postcode,
+                            'city' => $adrsDelivery->city,
+                            'country' => $adrsDelivery->country,
+                        );
+
+                        $bill_address = array(
+                            'email' => $customer->email,
+                            'telno' => $adrsBilling->phone,
+                            'cellno' => $adrsBilling->phone_mobile,
+                            'fname' => $adrsBilling->firstname,
+                            'lname' => $adrsBilling->lastname,
+                            'company' => $adrsBilling->company,
+                            'careof' => '',
+                            'street' => $adrsBilling->address1,
+                            'house_number' => '',
+                            'house_extension' => '',
+                            'zip' => $adrsBilling->postcode,
+                            'city' => $adrsBilling->city,
+                            'country' => $adrsBilling->country,
+                        );
+
+                        foreach ($ship_address as $key => $col)
+                        {
+                            if (!is_array($col))
+                                $ship_address[$key] = utf8_decode(Encoding::fixUTF8($col));
+                        }
+                        foreach ($bill_address as $key => $col)
+                        {
+                            if (!is_array($col))
+                                $bill_address[$key] = utf8_decode(Encoding::fixUTF8($col));
+                        }
+                        $cart_details = $this->context->cart->getSummaryDetails(null, true);
+                        $this->context->cart->update();
+
+                        $products = $this->context->cart->getProducts();
+                        $taxrate = 0;
+                        $goods_list = array();
+                        foreach ($products as $product) {
+                            if (!empty($product['price'])) {
+                                $taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
+                                $goods_list[] = array(
+                                    'qty' => (int)$product['cart_quantity'],
+                                    'goods' => array(
+                                        'artno' => $product['reference'],
+                                        'title' => $product['name'],
+                                        'price' => $product['price'] * 100,
+                                        'vat' => (float)$taxrate,
+                                        'discount' => 0.0,
+                                        'flags' => ($product['id_product'] == Configuration::get('BM_INV_FEE_ID_SWEDEN')) ? 16 : 0,
+                                    )
+
+                                );
+                            }
+                        }
+
+                        $carrier = $cart_details['carrier'];
+                        if (!empty($cart_details['total_discounts'])) {
+                            $discountamount = $cart_details['total_discounts'] / (($taxrate + 100) / 100);
+                            if (!empty($discountamount)) {
+                                $goods_list[] = array(
+                                    'qty' => (int)1,
+                                    'goods' => array(
+                                        'artno' => '',
+                                        'title' => $this->context->controller->module->l('Rabatt'),
+                                        'price' => 0 - abs($discountamount * 100),
+                                        'vat' => $taxrate,
+                                        'discount' => 0.0,
+                                        'flags' => 0,
+                                    )
+
+                                );
+                            }
+                        }
+                        $notfree = !(isset($cart_details['free_ship']) && $cart_details['free_ship'] == 1);
+
+                        if ($carrier->active && $notfree)
+                        {
+
+                            if (version_compare(_PS_VERSION_, '1.5', '<'))
+                                $shippingPrice = $cart->getOrderShippingCost();
+                            else
+                                $shippingPrice = $cart->getTotalShippingCost();
+
+                            $carrier = new Carrier($cart->id_carrier, $this->context->cart->id_lang);
+                            if (version_compare(_PS_VERSION_, '1.5', '>='))
+                                $taxrate = $carrier->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
+                            else
+                                $taxrate = Tax::getCarrierTaxRate($cart->id_carrier, Configuration::get('PS_TAX_ADDRESS_TYPE'));
+
+                            if (!empty($shippingPrice)) {
+                                $shippingPrice = $shippingPrice / (1 + $taxrate / 100);
+                                $goods_list[] = array(
+                                    'qty' => 1,
+                                    'goods' => array(
+                                        'artno' => (string)$carrier->name . $cart->id_carrier,
+                                        'title' => $carrier->name,
+                                        'price' => $shippingPrice * 100,
+                                        'vat' => (float)$taxrate,
+                                        'discount' => 0.0,
+                                        'flags' => 8, //16|32
+                                    )
+                                );
+                            }
+                        }
+                        $pclass = -1;
+                        $transaction = array(
+                            'order1' => (string)$order_id,
+                            'order2' => '',
+                            'comment' => '',
+                            'flags' => ($testMode) ? 2 : 8,
+                            'gender' => (string)1,
+                            'reference' => '',
+                            'reference_code' => '',
+                            'currency' => $currency,
+                            'country' => $country,
+                            'language' => $language,
+                            'pclass' => $pclass,
+                            'shipInfo' => array('delay_adjust' => '1'),
+                            'travelInfo' => array(),
+                            'incomeInfo' => array(),
+                            'bankInfo' => array(),
+                            'sid' => array('time' => microtime(true)),
+                            'extraInfo' => array(array('cust_no' => (int)$this->context->cart->id_customer))
+                        );
+
+                        $result = $k->ActivateReservation((string)$payment[0]->transaction_id, '', $bill_address, $ship_address, $goods_list, $transaction);
+                        if (is_string($result) || !is_array($result) || isset($result['error'])) {
+                            $this->context->cookie->error = (isset($result['error'])) ? utf8_encode($result['error']) : utf8_encode($result);
+                            $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+                        }
+
+                        $this->context->cookie->confirmation = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'), $order_id) . ' (<a target="_blank" href="http://online.billmate.se/faktura">' . $this->l('Open Billmate Online') . '</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s'), $this->context->cookie->confirmation_orders . ', ' . $order_id) . ' (<a target="_blank" href="http://online.billmate.se">' . $this->l('Open Billmate Online') . '</a>)';
+                        $this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->confirmation_orders . ', ' . $order_id : $order_id;
+                    }
+                    elseif (isset($resultCheck['code']))
+                    {
+	                    if ($resultCheck['code'] == 5220) {
+		                    $mode                             = $testMode ? 'test' : 'live';
+		                    $this->context->cookie->api_error = ! isset( $this->context->cookie->api_error_orders ) ? sprintf( $this->l('Order %s failed to activate through Billmate. The order does not exist in Billmate Online. The order exists in (%s) mode however. Try changing the mode in the modules settings.'), $order_id, $mode ).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf( $this->l('The following orders failed to activate through Billmate: %s. The orders does not exist in Billmate Online. The orders exists in (%s) mode however. Try changing the mode in the modules settings.'), $this->context->cookie->api_error_orders, '. ' . $order_id, $mode ).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+	                    }
+	                    else
+		                    $this->context->cookie->api_error = $resultCheck['message'];
+
+	                    $this->context->cookie->api_error_orders = isset($this->context->cookie->api_error_orders) ? $this->context->cookie->api_error_orders.', '.$order_id : $order_id;
+
+                    }
+                    else
+                    {
+                        $this->context->cookie->diff = !isset($this->context->cookie->diff_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The amounts don\'t match: %s, %s. Activate manually in Billmate Online.'),$order_id, $orderTotal, $total).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The amounts don\'t match. Activate manually in Billmate Online.'),$this->context->cookie->diff_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+                        $this->context->cookie->diff_orders = isset($this->context->cookie->diff_orders) ? $this->context->cookie->diff_orders.', '.$order_id : $order_id;
+                    }
+                }
+                elseif(Tools::strtolower($invoice) == 'paid' || Tools::strtolower($invoice) == 'factoring' || Tools::strtolower($invoice) == 'handling' || Tools::strtolower($invoice) == 'partpayment') {
+                    $this->context->cookie->information = !isset($this->context->cookie->information_orders) ? sprintf($this->l('Order %s is already activated through Billmate.'),$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders has already been activated through Billmate: %s'),$this->context->cookie->information_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+                    $this->context->cookie->information_orders = isset($this->context->cookie->information_orders) ? $this->context->cookie->information_orders . ', ' . $order_id : $order_id;
+                }
+                else {
+                    $this->context->cookie->error = !isset($this->context->cookie->error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate.'),$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s.'),$this->context->cookie->error_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+                    $this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders . ', ' . $order_id : $order_id;
+                }
+
+            }
+        }
+        //Logger::AddLog(print_r($params,true));
+    }
 
 
 	/**
@@ -220,7 +526,7 @@ class BillmatePartpayment extends PaymentModule
 				'required' => false,
 				'value' => (float)Configuration::get('BILLMATE_MIN_VALUE_'.$country['name']),
 				'type' => 'text',
-				'label' => $this->l('Minimum Value ').'('.$currency['sign'].')',
+				'label' => $this->l('Minimum Value ').' ('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 			$input_country[$country['name']]['maximum_value_'.$country['name']] = array(
@@ -228,13 +534,26 @@ class BillmatePartpayment extends PaymentModule
 				'required' => false,
 				'value' => Configuration::get('BILLMATE_MAX_VALUE_'.$country['name']) != 0 ? (float)Configuration::get('BILLMATE_MAX_VALUE_'.$country['name']) : 99999,
 				'type' => 'text',
-				'label' => $this->l('Maximum Value ').'('.$currency['sign'].')',
+				'label' => $this->l('Maximum Value ').' ('.$currency['sign'].')',
 				'desc' => $this->l(''),
 			);
 
 			if (Configuration::get('BILLMATE_STORE_ID_'.$country['name']))
 				$activateCountry[] = $country['name'];
 		}
+
+        $activateStatuses = array();
+        $activateStatuses = $activateStatuses + $statuses_array;
+        $status_activate = array(
+            'id' => 'activationSelect',
+            'name' => 'billmateActivateOnOrderStatus[]',
+            'required' => true,
+            'type' => 'select_activate',
+            'label' => $this->l('Order statuses for automatic order activation in Billmate Online'),
+            'desc' => $this->l(''),
+            'value'=> (Tools::safeOutput(Configuration::get('BILLMATE_ACTIVATE_ON_STATUS'))) ? unserialize(Configuration::get('BILLMATE_ACTIVATE_ON_STATUS')) : 0,
+            'options' => $activateStatuses
+        );
 
 		$smarty->assign($this->moduleName.'FormCredential', './index.php?tab=AdminModules&configure='.$this->name.'&token='.Tools::getAdminTokenLite('AdminModules').'&tab_module='.$this->tab.'&module_name='.$this->name);
 		$smarty->assign($this->moduleName.'CredentialTitle', $this->l('Location'));
@@ -243,7 +562,16 @@ class BillmatePartpayment extends PaymentModule
 			$this->l('E.g. Swedish customer, SEK, Sweden and Swedish.').'<br/>'.
 			$this->l('In order for your customers to use Billmate, your customers must be located in the same country in which your e-store is registered.'));
 
-		$smarty->assign(array(
+        if(version_compare(_PS_VERSION_, '1.5', '>='))
+            $showActivate = true;
+        else
+            $showActivate = false;
+
+
+        $smarty->assign(array(
+                'show_activate' => $showActivate,
+                'billmate_activation' => Configuration::get('BILLMATE_ACTIVATE'),
+                'status_activate' => $status_activate,
 				'billmate_pclass' => Db::getInstance()->ExecuteS('SELECT * FROM `'._DB_PREFIX_.'billmate_payment_pclasses`'),
 				'billmate_mod' => Configuration::get('BILLMATE_MOD'),
 				'billmate_active_partpayment' => Configuration::get('BILLMATE_ACTIVE_PARTPAYMENT'),
@@ -284,7 +612,11 @@ class BillmatePartpayment extends PaymentModule
 			Configuration::updateValue('BILLMATE_ACTIVE_PARTPAYMENT', true);
 		else
 			billmate_deleteConfig('BILLMATE_ACTIVE_PARTPAYMENT');
-		
+
+		if(Tools::getValue('billmate_activation') == 1)
+			Configuration::updateValue('BILLMATE_ACTIVATE_ON_STATUS',serialize(Tools::getValue('billmateActivateOnOrderStatus')));
+
+        Configuration::updateValue('BILLMATE_ACTIVATE',Tools::getValue('billmate_activation'));
 
 		foreach ($this->countries as $country)
 		{
@@ -380,10 +712,22 @@ class BillmatePartpayment extends PaymentModule
 
 
 		$this->registerHook('displayPayment');
+        $this->registerHook('actionOrderStatusUpdate');
 		if (!Configuration::get('BILLMATE_PAYMENT_ACCEPTED'))
 			Configuration::updateValue('BILLMATE_PAYMENT_ACCEPTED', $this->addState('Billmate : Payment accepted', '#DDEEFF'));
 		if (!Configuration::get('BILLMATE_PAYMENT_PENDING'))
 			Configuration::updateValue('BILLMATE_PAYMENT_PENDING', $this->addState('Billmate : payment in pending verification', '#DDEEFF'));
+        $include = array();
+        $hooklists = Hook::getHookModuleExecList('displayBackOfficeHeader');
+        foreach($hooklists as $hooklist)
+        {
+            if(!in_array($hooklist['module'],array('billmatebank','billmatecardpay','billmateinvoice'))){
+                $include[] = true;
+            }
+        }
+
+        if(in_array(true,$include))
+            $this->registerHook('displayBackOfficeHeader');
 
 		/*auto install currencies*/
 		$currencies = array(

@@ -99,7 +99,7 @@ padding-top: 13px!important;
 	  {l s='The total amount of your order is' mod='billmatepartpayment'}
 	  <span id="amount">{displayPrice price=$total_fee}</span>
 	  {if $use_taxes == 1}
-		{l s='(tax incl.)' mod='billmatepartpayment'}
+		{l s='(incl. tax)' mod='billmatepartpayment'}
 	  {/if}
 	</p>
 	  <p class="bnormal"><b>{l s='Choose the payment option that best suite your needs' mod='billmatepartpayment'}</b></p>
@@ -107,7 +107,7 @@ padding-top: 13px!important;
 
 	<select name="paymentAccount" class="billdropdown">
 	  {foreach from=$accountPrice item=val key=k}
-	  <option value="{$k}">{$val.month}  {l s='months partpayment -' mod='billmatepartpayment'} {convertPrice|regex_replace:'/[.,]0+/':'' price=$val.price} {l s='per månad' mod='billmatepartpayment'}</option>
+	  <option value="{$k}">{$val.month}  {l s='months partpayment -' mod='billmatepartpayment'} {convertPrice|regex_replace:'/[.,]0+/':'' price=$val.price} {l s='per month' mod='billmatepartpayment'}</option>
 	  {/foreach}
 	</select>
 	<br/>
@@ -115,7 +115,7 @@ padding-top: 13px!important;
 	<br />
 	<p class="blarge">
 
-	  <label>{l s='Personal Number:' mod='billmatepartpayment'}</label>
+	  <label>{l s='Personal Number / Organization Number:' mod='billmatepartpayment'}</label>
 	  <input type="text" name="billmate_pno" id="billmate_pno" value="" style="border:1px solid #D3D3D3;padding:0.2em;" required />
 	</p>
 	<p class="bsmall">

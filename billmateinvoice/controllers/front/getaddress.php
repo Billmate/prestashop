@@ -401,7 +401,7 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 
 		$ssl = true;
 		$debug = false;
-
+        Logger::addLog('currency:'. $this->context->currency->iso_code);
 		$k = new BillMate($eid, $secret, $ssl, $debug, Configuration::get('BILLMATEINV_MOD'));
 
 		$personalnumber = trim(Tools::getValue('pno'));
@@ -413,49 +413,65 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 			'DEU' => 'EUR',
 			'NLD' => 'EUR',
 		);
-
+        switch($this->context->currency->iso_code){
+            case 'EUR':
+                $currency = 2;
+                break;
+            case 'DKK':
+                $currency = 3;
+                break;
+            case 'SEK':
+                $currency = 0;
+                break;
+            case 'NOK':
+                $currency = 1;
+                break;
+            default:
+                throw new Exception('Not a guilty currency for Billmate Invoice');
+                break;
+        }
 		switch ($isocode) {
 			// Sweden
 			case 'SE':
 				$country = 209;
 				$language = 138;
 				$encoding = 2;
-				$currency = 0;
+				//$currency = 0;
 				break;
 			// Finland
 			case 'FI':
 				$country = 73;
 				$language = 37;
 				$encoding = 4;
-				$currency = 2;
+				//$currency = 2;
 				break;
 			// Denmark
 			case 'DK':
 				$country = 59;
 				$language = 27;
 				$encoding = 5;
-				$currency = 3;
+				//$currency = 3;
 				break;
 			// Norway
 			case 'NO':
 				$country = 164;
 				$language = 97;
 				$encoding = 3;
-				$currency = 1;
+				//$currency = 1;
 				break;
 			// Germany
 			case 'DE':
 				$country = 81;
 				$language = 28;
 				$encoding = 6;
-				$currency = 2;
+				//$currency = 2;
 				break;
 			// Netherlands
 			case 'NL':
 				$country = 154;
 				$language = 101;
 				$encoding = 7;
-				$currency = 2;
+				//$currency = 2;
 				break;
 		}
 
@@ -544,6 +560,34 @@ class BillmateInvoiceGetaddressModuleFrontController extends ModuleFrontControll
 						'flags'    => 0,
 					)
 					
+				);
+			}
+		}
+
+		// Do we have any gift products in cart
+		if (isset($cart_details['gift_products']) && !empty($cart_details['gift_products']))
+		{
+			foreach ($cart_details['gift_products'] as $gift_product)
+			{
+				$discountamount = 0;
+				foreach ($products as $product){
+					if($gift_product['id_product'] == $product['id_product']){
+						$taxrate = ($product['price_wt'] == $product['price']) ? 0 : $product['rate'];
+						$discountamount = $product['price'];
+						$ref = $product['reference'];
+					}
+
+				}
+				$goods_list[] = array(
+					'qty' => (int) $gift_product['cart_quantity'],
+					'goods' => array(
+						'artno' => $ref,
+						'title' => $this->module->l('Gift :','getaddress').' '.$gift_product['name'],
+						'price' => $gift_product['price'] - round($discountamount * 100,0),
+						'vat' => $taxrate,
+						'discount' => 0.0,
+						'flags' => 0
+					)
 				);
 			}
 		}
