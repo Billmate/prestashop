@@ -360,11 +360,29 @@
 					$matched_address_id = false;
 					foreach ($customer_addresses as $customer_address)
 					{
-						if (Common::matchstr($customer_address['address1'], $address['street']) &&
-							Common::matchstr($customer_address['postcode'], $address['zip']) &&
-							Common::matchstr($customer_address['city'], $address['city']) &&
-							Common::matchstr($customer_address['country'], $address['country']))
-							$matched_address_id = $customer_address['id'];
+						file_put_contents(_PS_CACHE_DIR_.'addresses',print_r($customer_address,true),FILE_APPEND);
+						if (isset($customer_address['address1']))
+						{
+
+							if (Common::matchstr($customer_address['address1'], $address['street']) &&
+							    Common::matchstr($customer_address['postcode'], $address['zip']) &&
+							    Common::matchstr($customer_address['city'], $address['city']) &&
+							    Common::matchstr($customer_address['country'], $address['country'])
+							)
+								$matched_address_id = $customer_address['id'];
+						}
+						else
+						{
+							foreach ($customer_address as $c_address)
+							{
+								if (Common::matchstr($c_address['address1'], $address['street']) &&
+								    Common::matchstr($c_address['postcode'], $address['zip']) &&
+								    Common::matchstr($c_address['city'], $address['city']) &&
+								    Common::matchstr($c_address['country'], $address['country'])
+								)
+									$matched_address_id = $c_address['id'];
+							}
+						}
 
 					}
 					if (!$matched_address_id)
@@ -374,7 +392,7 @@
 
 						$addressnew->firstname = $address['firstname'];
 						$addressnew->lastname  = $address['lastname'];
-						$addressnew->company   = $address['company'];
+						$addressnew->company   = isset($address['company']) ? $address['company'] : '';
 
 						$addressnew->phone        = $billing->phone;
 						$addressnew->phone_mobile = $billing->phone_mobile;

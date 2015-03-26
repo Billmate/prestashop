@@ -64,9 +64,9 @@
     var checkbox_required = "{l s='Please check the checkbox for confirm this e-mail address is correct and can be used for invoicing.' mod='billmategateway'}";
     var carrierurl;
     {if $opc|default:false }
-    carrierurl = "{$link->getPageLink("order-opc", true)|escape:'url'}";
+    carrierurl = "{$link->getPageLink("order-opc", true)}";
     {else}
-    carrierurl = "{$link->getPageLink("order", true)|escape:'url'}";
+    carrierurl = "{$link->getPageLink("order", true)}";
     {/if}
     var loadingWindowTitle = '{l s='Processing....' mod='billmategateway'}';
     var windowtitlebillmate = "{l s='Pay by invoice can be made only to the address listed in the National Register. Would you make the purchase with address:' mod='billmategateway'}";
