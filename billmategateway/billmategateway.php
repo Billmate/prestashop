@@ -130,6 +130,8 @@
 				Configuration::updateValue('BILLMATE_ID', $billmateId);
 				Configuration::updateValue('BILLMATE_SECRET', $billmateSecret);
 			}
+			Configuration::updateValue('BILLMATE_ACTIVATE',Tools::getIsset('activate') ? 1 : 0);
+			Configuration::updateValue('BILLMATE_ACTIVATE_STATUS',serialize(Tools::getValue('activateStatuses')));
 			Configuration::updateValue('BILLMATE_SEND_REFERENCE', Tools::getIsset('sendOrderReference') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_GETADDRESS', Tools::getIsset('getaddress') ? 1 : 0);
 
@@ -203,7 +205,7 @@
 
 		public function displayErrors()
 		{
-			$this->smarty->assign('billmateErrors', $this->postErrors);
+			$this->smarty->assign('billmateError', $this->postErrors);
 
 			return $this->display(__FILE__, 'error.tpl');
 		}
