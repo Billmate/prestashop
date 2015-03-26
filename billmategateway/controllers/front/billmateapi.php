@@ -94,6 +94,14 @@
 			// Populate Data with the Customer Data and Cart stuff
 			$data['Customer'] = $this->prepareCustomer();
 			$data['Articles'] = $this->prepareArticles();
+			$discounts = $this->prepareDiscounts();
+			if (count($discounts) > 0)
+			{
+				foreach($discounts as $discount)
+					array_push($data['Articles'],$discount);
+			}
+
+
 			$data['Cart']     = $this->prepareTotals();
 
 			$result = $this->billmate->addPayment($data);
@@ -161,9 +169,9 @@
 
 				);
 				if (!isset($this->prepare_discount[$taxrate]))
-					$this->prepare_discount[$taxrate] = $article['price'];
+					$this->prepare_discount[$taxrate] = $article['price'] * 100;
 				else
-					$this->prepare_discount[$taxrate] += $article['price'];
+					$this->prepare_discount[$taxrate] += $article['price'] * 100;
 
 				$this->totals += $article['price'] * 100;
 				$this->tax += ($article['price'] * ($taxrate / 100)) * 100;
@@ -180,16 +188,20 @@
 			$discounts = array();
 			if (!empty($details['total_discounts']))
 			{
+				file_put_contents(_PS_CACHE_DIR_.'discounts',print_r($details,true));
 				foreach ($this->prepare_discount as $key => $value)
 				{
-					$amount_incl_tax   = $value * ($key / 100);
-					$percent_discount = $amount_incl_tax / $this->context->cart->getOrderTotal();
+					$amount_incl_tax   = $value * (1 + ($key / 100));
+					//$percent_discount = $amount_incl_tax / $this->context->cart->getOrderTotal();
+					$percent_discount = $value / ($this->totals);
 
-					$discount_amount = ($percent_discount * $details['total_discount']) / (1 + ($key / 100));
+					$discount_amount = ($percent_discount * $details['total_discounts']) / (1 + ($key / 100));
+
+
 					$discounts[]    = array(
 						'quantity'   => 1,
 						'artnr'      => 'discount-'.$key,
-						'title'      => sprintf($this->module->l('Discount $1%s% VAT'), $key),
+						'title'      => sprintf($this->module->l('Discount %s%% VAT'), $key),
 						'aprice'     => -($discount_amount * 100),
 						'taxrate'    => $key,
 						'discount'   => 0,
