@@ -19,7 +19,9 @@
 			$this->name                 = 'billmatepartpay';
 			$this->displayName          = $this->l('Billmate Part Pay');
 			$this->testMode             = Configuration::get('BPARTPAY_MOD');
-			$this->limited_countries    = array('sv');
+			$this->min_value            = Configuration::get('BPARTPAY_MIN_VALUE');
+			$this->max_value            = Configuration::get('BPARTPAY_MAX_VALUE');
+			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK');
 			$this->authorization_method = false;
 			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'partpay'));
@@ -33,6 +35,14 @@
 		{
 			if (!pClasses::hasPclasses(Language::getIsoById($cart->id_lang)) || Configuration::get('BPARTPAY_ENABLED') == 0)
 				return false;
+
+			if ($this->min_value > $this->context->cart->getOrderTotal())
+				return false;
+			if ($this->max_value < $this->context->cart->getOrderTotal())
+				return false;
+			if(!in_array($this->context->currency->iso_code,$this->allowed_currencies))
+				return false;
+
 
 			return array(
 				'name'         => $this->displayName,

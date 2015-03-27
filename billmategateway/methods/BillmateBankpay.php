@@ -19,8 +19,10 @@
 			$this->name                 = 'billmatebankpay';
 			$this->testMode             = Configuration::get('BBANKPAY_MOD');
 			$this->displayName          = $this->l('Billmate Bankpay');
-			$this->limited_countries    = array('sv');
+			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK');
+			$this->min_value            = Configuration::get('BBANKPAY_MIN_VALUE');
+			$this->max_value            = Configuration::get('BBANKPAY_MAX_VALUE');
 			$this->authorization_method = Configuration::get('BBANKPAY_AUTHORIZATION_METHOD');
 			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'bankpay'));
 			$this->icon                 = 'billmategateway/views/img/billmate_bankpay_l.png';
@@ -32,6 +34,12 @@
 		public function getPaymentInfo($cart)
 		{
 			if (Configuration::get('BBANKPAY_ENABLED') == 0)
+				return false;
+			if ($this->min_value > $this->context->cart->getOrderTotal())
+				return false;
+			if ($this->max_value < $this->context->cart->getOrderTotal())
+				return false;
+			if(!in_array($this->context->currency->iso_code,$this->allowed_currencies))
 				return false;
 
 			return array(

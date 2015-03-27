@@ -19,8 +19,10 @@
 			$this->name                 = 'billmateinvoice';
 			$this->displayName          = $this->l('Billmate Invoice');
 			$this->testMode             = Configuration::get('BINVOICE_MOD');
-			$this->limited_countries    = array('sv');
-			$this->allowed_currencies   = array('SEK');
+			$this->min_value            = Configuration::get('BINVOICE_MIN_VALUE');
+			$this->max_value            = Configuration::get('BINVOICE_MAX_VALUE');
+			$this->limited_countries    = array('se');
+			$this->allowed_currencies   = array('SEK','EUR');
 			$this->authorization_method = false;
 			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'invoice'));
 			$this->icon                 = 'billmategateway/views/img/billmate_invoice_l.png';
@@ -32,6 +34,14 @@
 		public function getPaymentInfo($cart)
 		{
 			if (Configuration::get('BINVOICE_ENABLED') == 0)
+				return false;
+
+			if ($this->min_value > $this->context->cart->getOrderTotal())
+				return false;
+			if ($this->max_value < $this->context->cart->getOrderTotal())
+				return false;
+
+			if(!in_array($this->context->currency->iso_code,$this->allowed_currencies))
 				return false;
 
 			return array(
