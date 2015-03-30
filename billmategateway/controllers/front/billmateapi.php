@@ -380,7 +380,7 @@
 								    Common::matchstr($c_address['city'], $address['city']) &&
 								    Common::matchstr($c_address['country'], $address['country'])
 								)
-									$matched_address_id = $c_address['id'];
+									$matched_address_id = $c_address['id_address'];
 							}
 						}
 
