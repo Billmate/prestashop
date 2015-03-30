@@ -369,7 +369,7 @@
 							    Common::matchstr($customer_address['city'], $address['city']) &&
 							    Common::matchstr($customer_address['country'], $address['country'])
 							)
-								$matched_address_id = $customer_address['id'];
+								$matched_address_id = $customer_address['id_address'];
 						}
 						else
 						{
