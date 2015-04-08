@@ -17,24 +17,26 @@
     <div style="display:none;" id="{$method.type}-fields">
         <form action="javascript://" class="{$method.type|escape:'html'}">
             {if $method.type == 'billmatepartpay'}
-                <select name="paymentAccount">
-                    {foreach $method.pClasses as $pclass}
-                        <option value="{$pclass.paymentplanid}">{$pclass.description} {displayPrice price=$pclass.monthlycost}
-                            / {l s='month' mod='billmategateway'}</option>
-                    {/foreach}
-                </select>
+                <div class="accountcontainer">
+                    <label style="display:block; padding:10px">{l s='Choose the payment option that suites you best:' mod='billmategateway'}</label>
+                    <select name="paymentAccount" style="margin-left:10px;">
+                        {foreach $method.pClasses as $pclass}
+                            <option value="{$pclass.paymentplanid}">{$pclass.description} {displayPrice price=$pclass.monthlycost}
+                                / {l s='month' mod='billmategateway'}</option>
+                        {/foreach}
+                    </select>
+                </div>
             {/if}
-            <div class="pno_container">
-                <label for="pno_{$method.type|escape:'html'}">{l s='Personal / Corporate number:' mod='billmategateway'}</label>
+            <div class="pno_container" style="padding:10px">
+                <label for="pno_{$method.type|escape:'html'}" style="display:block">{l s='Personal / Corporate number:' mod='billmategateway'}</label>
                 <input id="pno_{$method.type|escape:'html'}" name="pno_{$method.type|escape:'html'}" type="text"/>
             </div>
-            <div class="agreements">
+            <div class="agreements" style="padding:10px">
                 <input type="checkbox" checked="checked" id="agree_with_terms_{$method.type|escape:'html'}"
                        name="agree_with_terms_{$method.type|escape:'html'}"/>
                 <label for="terms_{$method.type|escape:'html'}">{$method.agreements|escape:'quotes'}</label>
-                <button id="{$method.type|escape:'html'}Submit">{l s='Proceed' mod='billmategateway'}</button>
-
             </div>
+            <button style="background-color: green; width: 26em; color: white; font-size: 18px;" id="{$method.type|escape:'html'}Submit">{l s='Proceed' mod='billmategateway'}</button>
         </form>
     </div>
 {/if}
