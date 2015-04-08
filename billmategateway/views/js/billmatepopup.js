@@ -369,9 +369,9 @@ if (typeof modalWin == 'undefined') {
                 } else {
                     modalWin.HideModalPopUp();
                     if (versionCompare(version, '1.6') == 1) {
-                        $('<div class="alert alert-danger">' + response.content + '</div>').insertBefore($('#order_area').first());
+                        $('<div class="alert alert-danger">' + response.content + '</div>').insertBefore($('#pno_billmate'+method).first());
                     } else {
-                        $('<div class="error">' + response.content + '</div>').insertBefore($('#order_area').first());
+                        $('<div class="error">' + response.content + '</div>').insertBefore($('#pno_billmate'+method).first());
                     }
                 }
             }
