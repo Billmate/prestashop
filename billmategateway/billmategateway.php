@@ -180,6 +180,10 @@
 
 		public function validateCredentials($eid, $secret)
 		{
+			if(empty($eid)){
+				$this->postErrors[] = $this->l('You must insert a Billmate ID');
+				return false;
+			}
 			$billmate            = Common::getBillmate($eid, $secret, false);
 			$data                = array();
 			$data['PaymentData'] = array(
