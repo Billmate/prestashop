@@ -21,6 +21,7 @@
 			$this->testMode             = Configuration::get('BPARTPAY_MOD');
 			$this->min_value            = Configuration::get('BPARTPAY_MIN_VALUE');
 			$this->max_value            = Configuration::get('BPARTPAY_MAX_VALUE');
+			$this->sort_order           = Configuration::get('BBANKPAY_SORTORDER');
 			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK');
 			$this->authorization_method = false;
@@ -48,6 +49,7 @@
 
 
 			return array(
+				'sort_order' => $this->sort_order,
 				'name'         => $this->displayName,
 				'type'         => $this->name,
 				'controller'   => $this->validation_controller,
@@ -118,6 +120,15 @@
 				'label' => $this->l('Paymentplans'),
 				'type' => 'table',
 				'pclasses' => $pclasses->getPClasses('')
+			);
+
+			$settings['sort'] = array(
+				'name'     => 'partpayBillmateSortOrder',
+				'required' => false,
+				'value'    => Configuration::get('BPARTPAY_SORTORDER'),
+				'type'     => 'text',
+				'label'    => $this->l('Sort Order'),
+				'desc'     => $this->l(''),
 			);
 			return $settings;
 

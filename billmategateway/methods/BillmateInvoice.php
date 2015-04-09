@@ -13,6 +13,7 @@
 
 	class BillmateInvoice extends BillmateGateway {
 
+
 		public function __construct()
 		{
 			parent::__construct();
@@ -21,6 +22,7 @@
 			$this->testMode             = Configuration::get('BINVOICE_MOD');
 			$this->min_value            = Configuration::get('BINVOICE_MIN_VALUE');
 			$this->max_value            = Configuration::get('BINVOICE_MAX_VALUE');
+			$this->sort_order           = Configuration::get('BBANKPAY_SORTORDER');
 			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK','EUR');
 			$this->authorization_method = false;
@@ -47,6 +49,7 @@
 				return false;
 
 			return array(
+				'sort_order' => $this->sort_order,
 				'name'       => $this->displayName,
 				'type'       => $this->name,
 				'controller' => $this->validation_controller,
@@ -133,6 +136,14 @@
 				'value'    => Configuration::get('BINVOICE_MAX_VALUE') != 0 ? (float)Configuration::get('BINVOICE_MAX_VALUE') : 99999,
 				'type'     => 'text',
 				'label'    => $this->l('Maximum Value ').' ('.$currency['sign'].')',
+				'desc'     => $this->l(''),
+			);
+			$settings['sort'] = array(
+				'name'     => 'invoiceBillmateSortOrder',
+				'required' => false,
+				'value'    => Configuration::get('BINVOICE_SORTORDER'),
+				'type'     => 'text',
+				'label'    => $this->l('Sort Order'),
 				'desc'     => $this->l(''),
 			);
 

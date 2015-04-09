@@ -24,6 +24,7 @@
 			$this->min_value            = Configuration::get('BBANKPAY_MIN_VALUE');
 			$this->max_value            = Configuration::get('BBANKPAY_MAX_VALUE');
 			$this->authorization_method = Configuration::get('BBANKPAY_AUTHORIZATION_METHOD');
+			$this->sort_order           = Configuration::get('BBANKPAY_SORTORDER');
 			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'bankpay'));
 			$this->icon                 = 'billmategateway/views/img/billmate_bankpay_l.png';
 		}
@@ -45,6 +46,7 @@
 				return false;
 
 			return array(
+				'sort_order' => $this->sort_order,
 				'name'       => $this->displayName,
 				'type'       => $this->name,
 				'method'    => 'bankpay',
@@ -116,6 +118,14 @@
 				'value'    => Configuration::get('BBANKPAY_MAX_VALUE') != 0 ? (float)Configuration::get('BBANKPAY_MAX_VALUE') : 99999,
 				'type'     => 'text',
 				'label'    => $this->l('Maximum Value ').' ('.$currency['sign'].')',
+				'desc'     => $this->l(''),
+			);
+			$settings['sort'] = array(
+				'name'     => 'bankpayBillmateSortOrder',
+				'required' => false,
+				'value'    => Configuration::get('BBANKPAY_SORTORDER'),
+				'type'     => 'text',
+				'label'    => $this->l('Sort Order'),
 				'desc'     => $this->l(''),
 			);
 

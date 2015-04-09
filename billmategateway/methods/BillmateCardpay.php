@@ -21,6 +21,7 @@
 			$this->testMode             = Configuration::get('BCARDPAY_MOD');
 			$this->min_value            = Configuration::get('BCARDPAY_MIN_VALUE');
 			$this->max_value            = Configuration::get('BCARDPAY_MAX_VALUE');
+			$this->sort_order           = Configuration::get('BBANKPAY_SORTORDER');
 			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK','EUR');
 			$this->authorization_method = Configuration::get('BCARDPAY_AUTHORIZATION_METHOD');
@@ -44,6 +45,7 @@
 				return false;
 
 			return array(
+				'sort_order' => $this->sort_order,
 				'name'       => $this->displayName,
 				'type'       => $this->name,
 				'method' => 'cardpay',
@@ -131,6 +133,14 @@
 				'value'    => Configuration::get('BCARDPAY_MAX_VALUE') != 0 ? (float)Configuration::get('BCARDPAY_MAX_VALUE') : 99999,
 				'type'     => 'text',
 				'label'    => $this->l('Maximum Value ').' ('.$currency['sign'].')',
+				'desc'     => $this->l(''),
+			);
+			$settings['sort'] = array(
+				'name'     => 'cardpayBillmateSortOrder',
+				'required' => false,
+				'value'    => Configuration::get('BCARDPAY_SORTORDER'),
+				'type'     => 'text',
+				'label'    => $this->l('Sort Order'),
 				'desc'     => $this->l(''),
 			);
 

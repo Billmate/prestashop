@@ -142,6 +142,7 @@
 			Configuration::updateValue('BBANKPAY_ORDER_STATUS', Tools::getValue('bankpayBillmateOrderStatus'));
 			Configuration::updateValue('BBANKPAY_MIN_VALUE', Tools::getValue('bankpayBillmateMinimumValue'));
 			Configuration::updateValue('BBANKPAY_MAX_VALUE', Tools::getValue('bankpayBillmateMaximumValue'));
+			Configuration::updateValue('BBANKPAY_SORTORDER', Tools::getValue('bankpayBillmateSortOrder'));
 
 			// Cardpay Settings
 			Configuration::updateValue('BCARDPAY_ENABLED', (Tools::getIsset('cardpayActivated')) ? 1 : 0);
@@ -152,6 +153,7 @@
 			Configuration::updateValue('BCARDPAY_AUTHORIZATION_METHOD', Tools::getValue('cardpayAuthorization'));
 			Configuration::updateValue('BCARDPAY_MIN_VALUE', Tools::getValue('cardpayBillmateMinimumValue'));
 			Configuration::updateValue('BCARDPAY_MAX_VALUE', Tools::getValue('cardpayBillmateMaximumValue'));
+			Configuration::updateValue('BCARDPAY_SORTORDER', Tools::getValue('cardpayBillmateSortOrder'));
 
 			// Invoice Settings
 			Configuration::updateValue('BINVOICE_ENABLED', (Tools::getIsset('invoiceActivated')) ? 1 : 0);
@@ -161,6 +163,7 @@
 			Configuration::updateValue('BINVOICE_ORDER_STATUS', Tools::getValue('invoiceBillmateOrderStatus'));
 			Configuration::updateValue('BINVOICE_MIN_VALUE', Tools::getValue('invoiceBillmateMinimumValue'));
 			Configuration::updateValue('BINVOICE_MAX_VALUE', Tools::getValue('invoiceBillmateMaximumValue'));
+			Configuration::updateValue('BINVOICE_SORTORDER', Tools::getValue('invoiceBillmateSortOrder'));
 
 			// partpay Settings
 			Configuration::updateValue('BPARTPAY_ENABLED', (Tools::getIsset('partpayActivated')) ? 1 : 0);
@@ -168,6 +171,7 @@
 			Configuration::updateValue('BPARTPAY_ORDER_STATUS', Tools::getValue('partpayBillmateOrderStatus'));
 			Configuration::updateValue('BPARTPAY_MIN_VALUE', Tools::getValue('partpayBillmateMinimumValue'));
 			Configuration::updateValue('BPARTPAY_MAX_VALUE', Tools::getValue('partpayBillmateMaximumValue'));
+			Configuration::updateValue('BBANKPAY_SORTORDER', Tools::getValue('partpayBillmateSortOrder'));
 			if (Configuration::get('BPARTPAY_ENABLED') == 1)
 			{
 				$pclasses  = new pClasses();
@@ -540,8 +544,16 @@
 				$result = $method->getPaymentInfo($cart);
 				if (!$result)
 					continue;
+				if ($result['sort_order'])
+				{
+					if (array_key_exists($result['sort_order'],$data))
+						$data[$result['sort_order'] + 1] = $result;
+					else
+						$data[$result['sort_order']] = $result;
+				}
+				else
+					$data[] = $result;
 
-				$data[] = $result;
 
 			}
 
