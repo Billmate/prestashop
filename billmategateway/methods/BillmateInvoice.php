@@ -13,7 +13,6 @@
 
 	class BillmateInvoice extends BillmateGateway {
 
-
 		public function __construct()
 		{
 			parent::__construct();
