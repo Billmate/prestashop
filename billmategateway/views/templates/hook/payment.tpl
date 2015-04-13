@@ -36,7 +36,7 @@
                        name="agree_with_terms_{$method.type|escape:'html'}"/>
                 <label for="terms_{$method.type|escape:'html'}">{$method.agreements|escape:'quotes'}</label>
             </div>
-            <button style="background-color: green; width: 26em; color: white; font-size: 18px;" id="{$method.type|escape:'html'}Submit">{l s='Proceed' mod='billmategateway'}</button>
+            <input type="button" class="exclusive button" id="{$method.type|escape:'html'}Submit" value="{l s='Proceed' mod='billmategateway'}"/>
         </form>
     </div>
 {/if}
