@@ -171,7 +171,7 @@
 			Configuration::updateValue('BPARTPAY_ORDER_STATUS', Tools::getValue('partpayBillmateOrderStatus'));
 			Configuration::updateValue('BPARTPAY_MIN_VALUE', Tools::getValue('partpayBillmateMinimumValue'));
 			Configuration::updateValue('BPARTPAY_MAX_VALUE', Tools::getValue('partpayBillmateMaximumValue'));
-			Configuration::updateValue('BBANKPAY_SORTORDER', Tools::getValue('partpayBillmateSortOrder'));
+			Configuration::updateValue('BPARTPAY_SORTORDER', Tools::getValue('partpayBillmateSortOrder'));
 			if (Configuration::get('BPARTPAY_ENABLED') == 1)
 			{
 				$pclasses  = new pClasses();
