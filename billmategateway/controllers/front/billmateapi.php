@@ -158,9 +158,10 @@
 			foreach ($articles as $article)
 			{
 				$taxrate       = ($article['price_wt'] == $article['price']) ? 0 : $article['rate'];
+				error_log(print_r($article, true ));
 				$articles_arr[] = array(
 					'quantity'   => $article['cart_quantity'],
-					'title'      => $article['name'],
+					'title'      => (isset($article['attributes']) && !empty($article['attributes'])) ? $article['name'].  ' - '.$article['attributes'] : $article['name'],
 					'artnr'      => $article['reference'],
 					'aprice'     => ($article['price'] / $article['cart_quantity']) * 100,
 					'taxrate'    => $taxrate,
