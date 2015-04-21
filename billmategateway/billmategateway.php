@@ -201,7 +201,7 @@
 			$result              = $billmate->getPaymentplans($data);
 			if (isset($result['code']) && ($result['code'] == '9010' || $result['code'] == '9013'))
 			{
-				$this->postErrors[] = $result['message'];
+				$this->postErrors[] = utf8_encode($result['message']);
 
 				return false;
 			}
