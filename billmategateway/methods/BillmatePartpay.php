@@ -21,12 +21,12 @@
 			$this->testMode             = Configuration::get('BPARTPAY_MOD');
 			$this->min_value            = Configuration::get('BPARTPAY_MIN_VALUE');
 			$this->max_value            = Configuration::get('BPARTPAY_MAX_VALUE');
-			$this->sort_order           = Configuration::get('BBANKPAY_SORTORDER');
+			$this->sort_order           = Configuration::get('BPARTPAY_SORTORDER');
 			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK');
 			$this->authorization_method = false;
 			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'partpay'));
-			$this->icon                 = 'billmategateway/views/img/billmate_partpayment_l.png';
+			$this->icon                 = file_exists(_PS_MODULE_DIR_.'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/partpayment.png') ? 'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/partpayment.png' : 'billmategateway/views/img/en/partpayment.png';
 		}
 
 		/**

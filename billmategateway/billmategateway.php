@@ -556,7 +556,7 @@
 
 
 			}
-
+			ksort($data);
 			return $data;
 		}
 

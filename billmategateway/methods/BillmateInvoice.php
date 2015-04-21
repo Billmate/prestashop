@@ -21,12 +21,12 @@
 			$this->testMode             = Configuration::get('BINVOICE_MOD');
 			$this->min_value            = Configuration::get('BINVOICE_MIN_VALUE');
 			$this->max_value            = Configuration::get('BINVOICE_MAX_VALUE');
-			$this->sort_order           = Configuration::get('BBANKPAY_SORTORDER');
+			$this->sort_order           = Configuration::get('BINVOICE_SORTORDER');
 			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK','EUR');
 			$this->authorization_method = false;
 			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'invoice'));
-			$this->icon                 = 'billmategateway/views/img/billmate_invoice_l.png';
+			$this->icon                 = file_exists(_PS_MODULE_DIR_.'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/invoice.png') ? 'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/invoice.png' : 'billmategateway/views/img/en/invoice.png';
 		}
 
 		/**
