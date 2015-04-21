@@ -41,10 +41,10 @@
 				return false;
 			if ($this->max_value < $this->context->cart->getOrderTotal())
 				return false;
-			if(!in_array($this->context->currency->iso_code, $this->allowed_currencies))
+			if (!in_array($this->context->currency->iso_code, $this->allowed_currencies))
 				return false;
 
-			if(!in_array(Tools::strtolower($this->context->country->iso_code), $this->limited_countries))
+			if (!in_array(Tools::strtolower($this->context->country->iso_code), $this->limited_countries))
 				return false;
 
 

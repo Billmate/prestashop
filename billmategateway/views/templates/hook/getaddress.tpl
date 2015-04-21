@@ -1,3 +1,11 @@
+{*
+* Created by PhpStorm.
+* User: jesper
+* Date: 15-03-17
+* Time: 13:01
+* @author Jesper Johansson jesper@boxedlogistics.se
+* @copyright Billmate AB 2015
+*}
 <p class="text">
     <span>{l s='Personal / Corporate number' mod='billmategateway'}</span>
     <input type="text" id="pno" name="pno"/>

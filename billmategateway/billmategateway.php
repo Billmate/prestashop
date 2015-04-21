@@ -130,8 +130,8 @@
 				Configuration::updateValue('BILLMATE_ID', $billmateId);
 				Configuration::updateValue('BILLMATE_SECRET', $billmateSecret);
 			}
-			Configuration::updateValue('BILLMATE_ACTIVATE',Tools::getIsset('activate') ? 1 : 0);
-			Configuration::updateValue('BILLMATE_ACTIVATE_STATUS',serialize(Tools::getValue('activateStatuses')));
+			Configuration::updateValue('BILLMATE_ACTIVATE', Tools::getIsset('activate') ? 1 : 0);
+			Configuration::updateValue('BILLMATE_ACTIVATE_STATUS', serialize(Tools::getValue('activateStatuses')));
 			Configuration::updateValue('BILLMATE_SEND_REFERENCE', Tools::getIsset('sendOrderReference') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_GETADDRESS', Tools::getIsset('getaddress') ? 1 : 0);
 
@@ -184,13 +184,13 @@
 
 		public function validateCredentials($eid, $secret)
 		{
-			if(empty($eid)){
+			if (empty($eid))
 				$this->postErrors[] = $this->l('You must insert a Billmate ID');
 				return false;
-			}
-			if(empty($secret)){
+
+			if (empty($secret))
 				$this->postErrors[] = $this->l('You must insert a Billmate Secret');
-			}
+
 			$billmate            = Common::getBillmate($eid, $secret, false);
 			$data                = array();
 			$data['PaymentData'] = array(
@@ -266,16 +266,15 @@
 			foreach ($files as $file)
 			{
 				$class = $file->getBasename('.php');
-				if($class == 'index'){
+				if ($class == 'index')
 					continue;
-				}
+
 				include_once($file->getPathname());
 
 				$updater = new $class();
 				$updater->install();
 			}
-			Configuration::updateValue('BILLMATE_VERSION',$this->version);
-			return;
+			Configuration::updateValue('BILLMATE_VERSION', $this->version);
 
 		}
 
@@ -296,7 +295,8 @@
 		{
 			$order = new Order($params['object']->id_order);
 			$invoice_fee = Configuration::get('BINVOICE_FEE');
-			if($order->module == 'billmateinvoice' && $invoice_fee > 0){
+			if ($order->module == 'billmateinvoice' && $invoice_fee > 0)
+			{
 
 
 
@@ -311,9 +311,9 @@
 
 				$this->smarty->assign('invoiceFeeIncl', $total_fee);
 				$this->smarty->assign('invoiceFeeTax', $tax_amount[1]);
-				$this->smarty->assign('order',$order);
+				$this->smarty->assign('order', $order);
 
-				return $this->display(__FILE__,'invoicefeepdf.tpl');
+				return $this->display(__FILE__, 'invoicefeepdf.tpl');
 			}
 		}
 
@@ -321,7 +321,7 @@
 		{
 			if (Configuration::get('BILLMATE_GETADDRESS'))
 
-				return $this->display(__FILE__,'getaddress.tpl');
+				return $this->display(__FILE__, 'getaddress.tpl');
 			else
 				return;
 		}
@@ -537,7 +537,7 @@
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
-				if($class == 'index')
+				if ($class == 'index')
 					continue;
 
 
@@ -549,7 +549,7 @@
 					continue;
 				if ($result['sort_order'])
 				{
-					if (array_key_exists($result['sort_order'],$data))
+					if (array_key_exists($result['sort_order'], $data))
 						$data[$result['sort_order'] + 1] = $result;
 					else
 						$data[$result['sort_order']] = $result;
@@ -565,12 +565,11 @@
 
 		public function getMethodInfo($name, $key)
 		{
-			$data        = array();
 			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'billmategateway/methods', FilesystemIterator::SKIP_DOTS);
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
-				if($class == 'index')
+				if ($class == 'index')
 					continue;
 				include_once($file->getPathname());
 				$method = new $class();
@@ -592,7 +591,7 @@
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
-				if($class == 'index')
+				if ($class == 'index')
 					continue;
 
 				include_once($file->getPathname());

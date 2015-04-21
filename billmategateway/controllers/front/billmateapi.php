@@ -97,8 +97,8 @@
 			$discounts = $this->prepareDiscounts();
 			if (count($discounts) > 0)
 			{
-				foreach($discounts as $discount)
-					array_push($data['Articles'],$discount);
+				foreach ($discounts as $discount)
+					array_push($data['Articles'], $discount);
 			}
 
 
@@ -188,11 +188,9 @@
 			$discounts = array();
 			if (!empty($details['total_discounts']))
 			{
-				file_put_contents(_PS_CACHE_DIR_.'discounts',print_r($details,true));
 				foreach ($this->prepare_discount as $key => $value)
 				{
-					$amount_incl_tax   = $value * (1 + ($key / 100));
-					//$percent_discount = $amount_incl_tax / $this->context->cart->getOrderTotal();
+
 					$percent_discount = $value / ($this->totals);
 
 					$discount_amount = ($percent_discount * $details['total_discounts']) / (1 + ($key / 100));
@@ -360,15 +358,13 @@
 					$matched_address_id = false;
 					foreach ($customer_addresses as $customer_address)
 					{
-						file_put_contents(_PS_CACHE_DIR_.'addresses',print_r($customer_address,true),FILE_APPEND);
 						if (isset($customer_address['address1']))
 						{
 
 							if (Common::matchstr($customer_address['address1'], $address['street']) &&
 							    Common::matchstr($customer_address['postcode'], $address['zip']) &&
 							    Common::matchstr($customer_address['city'], $address['city']) &&
-							    Common::matchstr($customer_address['country'], $address['country'])
-							)
+							    Common::matchstr($customer_address['country'], $address['country']))
 								$matched_address_id = $customer_address['id_address'];
 						}
 						else
@@ -569,7 +565,7 @@
 						$return = array('success' => true, 'redirect' => $result['url']);
 					else
 					{
-						Logger::addLog($result['message'],1,$result['code'],'Cart',$this->context->cart->id);
+						Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
 						$return = array('success' => false, 'content' => utf8_encode($result['message']));
 					}
 

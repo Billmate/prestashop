@@ -42,9 +42,9 @@
 			if ($this->max_value < $this->context->cart->getOrderTotal())
 				return false;
 
-			if(!in_array($this->context->currency->iso_code, $this->allowed_currencies))
+			if (!in_array($this->context->currency->iso_code, $this->allowed_currencies))
 				return false;
-			if(!in_array(Tools::strtolower($this->context->country->iso_code), $this->limited_countries))
+			if (!in_array(Tools::strtolower($this->context->country->iso_code), $this->limited_countries))
 				return false;
 
 			return array(
@@ -390,7 +390,7 @@
 							if (Validate::isCleanHtml($message))
 							{
 								$msg->message = $message;
-								$msg->id_order = intval($order->id);
+								$msg->id_order = (int)$order->id;
 								$msg->private = 1;
 								$msg->add();
 							}
@@ -487,7 +487,7 @@
 								// Set a new voucher code
 								$voucher->code = empty($voucher->code) ? substr(md5($order->id.'-'.$order->id_customer.'-'.$cart_rule['obj']->id), 0, 16) : $voucher->code.'-2';
 								if (preg_match('/\-([0-9]{1,2})\-([0-9]{1,2})$/', $voucher->code, $matches) && $matches[1] == $matches[2])
-									$voucher->code = preg_replace('/'.$matches[0].'$/', '-'.(intval($matches[1]) + 1), $voucher->code);
+									$voucher->code = preg_replace('/'.$matches[0].'$/', '-'.((int)$matches[1] + 1), $voucher->code);
 
 								// Set the new voucher value
 								if ($voucher->reduction_tax)
@@ -686,6 +686,7 @@
 								$data = array_merge($data, $extra_vars);
 
 							// Join PDF invoice
+							$file_attachement = array();
 							if ((int)Configuration::get('PS_INVOICE') && $order_status->invoice && $order->invoice_number)
 							{
 								$pdf = new PDF($order->getInvoicesCollection(), PDF::TEMPLATE_INVOICE, $this->context->smarty);
@@ -729,7 +730,7 @@
 					else
 					{
 						$error = Tools::displayError('Order creation failed');
-						Logger::addLog($error, 4, '0000002', 'Cart', intval($order->id_cart));
+						Logger::addLog($error, 4, '0000002', 'Cart', (int)$order->id_cart);
 						die($error);
 					}
 				} // End foreach $order_detail_list
@@ -740,7 +741,7 @@
 			else
 			{
 				$error = Tools::displayError('Cart cannot be loaded or an order has already been placed using this cart');
-				Logger::addLog($error, 4, '0000001', 'Cart', intval($this->context->cart->id));
+				Logger::addLog($error, 4, '0000001', 'Cart', (int)$this->context->cart->id);
 				die($error);
 			}
 		}

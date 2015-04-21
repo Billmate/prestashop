@@ -36,7 +36,7 @@
 			$this->billmate = Common::getBillmate($eid, $secret, $testmode, $ssl, $debug);
 
 			$data = $this->billmate->verify_hash(Tools::file_get_contents('php://input'));
-			file_put_contents(_PS_CACHE_DIR_.'debugcall',print_r($data,true));
+
 			if (!isset($data['code']) && !isset($data['error']))
 			{
 				$lockfile   = _PS_CACHE_DIR_.Tools::getValue('orderid');
@@ -79,7 +79,7 @@
 			{
 				$order        = $data['orderid'];
 				$order        = explode('-', $order);
-				Logger::addLog($data['message'],1,$data['code'],'Cart',$order[0]);
+				Logger::addLog($data['message'], 1, $data['code'], 'Cart', $order[0]);
 			}
 		}
 

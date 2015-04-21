@@ -41,7 +41,7 @@
 			if ($this->max_value < $this->context->cart->getOrderTotal())
 				return false;
 
-			if(!in_array($this->context->currency->iso_code,$this->allowed_currencies))
+			if (!in_array($this->context->currency->iso_code, $this->allowed_currencies))
 				return false;
 
 			return array(
