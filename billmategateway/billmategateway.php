@@ -185,11 +185,17 @@
 		public function validateCredentials($eid, $secret)
 		{
 			if (empty($eid))
+			{
 				$this->postErrors[] = $this->l('You must insert a Billmate ID');
 				return false;
+			}
 
 			if (empty($secret))
+			{
 				$this->postErrors[] = $this->l('You must insert a Billmate Secret');
+				return false;
+			}
+
 
 			$billmate            = Common::getBillmate($eid, $secret, false);
 			$data                = array();
