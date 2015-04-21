@@ -188,6 +188,9 @@
 				$this->postErrors[] = $this->l('You must insert a Billmate ID');
 				return false;
 			}
+			if(empty($secret)){
+				$this->postErrors[] = $this->l('You must insert a Billmate Secret');
+			}
 			$billmate            = Common::getBillmate($eid, $secret, false);
 			$data                = array();
 			$data['PaymentData'] = array(
