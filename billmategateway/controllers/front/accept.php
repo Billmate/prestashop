@@ -94,7 +94,7 @@
 				{
 					$values['PaymentData'] = array(
 						'number'  => $data['number'],
-						'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 1) ? $this->module->currentOrderReference : $this->module->currentOrder
+						'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->module->currentOrderReference : $this->module->currentOrder
 					);
 					$this->billmate->updatePayment($values);
 				}

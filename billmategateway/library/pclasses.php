@@ -55,7 +55,7 @@
 
 			$db = Db::getInstance();
 			//$db->Execute('TRUNCATE TABLE `'._DB_PREFIX_.'billmate_payment_pclasses`');
-			$db->Execute('DELETE FROM `'._DB_PREFIX_.'billmate_payment_pclasses` WHERE language = "'.$language.'"');
+			$db->Execute('DELETE FROM `'._DB_PREFIX_.'billmate_payment_pclasses` WHERE `language` = "'.$language.'"');
 
 			if (!is_array($data))
 				throw new Exception(strip_tags($data));

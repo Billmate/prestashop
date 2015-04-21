@@ -132,7 +132,7 @@
 			}
 			Configuration::updateValue('BILLMATE_ACTIVATE', Tools::getIsset('activate') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_ACTIVATE_STATUS', serialize(Tools::getValue('activateStatuses')));
-			Configuration::updateValue('BILLMATE_SEND_REFERENCE', Tools::getIsset('sendOrderReference') ? 1 : 0);
+			Configuration::updateValue('BILLMATE_SEND_REFERENCE', Tools::getValue('sendOrderReference'));
 			Configuration::updateValue('BILLMATE_GETADDRESS', Tools::getIsset('getaddress') ? 1 : 0);
 
 			// Bankpay Settings
@@ -641,13 +641,15 @@
 				'value'    => Configuration::get('BILLMATE_SECRET')
 			);
 
+			$reference = array('orderid' => $this->l('Order ID'),'reference' => $this->l('Reference ID'));
 			$settings['sendorderreference'] = array(
 				'name'     => 'sendOrderReference',
 				'required' => true,
-				'type'     => 'checkbox',
-				'label'    => $this->l('Send Reference'),
-				'desc'     => $this->l('Activate to Send Order reference instead of Order number'),
-				'value'    => Configuration::get('BILLMATE_SEND_REFERENCE')
+				'type'     => 'select',
+				'label'    => $this->l('Order id used by Billmate'),
+				'desc'     => '',
+				'value'    => Configuration::get('BILLMATE_SEND_REFERENCE') ? Configuration::get('BILLMATE_SEND_REFERENCE') : 'orderid',
+				'options' => $reference
 			);
 
 			$activate_status      = Configuration::get('BILLMATE_ACTIVATE');
