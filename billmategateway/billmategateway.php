@@ -44,7 +44,7 @@
 			/* The parent construct is required for translations */
 			$this->page                 = basename(__FILE__, '.php');
 			$this->displayName          = $this->l('Billmate Payment Gateway');
-			$this->description          = $this->l('Accepts payments by Billmate');
+			$this->description          = $this->l('Accept online payments with Billmate.');
 			$this->confirmUninstall     = $this->l(
 				'Are you sure you want to delete your settings?'
 			);
