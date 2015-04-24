@@ -6,14 +6,43 @@
 * @author Jesper Johansson jesper@boxedlogistics.se
 * @copyright Billmate AB 2015
 *}
+<style>
+    {if $template == 'new'}
+    div.payment_module {
+        border: 1px solid #d6d4d4;
+        background: #fbfbfb;
+    }
+    div.payment_module a {
+        display: block;
+        /*border: 1px solid #d6d4d4;*/
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        font-size: 17px;
+        line-height: 23px;
+        color: #333;
+        font-weight: bold;
+        padding: 33px 40px 34px 99px;
+        letter-spacing: -1px;
+        position: relative;
+    }
+    {else}
+    div.payment_module {
+        margin: 0;
+    }
+    div.payment_module a {
+        display:block;
+    }
+    {/if}
+</style>
 {foreach $methods as $method}
-    <p class="payment_module">
+    <div class="payment_module">
     <style>
-        p.payment_module a.{$method.type} {
+        div.payment_module a.{$method.type} {
             background: url("{$smarty.const._MODULE_DIR_}{$method.icon}") 15px 15px no-repeat #fbfbfb;
             padding-left: 180px;
         }
-        p.payment_module a.{$method.type}:after{
+        div.payment_module a.{$method.type}:after{
             display: block;
             content: "\f054";
             position: absolute;
@@ -26,6 +55,14 @@
             width: 14px;
             color: #777;
         }
+        #terms,#terms-partpay{
+            cursor: pointer!important;
+            font-size: inherit;
+            display: inherit;
+            border: none;
+            padding: inherit;
+            text-decoration: underline;
+        }
     </style>
     {if $method.type != 'billmateinvoice' && $method.type != 'billmatepartpay'}
         <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller}" onclick="getPayment('{$method.method}'); return false;">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'}</a>
@@ -37,7 +74,7 @@
                 <div style="padding:10px;" id="error_{$method.type}"></div>
                 {if $method.type == 'billmatepartpay'}
                     <div class="accountcontainer">
-                        <label style="display:block; padding:10px">{l s='Choose the payment option that suites you best:' mod='billmategateway'}</label>
+                        <label style="display:block; padding:10px; {if $template == 'legacy'}clear:both;{/if}">{l s='Choose the payment option that suites you best:' mod='billmategateway'}</label>
                         <select name="paymentAccount" style="margin-left:10px;">
                             {foreach $method.pClasses as $pclass}
                                 <option value="{$pclass.paymentplanid}">{$pclass.description} {displayPrice price=$pclass.monthlycost}
@@ -47,7 +84,7 @@
                     </div>
                 {/if}
                 <div class="pno_container" style="padding:10px">
-                    <label for="pno_{$method.type|escape:'html'}" style="display:block">{l s='Personal / Corporate number:' mod='billmategateway'}</label>
+                    <label for="pno_{$method.type|escape:'html'}" style="display:block; {if $template == 'legacy'}clear:both;{/if}">{l s='Personal / Corporate number:' mod='billmategateway'}</label>
                     <input id="pno_{$method.type|escape:'html'}" name="pno_{$method.type|escape:'html'}" type="text"/>
                 </div>
                 <div class="agreements" style="padding:10px">
@@ -59,7 +96,7 @@
             </form>
         </div>
     {/if}
-    </p>
+    </div>
 {/foreach}
 <script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
 <script type="text/javascript">
