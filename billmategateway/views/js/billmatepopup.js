@@ -355,6 +355,11 @@ if (typeof modalWin == 'undefined') {
                     window.location.href = response.redirect;
                 } else {
                     if (typeof response.action != 'undefined') {
+                        if (versionCompare(version, '1.6') == 1) {
+                            $('.alert-danger').remove();
+                        } else {
+                            $('.error').remove();
+                        }
                         $.post(carrierurl, response.action, function () {
                             getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
                         });
@@ -369,9 +374,11 @@ if (typeof modalWin == 'undefined') {
                 } else {
                     modalWin.HideModalPopUp();
                     if (versionCompare(version, '1.6') == 1) {
-                        $('<div class="alert alert-danger">' + response.content + '</div>').insertBefore($('#pno_billmate'+method).first());
+                        $('.alert-danger').remove();
+                        $('<div class="alert alert-danger">' + response.content + '</div>').insertBefore($('#error_'+method).first());
                     } else {
-                        $('<div class="error">' + response.content + '</div>').insertBefore($('#pno_billmate'+method).first());
+                        $('.error').remove();
+                        $('<div class="error">' + response.content + '</div>').insertBefore($('#error_'+method).first());
                     }
                 }
             }
