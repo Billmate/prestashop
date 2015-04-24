@@ -512,6 +512,10 @@
 		{
 			$methods = $this->getMethods($params['cart']);
 
+			$template = 'new';
+			if (version_compare(_PS_VERSION_, '1.6', '<'))
+				$template = 'legacy';
+
 
 			$this->smarty->assign(
 				array(
@@ -519,6 +523,7 @@
 						'path'          => $this->_path,
 						'this_path_ssl' => (_PS_VERSION_ >= 1.4 ? Tools::getShopDomainSsl(true, true) : '').__PS_BASE_URI__.'modules/'.$this->moduleName.'/'
 					),
+					'template' => $template,
 					'methods'    => $methods,
 					'ps_version' => _PS_VERSION_,
 					'eid' => $this->billmate_merchant_id

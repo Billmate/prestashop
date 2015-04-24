@@ -8,11 +8,29 @@
 *}
 {foreach $methods as $method}
     <p class="payment_module">
+    <style>
+        p.payment_module a.{$method.type} {
+            background: url("{$smarty.const._MODULE_DIR_}{$method.icon}") 15px 15px no-repeat #fbfbfb;
+            padding-left: 180px;
+        }
+        p.payment_module a.{$method.type}:after{
+            display: block;
+            content: "\f054";
+            position: absolute;
+            right: 15px;
+            margin-top: -11px;
+            top: 50%;
+            font-family: "FontAwesome";
+            font-size: 25px;
+            height: 22px;
+            width: 14px;
+            color: #777;
+        }
+    </style>
     {if $method.type != 'billmateinvoice' && $method.type != 'billmatepartpay'}
-        <a href="{$method.controller}" onclick="getPayment('{$method.method}'); return false;"><img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{$method.name|escape:'html'}</a>
+        <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller}" onclick="getPayment('{$method.method}'); return false;">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'}</a>
     {else}
-        <a href="{$method.controller|escape:'url'}" id="{$method.type|escape:'html'}"><img
-                    src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{$method.name|escape:'html'} {if $method.type == 'billmatepartpay'} - {l s='Pay from' mod='billmategateway'} {displayPrice price=$method.monthly_cost.monthlycost} {else} - {displayPrice price=$method.invoiceFee.fee_incl_tax}  {l s='invoice fee is added to the order sum' mod='billmategateway'}{/if}
+        <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller|escape:'url'}" id="{$method.type|escape:'html'}">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'} {if $method.type == 'billmatepartpay'} - {l s='Pay from' mod='billmategateway'} {displayPrice price=$method.monthly_cost.monthlycost} {elseif $method.invoiceFee.fee > 0} - {displayPrice price=$method.invoiceFee.fee_incl_tax}  {l s='invoice fee is added to the order sum' mod='billmategateway'}{/if}
         </a>
         <div style="display:none;" id="{$method.type}-fields">
             <form action="javascript://" class="{$method.type|escape:'html'}">
