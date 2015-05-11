@@ -55,7 +55,8 @@
 
 			$db = Db::getInstance();
 			//$db->Execute('TRUNCATE TABLE `'._DB_PREFIX_.'billmate_payment_pclasses`');
-			$db->Execute('DELETE FROM `'._DB_PREFIX_.'billmate_payment_pclasses` WHERE `language` = "'.$language.'"');
+			if(self::hasPclasses($language))
+				$db->Execute('DELETE FROM `'._DB_PREFIX_.'billmate_payment_pclasses` WHERE `language` = "'.$language.'"');
 
 			if (!is_array($data))
 				throw new Exception(strip_tags($data));
@@ -65,7 +66,6 @@
 				foreach ($data as $row)
 				{
 					$row['eid'] = $eid;
-
 					Db::getInstance()->insert('billmate_payment_pclasses', $row);
 
 				}
@@ -80,6 +80,7 @@
 			$item['interestrate'] = $item['interestrate'] / 100;
 			$item['minamount']    = $item['minamount'] / 100;
 			$item['maxamount']    = $item['maxamount'] / 100;
+
 		}
 
 		public function getCheapestPClass($sum, $flags, $language)
