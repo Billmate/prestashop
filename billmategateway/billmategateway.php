@@ -125,8 +125,10 @@
 			$billmateId     = Tools::getValue('billmateId');
 			$billmateSecret = Tools::getValue('billmateSecret');
 
+			$credentialvalidated = false;
 			if ($this->validateCredentials($billmateId, $billmateSecret))
 			{
+				$credentialvalidated = true;
 				Configuration::updateValue('BILLMATE_ID', $billmateId);
 				Configuration::updateValue('BILLMATE_SECRET', $billmateSecret);
 			}
@@ -172,7 +174,7 @@
 			Configuration::updateValue('BPARTPAY_MIN_VALUE', Tools::getValue('partpayBillmateMinimumValue'));
 			Configuration::updateValue('BPARTPAY_MAX_VALUE', Tools::getValue('partpayBillmateMaximumValue'));
 			Configuration::updateValue('BPARTPAY_SORTORDER', Tools::getValue('partpayBillmateSortOrder'));
-			if (Configuration::get('BPARTPAY_ENABLED') == 1)
+			if (Configuration::get('BPARTPAY_ENABLED') == 1 && $credentialvalidated)
 			{
 				$pclasses  = new pClasses();
 				$languages = Language::getLanguages();
@@ -205,7 +207,7 @@
 				'country'  => 'se'
 			);
 			$result              = $billmate->getPaymentplans($data);
-			if (isset($result['code']) && ($result['code'] == '9010' || $result['code'] == '9013'))
+			if (isset($result['code']) && ($result['code'] == '9010' || $result['code'] == '9012' || $result['code'] == '9013'))
 			{
 				$this->postErrors[] = utf8_encode($result['message']);
 
