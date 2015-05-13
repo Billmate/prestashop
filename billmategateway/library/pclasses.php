@@ -104,7 +104,6 @@
 							if ($minpay >= $lowest_payment)
 							{
 								$lowest_pp = $minpay;
-
 								$lowest                = $pclass;
 								$lowest['monthlycost'] = $minpay;
 							}
@@ -148,11 +147,11 @@
 
 		public static function hasPclasses($language)
 		{
-			$data = Db::getInstance()->ExecuteS('SELECT count(*) FROM '._DB_PREFIX_.
+			$data = Db::getInstance()->ExecuteS('SELECT count(*) AS total FROM '._DB_PREFIX_.
 												'billmate_payment_pclasses WHERE language = "'.$language.
 												'" AND expirydate > NOW()');
 
-			if ($data == 0)
+			if ($data[0]['total'] == 0)
 				return false;
 
 			return true;
