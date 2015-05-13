@@ -55,6 +55,9 @@
             width: 14px;
             color: #777;
         }
+        div.payment_module .error{
+            clear:both;
+        }
         #terms,#terms-partpay{
             cursor: pointer!important;
             font-size: inherit;

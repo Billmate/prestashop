@@ -375,10 +375,10 @@ if (typeof modalWin == 'undefined') {
                     modalWin.HideModalPopUp();
                     if (versionCompare(version, '1.6') == 1) {
                         $('.alert-danger').remove();
-                        $('<div class="alert alert-danger">' + response.content + '</div>').insertBefore($('#error_'+method).first());
+                        $('<div class="alert alert-danger">' + response.content + '</div>').insertBefore($('#error_billmate'+method).first());
                     } else {
                         $('.error').remove();
-                        $('<div class="error">' + response.content + '</div>').insertBefore($('#error_'+method).first());
+                        $('<div class="error">' + response.content + '</div>').insertBefore($('#error_billmate'+method).first());
                     }
                 }
             }

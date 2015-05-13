@@ -307,7 +307,7 @@
 			$address = $this->billmate->getAddress(array('pno' => $this->pno));
 			if (isset($address['code']))
 			{
-				$return = array('success' => false, 'content' => $address['message']);
+				$return = array('success' => false, 'content' => utf8_encode($address['message']));
 				die(Tools::jsonEncode($return));
 			}
 			foreach ($address as $key => $value)
