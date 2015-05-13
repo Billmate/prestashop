@@ -354,13 +354,14 @@ if (typeof modalWin == 'undefined') {
                 if (typeof response.redirect != 'undefined') {
                     window.location.href = response.redirect;
                 } else {
+                    if (versionCompare(version, '1.6') == 1) {
+                        $('.alert-danger').remove();
+                    } else {
+                        $('.error').remove();
+                    }
                     if (typeof response.action != 'undefined') {
-                        if (versionCompare(version, '1.6') == 1) {
-                            $('.alert-danger').remove();
-                        } else {
-                            $('.error').remove();
-                        }
-                        $.post(carrierurl, response.action, function () {
+
+                        $.post(carrierurl, response.action, function (response) {
                             getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
                         });
                     } else {

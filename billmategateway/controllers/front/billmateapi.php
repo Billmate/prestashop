@@ -121,27 +121,27 @@
 			$billing_address       = new Address($this->context->cart->id_address_invoice);
 			$shipping_address      = new Address($this->context->cart->id_address_delivery);
 			$customer['Billing']  = array(
-				'firstname' => $billing_address->firstname,
-				'lastname'  => $billing_address->lastname,
-				'company'   => $billing_address->company,
-				'street'    => $billing_address->address1,
+				'firstname' => mb_convert_encoding($billing_address->firstname,'UTF-8','auto'),
+				'lastname'  => mb_convert_encoding($billing_address->lastname,'UTF-8','auto'),
+				'company'   => mb_convert_encoding($billing_address->company,'UTF-8','auto'),
+				'street'    => mb_convert_encoding($billing_address->address1,'UTF-8','auto'),
 				'street2'   => '',
-				'zip'       => $billing_address->postcode,
-				'city'      => $billing_address->city,
-				'country'   => Country::getNameById($this->context->language->id, $billing_address->id_country),
-				'phone'     => $billing_address->phone,
-				'email'     => $this->context->customer->email
+				'zip'       => mb_convert_encoding($billing_address->postcode,'UTF-8','auto'),
+				'city'      => mb_convert_encoding($billing_address->city,'UTF-8','auto'),
+				'country'   => mb_convert_encoding(Country::getIsoById($billing_address->id_country),'UTF-8','auto'),
+				'phone'     => mb_convert_encoding($billing_address->phone,'UTF-8','auto'),
+				'email'     => mb_convert_encoding($this->context->customer->email,'UTF-8','auto')
 			);
 			$customer['Shipping'] = array(
-				'firstname' => $shipping_address->firstname,
-				'lastname'  => $shipping_address->lastname,
-				'company'   => $shipping_address->company,
-				'street'    => $shipping_address->address1,
+				'firstname' => mb_convert_encoding($shipping_address->firstname,'UTF-8','auto'),
+				'lastname'  => mb_convert_encoding($shipping_address->lastname,'UTF-8','auto'),
+				'company'   => mb_convert_encoding($shipping_address->company,'UTF-8','auto'),
+				'street'    => mb_convert_encoding($shipping_address->address1,'UTF-8','auto'),
 				'street2'   => '',
-				'zip'       => $shipping_address->postcode,
-				'city'      => $shipping_address->city,
-				'country'   => Country::getNameById($this->context->language->id, $shipping_address->id_country),
-				'phone'     => $shipping_address->phone,
+				'zip'       => mb_convert_encoding($shipping_address->postcode,'UTF-8','auto'),
+				'city'      => mb_convert_encoding($shipping_address->city,'UTF-8','auto'),
+				'country'   => mb_convert_encoding(Country::getIsoById($shipping_address->id_country),'UTF-8','auto'),
+				'phone'     => mb_convert_encoding($shipping_address->phone,'UTF-8','auto'),
 			);
 
 			return $customer;
@@ -311,7 +311,7 @@
 				die(Tools::jsonEncode($return));
 			}
 			foreach ($address as $key => $value)
-				$address[$key] = utf8_encode($value);
+				$address[$key] = mb_convert_encoding($value,'UTF-8','auto');
 
 			$billing  = new Address($this->context->cart->id_address_invoice);
 			$shipping = new Address($this->context->cart->id_address_delivery);
@@ -334,12 +334,13 @@
 							Common::matchstr($billing->city, $shipping->city) &&
 							Common::matchstr($billing->postcode, $shipping->postcode) &&
 							Common::matchstr($billing->address1, $shipping->address1);
+			error_log('scountry'.$shipping->country.' '.$address['country']);
 			if (!(
 				$api_matched_name
 				&& Common::matchstr($shipping->address1, $address['street'])
 				&& Common::matchstr($shipping->postcode, $address['zip'])
 				&& Common::matchstr($shipping->city, $address['city'])
-				&& Common::matchstr($address['country'], $shipping->country)
+				&& Common::matchstr($address['country'], Country::getNameById($this->context->language->id, $shipping->id_country))
 				&& $address_same
 			))
 			{
@@ -347,9 +348,9 @@
 				{
 					// The customer clicked yes
 					$cart_details = $this->context->cart->getSummaryDetails(null, true);
-					$carrier_id   = $cart_details['carrier']->id;
+					$carrier_id   = $this->context->cart->id_carrier;
 
-					$carrier = Carrier::getCarrierByReference($cart_details['carrier']->id_reference);
+					$carrier = new Carrier($carrier_id,$this->context->cart->id_lang);
 
 					$customer_addresses = $this->context->customer->getAddresses($this->context->language->id);
 
@@ -365,7 +366,7 @@
 							if (Common::matchstr($customer_address['address1'], $address['street']) &&
 							    Common::matchstr($customer_address['postcode'], $address['zip']) &&
 							    Common::matchstr($customer_address['city'], $address['city']) &&
-							    Common::matchstr($customer_address['country'], $address['country']))
+							    Common::matchstr(Country::getNameById($this->context->language->id, $customer_address['id_country']), $address['country']))
 								$matched_address_id = $customer_address['id_address'];
 						}
 						else
@@ -375,7 +376,7 @@
 								if (Common::matchstr($c_address['address1'], $address['street']) &&
 								    Common::matchstr($c_address['postcode'], $address['zip']) &&
 								    Common::matchstr($c_address['city'], $address['city']) &&
-								    Common::matchstr($c_address['country'], $address['country'])
+								    Common::matchstr(Country::getNameById($this->context->language->id, $c_address['id_country']), $address['country'])
 								)
 									$matched_address_id = $c_address['id_address'];
 							}
@@ -399,7 +400,6 @@
 						$addressnew->city     = $address['city'];
 						$addressnew->country  = $address['country'];
 						$addressnew->alias    = 'Bimport-'.date('Y-m-d');
-
 						$addressnew->id_country = Country::getIdByName($this->context->language->id, $address['country']);
 						$addressnew->save();
 						$matched_address_id = $addressnew->id;
@@ -420,7 +420,7 @@
 								'gift'                                   => 0,
 								'gift_message'                           => '',
 								'recyclable'                             => 0,
-								'delivery_option['.$matched_address_id.']' => $carrier->id.',',
+								'delivery_option['.$matched_address_id.']' => $carrier->id,
 								'ajax'                                   => true,
 								'token'                                  => Tools::getToken(false),
 							)
