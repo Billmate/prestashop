@@ -6,7 +6,8 @@
  * @author Jesper Johansson jesper@boxedlogistics.se
  * @copyright Billmate AB 2015
  */
-
+var $checkoutbtn = null;
+var billmateprocessing = false;
 if (navigator.appName != 'Microsoft Internet Explorer') {
 //https://github.com/paulirish/matchMedia.js/
     window.matchMedia || (window.matchMedia = function () {
@@ -280,6 +281,91 @@ if (typeof modalWin == 'undefined') {
     }
     AddEvent(window,'load',function(){
         jQuery.getScript('https://billmate.se/billmate/base_jquery.js',function(){addTerms();})
+
+        // is there Radios for Payment methods? In One page checkout they exists
+        if($('input[name="id_payment_method"]')) {
+            try {
+                var selectedMethod = $('input[name="id_payment_method"]:checked').val();
+                if(typeof selectedMethod != 'undefined') {
+                    if ($('#' + selectedMethod).parent('.payment_module').children('.payment-form')) {
+                        var el = $('#' + selectedMethod).parent('.payment_module').children('.payment-form');
+                        var method = el.attr('id');
+                        //method = method.replace('-fields','');
+
+                        if (typeof method != 'undefined') {
+                            var methodName = method.replace('-fields', '');
+
+                            if (!$('#payment_' + selectedMethod).parents('.item,.alternate_item').hasClass('fields'));
+                            $('#payment_' + selectedMethod).parents('.item,.alternate_item').addClass('fields');
+
+                            $('#' + selectedMethod).parent('.payment_module').children('.payment-form').appendTo($('.cssback.' + methodName).parents('.item,.alternate_item').children('.payment_description'));
+                            $('#' + method).show();
+
+                            $('#' + methodName + 'Submit').hide();
+                            $checkoutbtn = $('.confirm_button')[1].onclick;
+                            $('.confirm_button')[1].onclick = function (e) {
+                                $('#' + methodName + 'Submit').click();
+                                e.preventDefault();
+                            }
+                        }
+                    }
+                }
+
+                $(document).on('click','input[name="id_payment_method"]', function (element) {
+
+                    $('.payment-form').hide();
+                    var value = element.target.value;
+
+                    if ($('#payment_' + value).parents('.item,.alternate_item').hasClass('fields')){
+
+                        $('#payment_'+ value).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').show();
+                        //$checkoutbtn = $('.confirm_button')[1].onclick;
+                        $('.confirm_button')[1].onclick = function(e){
+                            $('#' + methodName + 'Submit').click();
+
+                            e.preventDefault()
+                        }
+
+                    }else if ($('#' + value).parent('.payment_module').children('.payment-form')) {
+                        var el = $('#' + value).parent('.payment_module').children('.payment-form');
+                        var method = el.attr('id');
+                        //method = method.replace('-fields','');
+
+                        if(typeof method != 'undefined') {
+                            var methodName = method.replace('-fields', '');
+
+                            if(!$('#payment_'+value).parents('.item,.alternate_item').hasClass('fields'));
+                                $('#payment_'+value).parents('.item,.alternate_item').addClass('fields');
+
+                            $('#' + value).parent('.payment_module').children('.payment-form').appendTo($('.cssback.' + methodName).parents('.item,.alternate_item').children('.payment_description'));
+                            $('#'+method).show();
+
+                            $('#' + methodName + 'Submit').hide();
+                            $checkoutbtn = $('.confirm_button')[1].onclick;
+                            $('.confirm_button')[1].onclick = function (e) {
+                                $('#' + methodName + 'Submit').click();
+                                e.preventDefault();
+                            }
+                        } else {
+                            if($checkoutbtn != null) {
+                                //$checkoutbtn = $('.confirm_button')[1].onclick;
+                                $('.confirm_button')[1].onclick = $checkoutbtn
+                            }
+                        }
+                    }
+
+                });
+            }catch(err){
+                console.log(err);
+            }
+        }
+
+    });
+    function billmateOpc(){
+
+    }
+    AddEvent(window,'ready',function(){
+
     })
     function ShowDivInCenter(divId) {
         try {
@@ -348,10 +434,13 @@ if (typeof modalWin == 'undefined') {
         } else {
             $('div.error').remove();
         }
+        billmateprocessing = true;
         jQuery.post(ajaxurl + '&method=' + method + param, form, function (json) {
             eval('var response = ' + json);
+            billmateprocessing = false;
             if (response.success) {
                 if (typeof response.redirect != 'undefined') {
+
                     window.location.href = response.redirect;
                 } else {
                     if (versionCompare(version, '1.6') == 1) {

@@ -25,26 +25,26 @@
 		{
 			try
 			{
-				$this->db->execute('DROP TABLE IF EXISTS '._DB_PREFIX_.'billmate_rno');
-				$this->db->execute('DROP TABLE IF EXISTS '._DB_PREFIX_.'billmate_payment_classes');
-				$this->db->execute('CREATE TABLE IF NOT EXISTS '._DB_PREFIX_.'billmate_payment_pclasses (
-			id int AUTO_INCREMENT,
-			eid int,
-			paymentplanid int,
-			description varchar(255),
-			nbrofmonths int,
-			startfee decimal(11,2),
-			handlingfee decimal(11,2),
-			minamount decimal(11,2),
-			maxamount decimal(11,2),
-			interestrate decimal(11,2),
-			monthlycost decimal(11,2),
-			`type` tinyint,
-			expirydate date,
-			country varchar(255),
-			`language` varchar(255),
-			currency varchar(10),
-			PRIMARY KEY(id))');
+				$this->db->execute('DROP TABLE IF EXISTS '._DB_PREFIX_.'billmate_rno;',false);
+				$drop = $this->db->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.'billmate_payment_pclasses`;CREATE TABLE `'._DB_PREFIX_.'billmate_payment_pclasses` (
+                                        `id` int AUTO_INCREMENT,
+                                        `eid` int,
+                                        `paymentplanid` int,
+                                        `description` varchar(255),
+                                        `nbrofmonths` int,
+                                        `startfee` decimal(11,2),
+                                        `handlingfee` decimal(11,2),
+                                        `minamount` decimal(11,2),
+                                        `maxamount` decimal(11,2),
+                                        `interestrate` decimal(11,2),
+                                        `monthlycost` decimal(11,2),
+                                        `type` tinyint,
+                                        `expirydate` date,
+                                        `country` varchar(255),
+                                        `language` varchar(255),
+                                        `currency` varchar(10),
+                                        PRIMARY KEY(`id`));',false);
+
 
 			}
 			catch (Exception $e)

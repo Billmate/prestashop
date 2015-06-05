@@ -68,11 +68,11 @@
         }
     </style>
     {if $method.type != 'billmateinvoice' && $method.type != 'billmatepartpay'}
-        <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller}" onclick="getPayment('{$method.method}'); return false;">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'}</a>
+        <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller}" onclick="getPayment('{$method.method}');">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'}</a>
     {else}
         <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller|escape:'url'}" id="{$method.type|escape:'html'}">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'} {if $method.type == 'billmatepartpay'} - {l s='Pay from' mod='billmategateway'} {convertPrice|regex_replace:'/[.,]0+/':'' price=$method.monthly_cost.monthlycost} {elseif $method.invoiceFee.fee > 0} - {convertPrice|regex_replace:'/[.,]0+/':'' price=$method.invoiceFee.fee_incl_tax}  {l s='invoice fee is added to the order sum' mod='billmategateway'}{/if}
         </a>
-        <div style="display:none;" id="{$method.type}-fields">
+        <div style="display:none;" id="{$method.type}-fields" class="payment-form">
             <form action="javascript://" class="{$method.type|escape:'html'}">
                 <div style="padding:10px;" id="error_{$method.type}"></div>
                 {if $method.type == 'billmatepartpay'}
@@ -120,6 +120,7 @@
                     }
                 }
                 })
+        return false;
     }
     var emptypersonerror = "{l s='PNO/SSN missing' mod='billmategateway'}";
     var checkbox_required = "{l s='Please check the checkbox for confirm this e-mail address is correct and can be used for invoicing.' mod='billmategateway'}";
@@ -135,7 +136,9 @@
         var method = $(this).data('method');
         var form = $('.billmate' + method).serializeArray();
         modalWin.HideModalPopUp();
-        getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
+        console.log('click');
+        if(!billmateprocessing)
+            getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
     });
     $('#billmateinvoice').click(function (e) {
         $('#billmatepartpay-fields').hide();

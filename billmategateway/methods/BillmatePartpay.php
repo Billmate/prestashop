@@ -122,12 +122,13 @@
 				'label'    => $this->l('Sort Order'),
 				'desc'     => $this->l(''),
 			);
-			$pclasses = new pClasses(Configuration::get('BILLMATE_ID'));
+            if(Configuration::get('BILLMATE_ID'))
+			    $pclasses = new pClasses(Configuration::get('BILLMATE_ID'));
 			$settings['paymentplans'] = array(
 				'name' => 'paymentplans',
 				'label' => $this->l('Paymentplans'),
 				'type' => 'table',
-				'pclasses' => $pclasses->getPClasses('')
+				'pclasses' => (Configuration::get('BILLMATE_ID')) ? $pclasses->getPClasses('') : false
 			);
 
 

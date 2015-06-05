@@ -46,7 +46,8 @@
 
 			if (!defined('BILLMATE_CLIENT'))
 				define('BILLMATE_CLIENT', 'PrestaShop:2.0.0');
-
+            if(!defined('BILLMATE_SERVER'))
+                define('BILLMATE_SERVER','2.1.7');
 			$this->method = Tools::getValue('method');
 
 			$eid    = Configuration::get('BILLMATE_ID');
@@ -334,13 +335,12 @@
 							Common::matchstr($billing->city, $shipping->city) &&
 							Common::matchstr($billing->postcode, $shipping->postcode) &&
 							Common::matchstr($billing->address1, $shipping->address1);
-			error_log('scountry'.$shipping->country.' '.$address['country']);
 			if (!(
 				$api_matched_name
 				&& Common::matchstr($shipping->address1, $address['street'])
 				&& Common::matchstr($shipping->postcode, $address['zip'])
 				&& Common::matchstr($shipping->city, $address['city'])
-				&& Common::matchstr($address['country'], Country::getNameById($this->context->language->id, $shipping->id_country))
+				&& Common::matchstr($address['country'], Country::getIsoById($shipping->id_country))
 				&& $address_same
 			))
 			{
@@ -366,7 +366,7 @@
 							if (Common::matchstr($customer_address['address1'], $address['street']) &&
 							    Common::matchstr($customer_address['postcode'], $address['zip']) &&
 							    Common::matchstr($customer_address['city'], $address['city']) &&
-							    Common::matchstr(Country::getNameById($this->context->language->id, $customer_address['id_country']), $address['country']))
+							    Common::matchstr(Country::getIsoById($customer_address['id_country']), $address['country']))
 								$matched_address_id = $customer_address['id_address'];
 						}
 						else
@@ -376,7 +376,7 @@
 								if (Common::matchstr($c_address['address1'], $address['street']) &&
 								    Common::matchstr($c_address['postcode'], $address['zip']) &&
 								    Common::matchstr($c_address['city'], $address['city']) &&
-								    Common::matchstr(Country::getNameById($this->context->language->id, $c_address['id_country']), $address['country'])
+								    Common::matchstr(Country::getIsoById($c_address['id_country']), $address['country'])
 								)
 									$matched_address_id = $c_address['id_address'];
 							}
@@ -400,7 +400,7 @@
 						$addressnew->city     = $address['city'];
 						$addressnew->country  = $address['country'];
 						$addressnew->alias    = 'Bimport-'.date('Y-m-d');
-						$addressnew->id_country = Country::getIdByName($this->context->language->id, $address['country']);
+						$addressnew->id_country = Country::getByIso($address['country']);
 						$addressnew->save();
 						$matched_address_id = $addressnew->id;
 					}
@@ -452,7 +452,7 @@
 					$this->context->smarty->assign('address', $address['street']);
 					$this->context->smarty->assign('zipcode', $address['zip']);
 					$this->context->smarty->assign('city', $address['city']);
-					$this->context->smarty->assign('country', $address['country']);
+					$this->context->smarty->assign('country', Country::getNameById($this->context->language->id,Country::getByIso($address['country'])));
 
 					$previouslink = $this->context->link->getPageLink('order.php', true).'?step=3';
 					$this->context->smarty->assign('previousLink', $previouslink);
@@ -515,7 +515,7 @@
 				'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method)),
 				'cancelurl'    => $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method)),
 				'callbackurl'  => $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method)),
-				'returnmethod' => 'POST'
+				'returnmethod' => (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == "on") ?'POST' : 'GET'
 			);
 
 			return $payment_data;
