@@ -9,7 +9,7 @@
 <p class="text">
     <span>{l s='Personal / Corporate number' mod='billmategateway'}</span>
     <input type="text" id="pno" name="pno"/>
-    <button id="getaddress">{l s="Get Address" mod='billmategateway'}</button>
+    <button id="getaddress" class="btn btn-default"><span>{l s="Get Address" mod='billmategateway'}</span></button>
 </p>
 <script type="text/javascript">
     var getaddressurl = "{$link->getModuleLink('billmategateway','getaddress', ['ajax'=> 0], true)}";
