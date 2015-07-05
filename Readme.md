@@ -34,15 +34,22 @@ Read following information to install these plugins
 ## Changelog
 
 ### 2.0.0
+* Tweak - Rewrite of the plugin to only have one folder.
+* Tweak - Changed the settings to only insert Billmate ID and Secret in one place.
+* Feature - GetAddress on checkout page.
+* Tweak - Validate Credentials on save, to make sure the correct credentials are used.
+* Enchancement - No need for product as a Invoicefee.
 
 ### 1.35.2 (2015-02-02)
 3 issues closed and 13 commits.
+
 * Fix - If no order status was set, the module would stop working. Now it will default to the Prestashop standard order accepted status if no status is defined.
 * Fix - Fixed a bug if minify was enabled the invoice & part payment module would not work.
 * Fix - Increased the z-index of the billmatepopup to 9999, it should now always be on top.
 
 ### 1.35.1 (2015-01-30)
 1 issue closed and 4 commits.
+
 * Fix - Updated how auto activate card & bankpayments are processed to contain the correct order id.
 
 ### 1.35 (2015-01-28)

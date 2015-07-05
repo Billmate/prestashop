@@ -55,7 +55,7 @@
 				$extra               = array('transaction_id' => $data['number']);
 				$status              = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
 				$this->module->validateOrder((int)$this->context->cart->id, $status, $total,
-					$this->coremodule->displayName, null, $extra, null, false, $customer->secure_key);
+					$this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$values = array();
 				if ($this->module->authorization_method != 'sale' && ($this->method == 'cardpay' || $this->method == 'bankpay'))
 				{

@@ -537,7 +537,7 @@
 						$this->module->validateOrder((int)$this->context->cart->id,
 								$status,
 								($this->method == 'invoice') ? $this->paid_amount/100 : $total,
-								$this->coremodule->displayName,
+								$this->module->displayName,
 								null, $extra, null, false, $customer->secure_key);
 						$values                = array();
 						$values['PaymentData'] = array(
