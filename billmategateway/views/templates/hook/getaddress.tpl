@@ -27,12 +27,19 @@
                         response = JSON.parse(response);
                         if(response.success){
                             $('input[name="firstname"]').val(response.data.firstname);
+                            $('input[name="firstname"]').trigger('change');
                             $('input[name="lastname"]').val(response.data.lastname);
+                            $('input[name="lastname"]').trigger('change');
                             $('input[name="company"]').val(response.data.company);
+                            $('input[name="company"]').trigger('change');
                             $('input[name="address1"]').val(response.data.street);
+                            $('input[name="address1"]').trigger('change');
                             $('input[name="city"]').val(response.data.city);
+                            $('input[name="city"]').trigger('change');
                             $('input[name="postcode"]').val(response.data.zip);
+                            $('input[name="postcode"]').trigger('change');
                             $('input[name="id_country"]').val(response.data.id_country);
+                            $('input[name="id_country"]').trigger('change');
                         } else {
                             alert(errormessage);
                         }
