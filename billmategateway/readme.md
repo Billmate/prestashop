@@ -27,20 +27,21 @@ Read following information to install these plugins
 ## Changelog
 
 ### 2.0 (2015-07-06)
-44 issues closed and 76 commits
+44 issues closed and 76 commits.
 
-* Feature - validate credentials
-* Enchancement - Invoice fee is not a product anymore
-* Enchancement - Get Address on checkout page
-* Enchancement - Choice for order id or reference id as Billmate order id
-* Enchancement - Localized Logos
-* Enchancement - Ajax in checkout to validate Address
-* Enchancement - Add variable product selection in product title on invoice
-* Improvement - Better Currency support
-* Improvement - Better Country support
-* Styling - Nicer Address validation popup
-* Tweak - One module instead of four
-* Tweak - Consequent Naming Conventions
+* Feature - validate credentials.
+* Fix - Discount is not applied to invoice fee anymore.
+* Enchancement - Invoice fee is not a product anymore.
+* Enchancement - Get Address on checkout page.
+* Enchancement - Choice for order id or reference id as Billmate order id.
+* Enchancement - Localized Logos.
+* Enchancement - Ajax in checkout to validate Address.
+* Enchancement - Add variable product selection in product title on invoice.
+* Improvement - Better Currency support.
+* Improvement - Better Country support.
+* Styling - Nicer Address validation popup.
+* Tweak - One module instead of four.
+* Tweak - Consequent Naming Conventions.
 
 ### 1.36 (2015-03-25)
 25 issues closed and 58 commits.
