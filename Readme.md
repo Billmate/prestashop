@@ -14,31 +14,47 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 ## Important Note
 * This plugin does not currently support campaigns.
 * The automatic order activation on status change is supported from PrestaShop version 1.5 and above.
-
-### Invoice Fee Handling
-Since of version 1.31 the Invoice Fee for Billmate Invoice are added as a simple (hidden) product. This is to match order total in Prestashop and your billmate part payment (in earlier versions the invoice fee only were added to Billmate).
-
-To create a Invoice fee product: 
-* Add a simple (hidden) product. Mark it as a taxable product.
-* Go to the Billmate Gateway settings page and add the ID of the Invoice Fee product. The ID can be found by hovering the Invoice Fee product on the Products page in Prestashop.
-
+* This module doesnt support 1.4 anymore.
 
 
 ## Installation
 
 Read following information to install these plugins
 
-* You will find four plugins, billmateinvoice, billmatepartpayment, billmatecardpay & billmatebank
+* You will find one plugin billmategateway
 * Extract zip file under prestashop_root/modules
 
 ## Changelog
 
-### 2.0.0
-* Tweak - Rewrite of the plugin to only have one folder.
-* Tweak - Changed the settings to only insert Billmate ID and Secret in one place.
-* Feature - GetAddress on checkout page.
-* Tweak - Validate Credentials on save, to make sure the correct credentials are used.
-* Enchancement - No need for product as a Invoicefee.
+### 2.0 (2015-07-06)
+44 issues closed and 76 commits.
+
+* Feature - validate credentials.
+* Fix - Discount is not applied to invoice fee anymore.
+* Enchancement - Invoice fee is not a product anymore.
+* Enchancement - Get Address on checkout page.
+* Enchancement - Choice for order id or reference id as Billmate order id.
+* Enchancement - Localized Logos.
+* Enchancement - Ajax in checkout to validate Address.
+* Enchancement - Add variable product selection in product title on invoice.
+* Improvement - Better Currency support.
+* Improvement - Better Country support.
+* Styling - Nicer Address validation popup.
+* Tweak - One module instead of four.
+* Tweak - Consequent Naming Conventions.
+
+### 1.36 (2015-03-25)
+25 issues closed and 58 commits.
+
+* Feature - Activate the order in Billmate online automatically by setting a specific order status by enabling the setting for it in each specific payment module.
+* Fix - Small translation fix for 3D Secure setting.
+* Fix - No more double breadcrumbs in Billmate Bank redirect page.
+* Fix - The module now works together with the discount type of free gift.
+* Fix - Clarified that the invoice fee you enter in admin is excluding VAT.
+* Fix - Improved support for other currencies.
+* Fix - Invoice fee is sent in correct currency with auto converting.
+* Fix - Some layout improvements.
+* Fix - Some translation improvements.
 
 ### 1.35.2 (2015-02-02)
 3 issues closed and 13 commits.
