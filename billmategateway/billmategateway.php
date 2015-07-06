@@ -58,6 +58,15 @@
 			$this->context->smarty->assign('base_dir', __PS_BASE_URI__);
 		}
 
+        public function dummyTranslations()
+        {
+            $this->l('Billmate Cardpay');
+            $this->l('Billmate Bankpay');
+            $this->l('Billmate Invoice');
+            $this->l('Billmate Partpay');
+
+        }
+
 		public function getContent()
 		{
 			$html = '';
@@ -699,7 +708,7 @@
 				'name' => 'getaddress',
 				'type' => 'checkbox',
 				'label' => $this->l('Activate GetAddress'),
-				'desc' => 'Let your customer use getAddress for checkout',
+				'desc' => $this->l('Let your customer use getAddress for checkout'),
 				'value' => Configuration::get('BILLMATE_GETADDRESS')
 			);
 			$this->smarty->assign('activation_status', $activate_status);
