@@ -16,7 +16,7 @@
 
     <div style="margin-top:1em">
 
-        <input data-theme="b" type="button" id="billmate_button" data-method="{$method|escape:'html'}"
+        <input data-theme="b" type="button" id="billmate_button" class="button" data-method="{$method|escape:'html'}"
                value="{l s='Yes, make purchase with this address' mod='billmategateway'}" class="billmate_button"/>
     </div>
     <div>

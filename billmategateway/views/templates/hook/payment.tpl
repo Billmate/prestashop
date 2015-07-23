@@ -7,6 +7,35 @@
 * @copyright Billmate AB 2015
 *}
 <style>
+    #divFrameParent * {
+        text-align: center!important;
+        font-size: 1em;
+        font-family: tahoma!important;
+    }
+
+    #divFrameParent .checkout-heading {
+        color: #000000!important;
+        font-weight: bold!important;
+        font-size: 13px!important;
+        margin-bottom: 15px!important;
+        padding: 8px!important;
+    }
+    #divFrameParent .button:hover{
+        background:#0B6187!important;
+    }
+    #divFrameParent .button {
+        background-color: #1DA9E7!important;
+        background: #1DA9E7!important;
+        border: 0 none!important;
+        border-radius: 8px!important;
+        box-shadow: 2px 2px 2px 1px #EAEAEA!important;
+        color: #FFFFFF!important;
+        cursor: pointer!important;
+        font-family: arial!important;
+        font-size: 14px!important;
+        font-weight: bold!important;
+        padding: 3px 17px!important;
+    }
     {if $template == 'new'}
     div.payment_module {
         border: 1px solid #d6d4d4;
@@ -136,7 +165,7 @@
         var method = $(this).data('method');
         var form = $('.billmate' + method).serializeArray();
         modalWin.HideModalPopUp();
-        console.log('click');
+
         if(!billmateprocessing)
             getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
     });
