@@ -6,11 +6,11 @@
 * @author Jesper Johansson jesper@boxedlogistics.se
 * @copyright Billmate AB 2015
 *}
-<p class="text">
-    <span>{l s='Personal / Corporate number' mod='billmategateway'}</span>
-    <input type="text" id="pno" name="pno"/>
-    <button id="getaddress" class="btn btn-default"><span>{l s="Get Address" mod='billmategateway'}</span></button>
-</p>
+<div class="text form-group">
+    <label>{l s='Personal / Corporate number' mod='billmategateway'}</label>
+    <input type="text" id="pno" class="text form-control" name="pno"/>
+    <button id="getaddress" class="btn btn-default button"><span>{l s="Get Address" mod='billmategateway'}</span></button>
+</div>
 <script type="text/javascript">
     var getaddressurl = "{$link->getModuleLink('billmategateway','getaddress', ['ajax'=> 0], true)}";
     var errormessage = '{l s='We couldnt find your address, please enter manually' mod='billmategateway'}';
