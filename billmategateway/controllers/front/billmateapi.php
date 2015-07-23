@@ -159,7 +159,7 @@
 			foreach ($articles as $article)
 			{
 				$taxrate       = ($article['price_wt'] == $article['price']) ? 0 : $article['rate'];
-				error_log(print_r($article, true ));
+
 				$articles_arr[] = array(
 					'quantity'   => $article['cart_quantity'],
 					'title'      => (isset($article['attributes']) && !empty($article['attributes'])) ? $article['name'].  ' - '.$article['attributes'] : $article['name'],
@@ -402,6 +402,7 @@
 						$addressnew->alias    = 'Bimport-'.date('Y-m-d');
 						$addressnew->id_country = Country::getByIso($address['country']);
 						$addressnew->save();
+
 						$matched_address_id = $addressnew->id;
 					}
 					$this->context->cart->updateAddressId($this->context->cart->id_address_delivery, $matched_address_id);

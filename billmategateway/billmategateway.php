@@ -323,11 +323,11 @@
 				$tax_calculator = new TaxCalculator(array($tax));
 
 				$tax_amount = $tax_calculator->getTaxesAmount($invoice_fee);
-
-				$total_fee = $invoice_fee + $tax_amount[1];
+				$billmatetax = array_pop($tax_amount);
+				$total_fee = $invoice_fee + $billmatetax;
 
 				$this->smarty->assign('invoiceFeeIncl', $total_fee);
-				$this->smarty->assign('invoiceFeeTax', $tax_amount[1]);
+				$this->smarty->assign('invoiceFeeTax', $billmatetax);
 				$this->smarty->assign('order', $order);
 
 				return $this->display(__FILE__, 'invoicefeepdf.tpl');

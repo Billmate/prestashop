@@ -311,8 +311,10 @@
 						$billmate_tax_calculator = new TaxCalculator(array($billmate_tax));
 
 						$tax_amount = $billmate_tax_calculator->getTaxesAmount($billmate_invoice_fee);
-
-						$total_fee = $billmate_invoice_fee + $tax_amount[1];
+						// todo check this line
+						error_log('tax_amount'.print_r($tax_amount,true));
+						$billmatetax = array_pop($tax_amount);
+						$total_fee = $billmate_invoice_fee + $billmatetax;
 						$order->total_paid_tax_excl = (float)Tools::ps_round((float)$this->context->cart->getOrderTotal(false, Cart::BOTH, $order->product_list, $id_carrier) + $billmate_invoice_fee, 2);
 						$order->total_paid_tax_incl = (float)Tools::ps_round((float)$this->context->cart->getOrderTotal(true, Cart::BOTH, $order->product_list, $id_carrier) + $total_fee, 2);
 						$order->total_paid = $order->total_paid_tax_incl;
