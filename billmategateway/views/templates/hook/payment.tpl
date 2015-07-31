@@ -132,7 +132,12 @@
 {/foreach}
 <script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
 <script type="text/javascript">
-
+    if(!billmatepopupLoaded){
+        var script = document.createElement('script');
+        script.setAttribute('src','{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js');
+        script.setAttribute('type','text/javascript');
+        document.getElementsByTagName('head')[0].appendChild(script);
+    }
     var version = "{$ps_version|escape:'html'}"
     var PARTPAYMENT_EID = "{$eid}";
     var ajaxurl = "{$link->getModuleLink('billmategateway', 'billmateapi', ['ajax'=> 0], true)}";
@@ -166,8 +171,10 @@
         var form = $('.billmate' + method).serializeArray();
         modalWin.HideModalPopUp();
 
-        if(!billmateprocessing)
+        if(!billmateprocessing) {
+
             getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
+        }
     });
     $('#billmateinvoice').click(function (e) {
         $('#billmatepartpay-fields').hide();
@@ -180,14 +187,18 @@
         e.preventDefault();
     })
     $('#billmateinvoiceSubmit').click(function (e) {
-        var form = $('.billmateinvoice').serializeArray();
-
+        if($('form.billmateinvoice').length > 1) {
+            var form = $('form.realbillmateinvoice').serializeArray();
+        } else {
+            var form = $('form.billmateinvoice').serializeArray();
+        }
         if ($.trim($('#pno_billmateinvoice').val()) == '') {
             alert(emptypersonerror);
             return;
         }
         if ($('#agree_with_terms_billmateinvoice').prop('checked') == true) {
-            getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'invoice');
+            if(!billmateprocessing)
+                getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'invoice');
         } else {
             alert($('<textarea/>').html(checkbox_required).text());
         }
@@ -195,18 +206,82 @@
     })
 
     $('#billmatepartpaySubmit').click(function (e) {
-        var form = $('.billmatepartpay').serializeArray();
-
+        if($('form.billmatepartpay').length > 1){
+            var form = $('form.realbillmatepartpay').serializeArray();
+        } else {
+            var form = $('form.billmatepartpay').serializeArray();
+        }
         if ($.trim($('#pno_billmatepartpay').val()) == '') {
             alert(emptypersonerror);
             return;
         }
         if ($('#agree_with_terms_billmatepartpay').prop('checked') == true) {
-            getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'partpay');
+            if(!billmateprocessing)
+                getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'partpay');
         } else {
             alert($('<textarea/>').html(checkbox_required).text());
         }
         e.preventDefault();
 
     })
+    if($('input[name="id_payment_method"]')) {
+        $(document).on('click', 'input[name="id_payment_method"]', function (element) {
+            console.log('click');
+            $('.payment-form').hide();
+            var value = element.target.value;
+
+            if ($('#payment_' + value).parents('.item,.alternate_item').hasClass('fields')) {
+                console.log('has fields');
+
+                $('#payment_' + value).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').show();
+                //$checkoutbtn = $('.confirm_button')[1].onclick;
+                var method = $('#payment_' + value).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').attr('id');
+                var methodName = method.replace('-fields', '');
+                if ($('#pno')) {
+                    $('pno_' + methodName).val($('#pno'));
+                }
+                $('.confirm_button')[1].onclick = function (e) {
+                    console.log('method1' + methodName);
+                    submitAccount($('#' + methodName + 'Submit'));
+
+
+                    e.preventDefault()
+                }
+
+            } else if ($('#' + value).parent('.payment_module').children('.payment-form')) {
+                var el = $('#' + value).parent('.payment_module').children('.payment-form');
+                var method = el.attr('id');
+                //method = method.replace('-fields','');
+
+                if (typeof method != 'undefined') {
+                    var methodName = method.replace('-fields', '');
+
+                    if (!$('#payment_' + value).parents('.item,.alternate_item').hasClass('fields'))
+                        $('#payment_' + value).parents('.item,.alternate_item').addClass('fields');
+
+                    $('#' + value).parent('.payment_module').children('.payment-form').appendTo($('.cssback.' + methodName).parents('.item,.alternate_item').children('.payment_description'));
+                    $('.cssback.' + methodName).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').children('.' + methodName).addClass('real' + methodName);
+                    $('#' + value).parent('.payment_module').children('.payment-form').remove(methodName);
+                    $('#' + method).show();
+                    if ($('#pno')) {
+                        $('pno_' + methodName).val($('#pno'));
+                    }
+                    $('#' + methodName + 'Submit').hide();
+                    $checkoutbtn = $('.confirm_button')[1].onclick;
+                    $('.confirm_button')[1].onclick = function (e) {
+                        //$('#' + methodName + 'Submit').click();
+                        submitAccount($('#' + methodName + 'Submit'));
+
+                        e.preventDefault();
+                    }
+                } else {
+                    if ($checkoutbtn != null) {
+                        //$checkoutbtn = $('.confirm_button')[1].onclick;
+                        $('.confirm_button')[1].onclick = $checkoutbtn
+                    }
+                }
+            }
+
+        });
+    }
 </script>

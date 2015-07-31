@@ -40,6 +40,9 @@
                             $('input[name="postcode"]').trigger('change');
                             $('input[name="id_country"]').val(response.data.id_country);
                             $('input[name="id_country"]').trigger('change');
+                            if(typeof validateAllFieldsNow == "function"){
+                                validateAllFieldsNow(true);
+                            }
                         } else {
                             alert(errormessage);
                         }

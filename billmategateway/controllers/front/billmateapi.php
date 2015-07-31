@@ -121,6 +121,8 @@
 			$customer['pno']      = ($this->method == 'invoice' || $this->method == 'partpay') ? $this->pno : '';
 			$billing_address       = new Address($this->context->cart->id_address_invoice);
 			$shipping_address      = new Address($this->context->cart->id_address_delivery);
+			error_log(print_r( $this->context->customer,true));
+
 			$customer['Billing']  = array(
 				'firstname' => mb_convert_encoding($billing_address->firstname,'UTF-8','auto'),
 				'lastname'  => mb_convert_encoding($billing_address->lastname,'UTF-8','auto'),
