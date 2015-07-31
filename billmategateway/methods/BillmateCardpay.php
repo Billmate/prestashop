@@ -30,10 +30,7 @@
 			$this->icon                 = file_exists(_PS_MODULE_DIR_.'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/card.png') ? 'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/card.png' : 'billmategateway/views/img/en/card.png';
 		}
 
-        public function l($string)
-        {
-            return parent::l($string,basename(__FILE__,'.php'));
-        }
+
 
 		/**
 		 * Returns Payment info for appending in payment methods list
