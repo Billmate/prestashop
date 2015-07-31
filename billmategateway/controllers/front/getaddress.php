@@ -26,6 +26,7 @@
 			$eid    = Configuration::get('BILLMATE_ID');
 			$secret = Configuration::get('BILLMATE_SECRET');
 			if (!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE', $this->context->language->iso_code);
+
 			$this->billmate = Common::getBillmate($eid, $secret, false);
 
 			$this->pno = Tools::getValue('pno');
