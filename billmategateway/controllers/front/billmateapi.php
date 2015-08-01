@@ -456,8 +456,10 @@
 					$this->context->smarty->assign('zipcode', $address['zip']);
 					$this->context->smarty->assign('city', $address['city']);
 					$this->context->smarty->assign('country', Country::getNameById($this->context->language->id,Country::getByIso($address['country'])));
-
-					$previouslink = $this->context->link->getPageLink('order.php', true).'?step=3';
+					if (Module::isInstalled('onepagecheckout'))
+						$previouslink = $this->context->link->getPageLink('order.php',true);
+					else
+						$previouslink = $this->context->link->getPageLink('order.php', true).'?step=3';
 					$this->context->smarty->assign('previousLink', $previouslink);
 
 					$html   = $this->context->smarty->fetch(_PS_MODULE_DIR_.'billmategateway/views/templates/front/wrongaddress.tpl');
@@ -537,11 +539,21 @@
 						$extra    = array('transaction_id' => $result['number']);
 						$total    = $this->context->cart->getOrderTotal();
 						$customer = new Customer((int)$this->context->cart->id_customer);
-						$this->module->validateOrder((int)$this->context->cart->id,
+						if ($this->method == 'partpay')
+						{
+							$this->coremodule->validateOrder((int)$this->context->cart->id,
 								$status,
-								($this->method == 'invoice') ? $this->paid_amount/100 : $total,
+								($this->method == 'invoice') ? $this->paid_amount / 100 : $total,
 								$this->module->displayName,
 								null, $extra, null, false, $customer->secure_key);
+						}
+						else {
+							$this->module->validateOrder((int)$this->context->cart->id,
+								$status,
+								($this->method == 'invoice') ? $this->paid_amount / 100 : $total,
+								$this->module->displayName,
+								null, $extra, null, false, $customer->secure_key);
+						}
 						$values                = array();
 						$values['PaymentData'] = array(
 							'number'  => $result['number'],

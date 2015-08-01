@@ -272,7 +272,7 @@
 						$order->secure_key = ($secure_key ? pSQL($secure_key) : pSQL($this->context->customer->secure_key));
 						$order->payment = $payment_method;
 						if (isset($this->name))
-							$order->module = $this->name;
+							$order->module = $this->module->name;
 						$order->recyclable = $this->context->cart->recyclable;
 						$order->gift = (int)$this->context->cart->gift;
 						$order->gift_message = $this->context->cart->gift_message;

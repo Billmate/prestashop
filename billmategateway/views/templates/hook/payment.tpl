@@ -142,6 +142,8 @@
     var PARTPAYMENT_EID = "{$eid}";
     var ajaxurl = "{$link->getModuleLink('billmategateway', 'billmateapi', ['ajax'=> 0], true)}";
     function getPayment(method){
+        if(typeof submitAccount == 'function')
+            submitAccount();
         $.ajax({
                 url: ajaxurl,
                 data: 'method='+method,
@@ -168,7 +170,10 @@
     var windowtitlebillmate = "{l s='Pay by invoice can be made only to the address listed in the National Register. Would you make the purchase with address:' mod='billmategateway'}";
     jQuery(document.body).on('click', '#billmate_button', function () {
         var method = $(this).data('method');
-        var form = $('.billmate' + method).serializeArray();
+        if ($('form.billmate'+method).length > 0)
+            var form =('form.realbillmate'+method).serializeArray();
+        else
+            var form = $('form.billmate' + method).serializeArray();
         modalWin.HideModalPopUp();
 
         if(!billmateprocessing) {
@@ -224,7 +229,7 @@
         e.preventDefault();
 
     })
-    if($('input[name="id_payment_method"]')) {
+    if($('input[name="id_payment_method"]').length) {
         $(document).on('click', 'input[name="id_payment_method"]', function (element) {
             console.log('click');
             $('.payment-form').hide();
@@ -237,8 +242,8 @@
                 //$checkoutbtn = $('.confirm_button')[1].onclick;
                 var method = $('#payment_' + value).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').attr('id');
                 var methodName = method.replace('-fields', '');
-                if ($('#pno')) {
-                    $('pno_' + methodName).val($('#pno'));
+                if ($('#pno').length) {
+                    $('#pno_' + methodName).val($('#pno').val());
                 }
                 $('.confirm_button')[1].onclick = function (e) {
                     console.log('method1' + methodName);
@@ -263,8 +268,8 @@
                     $('.cssback.' + methodName).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').children('.' + methodName).addClass('real' + methodName);
                     $('#' + value).parent('.payment_module').children('.payment-form').remove(methodName);
                     $('#' + method).show();
-                    if ($('#pno')) {
-                        $('pno_' + methodName).val($('#pno'));
+                    if ($('#pno').length) {
+                        $('#pno_' + methodName).val($('#pno').val());
                     }
                     $('#' + methodName + 'Submit').hide();
                     $checkoutbtn = $('.confirm_button')[1].onclick;

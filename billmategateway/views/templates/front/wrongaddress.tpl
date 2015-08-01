@@ -20,7 +20,7 @@
                value="{l s='Yes, make purchase with this address' mod='billmategateway'}" class="billmate_button"/>
     </div>
     <div>
-        <a href="{$previousLink|escape:'url'}" class="linktag"
+        <a href="{$previousLink}" class="linktag"
            onclick="modalWin.HideModalPopUp();">{l s='I want to specify a different number or change payment method' mod='billmategateway'}</a>
     </div>
 </form>
