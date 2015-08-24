@@ -149,7 +149,7 @@
 			// Bankpay Settings
 			Configuration::updateValue('BBANKPAY_ENABLED', (Tools::getIsset('bankpayActivated')) ? 1 : 0);
 			Configuration::updateValue('BBANKPAY_MOD', (Tools::getIsset('bankpayTestmode')) ? 1 : 0);
-			Configuration::updateValue('BBANKPAY_AUTHORIZATION_METHOD', Tools::getValue('bankpayAuthorization'));
+			//Configuration::updateValue('BBANKPAY_AUTHORIZATION_METHOD', Tools::getValue('bankpayAuthorization'));
 			Configuration::updateValue('BBANKPAY_ORDER_STATUS', Tools::getValue('bankpayBillmateOrderStatus'));
 			Configuration::updateValue('BBANKPAY_MIN_VALUE', Tools::getValue('bankpayBillmateMinimumValue'));
 			Configuration::updateValue('BBANKPAY_MAX_VALUE', Tools::getValue('bankpayBillmateMaximumValue'));
@@ -238,11 +238,30 @@
 			return $this->display(__FILE__, 'error.tpl');
 		}
 
+		private function addState($en, $color)
+		{
+			$orderState = new OrderState();
+			$orderState->name = array();
+			foreach (Language::getLanguages() as $language)
+				$orderState->name[$language['id_lang']] = $en;
+			$orderState->send_email = false;
+			$orderState->color = $color;
+			$orderState->hidden = false;
+			$orderState->delivery = false;
+			$orderState->logable = true;
+			if ($orderState->add())
+				copy(dirname(__FILE__).'/logo.gif', dirname(__FILE__).'/../../img/os/'.(int)$orderState->id.'.gif');
+			return $orderState->id;
+		}
+
 		public function install()
 		{
 			if (!parent::install())
 				return false;
 
+
+			if (!Configuration::get('BILLMATE_PAYMENT_PENDING'))
+				Configuration::updateValue('BILLMATE_PAYMENT_PENDING', $this->addState('Billmate : payment pending', '#DDEEFF'));
 			// Inactivate status for modules
 			Configuration::updateValue('BPARTPAY_ENABLED', 0);
 			Configuration::updateValue('BINVOICE_ENABLED', 0);

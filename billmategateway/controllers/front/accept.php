@@ -87,10 +87,11 @@
 				$total  = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 				$extra  = array('transaction_id' => $data['number']);
 				$status = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
+				$status = ($data['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
 				$this->coremodule->validateOrder((int)$this->context->cart->id, $status,
 					$total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$values = array();
-				if ($this->module->authorization_method != 'sale' && ($this->method == 'cardpay' || $this->method == 'bankpay'))
+				if (($this->module->authorization_method != 'sale' && $this->method == 'cardpay') || $this->method == 'bankpay')
 				{
 					$values['PaymentData'] = array(
 						'number'  => $data['number'],
@@ -98,7 +99,7 @@
 					);
 					$this->billmate->updatePayment($values);
 				}
-				if ($this->module->authorization_method == 'sale' && ($this->method == 'cardpay' || $this->method == 'bankpay'))
+				if ($this->module->authorization_method == 'sale' && $this->method == 'cardpay')
 				{
 
 					$values['PaymentData'] = array(

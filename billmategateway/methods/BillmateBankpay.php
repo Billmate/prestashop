@@ -86,7 +86,7 @@
 				'desc'     => $this->module->l('Enable Test Mode','billmatebankpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BBANKPAY_MOD'))) ? 1 : 0
 			);
-			$settings['authorization'] = array(
+			/*$settings['authorization'] = array(
 				'name'    => 'bankpayAuthorization',
 				'type'    => 'radio',
 				'label'   => $this->module->l('Authorization Method'),
@@ -96,7 +96,7 @@
 					'authorize' => $this->module->l('Authorize','billmatebankpay'),
 					'sale'      => $this->module->l('Sale','billmatebankpay')
 				)
-			);
+			);*/
 
 			$settings['order_status']  = array(
 				'name'     => 'bankpayBillmateOrderStatus',

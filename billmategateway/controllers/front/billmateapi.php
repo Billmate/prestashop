@@ -485,7 +485,7 @@
 				'paymentplanid' => ($method == 'partpay') ? Tools::getValue('paymentAccount') : '',
 				'currency'      => Tools::strtoupper($this->context->currency->iso_code),
 				'language'      => Tools::strtolower($this->context->language->iso_code),
-				'country'       => Tools::strtolower($this->context->country->iso_code),
+				'country'       => Tools::strtoupper($this->context->country->iso_code),
 				'orderid'       => Tools::substr($this->context->cart->id.'-'.time(), 0, 10)
 			);
 
@@ -507,8 +507,9 @@
 				'method'   => ($method == 'cardpay') ? 8 : 16,
 				'currency' => Tools::strtoupper($this->context->currency->iso_code),
 				'language' => Tools::strtolower($this->context->language->iso_code),
-				'country'  => Tools::strtolower($this->context->country->iso_code),
-				'orderid'  => Tools::substr($this->context->cart->id.'-'.time(), 0, 10)
+				'country'  => Tools::strtoupper($this->context->country->iso_code),
+				'orderid'  => Tools::substr($this->context->cart->id.'-'.time(), 0, 10),
+				'autoactivate' => ($method == 'cardpay') ? Configuration::get('BCARDPAY_AUTHORIZATION_METHOD') : 0
 			);
 			$payment_data['PaymentInfo'] = array(
 				'paymentdate' => date('Y-m-d')
@@ -536,6 +537,7 @@
 					if (!isset($result['code']))
 					{
 						$status   = ($this->method == 'invoice') ? Configuration::get('BINVOICE_ORDER_STATUS') : Configuration::get('BPARTPAY_ORDER_STATUS');
+						$status = ($result['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
 						$extra    = array('transaction_id' => $result['number']);
 						$total    = $this->context->cart->getOrderTotal();
 						$customer = new Customer((int)$this->context->cart->id_customer);
