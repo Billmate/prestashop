@@ -76,6 +76,14 @@
 					else
 						$order_id = Order::getOrderByCartId($this->context->cart->id);
 
+					$orderObject = new Order($order_id);
+					if($orderObject->current_state == Configuration::get('BILLMATE_PAYMENT_PENDING') && $data['status'] != 'Pending'){
+						$orderHistory = new OrderHistory();
+						$status              = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
+
+						$orderHistory->changeIdOrderState($status, $orderObject->id, true);
+					}
+
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.
 					                    '&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->coremodule->id.
 					                    '&id_order='.(int)$order_id);
@@ -95,7 +103,7 @@
 				{
 					$values['PaymentData'] = array(
 						'number'  => $data['number'],
-						'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->module->currentOrderReference : $this->module->currentOrder
+						'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->coremodule->currentOrderReference : $this->coremodule->currentOrder
 					);
 					$this->billmate->updatePayment($values);
 				}

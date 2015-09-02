@@ -26,7 +26,7 @@
 		{
 			$month = $fromdayone;
 			foreach ($payarray as $payment)
-				$pval -= $payment / pow(1 + $rate / (12 * 100.0), $month++);
+				$pval -= $payment / pow(1 + $rate / 12, $month++);
 
 
 			return ($pval);
@@ -73,7 +73,7 @@
 
 		private static function _irr2apr($irr)
 		{
-			return (100 * (pow(1 + $irr / (12 * 100.0), 12) - 1));
+			return (100 * (pow(1 + $irr / 12, 12) - 1));
 		}
 
 		private static function _fulpacc($pval, $rate, $fee, $minpay, $payment, $months, $base)
@@ -82,7 +82,7 @@
 			$payarray = array();
 			while (($months != 0) && ($bal > self::$accuracy))
 			{
-				$interest = $bal * $rate / (100.0 * 12);
+				$interest = $bal * $rate / 12;
 				$newbal   = $bal + $interest + $fee;
 				if ($minpay >= $newbal || $payment >= $newbal)
 				{
@@ -110,7 +110,7 @@
 			if ($rate == 0)
 				return $pval / $months;
 
-			$p = $rate / (100.0 * 12);
+			$p = $rate / 100.0;
 
 			return $pval * $p / (1 - pow((1 + $p), -$months));
 		}
