@@ -28,6 +28,10 @@
                         if(response.success){
                             $('input[name="firstname"]').val(response.data.firstname);
                             $('input[name="firstname"]').trigger('change');
+                            $('input[name="customer_firstname"]').val(response.data.firstname);
+                            $('input[name="customer_firstname"]').trigger('change');
+                            $('input[name="customer_lastname"]').val(response.data.lastname);
+                            $('input[name="customer_lastname"]').trigger('change');
                             $('input[name="lastname"]').val(response.data.lastname);
                             $('input[name="lastname"]').trigger('change');
                             $('input[name="company"]').val(response.data.company);
@@ -40,6 +44,11 @@
                             $('input[name="postcode"]').trigger('change');
                             $('input[name="id_country"]').val(response.data.id_country);
                             $('input[name="id_country"]').trigger('change');
+                            $('input[name="email"]').val(response.data.email);
+                            $('input[name="email"]').trigger('change');
+                            $('input[name="phone_mobile"]').val(response.data.phone);
+                            $('input[name="phone_mobile"]').trigger('change');
+
                             if(typeof validateAllFieldsNow == "function"){
                                 validateAllFieldsNow(true);
                             }
