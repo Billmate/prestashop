@@ -265,7 +265,7 @@
 				$carrier_obj = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
 				$taxrate    = $carrier_obj->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
 
-				$total_shipping_cost  = $this->context->cart->getTotalShippingCost();
+				$total_shipping_cost  = $this->context->cart->getTotalShippingCost(null, false);
 				$totals['Shipping'] = array(
 					'withouttax' => $total_shipping_cost * 100,
 					'taxrate'    => $taxrate
@@ -289,6 +289,7 @@
 				$this->totals += $fee * 100;
 				$this->tax += (($tax_rate / 100) * $fee) * 100;
 			}
+
 			$rounding         = ($order_total * 100) - $this->tax - $this->totals;
 			$totals['Total']  = array(
 				'withouttax' => $this->totals,
@@ -509,7 +510,7 @@
 				'language' => Tools::strtolower($this->context->language->iso_code),
 				'country'  => Tools::strtoupper($this->context->country->iso_code),
 				'orderid'  => Tools::substr($this->context->cart->id.'-'.time(), 0, 10),
-				'autoactivate' => ($method == 'cardpay') ? Configuration::get('BCARDPAY_AUTHORIZATION_METHOD') : 0
+				'autoactivate' => ($method == 'cardpay' && (Configuration::get('BCARDPAY_AUTHORIZATION_METHOD') != 'authorize')) ? 1 : 0
 			);
 			$payment_data['PaymentInfo'] = array(
 				'paymentdate' => date('Y-m-d')
