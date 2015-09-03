@@ -136,9 +136,12 @@
 			{
 				foreach ($data as $row)
 				{
-					$pclasses[$key]                = $row;
-					$pclasses[$key]['monthlycost'] = BillmateCalc::calc_monthly_cost($total, $row, BillmateFlags::CHECKOUT_PAGE);
-					$key++;
+					if ($row['type'] < 2 && $total >= $row['minamount'] && ($total <= $row['maxamount'] || $row['maxamount'] == 0))
+					{
+						$pclasses[$key] = $row;
+						$pclasses[$key]['monthlycost'] = BillmateCalc::calc_monthly_cost($total, $row, BillmateFlags::CHECKOUT_PAGE);
+						$key++;
+					}
 				}
 			}
 

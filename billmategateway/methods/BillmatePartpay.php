@@ -51,6 +51,10 @@
 				return false;
 
 
+			$pclasses = $this->getPclasses($cart);
+			if(empty($pclasses))
+				return false;
+
 			return array(
 				'sort_order' => $this->sort_order,
 				'name'         => $this->displayName,
@@ -58,7 +62,7 @@
 				'controller'   => $this->validation_controller,
 				'icon'         => $this->icon,
 				'agreements'   => sprintf($this->module->l('My email is accurate and can be used for invoicing.','billmatepartpay').' <a id="terms-partpay" style="cursor:pointer!important">'.$this->module->l('I confirm the terms for invoice payment','billmatepartpay').'</a>'),
-				'pClasses'     => $this->getPclasses($cart),
+				'pClasses'     => $pclasses,
 				'monthly_cost' => $this->getMonthlyCost($cart)
 
 			);

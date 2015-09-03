@@ -84,9 +84,12 @@
 
 					if($orderObject->current_state == Configuration::get('BILLMATE_PAYMENT_PENDING') && $data['status'] != 'Pending'){
 						$orderHistory = new OrderHistory();
+						$orderHistory->id_order = (int) $orderObject->id;
+
 						$status              = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
 
 						$orderHistory->changeIdOrderState($status, $order_id, true);
+						$orderHistory->add();
 					}
 					die('OK');
 				}

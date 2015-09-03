@@ -76,9 +76,9 @@
 			return (100 * (pow(1 + $irr / 12, 12) - 1));
 		}
 
-		private static function _fulpacc($pval, $rate, $fee, $minpay, $payment, $months, $base)
+		private static function _fulpacc($sum, $rate, $fee, $minpay, $payment, $months, $base)
 		{
-			$bal      = $pval;
+			$bal      = $sum;
 			$payarray = array();
 			while (($months != 0) && ($bal > self::$accuracy))
 			{
@@ -102,17 +102,24 @@
 			return $payarray;
 		}
 
-		private static function _annuity($pval, $months, $rate)
+		/**
+		 * Calculates monthly payment amount
+		 *
+		 * @param $sum float The amount to pay
+		 * @param $months
+		 * @param $rate float The interest rate
+		 * @return float
+		 */
+		private static function _annuity($sum, $months, $rate)
 		{
 			if ($months == 0)
-				return $pval;
+				return $sum;
+			elseif ($rate == 0)
+				return $sum / $months;
 
-			if ($rate == 0)
-				return $pval / $months;
+			$interest_rate = $rate / 12;
 
-			$p = $rate / 100.0;
-
-			return $pval * $p / (1 - pow((1 + $p), -$months));
+			return $sum * $interest_rate / (1 - pow((1 + $interest_rate), -$months));
 		}
 
 		private static function _aprAnnuity($pval, $months, $rate, $fee, $minpay)
@@ -140,6 +147,7 @@
 				$startfee = $pclass['startfee'];
 
 			$sum += $startfee;
+
 			$base   = true;//($pclass['type'] === BillmatePClass::ACCOUNT);
 			$lowest = self::get_lowest_payment_for_account($pclass['country']);
 
@@ -269,6 +277,16 @@
 			return self::pRound($credit_cost, $pclass['country']);
 		}
 
+
+		/**
+		 * A method for calculating monthly cost
+		 *
+		 * @param $sum
+		 * @param $pclass
+		 * @param $flags
+		 * @return float
+		 * @throws Exception
+		 */
 		public static function calc_monthly_cost($sum, $pclass, $flags)
 		{
 			if (!is_numeric($sum))
