@@ -162,23 +162,24 @@
 			{
 				$taxrate       = ($article['price_wt'] == $article['price']) ? 0 : $article['rate'];
 
+				$roundedArticle = round($article['price'], 2);
 				$articles_arr[] = array(
 					'quantity'   => $article['cart_quantity'],
 					'title'      => (isset($article['attributes']) && !empty($article['attributes'])) ? $article['name'].  ' - '.$article['attributes'] : $article['name'],
 					'artnr'      => $article['reference'],
-					'aprice'     => ($article['price'] / $article['cart_quantity']) * 100,
+					'aprice'     => round(($article['price'] / $article['cart_quantity']) * 100,2),
 					'taxrate'    => $taxrate,
 					'discount'   => 0,
-					'withouttax' => $article['price'] * 100
+					'withouttax' => $roundedArticle * 100
 
 				);
 				if (!isset($this->prepare_discount[$taxrate]))
-					$this->prepare_discount[$taxrate] = $article['price'] * 100;
+					$this->prepare_discount[$taxrate] = $roundedArticle * 100;
 				else
-					$this->prepare_discount[$taxrate] += $article['price'] * 100;
+					$this->prepare_discount[$taxrate] += $roundedArticle * 100;
 
-				$this->totals += $article['price'] * 100;
-				$this->tax += ($article['price'] * ($taxrate / 100)) * 100;
+				$this->totals += $roundedArticle * 100;
+				$this->tax += ($roundedArticle * ($taxrate / 100)) * 100;
 
 			}
 
@@ -197,7 +198,7 @@
 
 					$percent_discount = $value / ($this->totals);
 
-					$discount_amount = ($percent_discount * $details['total_discounts']) / (1 + ($key / 100));
+					$discount_amount = round(($percent_discount * $details['total_discounts']) / (1 + ($key / 100)),2);
 
 
 					$discounts[]    = array(
@@ -228,7 +229,7 @@
 						$discount_amount = $product['price'];
 					}
 					$price          = $gift['price'] / $gift['cart_quantity'];
-					$discount_amount = $discount_amount / $gift['cart_quantity'];
+					$discount_amount = round($discount_amount / $gift['cart_quantity'],2);
 					$total          = $discount_amount * $gift['cart_quantity'] * 100;
 					$discounts[]    = array(
 						'quantity'   => $gift['cart_quantity'],
@@ -265,7 +266,7 @@
 				$carrier_obj = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
 				$taxrate    = $carrier_obj->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
 
-				$total_shipping_cost  = $this->context->cart->getTotalShippingCost(null, false);
+				$total_shipping_cost  = round($this->context->cart->getTotalShippingCost(null, false),2);
 				$totals['Shipping'] = array(
 					'withouttax' => $total_shipping_cost * 100,
 					'taxrate'    => $taxrate
@@ -281,6 +282,7 @@
 				$tax                = new Tax($invoice_fee_tax);
 				$tax_calculator      = new TaxCalculator(array($tax));
 				$tax_rate            = $tax_calculator->getTotalRate();
+				$fee = round($fee,2);
 				$totals['Handling'] = array(
 					'withouttax' => $fee * 100,
 					'taxrate'    => $tax_rate
