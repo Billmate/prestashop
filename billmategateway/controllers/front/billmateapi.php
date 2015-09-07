@@ -257,6 +257,7 @@
 		{
 			$totals     = array();
 			$details    = $this->context->cart->getSummaryDetails(null, true);
+
 			$carrier    = $details['carrier'];
 			$order_total = $this->context->cart->getOrderTotal();
 			$notfree    = !(isset($details['free_ship']) && $details['free_ship'] == 1);
@@ -426,7 +427,7 @@
 								'gift'                                   => 0,
 								'gift_message'                           => '',
 								'recyclable'                             => 0,
-								'delivery_option['.$matched_address_id.']' => $carrier->id,
+								'delivery_option['.$matched_address_id.']' => $carrier->id.',',
 								'ajax'                                   => true,
 								'token'                                  => Tools::getToken(false),
 							)
