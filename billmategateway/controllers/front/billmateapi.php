@@ -569,13 +569,7 @@
 							'number'  => $result['number'],
 							'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->module->currentOrderReference : $this->module->currentOrder
 						);
-						if($this->handling_fee){
-							Db::getInstance()->insert('billmate_payment_fees',array(
-								'order_id' => $this->module->currentOrder,
-								'invoice_fee' => $this->handling_fee,
-								'tax_rate' => $this->handling_taxrate
-							));
-						}
+
 						$this->billmate->updatePayment($values);
 
 						$url                = 'order-confirmation&id_cart='.(int)$this->context->cart->id.

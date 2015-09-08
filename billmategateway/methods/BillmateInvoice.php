@@ -309,7 +309,7 @@
 
 						$tax_amount = $billmate_tax_calculator->getTaxesAmount($billmate_invoice_fee);
 						// todo check this line
-						error_log('tax_amount'.print_r($tax_amount,true));
+
 						$billmatetax = array_pop($tax_amount);
 						$total_fee = $billmate_invoice_fee + $billmatetax;
 						$order->total_paid_tax_excl = (float)Tools::ps_round((float)$this->context->cart->getOrderTotal(false, Cart::BOTH, $order->product_list, $id_carrier) + $billmate_invoice_fee, 2);
@@ -331,7 +331,13 @@
 						// We use number_format in order to compare two string
 						if ($order_status->logable && number_format($cart_total_paid + $total_fee, 2) != number_format($amount_paid, 2))
 							$id_order_state = Configuration::get('PS_OS_ERROR');
-
+						if($billmate_invoice_fee > 0){
+							Db::getInstance()->insert('billmate_payment_fees',array(
+								'order_id' => $order->id,
+								'invoice_fee' => $billmate_invoice_fee,
+								'tax_rate' => $billmate_tax_calculator->getTotalRate()
+							));
+						}
 						$order_list[] = $order;
 
 						// Insert new Order detail list using cart for the current order
