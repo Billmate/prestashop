@@ -37,6 +37,8 @@
 		protected $pno;
 		protected $billmate;
 		protected $coremodule;
+		protected $handling_fee = false;
+		protected $handling_taxrate = false;
 
 
 		public function postProcess()
@@ -288,6 +290,8 @@
 					'withouttax' => $fee * 100,
 					'taxrate'    => $tax_rate
 				);
+				$this->handling_fee = $fee;
+				$this->handling_taxrate = $tax_rate;
 				$order_total += $fee * (1 + ($tax_rate / 100));
 				$this->totals += $fee * 100;
 				$this->tax += (($tax_rate / 100) * $fee) * 100;
@@ -565,6 +569,13 @@
 							'number'  => $result['number'],
 							'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->module->currentOrderReference : $this->module->currentOrder
 						);
+						if($this->handling_fee){
+							Db::getInstance()->insert('billmate_payment_fees',array(
+								'order_id' => $this->module->currentOrder,
+								'invoice_fee' => $this->handling_fee,
+								'tax_rate' => $this->handling_taxrate
+							));
+						}
 						$this->billmate->updatePayment($values);
 
 						$url                = 'order-confirmation&id_cart='.(int)$this->context->cart->id.

@@ -51,6 +51,7 @@
 			$this->billmate_merchant_id = Configuration::get('BILLMATE_ID');
 			$this->billmate_secret      = Configuration::get('BILLMATE_SECRET');
 			$installedVersion           = Configuration::get('BILLMATE_VERSION');
+
 			// Is the module installed and need to be updated?
 			if ($installedVersion && version_compare($installedVersion, $this->version, '<'))
 				$this->update();
@@ -299,17 +300,31 @@
 
 				return;
 			}
+			$installedUpdates = Configuration::get('BILLMATE_UPDATES');
+			$installed = array();
 			foreach ($files as $file)
 			{
 				$class = $file->getBasename('.php');
+
+
+				if($installedUpdates){
+					$installed = explode(',',$installedUpdates);
+					if(in_array($class,$installed))
+						continue;
+				}
 				if ($class == 'index')
 					continue;
 
 				include_once($file->getPathname());
 
-				$updater = new $class();
+				$updater = new $class(Db::getInstance());
 				$updater->install();
+				$installed[] = $class;
+
+
 			}
+
+			Configuration::updateValue('BILLMATE_UPDATES',implode(',',$installed));
 			Configuration::updateValue('BILLMATE_VERSION', $this->version);
 
 		}
@@ -330,19 +345,13 @@
 		public function hookDisplayPdfInvoice($params)
 		{
 			$order = new Order($params['object']->id_order);
-			$invoice_fee = Configuration::get('BINVOICE_FEE');
-			if ($order->module == 'billmateinvoice' && $invoice_fee > 0)
-			{
+			$result = Db::getInstance()->getRow('SELECT * FROM '._DB_PREFIX_.'billmate_payment_fees WHERE order_id = "'.$order->id.'"');
+			if($result){
 
 
-
-				$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
-
-				$tax           = new Tax($invoice_fee_tax);
-				$tax_calculator = new TaxCalculator(array($tax));
-
-				$tax_amount = $tax_calculator->getTaxesAmount($invoice_fee);
-				$billmatetax = array_pop($tax_amount);
+				$invoice_fee_tax = $result['tax_rate'] / 100;
+				$invoice_fee = $result['invoice_fee'];
+				$billmatetax = $result['invoice_fee'] * $invoice_fee_tax;
 				$total_fee = $invoice_fee + $billmatetax;
 
 				$this->smarty->assign('invoiceFeeIncl', $total_fee);
@@ -375,26 +384,23 @@
 
 			$order = new Order($order_id);
 
-			if ($order->module != 'billmateinvoice')
+			$result = Db::getInstance()->getRow('SELECT * FROM '._DB_PREFIX_.'billmate_payment_fees WHERE order_id = "'.$order->id.'"');
+			if($result){
+
+
+				$invoice_fee_tax = $result['tax_rate'] / 100;
+				$invoice_fee = $result['invoice_fee'];
+				$billmatetax = $result['invoice_fee'] * $invoice_fee_tax;
+				$total_fee = $invoice_fee + $billmatetax;
+
+				$this->smarty->assign('invoiceFeeIncl', $total_fee);
+				$this->smarty->assign('invoiceFeeTax', $billmatetax);
+				$this->smarty->assign('order', $order);
+
+				return $this->display(__FILE__, 'invoicefee.tpl');
+			} else {
 				return;
-
-			$invoice_fee = Configuration::get('BINVOICE_FEE');
-			if ($invoice_fee == 0)
-				return;
-
-			$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
-
-			$tax           = new Tax($invoice_fee_tax);
-			$tax_calculator = new TaxCalculator(array($tax));
-
-			$tax_amount = $tax_calculator->getTaxesAmount($invoice_fee);
-
-			$total_fee = $invoice_fee + $tax_amount[1];
-
-			$this->smarty->assign('invoiceFeeIncl', $total_fee);
-			$this->smarty->assign('invoiceFeeTax', $tax_amount[1]);
-
-			return $this->display(__FILE__, 'invoicefee.tpl');
+			}
 		}
 
 		public function hookDisplayBackOfficeHeader()
