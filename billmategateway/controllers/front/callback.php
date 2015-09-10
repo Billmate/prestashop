@@ -40,9 +40,9 @@
 			$secret       = Configuration::get('BILLMATE_SECRET');
 			$ssl          = true;
 			$debug        = false;
-			require_once(_PS_MODULE_DIR_.'billmategateway/methods/Billmate'.Tools::ucfirst($this->method).'.php');
+			require_once(_PS_MODULE_DIR_.'billmategateway/methods/'.Tools::ucfirst($this->method).'.php');
 
-			$class        = 'Billmate'.Tools::ucfirst($this->method);
+			$class        = Tools::ucfirst($this->method);
 			$this->module = new $class;
 			$this->coremodule = new BillmateGateway();
 			$testmode = $this->module->testMode;
@@ -105,7 +105,7 @@
 				$extra               = array('transaction_id' => $data['number']);
 				$status              = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
 				$status = ($data['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
-				$this->coremodule->validateOrder((int)$this->context->cart->id, $status, $total,
+				$this->module->validateOrder((int)$this->context->cart->id, $status, $total,
 					$this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$values = array();
 				if ($this->module->authorization_method != 'sale' && $this->method == 'cardpay' || $this->method == 'bankpay')

@@ -56,9 +56,9 @@
 			$secret = Configuration::get('BILLMATE_SECRET');
 			$ssl    = true;
 			$debug  = false;
-			require_once(_PS_MODULE_DIR_.'billmategateway/methods/Billmate'.Tools::ucfirst($this->method).'.php');
+			require_once(_PS_MODULE_DIR_.'billmategateway/methods/'.Tools::ucfirst($this->method).'.php');
 
-			$class        = 'Billmate'.Tools::ucfirst($this->method);
+			$class        = Tools::ucfirst($this->method);
 			$this->module = new $class;
 			$this->coremodule = new BillmateGateway();
 			$testmode = $this->module->testMode;
@@ -573,7 +573,7 @@
 						$this->billmate->updatePayment($values);
 
 						$url                = 'order-confirmation&id_cart='.(int)$this->context->cart->id.
-											  '&id_module='.(int)$this->coremodule->id.
+											  '&id_module='.(int)$this->getmoduleId('billmate'.$this->method).
 						                      '&id_order='.(int)$this->module->currentOrder.
 											  '&key='.$customer->secure_key;
 						$return['success']  = true;
@@ -600,6 +600,18 @@
 					break;
 			}
 			die(Tools::JsonEncode($return));
+		}
+
+		public function getmoduleId($method)
+		{
+			$id2name = array();
+			$sql = 'SELECT `id_module`, `name` FROM `'._DB_PREFIX_.'module`';
+			if ($results = Db::getInstance()->executeS($sql)) {
+				foreach ($results as $row) {
+					$id2name[$row['name']] = $row['id_module'];
+				}
+			}
+			return $id2name[$method];
 		}
 
 	}

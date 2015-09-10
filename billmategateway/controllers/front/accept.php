@@ -40,6 +40,19 @@
 
 		}
 
+		public function getmoduleId($method)
+		{
+			$id2name = array();
+			$sql = 'SELECT `id_module`, `name` FROM `'._DB_PREFIX_.'module`';
+			if ($results = Db::getInstance()->executeS($sql)) {
+				foreach ($results as $row) {
+					$id2name[$row['name']] = $row['id_module'];
+				}
+			}
+
+			return $id2name[$method];
+		}
+
 		public function postProcess()
 		{
 			$this->method = Tools::getValue('method');
@@ -47,9 +60,9 @@
 			$secret       = Configuration::get('BILLMATE_SECRET');
 			$ssl          = true;
 			$debug        = false;
-			require_once(_PS_MODULE_DIR_.'billmategateway/methods/Billmate'.Tools::ucfirst($this->method).'.php');
+			require_once(_PS_MODULE_DIR_.'billmategateway/methods/'.Tools::ucfirst($this->method).'.php');
 
-			$class        = 'Billmate'.Tools::ucfirst($this->method);
+			$class        = Tools::ucfirst($this->method);
 			$this->module = new $class;
 			$this->coremodule = new BillmateGateway();
 
@@ -86,7 +99,7 @@
 					}
 
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.
-					                    '&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->coremodule->id.
+					                    '&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->getmoduleId('billmate'.$this->method).
 					                    '&id_order='.(int)$order_id);
 					die;
 				}
@@ -97,7 +110,7 @@
 				$extra  = array('transaction_id' => $data['number']);
 				$status = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
 				$status = ($data['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
-				$this->coremodule->validateOrder((int)$this->context->cart->id, $status,
+				$this->module->validateOrder((int)$this->context->cart->id, $status,
 					$total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$values = array();
 				if (($this->module->authorization_method != 'sale' && $this->method == 'cardpay') || $this->method == 'bankpay')
@@ -118,7 +131,7 @@
 				}
 				unlink($lockfile);
 				Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.
-									'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->coremodule->id.
+									'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->getmoduleId('billmate'.$this->method).
 									'&id_order='.(int)$this->module->currentOrder);
 				die();
 			}
