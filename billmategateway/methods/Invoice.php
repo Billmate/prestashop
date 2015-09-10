@@ -272,7 +272,7 @@
 						$order->secure_key = ($secure_key ? pSQL($secure_key) : pSQL($this->context->customer->secure_key));
 						$order->payment = $payment_method;
 						if (isset($this->name))
-							$order->module = $this->module->name;
+							$order->module = $this->name;
 						$order->recyclable = $this->context->cart->recyclable;
 						$order->gift = (int)$this->context->cart->gift;
 						$order->gift_message = $this->context->cart->gift_message;
@@ -464,7 +464,15 @@
 								$virtual_product &= false;
 
 						} // end foreach ($products)
-
+						if($billmate_invoice_fee > 0){
+							$products_list .= '<tr style="background-color: '.((count($order->product_list) +1) % 2 ? '#DDE2E6' : '#EBECEE').';">
+								<td style="padding: 0.6em 0.4em;width: 15%;">&nbsp;</td>
+								<td style="padding: 0.6em 0.4em;width: 30%;"><strong>'.$this->module->l('Invoicefee tax incl.').'</strong></td>
+								<td style="padding: 0.6em 0.4em; width: 20%;">'.Tools::displayPrice(Product::getTaxCalculationMethod((int)$this->context->customer->id) == PS_TAX_EXC ? Tools::ps_round($billmate_invoice_fee, 2) : $total_fee, $this->context->currency, false).'</td>
+								<td style="padding: 0.6em 0.4em; width: 15%;">1</td>
+								<td style="padding: 0.6em 0.4em; width: 20%;">'.Tools::displayPrice((Product::getTaxCalculationMethod() == PS_TAX_EXC ? Tools::ps_round($billmate_invoice_fee, 2) : $total_fee), $this->context->currency, false).'</td>
+							</tr>';
+						}
 						$cart_rules_list = '';
 						$total_reduction_value_ti = 0;
 						$total_reduction_value_tex = 0;

@@ -549,13 +549,15 @@
 						$extra    = array('transaction_id' => $result['number']);
 						$total    = $this->context->cart->getOrderTotal();
 						$customer = new Customer((int)$this->context->cart->id_customer);
+						$orderId = 0;
 						if ($this->method == 'partpay')
 						{
-							$this->coremodule->validateOrder((int)$this->context->cart->id,
+							$this->module->validateOrder((int)$this->context->cart->id,
 								$status,
 								($this->method == 'invoice') ? $this->paid_amount / 100 : $total,
 								$this->module->displayName,
 								null, $extra, null, false, $customer->secure_key);
+							$orderId = $this->module->currentOrder;
 						}
 						else {
 							$this->module->validateOrder((int)$this->context->cart->id,
@@ -563,6 +565,7 @@
 								($this->method == 'invoice') ? $this->paid_amount / 100 : $total,
 								$this->module->displayName,
 								null, $extra, null, false, $customer->secure_key);
+							$orderId = $this->module->currentOrder;
 						}
 						$values                = array();
 						$values['PaymentData'] = array(
@@ -574,7 +577,7 @@
 
 						$url                = 'order-confirmation&id_cart='.(int)$this->context->cart->id.
 											  '&id_module='.(int)$this->getmoduleId('billmate'.$this->method).
-						                      '&id_order='.(int)$this->module->currentOrder.
+						                      '&id_order='.(int)$orderId.
 											  '&key='.$customer->secure_key;
 						$return['success']  = true;
 						$return['redirect'] = $this->context->link->getPageLink($url);
