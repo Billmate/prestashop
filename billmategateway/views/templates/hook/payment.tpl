@@ -184,11 +184,17 @@
     $('#billmateinvoice').click(function (e) {
         $('#billmatepartpay-fields').hide();
         $('#billmateinvoice-fields').show();
+        if ($('#pno').length) {
+            $('#pno_billmateinvoice').val($('#pno').val());
+        }
         e.preventDefault();
     })
     $('#billmatepartpay').click(function (e) {
         $('#billmateinvoice-fields').hide();
         $('#billmatepartpay-fields').show();
+        if ($('#pno').length) {
+            $('#pno_billmatepartpay').val($('#pno').val());
+        }
         e.preventDefault();
     })
     $('#billmateinvoiceSubmit').click(function (e) {

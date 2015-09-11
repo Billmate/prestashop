@@ -280,6 +280,7 @@ if (typeof modalWin == 'undefined') {
         jQuery(document).Terms('villkor',{invoicefee:0}, '#terms');
         jQuery(document).Terms('villkor_delbetalning',{eid: PARTPAYMENT_EID, effectiverate:34},'#terms-partpay');
     }
+
     AddEvent(window,'load',function(){
         jQuery.getScript('https://billmate.se/billmate/base_jquery.js',function(){addTerms();})
 
