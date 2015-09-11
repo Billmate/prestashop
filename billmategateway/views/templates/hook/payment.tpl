@@ -132,11 +132,19 @@
 {/foreach}
 <script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
 <script type="text/javascript">
+
     if(!billmatepopupLoaded){
         var script = document.createElement('script');
         script.setAttribute('src','{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js');
         script.setAttribute('type','text/javascript');
         document.getElementsByTagName('head')[0].appendChild(script);
+    }
+    function addTerms(){
+        jQuery(document).Terms('villkor',{ldelim}invoicefee:0{rdelim}, '#terms');
+        jQuery(document).Terms('villkor_delbetalning',{ldelim}eid: PARTPAYMENT_EID, effectiverate:34{rdelim},'#terms-partpay');
+    }
+    if(!$.fn.Terms){
+        jQuery.getScript('https://billmate.se/billmate/base_jquery.js',function(){ldelim}addTerms(){rdelim});
     }
     var version = "{$ps_version|escape:'html'}"
     var PARTPAYMENT_EID = "{$eid}";
@@ -295,4 +303,5 @@
 
         });
     }
+
 </script>
