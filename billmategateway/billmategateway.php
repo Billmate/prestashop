@@ -365,8 +365,11 @@
 		public function hookDisplayCustomerAccountFormTop($params)
 		{
 			if (Configuration::get('BILLMATE_GETADDRESS'))
+			{
 
+				$this->smarty->assign('pno', (isset($this->context->cookie->billmatepno)) ? $this->context->cookie->billmatepno : '');
 				return $this->display(__FILE__, 'getaddress.tpl');
+			}
 			else
 				return;
 		}

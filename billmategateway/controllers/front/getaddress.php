@@ -30,7 +30,7 @@
 			$this->billmate = Common::getBillmate($eid, $secret, false);
 
 			$this->pno = Tools::getValue('pno');
-
+			$this->context->cookie->billmatepno = $this->pno;
 			$address = $this->billmate->getAddress(array('pno' => $this->pno));
 			if (!isset($address['code']))
 			{

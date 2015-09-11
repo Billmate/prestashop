@@ -97,7 +97,8 @@
 						$orderHistory->changeIdOrderState($status,(int) $orderObject->id, true);
 						$orderHistory->add();
 					}
-
+					if(isset($this->context->cookie->billmatepno))
+						unset($this->context->cookie->billmatepno);
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.
 					                    '&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->getmoduleId('billmate'.$this->method).
 					                    '&id_order='.(int)$order_id);
@@ -130,6 +131,8 @@
 					$this->billmate->activatePayment($values);
 				}
 				unlink($lockfile);
+				if(isset($this->context->cookie->billmatepno))
+					unset($this->context->cookie->billmatepno);
 				Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.
 									'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->getmoduleId('billmate'.$this->method).
 									'&id_order='.(int)$this->module->currentOrder);

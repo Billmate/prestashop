@@ -581,6 +581,8 @@
 											  '&key='.$customer->secure_key;
 						$return['success']  = true;
 						$return['redirect'] = $this->context->link->getPageLink($url);
+						if(isset($this->context->cookie->billmatepno))
+							unset($this->context->cookie->billmatepno);
 					}
 					else
 					{
