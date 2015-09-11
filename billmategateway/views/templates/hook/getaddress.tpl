@@ -48,6 +48,33 @@
                             $('input[name="email"]').trigger('change');
                             $('input[name="phone_mobile"]').val(response.data.phone);
                             $('input[name="phone_mobile"]').trigger('change');
+                            var year = 0;
+                            var month = 0;
+                            var day = 0;
+                            if(pno.length == 10){
+                                var tmpYear = pno.substring(0,2);
+                                month = pno.substring(2,4);
+                                day = pno.substring(4,6);
+                                year = '19'+tmpYear;
+
+                            }
+                            if(pno.length == 12){
+                                year = pno.substring(0,4);
+                                month = pno.substring(4,6);
+                                day = pno.substring(6,8);
+                            }
+
+                            month = month.replace(/^0+/, '');
+                            day = day.replace(/^0+/, '');
+                            console.log(year);
+                            console.log(month);
+                            console.log(day);
+                            $('select[name="years"]').val(year);
+                            $('select[name="years"]').trigger('change');
+                            $('select[name="months"]').val(month);
+                            $('select[name="months"]').trigger('change');
+                            $('select[name="days"]').val(day);
+                            $('select[name="days"]').trigger('change');
 
                             if(typeof validateAllFieldsNow == "function"){
                                 validateAllFieldsNow(true);
