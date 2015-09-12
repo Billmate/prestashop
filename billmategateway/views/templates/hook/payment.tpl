@@ -124,7 +124,8 @@
                            name="agree_with_terms_{$method.type|escape:'html'}"/>
                     <label for="terms_{$method.type|escape:'html'}">{$method.agreements|escape:'quotes'}</label>
                 </div>
-                <div style="padding:10px"><input type="button" class="exclusive button" id="{$method.type|escape:'html'}Submit" value="{l s='Proceed' mod='billmategateway'}"/></div>
+                <div style="padding:10px"><button type="submit" style="margin-bottom:10px;" class="btn btn-default button button-medium pull-right" id="{$method.type|escape:'html'}Submit" value=""/><span>{l s='Proceed' mod='billmategateway'}</span></div>
+                <div style="clear:both;"></div>
             </form>
         </div>
     {/if}
