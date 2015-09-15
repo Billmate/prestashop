@@ -18,7 +18,7 @@
 			parent::__construct();
 			$this->name                 = 'billmatecardpay';
             $this->module = new BillmateGateway();
-			$this->displayName          = $this->module->l('Billmate Cardpay','billmatecardpay');
+			$this->displayName          = $this->module->l('Billmate Cardpay','cardpay');
 			$this->testMode             = Configuration::get('BCARDPAY_MOD');
 			$this->min_value            = Configuration::get('BCARDPAY_MIN_VALUE');
 			$this->max_value            = Configuration::get('BCARDPAY_MAX_VALUE');
@@ -71,8 +71,8 @@
 				'name'     => 'cardpayActivated',
 				'required' => false,
 				'type'     => 'checkbox',
-				'label'    => $this->module->l('Enabled','billmatecardpay'),
-				'desc'     => $this->module->l('Should Billmate Cardpay be Enabled','billmatecardpay'),
+				'label'    => $this->module->l('Enabled','cardpay'),
+				'desc'     => $this->module->l('Should Billmate Cardpay be Enabled','cardpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BCARDPAY_ENABLED'))) ? 1 : 0,
 
 			);
@@ -81,22 +81,22 @@
 				'name'     => 'cardpayTestmode',
 				'required' => false,
 				'type'     => 'checkbox',
-				'label'    => $this->module->l('Test Mode','billmatecardpay'),
-				'desc'     => $this->module->l('Enable Test Mode','billmatecardpay'),
+				'label'    => $this->module->l('Test Mode','cardpay'),
+				'desc'     => $this->module->l('Enable Test Mode','cardpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BCARDPAY_MOD'))) ? 1 : 0
 			);
 
 			$settings['3dsecure']   = array(
 				'name'  => 'cardpay3dsecure',
 				'type'  => 'checkbox',
-				'label' => $this->module->l('Enable 3D secure','billmatecardpay'),
+				'label' => $this->module->l('Enable 3D secure','cardpay'),
 				'desc'  => '',
 				'value' => (Tools::safeOutput(Configuration::get('BCARDPAY_3DSECURE'))) ? 1 : 0
 			);
 			$settings['promptname'] = array(
 				'name'  => 'cardpayPromptname',
 				'type'  => 'checkbox',
-				'label' => $this->module->l('Prompt Name','billmatecardpay'),
+				'label' => $this->module->l('Prompt Name','cardpay'),
 				'desc'  => '',
 				'value' => (Tools::safeOutput(Configuration::get('BCARDPAY_PROMPT'))) ? 1 : 0
 			);
@@ -104,12 +104,12 @@
 			$settings['authorization'] = array(
 				'name'    => 'cardpayAuthorization',
 				'type'    => 'radio',
-				'label'   => $this->module->l('Authorization Method','billmatecardpay'),
+				'label'   => $this->module->l('Authorization Method','cardpay'),
 				'desc'    => '',
 				'value' => Configuration::get('BCARDPAY_AUTHORIZATION_METHOD'),
 				'options' => array(
-					'authorize' => $this->module->l('Authorize','billmatecardpay'),
-					'sale'      => $this->module->l('Sale','billmatecardpay')
+					'authorize' => $this->module->l('Authorize','cardpay'),
+					'sale'      => $this->module->l('Sale','cardpay')
 				)
 			);
 
@@ -117,7 +117,7 @@
 				'name'     => 'cardpayBillmateOrderStatus',
 				'required' => true,
 				'type'     => 'select',
-				'label'    => $this->module->l('Set Order Status','billmatecardpay'),
+				'label'    => $this->module->l('Set Order Status','cardpay'),
 				'desc'     => $this->module->l(''),
 				'value'    => (Tools::safeOutput(Configuration::get('BCARDPAY_ORDER_STATUS'))) ? Tools::safeOutput(Configuration::get('BCARDPAY_ORDER_STATUS')) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
 				'options'  => $statuses_array
@@ -127,7 +127,7 @@
 				'required' => false,
 				'value'    => (float)Configuration::get('BCARDPAY_MIN_VALUE'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Minimum Value ','billmatecardpay').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Minimum Value ','cardpay').' ('.$currency['sign'].')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['maximum_value'] = array(
@@ -135,7 +135,7 @@
 				'required' => false,
 				'value'    => Configuration::get('BCARDPAY_MAX_VALUE') != 0 ? (float)Configuration::get('BCARDPAY_MAX_VALUE') : 99999,
 				'type'     => 'text',
-				'label'    => $this->module->l('Maximum Value ','billmatecardpay').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Maximum Value ','cardpay').' ('.$currency['sign'].')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['sort'] = array(
@@ -143,7 +143,7 @@
 				'required' => false,
 				'value'    => Configuration::get('BCARDPAY_SORTORDER'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Sort Order','billmatecardpay'),
+				'label'    => $this->module->l('Sort Order','cardpay'),
 				'desc'     => $this->module->l(''),
 			);
 

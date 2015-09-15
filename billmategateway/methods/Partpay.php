@@ -18,7 +18,7 @@
 			parent::__construct();
 			$this->name                 = 'billmatepartpay';
             $this->module = new BillmateGateway();
-			$this->displayName          = $this->module->l('Billmate Part Pay','billmatepartpay');
+			$this->displayName          = $this->module->l('Billmate Part Pay','partpay');
 			$this->testMode             = Configuration::get('BPARTPAY_MOD');
 			$this->min_value            = Configuration::get('BPARTPAY_MIN_VALUE');
 			$this->max_value            = Configuration::get('BPARTPAY_MAX_VALUE');
@@ -61,7 +61,7 @@
 				'type'         => $this->name,
 				'controller'   => $this->validation_controller,
 				'icon'         => $this->icon,
-				'agreements'   => sprintf($this->module->l('My email is accurate and can be used for invoicing.','billmatepartpay').' <a id="terms-partpay" style="cursor:pointer!important">'.$this->module->l('I confirm the terms for invoice payment','billmatepartpay').'</a> '.$this->module->l('and accept the liability.')),
+				'agreements'   => sprintf($this->module->l('My email is accurate and can be used for invoicing.','partpay').' <a id="terms-partpay" style="cursor:pointer!important">'.$this->module->l('I confirm the terms for invoice payment','partpay').'</a> '.$this->module->l('and accept the liability.','partpay')),
 				'pClasses'     => $pclasses,
 				'monthly_cost' => $this->getMonthlyCost($cart)
 
@@ -81,8 +81,8 @@
 				'name'     => 'partpayActivated',
 				'required' => true,
 				'type'     => 'checkbox',
-				'label'    => $this->module->l('Enabled','billmatepartpay'),
-				'desc'     => $this->module->l('Should Billmate Partpay be Enabled','billmatepartpay'),
+				'label'    => $this->module->l('Enabled','partpay'),
+				'desc'     => $this->module->l('Should Billmate Partpay be Enabled','partpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BPARTPAY_ENABLED'))) ? 1 : 0,
 
 			);
@@ -91,8 +91,8 @@
 				'name'     => 'partpayTestmode',
 				'required' => true,
 				'type'     => 'checkbox',
-				'label'    => $this->module->l('Test Mode','billmatepartpay'),
-				'desc'     => $this->module->l('Enable Test Mode','billmatepartpay'),
+				'label'    => $this->module->l('Test Mode','partpay'),
+				'desc'     => $this->module->l('Enable Test Mode','partpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BPARTPAY_MOD'))) ? 1 : 0
 			);
 
@@ -100,7 +100,7 @@
 				'name'     => 'partpayBillmateOrderStatus',
 				'required' => true,
 				'type'     => 'select',
-				'label'    => $this->module->l('Set Order Status','billmatepartpay'),
+				'label'    => $this->module->l('Set Order Status','partpay'),
 				'desc'     => $this->module->l(''),
 				'value'    => (Tools::safeOutput(Configuration::get('BPARTPAY_ORDER_STATUS'))) ? Tools::safeOutput(Configuration::get('BPARTPAY_ORDER_STATUS')) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
 				'options'  => $statuses_array
@@ -110,7 +110,7 @@
 				'required' => false,
 				'value'    => (float)Configuration::get('BPARTPAY_MIN_VALUE'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Minimum Value ','billmatepartpay').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Minimum Value ','partpay').' ('.$currency['sign'].')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['maximum_value'] = array(
@@ -118,7 +118,7 @@
 				'required' => false,
 				'value'    => Configuration::get('BPARTPAY_MAX_VALUE') != 0 ? (float)Configuration::get('BPARTPAY_MAX_VALUE') : 99999,
 				'type'     => 'text',
-				'label'    => $this->module->l('Maximum Value ','billmatepartpay').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Maximum Value ','partpay').' ('.$currency['sign'].')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['sort'] = array(
@@ -126,14 +126,14 @@
 				'required' => false,
 				'value'    => Configuration::get('BPARTPAY_SORTORDER'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Sort Order','billmatepartpay'),
+				'label'    => $this->module->l('Sort Order','partpay'),
 				'desc'     => $this->module->l(''),
 			);
             if(Configuration::get('BILLMATE_ID'))
 			    $pclasses = new pClasses(Configuration::get('BILLMATE_ID'));
 			$settings['paymentplans'] = array(
 				'name' => 'paymentplans',
-				'label' => $this->module->l('Paymentplans','billmatepartpay'),
+				'label' => $this->module->l('Paymentplans','partpay'),
 				'type' => 'table',
 				'pclasses' => (Configuration::get('BILLMATE_ID')) ? $pclasses->getPClasses('') : false
 			);

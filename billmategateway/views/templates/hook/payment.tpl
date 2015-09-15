@@ -195,6 +195,8 @@
         $('#billmateinvoice-fields').show();
         if ($('#pno').length) {
             $('#pno_billmateinvoice').val($('#pno').val());
+            $('.pno_container').hide();
+
         }
         e.preventDefault();
     })
@@ -203,6 +205,7 @@
         $('#billmatepartpay-fields').show();
         if ($('#pno').length) {
             $('#pno_billmatepartpay').val($('#pno').val());
+            $('.pno_container').hide();
         }
         e.preventDefault();
     })

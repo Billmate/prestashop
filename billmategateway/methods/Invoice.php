@@ -18,7 +18,7 @@
 			parent::__construct();
 			$this->name                 = 'billmateinvoice';
             $this->module = new BillmateGateway();
-			$this->displayName          = $this->module->l('Billmate Invoice','billmateinvoice');
+			$this->displayName          = $this->module->l('Billmate Invoice','invoice');
 			$this->testMode             = Configuration::get('BINVOICE_MOD');
 			$this->min_value            = Configuration::get('BINVOICE_MIN_VALUE');
 			$this->max_value            = Configuration::get('BINVOICE_MAX_VALUE');
@@ -56,7 +56,7 @@
 				'type'       => $this->name,
 				'controller' => $this->validation_controller,
 				'icon'       => $this->icon,
-				'agreements' => sprintf($this->module->l('My email is accurate and can be used for invoicing.','billmateinvoice').' <a id="terms" style="cursor:pointer!important">'.$this->module->l('I confirm the terms for invoice payment','billmateinvoice').'</a> '.$this->module->l('and accept the liability.')),
+				'agreements' => sprintf($this->module->l('My email is accurate and can be used for invoicing.','invoice').' <a id="terms" style="cursor:pointer!important">'.$this->module->l('I confirm the terms for invoice payment','invoice').'</a> '.$this->module->l('and accept the liability.','invoice')),
 				'invoiceFee' => $this->getFee()
 			);
 		}
@@ -80,8 +80,8 @@
 				'name'     => 'invoiceActivated',
 				'required' => true,
 				'type'     => 'checkbox',
-				'label'    => $this->module->l('Enabled','billmateinvoice'),
-				'desc'     => $this->module->l('Should Billmate Invoice be Enabled','billmateinvoice'),
+				'label'    => $this->module->l('Enabled','invoice'),
+				'desc'     => $this->module->l('Should Billmate Invoice be Enabled','invoice'),
 				'value'    => (Tools::safeOutput(Configuration::get('BINVOICE_ENABLED'))) ? 1 : 0,
 
 			);
@@ -90,8 +90,8 @@
 				'name'     => 'invoiceTestmode',
 				'required' => true,
 				'type'     => 'checkbox',
-				'label'    => $this->module->l('Test Mode','billmateinvoice'),
-				'desc'     => $this->module->l('Enable Test Mode','billmateinvoice'),
+				'label'    => $this->module->l('Test Mode','invoice'),
+				'desc'     => $this->module->l('Enable Test Mode','invoice'),
 				'value'    => (Tools::safeOutput(Configuration::get('BINVOICE_MOD'))) ? 1 : 0
 			);
 
@@ -100,7 +100,7 @@
 				'required' => false,
 				'value'    => (float)Configuration::get('BINVOICE_FEE'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Invoice Fee ','billmateinvoice').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Invoice Fee ','invoice').' ('.$currency['sign'].')',
 				'desc'     => $this->module->l(''),
 			);
 
@@ -108,7 +108,7 @@
 				'name'     => 'invoiceFeeTax',
 				'required' => true,
 				'type'     => 'select',
-				'label'    => $this->module->l('Set Invoice Fee Tax Class','billmateinvoice'),
+				'label'    => $this->module->l('Set Invoice Fee Tax Class','invoice'),
 				'desc'     => $this->module->l(''),
 				'value'    => (Tools::safeOutput(Configuration::get('BINVOICE_FEE_TAX'))) ? Tools::safeOutput(Configuration::get('BINVOICE_FEE_TAX')) : '',
 				'options'  => $taxes_array
@@ -119,7 +119,7 @@
 				'name'     => 'invoiceBillmateOrderStatus',
 				'required' => true,
 				'type'     => 'select',
-				'label'    => $this->module->l('Set Order Status','billmateinvoice'),
+				'label'    => $this->module->l('Set Order Status','invoice'),
 				'desc'     => $this->module->l(''),
 				'value'    => (Tools::safeOutput(Configuration::get('BINVOICE_ORDER_STATUS'))) ? Tools::safeOutput(Configuration::get('BINVOICE_ORDER_STATUS')) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
 				'options'  => $statuses_array
@@ -129,7 +129,7 @@
 				'required' => false,
 				'value'    => (float)Configuration::get('BINVOICE_MIN_VALUE'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Minimum Value ','billmateinvoice').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Minimum Value ','invoice').' ('.$currency['sign'].')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['maximum_value'] = array(
@@ -137,7 +137,7 @@
 				'required' => false,
 				'value'    => Configuration::get('BINVOICE_MAX_VALUE') != 0 ? (float)Configuration::get('BINVOICE_MAX_VALUE') : 99999,
 				'type'     => 'text',
-				'label'    => $this->module->l('Maximum Value ','billmateinvoice').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Maximum Value ','invoice').' ('.$currency['sign'].')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['sort'] = array(
@@ -145,7 +145,7 @@
 				'required' => false,
 				'value'    => Configuration::get('BINVOICE_SORTORDER'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Sort Order','billmateinvoice'),
+				'label'    => $this->module->l('Sort Order','invoice'),
 				'desc'     => $this->module->l(''),
 			);
 

@@ -19,7 +19,7 @@
 			$this->name                 = 'billmatebankpay';
             $this->module = new BillmateGateway();
 			$this->testMode             = Configuration::get('BBANKPAY_MOD');
-			$this->displayName          = $this->module->l('Billmate Bankpay','billmatebankpay');
+			$this->displayName          = $this->module->l('Billmate Bankpay','bankpay');
 			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK');
 			$this->min_value            = Configuration::get('BBANKPAY_MIN_VALUE');
@@ -72,8 +72,8 @@
 				'name'     => 'bankpayActivated',
 				'required' => true,
 				'type'     => 'checkbox',
-				'label'    => $this->module->l('Enabled','billmatebankpay'),
-				'desc'     => $this->module->l('Should Billmate Bank be Enabled','billmatebankpay'),
+				'label'    => $this->module->l('Enabled','bankpay'),
+				'desc'     => $this->module->l('Should Billmate Bank be Enabled','bankpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BBANKPAY_ENABLED'))) ? 1 : 0,
 
 			);
@@ -82,8 +82,8 @@
 				'name'     => 'bankpayTestmode',
 				'required' => true,
 				'type'     => 'checkbox',
-				'label'    => $this->module->l('Test Mode','billmatebankpay'),
-				'desc'     => $this->module->l('Enable Test Mode','billmatebankpay'),
+				'label'    => $this->module->l('Test Mode','bankpay'),
+				'desc'     => $this->module->l('Enable Test Mode','bankpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BBANKPAY_MOD'))) ? 1 : 0
 			);
 			/*$settings['authorization'] = array(
@@ -93,8 +93,8 @@
 				'desc'    => '',
 				'value' => Configuration::get('BBANKPAY_AUTHORIZATION_METHOD'),
 				'options' => array(
-					'authorize' => $this->module->l('Authorize','billmatebankpay'),
-					'sale'      => $this->module->l('Sale','billmatebankpay')
+					'authorize' => $this->module->l('Authorize','bankpay'),
+					'sale'      => $this->module->l('Sale','bankpay')
 				)
 			);*/
 
@@ -102,7 +102,7 @@
 				'name'     => 'bankpayBillmateOrderStatus',
 				'required' => true,
 				'type'     => 'select',
-				'label'    => $this->module->l('Set Order Status','billmatebankpay'),
+				'label'    => $this->module->l('Set Order Status','bankpay'),
 				'desc'     => $this->module->l(''),
 				'value'    => (Tools::safeOutput(Configuration::get('BBANKPAY_ORDER_STATUS'))) ? Tools::safeOutput(Configuration::get('BBANKPAY_ORDER_STATUS')) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
 				'options'  => $statuses_array
@@ -112,7 +112,7 @@
 				'required' => false,
 				'value'    => (float)Configuration::get('BBANKPAY_MIN_VALUE'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Minimum Value ','billmatebankpay').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Minimum Value ','bankpay').' ('.$currency['sign'].')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['maximum_value'] = array(
@@ -120,7 +120,7 @@
 				'required' => false,
 				'value'    => Configuration::get('BBANKPAY_MAX_VALUE') != 0 ? (float)Configuration::get('BBANKPAY_MAX_VALUE') : 99999,
 				'type'     => 'text',
-				'label'    => $this->module->l('Maximum Value ','billmatebankpay').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Maximum Value ','bankpay').' ('.$currency['sign'].')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['sort'] = array(
@@ -128,7 +128,7 @@
 				'required' => false,
 				'value'    => Configuration::get('BBANKPAY_SORTORDER'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Sort Order','billmatebankpay'),
+				'label'    => $this->module->l('Sort Order','bankpay'),
 				'desc'     => $this->module->l(''),
 			);
 
