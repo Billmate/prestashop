@@ -477,6 +477,7 @@
 
 				$payment     = OrderPayment::getByOrderId($order_id);
 				$orderStatus = unserialize($orderStatus);
+                $orderStatus = is_array($orderStatus) ? $orderStatus : array($orderStatus);
 				$modules     = array('billmatecardpay', 'billmatebankpay', 'billmateinvoice', 'billmatepartpay');
 
 				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus) && $this->getMethodInfo($order->module, 'authorization_method') != 'sale')
@@ -488,24 +489,11 @@
 					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
 					if ($payment_status == 'created')
 					{
-                        $invoice_fee = Configuration::get('BINVOICE_FEE');
-                        $total_fee = 0;
-                        if ($invoice_fee > 0) {
 
-
-                            $invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
-
-                            $tax = new Tax($invoice_fee_tax);
-                            $tax_calculator = new TaxCalculator(array($tax));
-
-                            $tax_amount = $tax_calculator->getTaxesAmount($invoice_fee);
-
-                            $total_fee = $invoice_fee + $tax_amount[1];
-                        }
 
 						$total      = $payment_info['Cart']['Total']['withtax'] / 100;
-                        // If Billmate invoice add Invoice fee to prestashop total to make it possible to activate invoice orders
-						$orderTotal = $order->getTotalPaid() + ($order->module == 'billmateinvoice') ? $total_fee : 0;
+
+						$orderTotal = $order->getTotalPaid();
 						$diff       = $total - $orderTotal;
 						$diff       = abs($diff);
 						if ($diff < 1)
