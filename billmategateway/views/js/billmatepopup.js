@@ -387,7 +387,7 @@ if (typeof modalWin == 'undefined') {
     };
     function getData(param, form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method) {
 
-        ShowMessage('', loadingWindowTitle);
+        ShowMessage('<div class="billmate-loader"></div>', loadingWindowTitle);
         if (versionCompare(version, '1.6') == 1) {
             $('div.alert-danger').remove();
         } else {

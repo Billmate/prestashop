@@ -7,6 +7,21 @@
 * @copyright Billmate AB 2015
 *}
 <style>
+    .billmate-loader {
+        background: url("{$smarty.const._MODULE_DIR_}/modules/views/img/ajax-loader.gif") 15px 15px no-repeat #fbfbfb;
+    }
+
+    @media screen and (max-width: 768px) {
+        #facebox img{
+            width: 90%!important;
+        }
+        #facebox{
+            width: 80%!important;
+            right:10%!important;
+            left: 10%!important;
+        }
+    }
+
     #divFrameParent * {
         text-align: center!important;
         font-size: 1em;
@@ -97,7 +112,7 @@
         }
     </style>
     {if $method.type != 'billmateinvoice' && $method.type != 'billmatepartpay'}
-        <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller}" onclick="getPayment('{$method.method}');return false;">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'}</a>
+        <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller}" onclick="getPayment('{$method.method}');">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'}</a>
     {else}
         <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller|escape:'url'}" id="{$method.type|escape:'html'}">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'} {if $method.type == 'billmatepartpay'} - {l s='Pay from' mod='billmategateway'} {convertPrice|regex_replace:'/[.,]0+/':'' price=$method.monthly_cost.monthlycost} {elseif $method.invoiceFee.fee > 0} - {convertPrice|regex_replace:'/[.,]0+/':'' price=$method.invoiceFee.fee_incl_tax}  {l s='invoice fee is added to the order sum' mod='billmategateway'}{/if}
         </a>
@@ -176,6 +191,7 @@
     carrierurl = "{$link->getPageLink("order", true)}";
     {/if}
     var loadingWindowTitle = '{l s='Processing....' mod='billmategateway'}';
+
     var windowtitlebillmate = "{l s='Pay by invoice can be made only to the address listed in the National Register. Would you make the purchase with address:' mod='billmategateway'}";
     jQuery(document.body).on('click', '#billmate_button', function () {
         var method = $(this).data('method');
