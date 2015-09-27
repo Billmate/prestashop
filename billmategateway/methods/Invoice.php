@@ -80,7 +80,7 @@
 				'name'     => 'invoiceActivated',
 				'required' => true,
 				'type'     => 'checkbox',
-				'label'    => $this->module->l('Enabled','invoice'),
+				'label'    => $this->module->l('Enabled','invoice','invoice'),
 				'desc'     => $this->module->l('Should Billmate Invoice be Enabled','invoice'),
 				'value'    => (Tools::safeOutput(Configuration::get('BINVOICE_ENABLED'))) ? 1 : 0,
 
@@ -467,7 +467,7 @@
 						if($billmate_invoice_fee > 0){
 							$products_list .= '<tr style="background-color: '.((count($order->product_list) +1) % 2 ? '#DDE2E6' : '#EBECEE').';">
 								<td style="padding: 0.6em 0.4em;width: 15%;">&nbsp;</td>
-								<td style="padding: 0.6em 0.4em;width: 30%;"><strong>'.$this->module->l('Invoicefee tax incl.').'</strong></td>
+								<td style="padding: 0.6em 0.4em;width: 30%;"><strong>'.$this->module->l('Invoicefee tax incl.','invoice').'</strong></td>
 								<td style="padding: 0.6em 0.4em; width: 20%;">'.Tools::displayPrice(Product::getTaxCalculationMethod((int)$this->context->customer->id) == PS_TAX_EXC ? Tools::ps_round($billmate_invoice_fee, 2) : $total_fee, $this->context->currency, false).'</td>
 								<td style="padding: 0.6em 0.4em; width: 15%;">1</td>
 								<td style="padding: 0.6em 0.4em; width: 20%;">'.Tools::displayPrice((Product::getTaxCalculationMethod() == PS_TAX_EXC ? Tools::ps_round($billmate_invoice_fee, 2) : $total_fee), $this->context->currency, false).'</td>
