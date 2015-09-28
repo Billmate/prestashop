@@ -70,7 +70,7 @@
         line-height: 23px;
         color: #333;
         font-weight: bold;
-        padding: 33px 40px 34px 99px;
+        padding: 33px 40px 34px 110px;
         letter-spacing: -1px;
         position: relative;
 
@@ -85,11 +85,13 @@
     {/if}
 </style>
 {foreach $methods as $method}
-    <div class="payment_module">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="payment_module">
     <style>
         div.payment_module a.{$method.type} {
             background: url("{$smarty.const._MODULE_DIR_}{$method.icon}") 15px 15px no-repeat #fbfbfb;
-            padding-left: 10%;
+
         }
         div.payment_module a.{$method.type}:after{
             display: block;
@@ -144,13 +146,15 @@
                     <input type="checkbox" checked="checked" id="agree_with_terms_{$method.type|escape:'html'}"
                            name="agree_with_terms_{$method.type|escape:'html'}"/>
                     </div>
-                    <label for="terms_{$method.type|escape:'html'}" style="float:left;">{$method.agreements|escape:'quotes'}</label>
+                    <label for="terms_{$method.type|escape:'html'}" style="float:left; max-width: 80%;">{$method.agreements|escape:'quotes'}</label>
                 </div>
                 <div style="padding:10px"><button type="submit" style="margin-bottom:10px;" class="btn btn-default button button-medium pull-right" id="{$method.type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span></button></div>
                 <div style="clear:both;"></div>
             </form>
         </div>
     {/if}
+    </div>
+        </div>
     </div>
 {/foreach}
 <script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
