@@ -683,7 +683,7 @@
 				'required' => true,
 				'type'     => 'text',
 				'label'    => $this->l('Billmate ID'),
-				'desc'     => $this->l('The Billmate ID from Billmateonline'),
+				'desc'     => $this->l('The Billmate ID from Billmate Online'),
 				'value'    => Configuration::get('BILLMATE_ID'),
 			);
 
@@ -692,7 +692,7 @@
 				'required' => true,
 				'type'     => 'text',
 				'label'    => $this->l('Secret'),
-				'desc'     => $this->l('The secret key from Billmateonline'),
+				'desc'     => $this->l('The secret key from Billmate Online'),
 				'value'    => Configuration::get('BILLMATE_SECRET')
 			);
 
