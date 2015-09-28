@@ -69,16 +69,14 @@
 
                             month = month.replace(/^0+/, '');
                             day = day.replace(/^0+/, '');
-                            console.log(year);
-                            console.log(month);
-                            console.log(day);
-                            $('select[name="years"]').val(year);
-                            $('select[name="years"]').trigger('change');
-                            $('select[name="months"]').val(month);
-                            $('select[name="months"]').trigger('change');
-                            $('select[name="days"]').val(day);
-                            $('select[name="days"]').trigger('change');
-
+                            if(typeof result.data.company == 'undefined') {
+                                $('select[name="years"]').val(year);
+                                $('select[name="years"]').trigger('change');
+                                $('select[name="months"]').val(month);
+                                $('select[name="months"]').trigger('change');
+                                $('select[name="days"]').val(day);
+                                $('select[name="days"]').trigger('change');
+                            }
                             if(typeof validateAllFieldsNow == "function"){
                                 validateAllFieldsNow(true);
                             }

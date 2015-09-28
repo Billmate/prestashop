@@ -391,14 +391,20 @@
 			$result = Db::getInstance()->getRow('SELECT * FROM '._DB_PREFIX_.'billmate_payment_fees WHERE order_id = "'.$order->id.'"');
 			if($result){
 
-
+				$payments = $order->getOrderPaymentCollection();
+				$currency = 0;
+				foreach($payments as $payment){
+					$currency = $payment->id_currency;
+				}
 				$invoice_fee_tax = $result['tax_rate'] / 100;
 				$invoice_fee = $result['invoice_fee'];
 				$billmatetax = $result['invoice_fee'] * $invoice_fee_tax;
+
 				$total_fee = $invoice_fee + $billmatetax;
 
 				$this->smarty->assign('invoiceFeeIncl', $total_fee);
 				$this->smarty->assign('invoiceFeeTax', $billmatetax);
+				$this->smarty->assign('invoiceFeeCurrency',$currency);
 				$this->smarty->assign('order', $order);
 
 				return $this->display(__FILE__, 'invoicefee.tpl');

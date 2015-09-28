@@ -285,6 +285,7 @@
 				$tax                = new Tax($invoice_fee_tax);
 				$tax_calculator      = new TaxCalculator(array($tax));
 				$tax_rate            = $tax_calculator->getTotalRate();
+				$fee = Tools::convertPriceFull($fee,null,$this->context->currency);
 				$fee = round($fee,2);
 				$totals['Handling'] = array(
 					'withouttax' => $fee * 100,

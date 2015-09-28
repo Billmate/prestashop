@@ -163,8 +163,19 @@
 				$taxCalculator = new TaxCalculator(array($tax));
 
 				$taxAmount                = $taxCalculator->getTaxesAmount($feeArray['fee']);
-				$feeArray['fee_tax']      = $taxAmount;
-				$feeArray['fee_incl_tax'] = $taxCalculator->addTaxes($feeArray['fee']);
+				$currency = new Currency($this->context->currency->id);
+
+
+
+				$feeArray['fee_tax'] = $taxAmount;
+
+				$fee = $taxCalculator->addTaxes($feeArray['fee']);
+
+				if($fee > 0) {
+					$feeArray['fee_incl_tax'] = Tools::convertPriceFull($fee,null,$currency);
+				} else {
+					$feeArray['fee_incl_tax'] = 0;
+				}
 
 				return $feeArray;
 			}
@@ -304,7 +315,7 @@
 						$total_fee = 0;
 						if($deliveries == 0) {
 							$billmate_invoice_fee = Configuration::get('BINVOICE_FEE');
-
+							$billmate_invoice_fee = Tools::convertPriceFull($billmate_invoice_fee,null,$this->context->currency);
 
 							$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
 
@@ -315,10 +326,12 @@
 							// todo check this line
 
 							$billmatetax = array_pop($tax_amount);
-							$billtotal_fee = $billmate_invoice_fee + $billmatetax;
+							//$billmatetax = Tools::convertPriceFull($billmatetax,null,$this->context->currency);
+							$billtotal_fee = round($billmate_invoice_fee + $billmatetax,2);
 
 						} else {
 							$billmate_invoice_fee = Configuration::get('BINVOICE_FEE');
+							$billmate_invoice_fee = Tools::convertPriceFull($billmate_invoice_fee,null,$this->context->currency);
 
 
 							$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
@@ -330,7 +343,8 @@
 							// todo check this line
 
 							$billmatetax = array_pop($tax_amount);
-							$billtotal_fee = $billmate_invoice_fee + $billmatetax;
+							//$billmatetax = Tools::convertPriceFull($billmatetax,null,$this->context->currency);
+							$billtotal_fee = round($billmate_invoice_fee + $billmatetax,2);
 							$billmatetax = 0;
 							$billmate_invoice_fee = 0;
 						}
@@ -354,7 +368,9 @@
 						// if ($order->total_paid != $order->total_paid_real)
 						// We use number_format in order to compare two string
 
-
+						error_log('amount'.$amount_paid);
+						error_log('cart_'.$cart_total_paid);
+						error_log('billtotal_fee'.$billtotal_fee);
 						if ($order_status->logable && number_format($cart_total_paid + $billtotal_fee, 2) != number_format($amount_paid, 2))
 							$id_order_state = Configuration::get('PS_OS_ERROR');
 						if($billmate_invoice_fee > 0){
