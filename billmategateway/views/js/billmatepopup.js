@@ -390,8 +390,12 @@ if (typeof modalWin == 'undefined') {
         ShowMessage('<div class="billmate-loader"></div>', loadingWindowTitle);
         if (versionCompare(version, '1.6') == 1) {
             $('div.alert-danger').remove();
+            $('#error_billmate'+method).css('padding-bottom','0px');
+
         } else {
             $('div.error').remove();
+            $('#error_billmate'+method).css('padding-bottom','0px');
+
         }
         billmateprocessing = true;
         jQuery.post(ajaxurl + '&method=' + method + param, form, function (json) {
@@ -424,9 +428,12 @@ if (typeof modalWin == 'undefined') {
                     modalWin.HideModalPopUp();
                     if (versionCompare(version, '1.6') == 1) {
                         $('.alert-danger').remove();
+                        $('#error_billmate'+method).css('padding-bottom','10px');
+
                         $('<div class="alert alert-danger">' + response.content + '</div>').insertBefore($('#error_billmate'+method).first());
                     } else {
                         $('.error').remove();
+                        $('#error_billmate'+method).css('padding-bottom','10px');
                         $('<div class="error">' + response.content + '</div>').insertBefore($('#error_billmate'+method).first());
                     }
                 }

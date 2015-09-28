@@ -125,7 +125,7 @@
         </a>
         <div style="display:none;" id="{$method.type}-fields" class="payment-form">
             <form action="javascript://" class="{$method.type|escape:'html'}">
-                <div style="padding:10px;" id="error_{$method.type}"></div>
+                <div style="" id="error_{$method.type}"></div>
                 {if $method.type == 'billmatepartpay'}
                     <div class="accountcontainer">
                         <label style="display:block; padding:10px; {if $template == 'legacy'}clear:both;{/if}">{l s='Payment options:' mod='billmategateway'}</label>
