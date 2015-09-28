@@ -56,7 +56,7 @@
 				'type'       => $this->name,
 				'controller' => $this->validation_controller,
 				'icon'       => $this->icon,
-				'agreements' => sprintf($this->module->l('My email is accurate and can be used for invoicing.','invoice').' <a id="terms" style="cursor:pointer!important">'.$this->module->l('I also confirm the terms for invoice payment','invoice').'</a> '.$this->module->l('and accept the liability.','invoice')),
+				'agreements' => sprintf('<span>'.$this->module->l('My email is accurate and can be used for invoicing.','invoice').'<br/> <a id="terms" style="cursor:pointer!important">'.$this->module->l('I also confirm the terms for invoice payment','invoice').'</a> '.$this->module->l('and accept the liability.','invoice').'</span>'),
 				'invoiceFee' => $this->getFee()
 			);
 		}

@@ -25,7 +25,7 @@
             {/foreach}
         </div>
         <div class="center pspace"><input type="submit" name="billmateSubmit"
-                                          value="{l s='Save' mod='billmategateway'}"/></div>
+                                          value="{l s='Save' mod='billmategateway'}" id="billmate-btn"/></div>
     </form>
 </div>
 {foreach from=$js item=link}

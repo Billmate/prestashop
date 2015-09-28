@@ -148,7 +148,7 @@
                     </div>
                     <label for="terms_{$method.type|escape:'html'}" style="float:left; max-width: 80%;">{$method.agreements|escape:'quotes'}</label>
                 </div>
-                <div style="padding:10px"><button type="submit" style="margin-bottom:10px;" class="btn btn-default button button-medium pull-right" id="{$method.type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span></button></div>
+                <div style="padding:10px; padding-top:0px;"><button type="submit" style="margin-bottom:10px;" class="btn btn-default button button-medium pull-right" id="{$method.type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span></button></div>
                 <div style="clear:both;"></div>
             </form>
         </div>

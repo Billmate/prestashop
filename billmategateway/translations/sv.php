@@ -27,8 +27,8 @@ $_MODULE['<{billmategateway}prestashop>billmategateway_24c4f68246a06b21ec3e7261d
 $_MODULE['<{billmategateway}prestashop>billmategateway_d0bedde4d0b3b5cfe60a43f747956d63'] = 'Följande ordrar misslyckades att aktiveras på Billmate: %s.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_215fdad94093ff14065535526bded8e0'] = 'Billmate ID';
 $_MODULE['<{billmategateway}prestashop>billmategateway_45989badf346d8ac8c66d1a042e4062d'] = 'Billmate ID från Billmate Online';
-$_MODULE['<{billmategateway}prestashop>billmategateway_1e6947ac7fb3a9529a9726eb692c8cc5'] = 'Lösenord';
-$_MODULE['<{billmategateway}prestashop>billmategateway_3f967e40755c9992c3774658ab9628ae'] = 'Lösenord från Billmate Online';
+$_MODULE['<{billmategateway}prestashop>billmategateway_1e6947ac7fb3a9529a9726eb692c8cc5'] = 'Secret';
+$_MODULE['<{billmategateway}prestashop>billmategateway_3f967e40755c9992c3774658ab9628ae'] = 'Secret från Billmate Online';
 $_MODULE['<{billmategateway}prestashop>billmategateway_d79cf3f429596f77db95c65074663a54'] = 'Order ID';
 $_MODULE['<{billmategateway}prestashop>billmategateway_4a749fd3b6a264a6fa279351e06a39f9'] = 'Referens ID';
 $_MODULE['<{billmategateway}prestashop>billmategateway_d2c877438d716fc35d80ef470090ff19'] = 'Order id används av Billmate';

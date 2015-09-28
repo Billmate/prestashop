@@ -320,7 +320,30 @@ small.footnote {
     background-color: #FFFFFF;
     cursor: pointer;
 }
-
+input#billmate-btn{
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    white-space: nowrap;
+    padding: 4px 8px;
+    font-size: 12px;
+    line-height: 1.42857;
+    border-radius: 3px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: #00aff0;
+    color: #fff;
+    text-transform: uppercase;
+    border-color: #008abd;
+    -webkit-box-shadow: #008abd 0 -1px 0 inset;
+    box-shadow: #008abd 0 -1px 0 inset;
+    margin-top:10px;
+}
 .billmate_list_country {
     background-color: #FFFFFF;
     border: 1px solid #CCCCCC;
