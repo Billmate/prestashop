@@ -76,7 +76,7 @@ $_MODULE['<{billmategateway}prestashop>invoice_00d23a76e43b46dae9ec7aa9dcbebb32'
 $_MODULE['<{billmategateway}prestashop>invoice_924665d15fb98a8baa6d3b67dd0c9551'] = 'Checka i för att aktivera Billmate Faktura i checkout';
 $_MODULE['<{billmategateway}prestashop>invoice_03a36f89aad8dd8286bc5fe6692cbbeb'] = 'Testläge';
 $_MODULE['<{billmategateway}prestashop>invoice_77f13e8055d1867d9a2bf4befa34cd19'] = 'Aktivera testläge';
-$_MODULE['<{billmategateway}prestashop>invoice_befd8996fad3e24232e3ac5738a746fc'] = 'Fakturaavift';
+$_MODULE['<{billmategateway}prestashop>invoice_1bca999e2d31198cddd3b5044ed1c1c8'] = 'Fakturaavgift ex. moms ';
 $_MODULE['<{billmategateway}prestashop>invoice_244806277ec473713bed296969e4a45d'] = 'Välj momssats för fakturaavgiften';
 $_MODULE['<{billmategateway}prestashop>invoice_57336e9fc16799e8a0a59811bd615809'] = 'Sätt orderstatus';
 $_MODULE['<{billmategateway}prestashop>invoice_0f3b6306a7efddf2ecf85698370d4762'] = 'Minsta orderbelopp';

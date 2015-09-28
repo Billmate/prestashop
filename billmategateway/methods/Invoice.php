@@ -100,7 +100,7 @@
 				'required' => false,
 				'value'    => (float)Configuration::get('BINVOICE_FEE'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Invoice Fee ','invoice').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Invoice fee ex. VAT ','invoice').' ('.$currency['sign'].')',
 				'desc'     => $this->module->l(''),
 			);
 
