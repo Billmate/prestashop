@@ -159,7 +159,23 @@
 {/foreach}
 <script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
 <script type="text/javascript">
-
+    function getPayment(method){
+        if(typeof submitAccount == 'function')
+            submitAccount();
+        $.ajax({
+            url: ajaxurl,
+            data: 'method='+method,
+            success: function(response){
+                var result = JSON.parse(response);
+                if(result.success){
+                    location.href = result.redirect;
+                } else {
+                    alert(result.content);
+                }
+            }
+        })
+        return false;
+    }
     if(!billmatepopupLoaded){
         var script = document.createElement('script');
         script.setAttribute('src','{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js');
@@ -176,23 +192,7 @@
     var version = "{$ps_version|escape:'html'}"
     var PARTPAYMENT_EID = "{$eid}";
     var ajaxurl = "{$link->getModuleLink('billmategateway', 'billmateapi', ['ajax'=> 0], true)}";
-    function getPayment(method){
-        if(typeof submitAccount == 'function')
-            submitAccount();
-        $.ajax({
-                url: ajaxurl,
-                data: 'method='+method,
-                success: function(response){
-                    var result = JSON.parse(response);
-                    if(result.success){
-                        location.href = result.redirect;
-                    } else {
-                        alert(result.content);
-                    }
-                }
-                })
-        return false;
-    }
+
     var emptypersonerror = "{l s='PNO/SSN missing' mod='billmategateway'}";
     var checkbox_required = "{l s='Please check the checkbox for confirm this e-mail address is correct and can be used for invoicing.' mod='billmategateway'}";
     var carrierurl;
@@ -218,6 +218,8 @@
         }
     });
     $('#billmateinvoice').click(function (e) {
+        $('a#billmateinvoice').css('padding-bottom','10px');
+        $('a#billmatepartpay').css('padding-bottom','34px');
         $('#billmatepartpay-fields').hide();
         $('#billmateinvoice-fields').show();
         if ($('#pno').length) {
@@ -228,6 +230,8 @@
         e.preventDefault();
     })
     $('#billmatepartpay').click(function (e) {
+        $('a#billmateinvoice').css('padding-bottom','34px');
+        $('a#billmatepartpay').css('padding-bottom','10px');
         $('#billmateinvoice-fields').hide();
         $('#billmatepartpay-fields').show();
         if ($('#pno').length) {
@@ -276,7 +280,7 @@
     })
     if($('input[name="id_payment_method"]').length) {
         $(document).on('click', 'input[name="id_payment_method"]', function (element) {
-            console.log('click');
+
             $('.payment-form').hide();
             var value = element.target.value;
 

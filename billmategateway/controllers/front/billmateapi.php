@@ -599,7 +599,12 @@
 				case 'bankpay':
 				case 'cardpay':
 					if (!isset($result['code']))
-						$return = array('success' => true, 'redirect' => $result['url']);
+						if($this->ajax) {
+							$return = array('success' => true, 'redirect' => $result['url']);
+						} else {
+							header('Location: '.$result['url']);
+						}
+
 					else
 					{
 						Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
