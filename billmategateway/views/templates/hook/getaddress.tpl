@@ -9,7 +9,7 @@
 <div class="text form-group">
     <label>{l s='Social Security Number / Corporate Registration number' mod='billmategateway'}</label>
     <div style="clear:both"></div>
-    <input type="text" id="pno" class="text form-control" name="pno" value="{$pno}" style="float: left;"/>
+    <input type="text" id="pno" class="text form-control" name="pno" value="{$pno}" style="float: left;width: 55%;max-width: 158px;"/>
     <button style="float:left" id="getaddress" class="btn btn-default button button-small"><span>{l s='Get address' mod='billmategateway'}</span></button>
 </div>
 <div style="clear:both"></div>
@@ -69,7 +69,7 @@
 
                             month = month.replace(/^0+/, '');
                             day = day.replace(/^0+/, '');
-                            if(typeof result.data.company == 'undefined') {
+                            if(typeof response.data.company == 'undefined') {
                                 $('select[name="years"]').val(year);
                                 $('select[name="years"]').trigger('change');
                                 $('select[name="months"]').val(month);
