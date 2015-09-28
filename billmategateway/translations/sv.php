@@ -33,7 +33,7 @@ $_MODULE['<{billmategateway}prestashop>billmategateway_d79cf3f429596f77db95c6507
 $_MODULE['<{billmategateway}prestashop>billmategateway_4a749fd3b6a264a6fa279351e06a39f9'] = 'Referens ID';
 $_MODULE['<{billmategateway}prestashop>billmategateway_d2c877438d716fc35d80ef470090ff19'] = 'Order id används av Billmate';
 $_MODULE['<{billmategateway}prestashop>billmategateway_80a82d1e9a70ca738c121a908efba781'] = 'Aktivera Fakturor';
-$_MODULE['<{billmategateway}prestashop>billmategateway_91a8f03a9782bbad1630ce029cbce142'] = 'Aktivera fakturor med inställd status på Billmate Online';
+$_MODULE['<{billmategateway}prestashop>billmategateway_91a8f03a9782bbad1630ce029cbce142'] = 'Aktivera fakturor med inställd status i Billmate Online automatiskt';
 $_MODULE['<{billmategateway}prestashop>billmategateway_4b534e271a8f95a880f2717a4da89d96'] = 'Orderstatus för automatisk order aktivering i Billmate Online.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3f90ab86b59f564abc8492f7df7e5f34'] = 'Aktivera Hämta address';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3c2701f97ac0685a064bea07e36aea6b'] = 'Aktivera hämta adress via personnummer för att förenkla flödet i kassan.';
@@ -123,7 +123,6 @@ $_MODULE['<{billmategateway}prestashop>payment_e580a2735b1cf3339f84cf1028d4e99b'
 $_MODULE['<{billmategateway}prestashop>payment_68dff7ceb4dcf8b754c6b51324a86173'] = 'Vänligen kryssa i kryssrutan för att bekräfta att denna e-postaddress är korrekt och får användas för fakturering';
 $_MODULE['<{billmategateway}prestashop>payment_edc82d9ccafac930ac7a30bd065c1fa8'] = 'Bearbetar....';
 $_MODULE['<{billmategateway}prestashop>payment_f4089e7fcaf8095dbfc44a69424f7e8c'] = 'Köp mot faktura kan bara göras till den address som är angiven i folkbokföringen. Vill du genomföra köpet med addressen:';
-$_MODULE['<{billmategateway}prestashop>settings_961f2247a2070bedff9f9cd8d64e2650'] = 'Välj';
 $_MODULE['<{billmategateway}prestashop>settings_1e4d925525a51a7807a2d79732601770'] = 'ID';
 $_MODULE['<{billmategateway}prestashop>settings_b5a7adde1af5c87d7fd797b6245c2a39'] = 'Beskrivning';
 $_MODULE['<{billmategateway}prestashop>settings_ef831a7b020689074c3df21c36dfc3c0'] = 'Månader';
