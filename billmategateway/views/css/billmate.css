@@ -339,9 +339,6 @@ input#billmate-btn{
     background-color: #00aff0;
     color: #fff;
     text-transform: uppercase;
-    border-color: #008abd;
-    -webkit-box-shadow: #008abd 0 -1px 0 inset;
-    box-shadow: #008abd 0 -1px 0 inset;
     margin-top:10px;
 }
 .billmate_list_country {
