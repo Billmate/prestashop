@@ -739,7 +739,8 @@
 			$settings['logo'] = array(
 				'name' => 'logo',
 				'type' => 'text',
-				'label' => $this->l('Logo used on the invoice sent from Billmate'),
+				'label' => $this->l('Logo to be displayed in the invoice'),
+				'desc' => $this->l('Enter the name of the logo (shown in Billmate Online). Leave empty if you only have one logo.'),
 				'value' => Configuration::get('BILLMATE_LOGO')
 			);
 			$this->smarty->assign(array('settings' => $settings, 'moduleName' => $this->l('Common Settings')));

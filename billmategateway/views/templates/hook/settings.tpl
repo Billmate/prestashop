@@ -14,14 +14,14 @@
                 <div class="input-row">
                     <span>{$setting.label|escape:'html'}</span>
                     <input type="checkbox" value="1" {if $setting.value == 1}checked="checked"{/if}
-                           name="{$setting.name|escape:'html'}"/>{$setting.desc|escape:'html'}
+                           name="{$setting.name|escape:'html'}"/> {$setting.desc|escape:'html'}
                 </div>
             {/if}
             {if $setting.type == 'text'}
                 <div class="input-row">
                     <span>{$setting.label|escape:'html'}</span>
                     <input type="{$setting.type|escape:'html'}" name="{$setting.name|escape:'html'}" id="{$setting.name|escape:'html'}"
-                           value="{$setting.value|escape:'html'}"/>{$setting.desc|escape:'html'}
+                           value="{$setting.value|escape:'html'}"/> {$setting.desc|escape:'html'}
                 </div>
             {/if}
             {if $setting.type == 'select'}

@@ -37,7 +37,8 @@ $_MODULE['<{billmategateway}prestashop>billmategateway_91a8f03a9782bbad1630ce029
 $_MODULE['<{billmategateway}prestashop>billmategateway_4b534e271a8f95a880f2717a4da89d96'] = 'Orderstatus för automatisk order aktivering i Billmate Online.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3f90ab86b59f564abc8492f7df7e5f34'] = 'Aktivera Hämta address';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3c2701f97ac0685a064bea07e36aea6b'] = 'Aktivera hämta adress via personnummer för att förenkla flödet i kassan.';
-$_MODULE['<{billmategateway}prestashop>billmategateway_3080f8df087d7481097e9c1ac14b8c73'] = 'Logo för faktura som skickas från Billmate';
+$_MODULE['<{billmategateway}prestashop>billmategateway_3336573a263dde25ad2c0c038607e3dc'] = ' Logotype som visas på fakturan';
+$_MODULE['<{billmategateway}prestashop>billmategateway_f0511bcd568430a8a1be2c6b5029dc47'] = 'Ange namnet på logotypen (finns i Billmate Online). Lämna tom om ni endast har en logotype.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_f5a8885f26ea1fe06b78b423fa4e9f95'] = 'Generella Inställningar';
 $_MODULE['<{billmategateway}prestashop>billmateapi_72dd0900a3fee01d727efa2066a06b11'] = 'Rabatt %s%% Moms';
 $_MODULE['<{billmategateway}prestashop>billmateapi_104d9898c04874d0fbac36e125fa1369'] = 'Rabatt';
