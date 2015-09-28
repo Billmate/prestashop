@@ -36,7 +36,7 @@ $_MODULE['<{billmategateway}prestashop>billmategateway_80a82d1e9a70ca738c121a908
 $_MODULE['<{billmategateway}prestashop>billmategateway_91a8f03a9782bbad1630ce029cbce142'] = 'Aktivera fakturor med inställd status på Billmate Online';
 $_MODULE['<{billmategateway}prestashop>billmategateway_4b534e271a8f95a880f2717a4da89d96'] = 'Orderstatus för automatisk order aktivering i Billmate Online.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3f90ab86b59f564abc8492f7df7e5f34'] = 'Aktivera Hämta address';
-$_MODULE['<{billmategateway}prestashop>billmategateway_ec689a686ba2e05254fb424a16f1b84f'] = 'Låt era kunder använda Hämta address vid kassan';
+$_MODULE['<{billmategateway}prestashop>billmategateway_3c2701f97ac0685a064bea07e36aea6b'] = 'Aktivera hämta adress via personnummer för att förenkla flödet i kassan.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3080f8df087d7481097e9c1ac14b8c73'] = 'Logo för faktura som skickas från Billmate';
 $_MODULE['<{billmategateway}prestashop>billmategateway_f5a8885f26ea1fe06b78b423fa4e9f95'] = 'Generella Inställningar';
 $_MODULE['<{billmategateway}prestashop>billmateapi_72dd0900a3fee01d727efa2066a06b11'] = 'Rabatt %s%% Moms';
@@ -69,7 +69,7 @@ $_MODULE['<{billmategateway}prestashop>cardpay_b836c068c07a63081cee72070653b056'
 $_MODULE['<{billmategateway}prestashop>cardpay_c20cc8f5bb7d26404f80b1c990c8a7fd'] = 'Sorteringsordning';
 $_MODULE['<{billmategateway}prestashop>invoice_c79f3b0a3c5936107bfd51556e2d3dd5'] = 'Billmate Faktura';
 $_MODULE['<{billmategateway}prestashop>invoice_660b3c28387f41fee5b3d65ed30b761e'] = 'Min e-postadress är korrekt och får användas för fakturering.';
-$_MODULE['<{billmategateway}prestashop>invoice_12ec406d37a4fec3d685f8964b3c4f63'] = 'Jag bekräftar köpvillkoren';
+$_MODULE['<{billmategateway}prestashop>invoice_5796704293dee7757c3b6961c16d11cd'] = 'Jag bekräftar även köpvillkoren';
 $_MODULE['<{billmategateway}prestashop>invoice_ee21ea8152cfde71f02f81dfdfd5fcf8'] = 'och accepterar betalningsansvaret.';
 $_MODULE['<{billmategateway}prestashop>invoice_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
 $_MODULE['<{billmategateway}prestashop>invoice_924665d15fb98a8baa6d3b67dd0c9551'] = 'Checka i för att aktivera Billmate Faktura i checkout';
@@ -84,7 +84,7 @@ $_MODULE['<{billmategateway}prestashop>invoice_c20cc8f5bb7d26404f80b1c990c8a7fd'
 $_MODULE['<{billmategateway}prestashop>invoice_2c2e385ee12076f630a9bf42e27ffde7'] = 'Fakturaavgift inkl. moms';
 $_MODULE['<{billmategateway}prestashop>partpay_0bbca79ade444fffaefd5036532c81ef'] = 'Billmate Delbetalning';
 $_MODULE['<{billmategateway}prestashop>partpay_660b3c28387f41fee5b3d65ed30b761e'] = 'Min e-postadress är korrekt och får användas för fakturering.';
-$_MODULE['<{billmategateway}prestashop>partpay_12ec406d37a4fec3d685f8964b3c4f63'] = 'Jag bekräftar köpvillkoren';
+$_MODULE['<{billmategateway}prestashop>partpay_5796704293dee7757c3b6961c16d11cd'] = 'Jag bekräftar även köpvillkoren';
 $_MODULE['<{billmategateway}prestashop>partpay_ee21ea8152cfde71f02f81dfdfd5fcf8'] = 'och accepterar betalningsansvaret.';
 $_MODULE['<{billmategateway}prestashop>partpay_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
 $_MODULE['<{billmategateway}prestashop>partpay_33995d5a88490da5c5a04849a9a9e3a3'] = 'Checka i för att aktivera Billmate Delbetalning i checkout';
@@ -98,8 +98,8 @@ $_MODULE['<{billmategateway}prestashop>partpay_6648bd6e19734714473f75c56fe52a47'
 $_MODULE['<{billmategateway}prestashop>wrongaddress_b863f99770e69cf22b40c822f729abb3'] = 'Ja, genomför köp med denna address.';
 $_MODULE['<{billmategateway}prestashop>wrongaddress_040604da72e02c86f502e4d30fdf5ce1'] = 'Nej, jag vill ange ett annat personnummer eller byta betalsätt';
 $_MODULE['<{billmategateway}prestashop>admin_c9cc8cce247e49bae79f15173ce97354'] = 'Spara';
-$_MODULE['<{billmategateway}prestashop>getaddress_a131d2f22ba02d1aa14a2ae692a7ae81'] = 'Personnummer / Organisationsnummer';
-$_MODULE['<{billmategateway}prestashop>getaddress_28d82b1bf285de821fd54288aa9a5d4e'] = 'Hämta address';
+$_MODULE['<{billmategateway}prestashop>getaddress_a24461731ee0511b9941f8abbdc03329'] = 'Personnummer / Organisationsnummer';
+$_MODULE['<{billmategateway}prestashop>getaddress_f9d7ed150dfcb19cd5b564fc76fcdf84'] = 'Hämta address';
 $_MODULE['<{billmategateway}prestashop>getaddress_ccb2f416f961066d90b3001c07f17c61'] = 'Vi kunde inte hitta er adress, vänligen fyll i manuellt';
 $_MODULE['<{billmategateway}prestashop>invoicefee_7dbfa0d9820106320e78b5e98cf2fa7a'] = 'Betalningsavgifter';
 $_MODULE['<{billmategateway}prestashop>invoicefee_70401e2c5c0e75064c2e3ae34b774981'] = 'Fakturaavgift';
@@ -110,11 +110,13 @@ $_MODULE['<{billmategateway}prestashop>orderconfirmation_75fbf512d744977d62599cc
 $_MODULE['<{billmategateway}prestashop>orderconfirmation_e6dc7945b557a1cd949bea92dd58963e'] = 'Er order skickas inom kort.';
 $_MODULE['<{billmategateway}prestashop>orderconfirmation_0db71da7150c27142eef9d22b843b4a9'] = 'För ytterligare frågor och mer information, vänligen kontakta vår';
 $_MODULE['<{billmategateway}prestashop>orderconfirmation_64430ad2835be8ad60c59e7d44e4b0b1'] = 'kundtjänst';
-$_MODULE['<{billmategateway}prestashop>payment_d4738d445ef6c323c3c608146f61d8bf'] = 'Betala från';
-$_MODULE['<{billmategateway}prestashop>payment_ba3682538afe34aa2633a121cf48984f'] = 'Fakturaavgiften läggs till på totalbeloppet';
-$_MODULE['<{billmategateway}prestashop>payment_63c6f977f76f28516db082da7074c0d5'] = 'Välj det betalningsalternativ som passar bäst:';
+$_MODULE['<{billmategateway}prestashop>payment_d98a07f84921b24ee30f86fd8cd85c3c'] = 'från';
+$_MODULE['<{billmategateway}prestashop>payment_fc2b9c465fcf3af8429152be64288754'] = '/ månad';
+$_MODULE['<{billmategateway}prestashop>payment_607c5925805c644aa7af92999dd1264d'] = 'Fakturaavgift';
+$_MODULE['<{billmategateway}prestashop>payment_044bdbd93862b9660b6493b455160111'] = 'tillkommer på ordern';
+$_MODULE['<{billmategateway}prestashop>payment_e2df530c0b093bcac893cd2412e8d55f'] = 'Betalningsalternativ';
 $_MODULE['<{billmategateway}prestashop>payment_7436f942d5ea836cb84f1bb2527d8286'] = 'månad';
-$_MODULE['<{billmategateway}prestashop>payment_41617a6b78c1c5abeb3fc6a5a14b9ac7'] = 'Personnummer / Organisationsnummer';
+$_MODULE['<{billmategateway}prestashop>payment_9faf6f7fc71220e6739d647a1cd8bce1'] = 'Personnummer / Organisationsnummer';
 $_MODULE['<{billmategateway}prestashop>payment_f262fae0a2f17e8c1eb4e9eddb0160e4'] = 'Fortsätt';
 $_MODULE['<{billmategateway}prestashop>payment_e580a2735b1cf3339f84cf1028d4e99b'] = 'Personnummer / Organisationsnummer saknas.';
 $_MODULE['<{billmategateway}prestashop>payment_68dff7ceb4dcf8b754c6b51324a86173'] = 'Vänligen kryssa i kryssrutan för att bekräfta att denna e-postaddress är korrekt och får användas för fakturering';

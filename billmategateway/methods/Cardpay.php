@@ -24,7 +24,7 @@
 			$this->max_value            = Configuration::get('BCARDPAY_MAX_VALUE');
 			$this->sort_order           = Configuration::get('BCARDPAY_SORTORDER');
 			$this->limited_countries    = array('se');
-			$this->allowed_currencies   = array('SEK','EUR');
+			$this->allowed_currencies   = array('SEK','EUR','DKK','NOK','GBP','USD');
 			$this->authorization_method = Configuration::get('BCARDPAY_AUTHORIZATION_METHOD');
 			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'cardpay'));
 			$this->icon                 = file_exists(_PS_MODULE_DIR_.'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/card.png') ? 'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/card.png' : 'billmategateway/views/img/en/card.png';

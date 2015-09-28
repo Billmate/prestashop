@@ -61,7 +61,7 @@
 				'type'         => $this->name,
 				'controller'   => $this->validation_controller,
 				'icon'         => $this->icon,
-				'agreements'   => sprintf($this->module->l('My email is accurate and can be used for invoicing.','partpay').' <a id="terms-partpay" style="cursor:pointer!important">'.$this->module->l('I confirm the terms for invoice payment','partpay').'</a> '.$this->module->l('and accept the liability.','partpay')),
+				'agreements'   => sprintf($this->module->l('My email is accurate and can be used for invoicing.','partpay').' <a id="terms-partpay" style="cursor:pointer!important">'.$this->module->l('I also confirm the terms for invoice payment','partpay').'</a> '.$this->module->l('and accept the liability.','partpay')),
 				'pClasses'     => $pclasses,
 				'monthly_cost' => $this->getMonthlyCost($cart)
 

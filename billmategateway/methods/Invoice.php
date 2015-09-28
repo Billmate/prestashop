@@ -24,7 +24,7 @@
 			$this->max_value            = Configuration::get('BINVOICE_MAX_VALUE');
 			$this->sort_order           = Configuration::get('BINVOICE_SORTORDER');
 			$this->limited_countries    = array('se');
-			$this->allowed_currencies   = array('SEK','EUR');
+			$this->allowed_currencies   = array('SEK','EUR','DKK','NOK','GBP','USD');
 			$this->authorization_method = false;
 			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'invoice'));
 			$this->icon                 = file_exists(_PS_MODULE_DIR_.'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/invoice.png') ? 'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/invoice.png' : 'billmategateway/views/img/en/invoice.png';
@@ -56,7 +56,7 @@
 				'type'       => $this->name,
 				'controller' => $this->validation_controller,
 				'icon'       => $this->icon,
-				'agreements' => sprintf($this->module->l('My email is accurate and can be used for invoicing.','invoice').' <a id="terms" style="cursor:pointer!important">'.$this->module->l('I confirm the terms for invoice payment','invoice').'</a> '.$this->module->l('and accept the liability.','invoice')),
+				'agreements' => sprintf($this->module->l('My email is accurate and can be used for invoicing.','invoice').' <a id="terms" style="cursor:pointer!important">'.$this->module->l('I also confirm the terms for invoice payment','invoice').'</a> '.$this->module->l('and accept the liability.','invoice')),
 				'invoiceFee' => $this->getFee()
 			);
 		}

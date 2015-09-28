@@ -55,6 +55,10 @@
     div.payment_module {
         border: 1px solid #d6d4d4;
         background: #fbfbfb;
+        margin-bottom: 10px;
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
     }
     div.payment_module a {
         display: block;
@@ -69,6 +73,7 @@
         padding: 33px 40px 34px 99px;
         letter-spacing: -1px;
         position: relative;
+
     }
     {else}
     div.payment_module {
@@ -84,7 +89,7 @@
     <style>
         div.payment_module a.{$method.type} {
             background: url("{$smarty.const._MODULE_DIR_}{$method.icon}") 15px 15px no-repeat #fbfbfb;
-            padding-left: 180px;
+            padding-left: 10%;
         }
         div.payment_module a.{$method.type}:after{
             display: block;
@@ -114,14 +119,14 @@
     {if $method.type != 'billmateinvoice' && $method.type != 'billmatepartpay'}
         <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller}" onclick="getPayment('{$method.method}');">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'}</a>
     {else}
-        <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller|escape:'url'}" id="{$method.type|escape:'html'}">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'} {if $method.type == 'billmatepartpay'} - {l s='Pay from' mod='billmategateway'} {convertPrice|regex_replace:'/[.,]0+/':'' price=$method.monthly_cost.monthlycost} {elseif $method.invoiceFee.fee > 0} - {convertPrice|regex_replace:'/[.,]0+/':'' price=$method.invoiceFee.fee_incl_tax}  {l s='invoice fee is added to the order sum' mod='billmategateway'}{/if}
+        <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller|escape:'url'}" id="{$method.type|escape:'html'}">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'} {if $method.type == 'billmatepartpay'} {l s='from' mod='billmategateway'} {convertPrice|regex_replace:'/[.,]0+/':'' price=$method.monthly_cost.monthlycost} {l s='/ month' mod='billmategateway'} {elseif $method.invoiceFee.fee > 0} - {l s='Invoice fee' mod='billmategateway'} {convertPrice|regex_replace:'/[.,]0+/':'' price=$method.invoiceFee.fee_incl_tax}  {l s='is added to the order sum' mod='billmategateway'}{/if}
         </a>
         <div style="display:none;" id="{$method.type}-fields" class="payment-form">
             <form action="javascript://" class="{$method.type|escape:'html'}">
                 <div style="padding:10px;" id="error_{$method.type}"></div>
                 {if $method.type == 'billmatepartpay'}
                     <div class="accountcontainer">
-                        <label style="display:block; padding:10px; {if $template == 'legacy'}clear:both;{/if}">{l s='Choose the payment option that suites you best:' mod='billmategateway'}</label>
+                        <label style="display:block; padding:10px; {if $template == 'legacy'}clear:both;{/if}">{l s='Payment options:' mod='billmategateway'}</label>
                         <select name="paymentAccount" style="margin-left:10px;">
                             {foreach $method.pClasses as $pclass}
                                 <option value="{$pclass.paymentplanid}">{$pclass.description} {displayPrice price=$pclass.monthlycost}
@@ -131,13 +136,15 @@
                     </div>
                 {/if}
                 <div class="pno_container" style="padding:10px">
-                    <label for="pno_{$method.type|escape:'html'}" style="display:block; {if $template == 'legacy'}clear:both;{/if}">{l s='Personal / Corporate number:' mod='billmategateway'}</label>
+                    <label for="pno_{$method.type|escape:'html'}" style="display:block; {if $template == 'legacy'}clear:both;{/if}">{l s='Social Security Number / Corporate Registration Number:' mod='billmategateway'}</label>
                     <input id="pno_{$method.type|escape:'html'}" name="pno_{$method.type|escape:'html'}" type="text"/>
                 </div>
                 <div class="agreements" style="padding:10px">
+                    <div style="float:left;">
                     <input type="checkbox" checked="checked" id="agree_with_terms_{$method.type|escape:'html'}"
                            name="agree_with_terms_{$method.type|escape:'html'}"/>
-                    <label for="terms_{$method.type|escape:'html'}">{$method.agreements|escape:'quotes'}</label>
+                    </div>
+                    <label for="terms_{$method.type|escape:'html'}" style="float:left;">{$method.agreements|escape:'quotes'}</label>
                 </div>
                 <div style="padding:10px"><button type="submit" style="margin-bottom:10px;" class="btn btn-default button button-medium pull-right" id="{$method.type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span></button></div>
                 <div style="clear:both;"></div>

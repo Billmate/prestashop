@@ -7,10 +7,12 @@
 * @copyright Billmate AB 2015
 *}
 <div class="text form-group">
-    <label>{l s='Personal / Corporate number' mod='billmategateway'}</label>
-    <input type="text" id="pno" class="text form-control" name="pno" value="{$pno}"/>
-    <button id="getaddress" class="btn btn-default button button-small"><span>{l s="Get Address" mod='billmategateway'}</span></button>
+    <label>{l s='Social Security Number / Corporate Registration number' mod='billmategateway'}</label>
+    <div style="clear:both"></div>
+    <input type="text" id="pno" class="text form-control" name="pno" value="{$pno}" style="float: left;"/>
+    <button style="float:left" id="getaddress" class="btn btn-default button button-small"><span>{l s="Get address" mod='billmategateway'}</span></button>
 </div>
+<div style="clear:both"></div>
 <script type="text/javascript">
     var getaddressurl = "{$link->getModuleLink('billmategateway','getaddress', ['ajax'=> 0], true)}";
     var errormessage = '{l s='We couldnt find your address, please enter manually' mod='billmategateway'}';
@@ -51,6 +53,7 @@
                             var year = 0;
                             var month = 0;
                             var day = 0;
+                            pno = pno.replace('-','');
                             if(pno.length == 10){
                                 var tmpYear = pno.substring(0,2);
                                 month = pno.substring(2,4);
