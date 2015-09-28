@@ -22,7 +22,7 @@
 			$this->testMode             = Configuration::get('BPARTPAY_MOD');
 			$this->min_value            = Configuration::get('BPARTPAY_MIN_VALUE');
 			$this->max_value            = Configuration::get('BPARTPAY_MAX_VALUE');
-			$this->sort_order           = Configuration::get('BPARTPAY_SORTORDER');
+			$this->sort_order           = (Configuration::get('BPARTPAY_SORTORDER')) ? Configuration::get('BPARTPAY_SORTORDER') : 2;
 			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK');
 			$this->authorization_method = false;

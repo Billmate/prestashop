@@ -22,7 +22,7 @@
 			$this->testMode             = Configuration::get('BINVOICE_MOD');
 			$this->min_value            = Configuration::get('BINVOICE_MIN_VALUE');
 			$this->max_value            = Configuration::get('BINVOICE_MAX_VALUE');
-			$this->sort_order           = Configuration::get('BINVOICE_SORTORDER');
+			$this->sort_order           = (Configuration::get('BINVOICE_SORTORDER')) ? Configuration::get('BINVOICE_SORTORDER') : 1;
 			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK','EUR','DKK','NOK','GBP','USD');
 			$this->authorization_method = false;

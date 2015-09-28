@@ -22,7 +22,7 @@
 			$this->testMode             = Configuration::get('BCARDPAY_MOD');
 			$this->min_value            = Configuration::get('BCARDPAY_MIN_VALUE');
 			$this->max_value            = Configuration::get('BCARDPAY_MAX_VALUE');
-			$this->sort_order           = Configuration::get('BCARDPAY_SORTORDER');
+			$this->sort_order           = (Configuration::get('BCARDPAY_SORTORDER')) ? Configuration::get('BCARDPAY_SORTORDER') : 3;
 			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK','EUR','DKK','NOK','GBP','USD');
 			$this->authorization_method = Configuration::get('BCARDPAY_AUTHORIZATION_METHOD');

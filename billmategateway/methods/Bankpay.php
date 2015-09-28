@@ -25,7 +25,7 @@
 			$this->min_value            = Configuration::get('BBANKPAY_MIN_VALUE');
 			$this->max_value            = Configuration::get('BBANKPAY_MAX_VALUE');
 			$this->authorization_method = Configuration::get('BBANKPAY_AUTHORIZATION_METHOD');
-			$this->sort_order           = Configuration::get('BBANKPAY_SORTORDER');
+			$this->sort_order           = (Configuration::get('BBANKPAY_SORTORDER')) ? Configuration::get('BBANKPAY_SORTORDER') : 4;
 			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'bankpay'));
 			$this->icon                 = file_exists(_PS_MODULE_DIR_.'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/card.png') ? 'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/card.png' : 'billmategateway/views/img/en/card.png';
 		}

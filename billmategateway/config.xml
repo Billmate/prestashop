@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <module>
     <name>billmategateway</name>
-    <displayName><![CDATA[BillMate]]></displayName>
+    <displayName><![CDATA[Billmate Payment Gateway]]></displayName>
     <version><![CDATA[2.0.0]]></version>
     <description><![CDATA[Accept online payments with Billmate.]]></description>
     <author><![CDATA[Billmate AB]]></author>
