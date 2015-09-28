@@ -4,12 +4,13 @@
  * Created by PhpStorm.
  * User: jesperjohansson
  * Date: 15-09-09
- * Time: 21:25
+ * Time: 21:18
  */
-class BillmateInvoice extends PaymentModule
+class BillmateBankpay extends PaymentModule
 {
     public function __construct()
     {
-        $this->name = 'billmateinvoice';
+        $this->name = 'billmatebankpay';
+
     }
 }
