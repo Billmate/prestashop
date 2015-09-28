@@ -28,7 +28,6 @@
                 <div class="input-row">
                     <span>{$setting.label|escape:'html'}</span>
                     <select {if isset($setting.id)}id="{$setting.id}"{/if} {if isset($setting.name)}name="{$setting.name}"{/if}>
-                        <option>{l s='Choose' mod='billmategateway'}</option>
                         {html_options options=$setting.options selected=$setting.value|escape:'html'}
                     </select>
                 </div>
