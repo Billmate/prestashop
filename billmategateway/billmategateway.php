@@ -146,6 +146,7 @@
 			Configuration::updateValue('BILLMATE_ACTIVATE_STATUS', serialize(Tools::getValue('activateStatuses')));
 			Configuration::updateValue('BILLMATE_SEND_REFERENCE', Tools::getValue('sendOrderReference'));
 			Configuration::updateValue('BILLMATE_GETADDRESS', Tools::getIsset('getaddress') ? 1 : 0);
+			Configuration::updateValue('BILLMATE_LOGO',Tools::getValue('logo'));
 
 			// Bankpay Settings
 			Configuration::updateValue('BBANKPAY_ENABLED', (Tools::getIsset('bankpayActivated')) ? 1 : 0);
@@ -728,6 +729,13 @@
 				'value' => Configuration::get('BILLMATE_GETADDRESS')
 			);
 			$this->smarty->assign('activation_status', $activate_status);
+
+			$settings['logo'] = array(
+				'name' => 'logo',
+				'type' => 'text',
+				'label' => $this->l('Logo used on the invoice sent from Billmate'),
+				'value' => Configuration::get('BILLMATE_LOGO')
+			);
 			$this->smarty->assign(array('settings' => $settings, 'moduleName' => $this->l('Common Settings')));
 
 			return $this->display(__FILE__, 'settings.tpl');

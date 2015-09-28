@@ -47,7 +47,7 @@
 				define('BILLMATE_LANGUAGE', $this->context->language->iso_code);
 
 			if (!defined('BILLMATE_CLIENT'))
-				define('BILLMATE_CLIENT', 'PrestaShop:2.0.0');
+				define('BILLMATE_CLIENT', 'PrestaShop:2.0');
             if(!defined('BILLMATE_SERVER'))
                 define('BILLMATE_SERVER','2.1.7');
 			$this->method = Tools::getValue('method');
@@ -494,7 +494,9 @@
 				'currency'      => Tools::strtoupper($this->context->currency->iso_code),
 				'language'      => Tools::strtolower($this->context->language->iso_code),
 				'country'       => Tools::strtoupper($this->context->country->iso_code),
-				'orderid'       => Tools::substr($this->context->cart->id.'-'.time(), 0, 10)
+				'orderid'       => Tools::substr($this->context->cart->id.'-'.time(), 0, 10),
+				'logo' 			=> (Configuration::get('BILLMATE_LOGO')) ? Configuration::get('BILLMATE_LOGO') : ''
+
 			);
 
 			$payment_data['PaymentInfo'] = array(
@@ -517,7 +519,9 @@
 				'language' => Tools::strtolower($this->context->language->iso_code),
 				'country'  => Tools::strtoupper($this->context->country->iso_code),
 				'orderid'  => Tools::substr($this->context->cart->id.'-'.time(), 0, 10),
-				'autoactivate' => ($method == 'cardpay' && (Configuration::get('BCARDPAY_AUTHORIZATION_METHOD') != 'authorize')) ? 1 : 0
+				'autoactivate' => ($method == 'cardpay' && (Configuration::get('BCARDPAY_AUTHORIZATION_METHOD') != 'authorize')) ? 1 : 0,
+				'logo' 			=> (Configuration::get('BILLMATE_LOGO')) ? Configuration::get('BILLMATE_LOGO') : ''
+
 			);
 			$payment_data['PaymentInfo'] = array(
 				'paymentdate' => date('Y-m-d')

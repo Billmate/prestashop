@@ -233,10 +233,12 @@
 						}
 				// Make sure CarRule caches are empty
 				CartRule::cleanCache();
-
+				$deliveries = 0;
+				$tmpAmount = $amount_paid;
 				foreach ($package_list as $id_address => $packageByAddress)
 					foreach ($packageByAddress as $id_package => $package)
 					{
+
 						$order = new Order();
 						$order->product_list = $package['product_list'];
 
@@ -299,18 +301,40 @@
 						$order->total_wrapping_tax_incl = (float)abs($this->context->cart->getOrderTotal(true, Cart::ONLY_WRAPPING, $order->product_list, $id_carrier));
 						$order->total_wrapping = $order->total_wrapping_tax_incl;
 						// Add invoice fee to total paid and total tax
-						$billmate_invoice_fee = Configuration::get('BINVOICE_FEE');
+						$total_fee = 0;
+						if($deliveries == 0) {
+							$billmate_invoice_fee = Configuration::get('BINVOICE_FEE');
 
 
-						$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
+							$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
 
-						$billmate_tax           = new Tax($invoice_fee_tax);
-						$billmate_tax_calculator = new TaxCalculator(array($billmate_tax));
+							$billmate_tax = new Tax($invoice_fee_tax);
+							$billmate_tax_calculator = new TaxCalculator(array($billmate_tax));
 
-						$tax_amount = $billmate_tax_calculator->getTaxesAmount($billmate_invoice_fee);
-						// todo check this line
+							$tax_amount = $billmate_tax_calculator->getTaxesAmount($billmate_invoice_fee);
+							// todo check this line
 
-						$billmatetax = array_pop($tax_amount);
+							$billmatetax = array_pop($tax_amount);
+							$billtotal_fee = $billmate_invoice_fee + $billmatetax;
+
+						} else {
+							$billmate_invoice_fee = Configuration::get('BINVOICE_FEE');
+
+
+							$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
+
+							$billmate_tax = new Tax($invoice_fee_tax);
+							$billmate_tax_calculator = new TaxCalculator(array($billmate_tax));
+
+							$tax_amount = $billmate_tax_calculator->getTaxesAmount($billmate_invoice_fee);
+							// todo check this line
+
+							$billmatetax = array_pop($tax_amount);
+							$billtotal_fee = $billmate_invoice_fee + $billmatetax;
+							$billmatetax = 0;
+							$billmate_invoice_fee = 0;
+						}
+
 						$total_fee = $billmate_invoice_fee + $billmatetax;
 						$order->total_paid_tax_excl = (float)Tools::ps_round((float)$this->context->cart->getOrderTotal(false, Cart::BOTH, $order->product_list, $id_carrier) + $billmate_invoice_fee, 2);
 						$order->total_paid_tax_incl = (float)Tools::ps_round((float)$this->context->cart->getOrderTotal(true, Cart::BOTH, $order->product_list, $id_carrier) + $total_fee, 2);
@@ -329,13 +353,16 @@
 						// We don't use the following condition to avoid the float precision issues : http://www.php.net/manual/en/language.types.float.php
 						// if ($order->total_paid != $order->total_paid_real)
 						// We use number_format in order to compare two string
-						if ($order_status->logable && number_format($cart_total_paid + $total_fee, 2) != number_format($amount_paid, 2))
+
+
+						if ($order_status->logable && number_format($cart_total_paid + $billtotal_fee, 2) != number_format($amount_paid, 2))
 							$id_order_state = Configuration::get('PS_OS_ERROR');
 						if($billmate_invoice_fee > 0){
 							Db::getInstance()->insert('billmate_payment_fees',array(
 								'order_id' => $order->id,
 								'invoice_fee' => $billmate_invoice_fee,
-								'tax_rate' => $billmate_tax_calculator->getTotalRate()
+								'tax_rate' => $billmate_tax_calculator->getTotalRate(),
+								'reference' => $reference
 							));
 						}
 						$order_list[] = $order;
@@ -356,6 +383,7 @@
 							$order_carrier->shipping_cost_tax_incl = (float)$order->total_shipping_tax_incl;
 							$order_carrier->add();
 						}
+						$deliveries++;
 					}
 
 				// The country can only change if the address used for the calculation is the delivery address, and if multi-shipping is activated

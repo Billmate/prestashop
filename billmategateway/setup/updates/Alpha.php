@@ -26,6 +26,7 @@ class Alpha implements SetupFileInterface
                                         `order_id` int,
                                         `invoice_fee` decimal(11,2),
                                         `tax_rate` decimal(11,2),
+                                        `reference` varchar(60),
                                         PRIMARY KEY(`id`));',false);
 
 
