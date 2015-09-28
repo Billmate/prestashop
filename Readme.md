@@ -20,28 +20,34 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 ## Installation
 
 Read following information to install these plugins
-
-* You will find one plugin billmategateway
-* Extract zip file under prestashop_root/modules
+* Uninstall and remove the old plugin directories.
+* You will find five folders in the Zip-Archive. Upload to your modules folder. 
+* Install our payment plugin.
+* Fill in your Billmate ID and Secret, activate the payment methods thats suits you well. 
+* Hit save button and it should be done.
 
 ## Changelog
 
-### 2.0 (2015-07-06)
-44 issues closed and 76 commits.
+### 2.0 (2015-09-28)
+84 issues closed and 127 commits.
 
 * Feature - validate credentials.
 * Fix - Discount is not applied to invoice fee anymore.
-* Enchancement - Invoice fee is not a product anymore.
-* Enchancement - Get Address on checkout page.
-* Enchancement - Choice for order id or reference id as Billmate order id.
-* Enchancement - Localized Logos.
-* Enchancement - Ajax in checkout to validate Address.
-* Enchancement - Add variable product selection in product title on invoice.
+* Enhancement - Invoice fee is not a product anymore.
+* Enhancement - Get Address on checkout page.
+* Enhancement - Choice for order id or reference id as Billmate order id.
+* Enhancement - Localized Logos.
+* Enhancement - Ajax in checkout to validate Address.
+* Enhancement - Add variable product selection in product title on invoice.
 * Improvement - Better Currency support.
 * Improvement - Better Country support.
 * Styling - Nicer Address validation popup.
 * Tweak - One module instead of four.
 * Tweak - Consequent Naming Conventions.
+* Enhancement - Improved compatibility with Delayed delivery.
+* Enhancement - Improved compatibility with multiple store locations.
+* Enhancement - Improved checkout flow.
+* Enhancement - Billmate ID and Secret only needs to be filled in once.
 
 ### 1.36 (2015-03-25)
 25 issues closed and 58 commits.

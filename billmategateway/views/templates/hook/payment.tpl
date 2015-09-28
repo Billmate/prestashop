@@ -106,6 +106,11 @@
             width: 14px;
             color: #777;
         }
+        div.payment_module a.{$method.type}:hover,
+        div.payment_module a.{$method.type}:visited,
+        div.payment_module a.{$method.type}:active{
+            text-decoration: none;
+        }
         div.payment_module .error{
             clear:both;
         }
