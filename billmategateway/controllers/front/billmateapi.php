@@ -520,7 +520,7 @@
 				'language' => Tools::strtolower($this->context->language->iso_code),
 				'country'  => Tools::strtoupper($this->context->country->iso_code),
 				'orderid'  => Tools::substr($this->context->cart->id.'-'.time(), 0, 10),
-				'autoactivate' => ($method == 'cardpay' && (Configuration::get('BCARDPAY_AUTHORIZATION_METHOD') != 'authorize')) ? 1 : 0,
+				'autoactivate' => 0,//($method == 'cardpay' && (Configuration::get('BCARDPAY_AUTHORIZATION_METHOD') != 'authorize')) ? 1 : 0,
 				'logo' 			=> (Configuration::get('BILLMATE_LOGO')) ? Configuration::get('BILLMATE_LOGO') : ''
 
 			);

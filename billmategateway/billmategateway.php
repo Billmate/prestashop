@@ -274,7 +274,7 @@
 			require_once(_PS_MODULE_DIR_.'/billmategateway/setup/InitInstall.php');
 			$installer = new InitInstall(Db::getInstance());
 			$installer->install();
-
+			$this->update();
 			if (!$this->registerHooks())
 				return false;
 
