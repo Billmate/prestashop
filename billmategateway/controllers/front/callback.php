@@ -87,14 +87,15 @@
 						$orderHistory->id_order = (int) $orderObject->id;
 
 						$status              = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
-
+						$status = ($data['status'] == 'Cancelled') ? Configuration::get('PS_OS_CANCELED') : $status;
 						$orderHistory->changeIdOrderState($status, $order_id, true);
 						$orderHistory->add();
 					}
 					die('OK');
 				}
 
-
+				if($data['status'] == 'Cancelled')
+					die('OK');
 				file_put_contents($lockfile, 1);
 
 
@@ -108,14 +109,13 @@
 				$this->module->validateOrder((int)$this->context->cart->id, $status, $total,
 					$this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$values = array();
-				if ($this->module->authorization_method != 'sale' && $this->method == 'cardpay' || $this->method == 'bankpay')
-				{
-					$values['PaymentData'] = array(
-						'number'  => $data['number'],
-						'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->coremodule->currentOrderReference : $this->coremodule->currentOrder
-					);
-					$this->billmate->updatePayment($values);
-				}
+
+				$values['PaymentData'] = array(
+					'number'  => $data['number'],
+					'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->coremodule->currentOrderReference : $this->coremodule->currentOrder
+				);
+				$this->billmate->updatePayment($values);
+
 				if ($this->module->authorization_method == 'sale' && $this->method == 'cardpay')
 				{
 
