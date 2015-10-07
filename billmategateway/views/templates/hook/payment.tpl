@@ -212,7 +212,7 @@
     jQuery(document.body).on('click', '#billmate_button', function () {
         var method = $(this).data('method');
         if ($('form.billmate'+method).length > 1)
-            var form =('form.realbillmate'+method).serializeArray();
+            var form = $('form.realbillmate'+method).serializeArray();
         else
             var form = $('form.billmate' + method).serializeArray();
         modalWin.HideModalPopUp();

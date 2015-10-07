@@ -27,6 +27,11 @@ Read following information to install these plugins
 * Hit save button and it should be done.
 
 ## Changelog
+
+### 2.0.2(2015-10-07)
+* Fix - Billmate Version
+* Fix - Javascript issue with onepage checkout.
+
 ### 2.0.1(2015-09-29)
 * Fix - Cancel callback 
 * Fix - Logic for activate payment
