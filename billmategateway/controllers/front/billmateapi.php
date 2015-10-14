@@ -47,7 +47,7 @@
 				define('BILLMATE_LANGUAGE', $this->context->language->iso_code);
 
 			if (!defined('BILLMATE_CLIENT'))
-				define('BILLMATE_CLIENT', 'PrestaShop:2.0.2');
+				define('BILLMATE_CLIENT', 'PrestaShop:2.0.3');
             if(!defined('BILLMATE_SERVER'))
                 define('BILLMATE_SERVER','2.1.7');
 			$this->method = Tools::getValue('method');
@@ -339,9 +339,14 @@
 
 			$matched_first = array_intersect($first_arr, $apifirst);
 			$matched_last  = array_intersect($last_arr, $apilast);
-
-			$api_matched_name = !empty($matched_first) && !empty($matched_last);
-
+			if (empty($address['company']))
+				$api_matched_name = !empty($matched_first) && !empty($matched_last);
+			else {
+				$prestacompany = explode(' ', $billing->company);
+				$apicompany = explode(' ', $address['company']);
+				$matched_company = array_intersect($prestacompany, $apicompany);
+				$api_matched_name = !empty($matched_company);
+			}
 			$address_same = Common::matchstr($user_ship, $user_bill) &&
 							Common::matchstr($billing->city, $shipping->city) &&
 							Common::matchstr($billing->postcode, $shipping->postcode) &&
@@ -399,8 +404,8 @@
 						$addressnew              = new Address();
 						$addressnew->id_customer = (int)$this->context->customer->id;
 
-						$addressnew->firstname = $address['firstname'];
-						$addressnew->lastname  = $address['lastname'];
+						$addressnew->firstname = !empty($address['firstname']) ? $address['firstname'] : $billing->firstname;
+						$addressnew->lastname  = !empty($address['lastname']) ? $address['lastname'] : $billing->lastname;
 						$addressnew->company   = isset($address['company']) ? $address['company'] : '';
 
 						$addressnew->phone        = $billing->phone;
@@ -459,6 +464,7 @@
 						'ps_version' => _PS_VERSION_,
 						'method'     => $this->method
 					));
+					$this->context->smarty->assign('company',$address['company']);
 					$this->context->smarty->assign('firstname', $address['firstname']);
 					$this->context->smarty->assign('lastname', $address['lastname']);
 					$this->context->smarty->assign('address', $address['street']);

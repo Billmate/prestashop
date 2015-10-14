@@ -8,7 +8,7 @@
 *}
 <form action="javascript://">
 	<span style="font-size: 1.3em;line-height: 1.4em;">
-		{$firstname|escape:'html'} {$lastname|escape:'html'}
+		{$firstname|escape:'html'} {$lastname|escape:'html'} {$company|escape:'html'}
         <br/>{$address|escape:'html'}
         <br/>{$zipcode|escape:'html'} {$city|escape:'html'}
         <br/>{$country|escape:'html'}
