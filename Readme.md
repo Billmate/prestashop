@@ -28,6 +28,10 @@ Read following information to install these plugins
 
 ## Changelog
 
+### 2.0.3(2015-10-14)
+
+* Fix - Company related stuff in checkout.
+
 ### 2.0.2(2015-10-07)
 * Fix - Billmate Version
 * Fix - Javascript issue with onepage checkout.
