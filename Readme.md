@@ -28,6 +28,10 @@ Read following information to install these plugins
 
 ## Changelog
 
+### 2.0.4(2015-10-20)
+
+* Fix - One page checkout with different amount of buttons.
+
 ### 2.0.3(2015-10-14)
 
 * Fix - Company related stuff in checkout.

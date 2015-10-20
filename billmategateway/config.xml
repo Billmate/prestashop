@@ -2,7 +2,7 @@
 <module>
     <name>billmategateway</name>
     <displayName><![CDATA[Billmate Payment Gateway]]></displayName>
-    <version><![CDATA[2.0.3]]></version>
+    <version><![CDATA[2.0.4]]></version>
     <description><![CDATA[Accept online payments with Billmate.]]></description>
     <author><![CDATA[Billmate AB]]></author>
     <tab><![CDATA[payments_gateways]]></tab>

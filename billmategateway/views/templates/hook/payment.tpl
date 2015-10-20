@@ -290,7 +290,7 @@
             var value = element.target.value;
 
             if ($('#payment_' + value).parents('.item,.alternate_item').hasClass('fields')) {
-                console.log('has fields');
+
 
                 $('#payment_' + value).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').show();
                 //$checkoutbtn = $('.confirm_button')[1].onclick;
@@ -299,8 +299,8 @@
                 if ($('#pno').length) {
                     $('#pno_' + methodName).val($('#pno').val());
                 }
-                $('.confirm_button')[1].onclick = function (e) {
-                    console.log('method1' + methodName);
+                $('.confirm_button')[$('.confirm_button').length - 1].onclick = function (e) {
+
                     submitAccount($('#' + methodName + 'Submit'));
 
 
@@ -326,8 +326,8 @@
                         $('#pno_' + methodName).val($('#pno').val());
                     }
                     $('#' + methodName + 'Submit').hide();
-                    $checkoutbtn = $('.confirm_button')[1].onclick;
-                    $('.confirm_button')[1].onclick = function (e) {
+                    $checkoutbtn = $('.confirm_button')[$('.confirm_button').length - 1].onclick;
+                    $('.confirm_button')[$('.confirm_button').length - 1].onclick = function (e) {
                         //$('#' + methodName + 'Submit').click();
                         submitAccount($('#' + methodName + 'Submit'));
 
@@ -336,7 +336,7 @@
                 } else {
                     if ($checkoutbtn != null) {
                         //$checkoutbtn = $('.confirm_button')[1].onclick;
-                        $('.confirm_button')[1].onclick = $checkoutbtn
+                        $('.confirm_button')[$('.confirm_button').length - 1].onclick = $checkoutbtn
                     }
                 }
             }
