@@ -28,6 +28,10 @@ Read following information to install these plugins
 
 ## Changelog
 
+### 2.0.5(2015-10-26)
+
+* Fix - mysql version 5.6.23 compatibility. 
+
 ### 2.0.4(2015-10-20)
 
 * Fix - One page checkout with different amount of buttons.
