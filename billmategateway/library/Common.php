@@ -20,7 +20,7 @@
 		public static function getBillmate($eid, $secret, $testmode, $ssl = true, $debug = false)
 		{
 			if (!defined('BILLMATE_CLIENT'))
-				define('BILLMATE_CLIENT', 'PrestaShop:2.0.4');
+				define('BILLMATE_CLIENT', 'PrestaShop:2.0.5');
 			if(!defined('BILLMATE_SERVER'))
 				define('BILLMATE_SERVER','2.1.7');
 			return new BillMate($eid, $secret, $ssl, $testmode, $debug);

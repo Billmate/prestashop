@@ -26,6 +26,7 @@
 			try
 			{
 				$this->db->execute('DROP TABLE IF EXISTS '._DB_PREFIX_.'billmate_rno;',false);
+				$this->db->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.'billmate_payment_pclasses`;',false);
 				$drop = $this->db->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.'billmate_payment_pclasses`;CREATE TABLE `'._DB_PREFIX_.'billmate_payment_pclasses` (
                                         `id` int AUTO_INCREMENT,
                                         `eid` int,
