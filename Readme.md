@@ -28,6 +28,10 @@ Read following information to install these plugins
 
 ## Changelog
 
+### 2.0.6(2015-10-27)
+
+* Fix - Product quantity calculation.
+
 ### 2.0.5(2015-10-26)
 
 * Fix - mysql version 5.6.23 compatibility. 

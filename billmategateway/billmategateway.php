@@ -21,7 +21,7 @@
 			$this->name       = 'billmategateway';
 			$this->moduleName = 'billmategateway';
 			$this->tab        = 'payments_gateways';
-			$this->version    = '2.0.5';
+			$this->version    = '2.0.6';
 			$this->author     = 'Billmate AB';
 
 			$this->currencies      = true;
@@ -606,6 +606,7 @@
 
 				$method = new $class();
 				$result = $method->getPaymentInfo($cart);
+
 				if (!$result)
 					continue;
 				if ($result['sort_order'])

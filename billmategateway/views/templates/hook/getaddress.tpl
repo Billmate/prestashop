@@ -36,8 +36,10 @@
                             $('input[name="customer_lastname"]').trigger('change');
                             $('input[name="lastname"]').val(response.data.lastname);
                             $('input[name="lastname"]').trigger('change');
-                            $('input[name="company"]').val(response.data.company);
-                            $('input[name="company"]').trigger('change');
+                            if(typeof response.data.company != 'undefined') {
+                                $('input[name="company"]').val(response.data.company);
+                                $('input[name="company"]').trigger('change');
+                            }
                             $('input[name="address1"]').val(response.data.street);
                             $('input[name="address1"]').trigger('change');
                             $('input[name="city"]').val(response.data.city);
