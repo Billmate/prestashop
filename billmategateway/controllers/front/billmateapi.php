@@ -47,7 +47,7 @@
 				define('BILLMATE_LANGUAGE', $this->context->language->iso_code);
 
 			if (!defined('BILLMATE_CLIENT'))
-				define('BILLMATE_CLIENT', 'PrestaShop:2.0.5');
+				define('BILLMATE_CLIENT', 'PrestaShop:2.0.6');
             if(!defined('BILLMATE_SERVER'))
                 define('BILLMATE_SERVER','2.1.7');
 			$this->method = Tools::getValue('method');
@@ -165,23 +165,24 @@
 				$taxrate       = ($article['price_wt'] == $article['price']) ? 0 : $article['rate'];
 
 				$roundedArticle = round($article['price'], 2);
+				$totalArticle = ($roundedArticle * $article['cart_quantity']) * 100;
 				$articles_arr[] = array(
 					'quantity'   => $article['cart_quantity'],
 					'title'      => (isset($article['attributes']) && !empty($article['attributes'])) ? $article['name'].  ' - '.$article['attributes'] : $article['name'],
 					'artnr'      => $article['reference'],
-					'aprice'     => round(($article['price'] / $article['cart_quantity']) * 100,2),
+					'aprice'     => $roundedArticle * 100,
 					'taxrate'    => $taxrate,
 					'discount'   => 0,
-					'withouttax' => $roundedArticle * 100
+					'withouttax' => ($roundedArticle * $article['cart_quantity']) * 100
 
 				);
 				if (!isset($this->prepare_discount[$taxrate]))
-					$this->prepare_discount[$taxrate] = $roundedArticle * 100;
+					$this->prepare_discount[$taxrate] = $totalArticle;
 				else
-					$this->prepare_discount[$taxrate] += $roundedArticle * 100;
+					$this->prepare_discount[$taxrate] += $totalArticle;
 
-				$this->totals += $roundedArticle * 100;
-				$this->tax += ($roundedArticle * ($taxrate / 100)) * 100;
+				$this->totals += $totalArticle;
+				$this->tax += round($totalArticle * ($taxrate / 100));
 
 			}
 
