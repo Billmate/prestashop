@@ -10,6 +10,7 @@
 	/*
 	 * The controller that does the main integration
 	 */
+    require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
 
 	require_once(_PS_MODULE_DIR_.'billmategateway/library/Billmate.php');
 
@@ -47,7 +48,7 @@
 				define('BILLMATE_LANGUAGE', $this->context->language->iso_code);
 
 			if (!defined('BILLMATE_CLIENT'))
-				define('BILLMATE_CLIENT', 'PrestaShop:2.0.6');
+				define('BILLMATE_CLIENT', 'PrestaShop:'.BILLMATE_PLUGIN_VERSION);
             if(!defined('BILLMATE_SERVER'))
                 define('BILLMATE_SERVER','2.1.7');
 			$this->method = Tools::getValue('method');

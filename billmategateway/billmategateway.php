@@ -21,7 +21,7 @@
 			$this->name       = 'billmategateway';
 			$this->moduleName = 'billmategateway';
 			$this->tab        = 'payments_gateways';
-			$this->version    = '2.0.6';
+			$this->version    = BILLMATE_PLUGIN_VERSION;
 			$this->author     = 'Billmate AB';
 
 			$this->currencies      = true;
