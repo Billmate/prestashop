@@ -28,6 +28,10 @@ Read following information to install these plugins
 
 ## Changelog
 
+### 2.0.7(2015-11-04)
+
+* Enhancement - Billmate support plugins. 
+
 ### 2.0.6(2015-10-27)
 
 * Fix - Product quantity calculation.

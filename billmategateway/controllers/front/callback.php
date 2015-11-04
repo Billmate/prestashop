@@ -49,7 +49,8 @@
 
 			$this->billmate = Common::getBillmate($eid, $secret, $testmode, $ssl, $debug);
 
-			$post = empty(Tools::file_get_contents('php://input')) ? $_GET : Tools::file_get_contents('php://input');
+            $input = Tools::file_get_contents('php://input');
+            $post = empty($input) ? $_GET : Tools::file_get_contents('php://input');
 
 			if(is_array($post))
 			{
@@ -112,7 +113,7 @@
 
 				$values['PaymentData'] = array(
 					'number'  => $data['number'],
-					'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->coremodule->currentOrderReference : $this->coremodule->currentOrder
+					'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->module->currentOrderReference : $this->module->currentOrder
 				);
 				$this->billmate->updatePayment($values);
 

@@ -8,19 +8,19 @@
 	 */
 
 	/*
-	 * Class for Common billmate stuff
+	 * Class for Common Billmate stuff
 	 */
 
 	require_once 'Billmate.php';
 	require_once 'Encoding.php';
 	require_once 'Utf8.php';
-
+    define('BILLMATE_PLUGIN_VERSION','2.0.7');
 	class Common {
 
 		public static function getBillmate($eid, $secret, $testmode, $ssl = true, $debug = false)
 		{
 			if (!defined('BILLMATE_CLIENT'))
-				define('BILLMATE_CLIENT', 'PrestaShop:2.0.6');
+				define('BILLMATE_CLIENT', 'PrestaShop:'.BILLMATE_PLUGIN_VERSION);
 			if(!defined('BILLMATE_SERVER'))
 				define('BILLMATE_SERVER','2.1.7');
 			return new BillMate($eid, $secret, $ssl, $testmode, $debug);
