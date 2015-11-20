@@ -144,6 +144,10 @@
 			}
 			Configuration::updateValue('BILLMATE_ACTIVATE', Tools::getIsset('activate') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_ACTIVATE_STATUS', serialize(Tools::getValue('activateStatuses')));
+
+			Configuration::updateValue('BILLMATE_CANCEL', Tools::getIsset('cancel') ? 1 : 0);
+			Configuration::updateValue('BILLMATE_CANCEL_STATUS', serialize(Tools::getValue('cancelStatuses')));
+
 			Configuration::updateValue('BILLMATE_SEND_REFERENCE', Tools::getValue('sendOrderReference'));
 			Configuration::updateValue('BILLMATE_GETADDRESS', Tools::getIsset('getaddress') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_LOGO',Tools::getValue('logo'));
@@ -340,7 +344,9 @@
 				   $this->registerHook('displayBackOfficeHeader') &&
 				   $this->registerHook('displayAdminOrder') &&
 				   $this->registerHook('displayPDFInvoice') &&
-					$this->registerHook('displayCustomerAccountFormTop');
+					$this->registerHook('displayCustomerAccountFormTop') &&
+					$this->registerHook('actionOrderSlipAdd') &&
+					$this->registerHook('orderSlip');
 		}
 
 		public function hookDisplayPdfInvoice($params)
@@ -460,6 +466,24 @@
 					unset($this->context->cookie->confirmation_orders);
 				}
 			}
+			if (isset($this->context->cookie->error_credit) && Tools::strlen($this->context->cookie->error_credit) > 2)
+			{
+				if (get_class($this->context->controller) == 'AdminOrdersController')
+				{
+					$this->context->controller->error_credits[] = $this->context->cookie->error_credit;
+					unset($this->context->cookie->error_credit);
+					unset($this->context->cookie->credit_orders);
+				}
+			}
+			if (isset($this->context->cookie->error_credit_activation) && Tools::strlen($this->context->cookie->error_credit_activation) > 2)
+			{
+				if (get_class($this->context->controller) == 'AdminOrdersController')
+				{
+					$this->context->controller->error_credit_activations[] = $this->context->cookie->error_credit_activation;
+					unset($this->context->cookie->error_credit_activation);
+					unset($this->context->cookie->credit_activate_orders);
+				}
+			}
 			/*if (Tools::getValue('controller') == 'AdminModules' && Tools::getValue('configure') == 'billmategateway')
 			{
 				$html = '';
@@ -471,9 +495,25 @@
 
 		}
 
+		/**
+		 * @param $params Array array('order' => $order, 'productList' => $order_detail_list, 'qtyList' => $full_quantity_list)
+		 */
+		public function hookActionOrderSlipAdd($params)
+		{
+			error_log('slipAdd');
+			$order = $params['order'];
+			$productList = $params['productList'];
+			$qtyList = $params['qtyList'];
+
+			file_put_contents(_PS_CACHE_DIR_.'credit.log','order'.print_r($order,true),FILE_APPEND);
+			file_put_contents(_PS_CACHE_DIR_.'credit.log','productList'.print_r($productList,true),FILE_APPEND);
+			file_put_contents(_PS_CACHE_DIR_.'credit.log','qtyList'.print_r($qtyList,true),FILE_APPEND);
+		}
+
 		public function hookActionOrderStatusUpdate($params)
 		{
 			$orderStatus = Configuration::get('BILLMATE_ACTIVATE_STATUS');
+			$cancelStatus = Configuration::get('BILLMATE_CANCEL_STATUS');
 			$activate    = Configuration::get('BILLMATE_ACTIVATE');
 			if ($activate && $orderStatus)
 			{
@@ -544,6 +584,38 @@
 					{
 						$this->context->cookie->error        = !isset($this->context->cookie->error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s.'), $this->context->cookie->error_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 						$this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
+					}
+				} elseif(in_array($order->module, $modules) && in_array($id_status, $cancelStatus)){
+					$testMode      = $this->getMethodInfo($order->module, 'testMode');
+					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
+					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
+
+					if($payment_status == 'paid'){
+						$creditResult = $billmate->creditPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id,'partcredit' => false)));
+						if(!isset($creditResult['code'])){
+							$actResult = $billmate->activatePayment(array('number' => $creditResult['number']));
+
+							if(isset($actResult['code'])){
+								$this->context->cookie->error_credit_activation        = !isset($this->context->cookie->credit_activate_orders) ? sprintf($this->l('Credit Order %s failed to activate through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate credit order through Billmate: %s.'), $this->context->cookie->credit_activate_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+
+								$this->context->cookie->credit_activate_orders = isset($this->context->cookie->credit_activate_orders) ? $this->context->cookie->credit_activate_orders.', '.$order_id : $order_id;
+
+							}
+						} else {
+							$this->context->cookie->error_credit        = !isset($this->context->cookie->credit_orders) ? sprintf($this->l('Order %s failed to credit through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to credit through Billmate: %s.'), $this->context->cookie->credit_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+
+							$this->context->cookie->credit_orders = isset($this->context->cookie->credit_orders) ? $this->context->cookie->credit_orders.', '.$order_id : $order_id;
+						}
+					} else {
+						$cancelResult = $billmate->cancelPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id)));
+
+						if(isset($cancelResult['code'])){
+							$this->context->cookie->error_credit        = !isset($this->context->cookie->credit_orders) ? sprintf($this->l('Order %s failed to credit through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to credit through Billmate: %s.'), $this->context->cookie->credit_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+
+							$this->context->cookie->credit_orders = isset($this->context->cookie->credit_orders) ? $this->context->cookie->credit_orders.', '.$order_id : $order_id;
+
+						}
 					}
 				}
 
@@ -727,6 +799,26 @@
 				'desc'     => '',
 				'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_ACTIVATE_STATUS'))) ? unserialize(Configuration::get('BILLMATE_ACTIVATE_STATUS')) : 0,
 				'options'  => $statuses_array
+			);
+			$credit_status      = Configuration::get('BILLMATE_CREDIT');
+			$settings['credit'] = array(
+					'name'     => 'credit',
+					'required' => true,
+					'type'     => 'checkbox',
+					'label'    => $this->l('Credit Invoices'),
+					'desc'     => $this->l('Credit Invoices with a certain status in Billmate Online'),
+					'value'    => $credit_status
+			);
+
+			$settings['creditStatuses'] = array(
+					'name'     => 'creditStatuses',
+					'id'       => 'credit_options',
+					'required' => true,
+					'type'     => 'multiselect',
+					'label'    => $this->l('Order statuses for automatic order credit in Billmate Online'),
+					'desc'     => '',
+					'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_CREDIT_STATUS'))) ? unserialize(Configuration::get('BILLMATE_CREDIT_STATUS')) : 0,
+					'options'  => $statuses_array
 			);
 			$settings['getaddress'] = array(
 				'name' => 'getaddress',
