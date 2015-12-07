@@ -504,10 +504,46 @@
 			$order = $params['order'];
 			$productList = $params['productList'];
 			$qtyList = $params['qtyList'];
+			$testMode      = $this->getMethodInfo($order->module, 'testMode');
 
-			file_put_contents(_PS_CACHE_DIR_.'credit.log','order'.print_r($order,true),FILE_APPEND);
-			file_put_contents(_PS_CACHE_DIR_.'credit.log','productList'.print_r($productList,true),FILE_APPEND);
-			file_put_contents(_PS_CACHE_DIR_.'credit.log','qtyList'.print_r($qtyList,true),FILE_APPEND);
+			$billmate = Common::getBillmate($this->billmate_merchant_id,$this->billmate_secret,$testMode);
+			$payment = OrderPayment::getByOrderId($order->id);
+			$values['PaymentData']['number'] = $payment[0]->transaction_id;
+			$values['PaymentData']['partcredit'] = true;
+			$values['Articles'] = array();
+			$tax = 0;
+			$total = 0;
+			foreach ($productList as $key => $product)
+			{
+				$prodTmp = new Product($product['id_order_detail']);
+				$tax = Tax::getProductTaxRate($product->id, $order->id_address_invoice);
+				$values['Articles'][] = array(
+						'artnr' => $prodTmp['reference'],
+						'title' =>  (isset($prodTmp['attributes']) && !empty($prodTmp['attributes'])) ? $prodTmp['name'].  ' - '.$prodTmp['attributes'] : $prodTmp['name'],
+						'quantity' => $product['quantity'],
+						'aprice' => $product['unit_price'] * 100,
+						'taxrate' => $tax,
+						'discount' => 0,
+						'withouttax' => 100 * ($product['unit_price'] * $product['quantity'])
+				);
+				$total += ($product['unit_price'] * $product['quantity']) * 100;
+				$tax += (100 * ($product['unit_price'] * $product['quantity'])) * ($tax/100);
+			}
+
+
+			$values['Cart']['Total'] = array(
+				'withouttax' => $total,
+					'tax' => $tax,
+					'rounding' => 0,
+					'withtax' => $total + $tax
+			);
+			$result = $billmate->creditPayment($values);
+			if (isset($result['code']))
+			{
+				$this->context->cookie->api_error = $result['message'];
+				$this->context->cookie->api_error_orders = isset($this->context->cookie->api_error_orders) ? $this->context->cookie->api_error_orders.', '.$order->id : $order->id;
+
+			}
 		}
 
 		public function hookActionOrderStatusUpdate($params)
