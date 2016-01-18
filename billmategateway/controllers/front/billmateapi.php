@@ -300,12 +300,12 @@
 				$this->tax += (($tax_rate / 100) * $fee) * 100;
 			}
 
-			$rounding         = ($order_total * 100) - $this->tax - $this->totals;
+			$rounding         = round(($order_total * 100)) - round($this->tax + $this->totals);
 			$totals['Total']  = array(
-				'withouttax' => $this->totals,
-				'tax'        => $this->tax,
-				'rounding'   => $rounding,
-				'withtax'    => $this->totals + $this->tax + $rounding
+				'withouttax' => round($this->totals),
+				'tax'        => round($this->tax),
+				'rounding'   => round($rounding),
+				'withtax'    => round($this->totals + $this->tax + $rounding)
 			);
 			$this->paid_amount = $totals['Total']['withtax'];
 
