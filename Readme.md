@@ -28,6 +28,9 @@ Read following information to install these plugins
 
 ## Changelog
 
+### 2.0.8(2016-01-18)
+* Fix - Totals rounding.
+
 ### 2.0.7(2015-11-04)
 
 * Enhancement - Billmate support plugins. 
