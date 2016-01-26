@@ -346,9 +346,25 @@
 				   $this->registerHook('displayPDFInvoice') &&
 					$this->registerHook('displayCustomerAccountFormTop') &&
 					$this->registerHook('actionOrderSlipAdd') &&
-					$this->registerHook('orderSlip');
+					$this->registerHook('orderSlip') &&
+					$this->registerHook('displayProductButtons');
 		}
 
+		public function hookDisplayProductButtons($params)
+		{
+			$cost = (1+($params['product']->tax_rate/100))*$params['product']->base_price;
+
+			require_once(_PS_MODULE_DIR_.'/billmategateway/methods/Partpay.php');
+			$partpay = new Partpay();
+			$plan = $partpay->getCheapestPlan($cost);
+			if($plan) {
+				$this->smarty->assign('icon',$params->icon);
+				$this->smarty->assign('plan', $plan);
+				return $this->display(__FILE__, 'payfrom.tpl');
+			}
+			return '';
+
+		}
 		public function hookDisplayPdfInvoice($params)
 		{
 			$order = new Order($params['object']->id_order);

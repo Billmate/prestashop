@@ -156,4 +156,11 @@
 
 			return $pclasses->getCheapestPClass($this->context->cart->getOrderTotal(), BillmateFlags::CHECKOUT_PAGE, $this->context->language->iso_code);
 		}
+
+		public function getCheapestPlan($cost)
+		{
+			$pclasses = new pClasses(Configuration::get('BILLMATE_ID'));
+
+			return $pclasses->getCheapestPClass($cost, BillmateFlags::CHECKOUT_PAGE, $this->context->language->iso_code);
+		}
 	}
