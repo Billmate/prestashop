@@ -816,7 +816,8 @@
 			$template = 'new';
 			if (version_compare(_PS_VERSION_, '1.6', '<'))
 				$template = 'legacy';
-
+			if (version_compare(_PS_VERSION_,'1.6.1','=>'))
+				$template = 'legacy';
 
 			$this->smarty->assign(
 				array(
