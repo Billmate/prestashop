@@ -28,6 +28,9 @@ Read following information to install these plugins
 
 ## Changelog
 
+### 2.0.9(2016-01-26)
+* Fix - Optimized Billmate.php
+
 ### 2.0.8(2016-01-18)
 * Fix - Totals rounding.
 
