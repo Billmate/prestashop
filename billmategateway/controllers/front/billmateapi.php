@@ -124,7 +124,6 @@
 			$customer['pno']      = ($this->method == 'invoice' || $this->method == 'partpay') ? $this->pno : '';
 			$billing_address       = new Address($this->context->cart->id_address_invoice);
 			$shipping_address      = new Address($this->context->cart->id_address_delivery);
-			error_log(print_r( $this->context->customer,true));
 
 			$customer['Billing']  = array(
 				'firstname' => mb_convert_encoding($billing_address->firstname,'UTF-8','auto'),
@@ -424,11 +423,12 @@
 						$matched_address_id = $addressnew->id;
 					}
 					$this->context->cart->updateAddressId($this->context->cart->id_address_delivery, $matched_address_id);
-
+					$this->context->cart->updateAddressId($this->context->cart->id_address_invoice, $matched_address_id);
+/*
 					$this->context->cart->id_address_invoice  = (int)$matched_address_id;
 					$this->context->cart->id_address_delivery = (int)$matched_address_id;
 					$this->context->cart->update();
-
+*/
 					if (Configuration::get('PS_ORDER_PROCESS_TYPE') == 1)
 					{
 						$return = array(

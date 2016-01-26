@@ -504,45 +504,170 @@
 			$order = $params['order'];
 			$productList = $params['productList'];
 			$qtyList = $params['qtyList'];
-			$testMode      = $this->getMethodInfo($order->module, 'testMode');
+			error_log('module'.str_replace('billmate','',$order->module));
+			$testMode      = (boolean) $this->getMethodInfo($order->module, 'testMode');
 
 			$billmate = Common::getBillmate($this->billmate_merchant_id,$this->billmate_secret,$testMode);
 			$payment = OrderPayment::getByOrderId($order->id);
-			$values['PaymentData']['number'] = $payment[0]->transaction_id;
-			$values['PaymentData']['partcredit'] = true;
-			$values['Articles'] = array();
-			$tax = 0;
-			$total = 0;
-			foreach ($productList as $key => $product)
-			{
-				$prodTmp = new Product($product['id_order_detail']);
-				$tax = Tax::getProductTaxRate($product->id, $order->id_address_invoice);
-				$values['Articles'][] = array(
-						'artnr' => $prodTmp['reference'],
-						'title' =>  (isset($prodTmp['attributes']) && !empty($prodTmp['attributes'])) ? $prodTmp['name'].  ' - '.$prodTmp['attributes'] : $prodTmp['name'],
-						'quantity' => $product['quantity'],
-						'aprice' => $product['unit_price'] * 100,
-						'taxrate' => $tax,
-						'discount' => 0,
-						'withouttax' => 100 * ($product['unit_price'] * $product['quantity'])
+			$paymentFromBillmate = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+			if($paymentFromBillmate['PaymentData']['status'] != 'Created' && $paymentFromBillmate['PaymentData']['status'] != 'Cancelled') {
+
+				$values['PaymentData']['number'] = $payment[0]->transaction_id;
+				$values['PaymentData']['partcredit'] = true;
+				$values['Articles'] = array();
+				$tax = 0;
+				$total = 0;
+				foreach ($productList as $key => $product) {
+
+					$orderDetail = Db::getInstance()->getRow('SELECT product_id,product_name FROM `' . _DB_PREFIX_ . 'order_detail` WHERE `id_order_detail` = ' . (int)$key);
+					$orderDetailTax = Db::getInstance()->getRow('SELECT id_tax FROM `' . _DB_PREFIX_ . 'order_detail_tax` WHERE `id_order_detail` = ' . (int)$key);
+
+					$tax = Db::getInstance()->getRow('SELECT rate FROM `' . _DB_PREFIX_ . 'tax` WHERE id_tax = ' . $orderDetailTax['id_tax']);
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'order_detail' . print_r($orderDetail, true),
+							FILE_APPEND);
+
+					$prodTmp = new Product($orderDetail['product_id']);
+					$taxRate = $tax['rate'];
+					$calcTax = $taxRate / 100;
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tax' . print_r($taxRate, true), FILE_APPEND);
+
+					$marginTax = $calcTax / (1 + $calcTax);
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'margin' . print_r($marginTax, true), FILE_APPEND);
+
+					$price = $product['unit_price'] * (1 - $marginTax);
+					//$tax = Tax::getProductTaxRate($product->id, $order->id_address_invoice);
+					$values['Articles'][] = array(
+							'artnr' => (string)$orderDetail['product_reference'],
+							'title' => $orderDetail['product_name'],
+							'quantity' => $product['quantity'],
+							'aprice' => round($price * 100),
+							'taxrate' => $taxRate,
+							'discount' => 0,
+							'withouttax' => round(100 * ($price * $product['quantity']))
+					);
+					$total += round(($price * $product['quantity']) * 100);
+					$tax += (100 * ($price * $product['quantity'])) * $calcTax;
+				}
+
+
+				$values['Cart']['Total'] = array(
+						'withouttax' => $total,
+						'tax' => $tax,
+						'rounding' => 0,
+						'withtax' => $total + $tax
 				);
-				$total += ($product['unit_price'] * $product['quantity']) * 100;
-				$tax += (100 * ($product['unit_price'] * $product['quantity'])) * ($tax/100);
-			}
+				$result = $billmate->creditPayment($values);
+				if (isset($result['code'])) {
+					$this->context->cookie->api_error = $result['message'];
+					$this->context->cookie->api_error_orders = isset($this->context->cookie->api_error_orders) ? $this->context->cookie->api_error_orders . ', ' . $order->id : $order->id;
+
+				}
+			} else {
+				$orderDetailObject = new OrderDetail();
+				$total = 0;
+				$totaltax = 0;
+				$billing_address       = new Address($order->id_address_invoice);
+				$shipping_address      = new Address($order->id_address_delivery);
+				$values['PaymentData'] = array(
+					'number' => $payment[0]->transaction_id
+				);
+				$values['Customer']['nr'] = $order->id_customer;
+				$values['Customer']['Billing']  = array(
+						'firstname' => mb_convert_encoding($billing_address->firstname,'UTF-8','auto'),
+						'lastname'  => mb_convert_encoding($billing_address->lastname,'UTF-8','auto'),
+						'company'   => mb_convert_encoding($billing_address->company,'UTF-8','auto'),
+						'street'    => mb_convert_encoding($billing_address->address1,'UTF-8','auto'),
+						'street2'   => '',
+						'zip'       => mb_convert_encoding($billing_address->postcode,'UTF-8','auto'),
+						'city'      => mb_convert_encoding($billing_address->city,'UTF-8','auto'),
+						'country'   => mb_convert_encoding(Country::getIsoById($billing_address->id_country),'UTF-8','auto'),
+						'phone'     => mb_convert_encoding($billing_address->phone,'UTF-8','auto'),
+						'email'     => mb_convert_encoding($this->context->customer->email,'UTF-8','auto')
+				);
+				$values['Customer']['Shipping'] = array(
+						'firstname' => mb_convert_encoding($shipping_address->firstname,'UTF-8','auto'),
+						'lastname'  => mb_convert_encoding($shipping_address->lastname,'UTF-8','auto'),
+						'company'   => mb_convert_encoding($shipping_address->company,'UTF-8','auto'),
+						'street'    => mb_convert_encoding($shipping_address->address1,'UTF-8','auto'),
+						'street2'   => '',
+						'zip'       => mb_convert_encoding($shipping_address->postcode,'UTF-8','auto'),
+						'city'      => mb_convert_encoding($shipping_address->city,'UTF-8','auto'),
+						'country'   => mb_convert_encoding(Country::getIsoById($shipping_address->id_country),'UTF-8','auto'),
+						'phone'     => mb_convert_encoding($shipping_address->phone,'UTF-8','auto'),
+				);
+				foreach($orderDetailObject->getList($order->id) as $orderDetail){
+					$orderDetailTax = Db::getInstance()->getRow('SELECT id_tax FROM `' . _DB_PREFIX_ . 'order_detail_tax` WHERE `id_order_detail` = ' . (int)$orderDetail['id_order_detail']);
+
+					$tax = Db::getInstance()->getRow('SELECT rate FROM `' . _DB_PREFIX_ . 'tax` WHERE id_tax = ' . $orderDetailTax['id_tax']);
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'order_detail' . print_r($orderDetail, true),
+							FILE_APPEND);
+
+					$prodTmp = new Product($orderDetail['product_id']);
+					$taxRate = $tax['rate'];
+					$calcTax = $taxRate / 100;
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tax' . print_r($taxRate, true), FILE_APPEND);
+
+					$marginTax = $calcTax / (1 + $calcTax);
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'margin' . print_r($marginTax, true), FILE_APPEND);
+
+					$price = $orderDetail['unit_price_tax_excl'];
+					//$tax = Tax::getProductTaxRate($orderDetail['product_id'], $order->id_address_invoice);
+					$quantity = $orderDetail['product_quantity'] - $orderDetail['product_quantity_refunded'];
+					$values['Articles'][] = array(
+							'artnr' => (string)$orderDetail['product_reference'],
+							'title' => $orderDetail['product_name'],
+							'quantity' => $quantity,
+							'aprice' => round($price * 100),
+							'taxrate' => $taxRate,
+							'discount' => 0,
+							'withouttax' => round(100 * ($price * $quantity))
+					);
+					$total += round(($price * $quantity) * 100);
+					$totaltax += (100 * ($price * $quantity)) * $calcTax;
+				}
 
 
-			$values['Cart']['Total'] = array(
-				'withouttax' => $total,
-					'tax' => $tax,
-					'rounding' => 0,
-					'withtax' => $total + $tax
-			);
-			$result = $billmate->creditPayment($values);
-			if (isset($result['code']))
-			{
-				$this->context->cookie->api_error = $result['message'];
-				$this->context->cookie->api_error_orders = isset($this->context->cookie->api_error_orders) ? $this->context->cookie->api_error_orders.', '.$order->id : $order->id;
+					$taxrate    = $order->carrier_tax_rate;
 
+					$total_shipping_cost  = round($order->total_shipping_tax_excl,2);
+					$values['Cart']['Shipping'] = array(
+							'withouttax' => $total_shipping_cost * 100,
+							'taxrate'    => $taxrate
+					);
+					$total += $total_shipping_cost * 100;
+					$totaltax += ($total_shipping_cost * ($taxrate / 100)) * 100;
+
+				if (Configuration::get('BINVOICE_FEE') > 0 && $order->module == 'billmateinvoice')
+				{
+					$fee           = Configuration::get('BINVOICE_FEE');
+					$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
+
+					$tax                = new Tax($invoice_fee_tax);
+					$tax_calculator      = new TaxCalculator(array($tax));
+					$tax_rate            = $tax_calculator->getTotalRate();
+					$fee = Tools::convertPriceFull($fee,null,$this->context->currency);
+					$fee = round($fee,2);
+					$values['Cart']['Handling'] = array(
+							'withouttax' => $fee * 100,
+							'taxrate'    => $tax_rate
+					);
+
+					$total += $fee * 100;
+					$totaltax += (($tax_rate / 100) * $fee) * 100;
+				}
+
+				$values['Cart']['Total'] = array(
+						'withouttax' => $total,
+						'tax' => $totaltax,
+						'rounding' => 0,
+						'withtax' => $total + $totaltax
+				);
+				$result = $billmate->updatePayment($values);
+				if (isset($result['code'])) {
+					$this->context->cookie->api_error = $result['message'];
+					$this->context->cookie->api_error_orders = isset($this->context->cookie->api_error_orders) ? $this->context->cookie->api_error_orders . ', ' . $order->id : $order->id;
+
+				}
 			}
 		}
 
@@ -743,9 +868,12 @@
 					continue;
 				include_once($file->getPathname());
 				$method = new $class();
+
+
 				if ($method->name == $name)
 				{
-					if (property_exists($class, $key))
+
+					if (property_exists($method, $key))
 						return $method->{$key};
 
 				}
