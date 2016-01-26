@@ -10,6 +10,8 @@ $_MODULE['<{billmategateway}prestashop>billmategateway_ac9b4cabc8547bf458da836da
 $_MODULE['<{billmategateway}prestashop>billmategateway_71b659c71cb48b160ad36d78db768326'] = 'Billmate Bankbetalning';
 $_MODULE['<{billmategateway}prestashop>billmategateway_c79f3b0a3c5936107bfd51556e2d3dd5'] = 'Billmate Faktura';
 $_MODULE['<{billmategateway}prestashop>billmategateway_339e1888611c1a7b51a5aaa0404b96eb'] = 'Billmate Delbetalning';
+$_MODULE['<{billmategateway}prestashop>billmategateway_72dd0900a3fee01d727efa2066a06b11'] = 'Rabatt %s%% Moms';
+$_MODULE['<{billmategateway}prestashop>billmategateway_104d9898c04874d0fbac36e125fa1369'] = 'Rabatt';
 $_MODULE['<{billmategateway}prestashop>billmategateway_f4f70727dc34561dfde1a3c529b6205c'] = 'Inställningar';
 $_MODULE['<{billmategateway}prestashop>billmategateway_c73445ba85d93bd1b499bb6b855c24bd'] = 'Du måste skriva in ditt Billmate ID';
 $_MODULE['<{billmategateway}prestashop>billmategateway_04aa149e28d45373790c2b1ed6261dd4'] = 'Du måste skriva in ditt Billmate Lösenord';

@@ -65,6 +65,8 @@
             $this->l('Billmate Bankpay');
             $this->l('Billmate Invoice');
             $this->l('Billmate Partpay');
+			$this->l('Discount %s%% VAT');
+			$this->l('Discount');
 
         }
 

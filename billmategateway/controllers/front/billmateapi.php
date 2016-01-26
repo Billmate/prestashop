@@ -207,7 +207,7 @@
 					$discounts[]    = array(
 						'quantity'   => 1,
 						'artnr'      => 'discount-'.$key,
-						'title'      => sprintf($this->module->l('Discount %s%% VAT'), $key),
+						'title'      => sprintf($this->coremodule->l('Discount %s%% VAT'), $key),
 						'aprice'     => -($discount_amount * 100),
 						'taxrate'    => $key,
 						'discount'   => 0,
@@ -236,7 +236,7 @@
 					$total          = $discount_amount * $gift['cart_quantity'] * 100;
 					$discounts[]    = array(
 						'quantity'   => $gift['cart_quantity'],
-						'artnr'      => $this->module->l('Discount'),
+						'artnr'      => $this->coremodule->l('Discount'),
 						'title'      => $gift['name'],
 						'aprice'     => $price - round($discount_amount * 100, 0),
 						'taxrate'    => $taxrate,
