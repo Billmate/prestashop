@@ -1007,7 +1007,7 @@
 				'name' => 'getaddress',
 				'type' => 'checkbox',
 				'label' => $this->l('Activate GetAddress'),
-				'desc' => $this->l('Activate get adress by social security number to speed up the checkout process.'),
+				'desc' => $this->l('Activate get address by social security number to speed up the checkout process.'),
 				'value' => Configuration::get('BILLMATE_GETADDRESS')
 			);
 			$this->smarty->assign('activation_status', $activate_status);

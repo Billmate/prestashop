@@ -45,7 +45,7 @@ $_MODULE['<{billmategateway}prestashop>billmategateway_ff8bbbeeeaef46e2fb7217ef4
 $_MODULE['<{billmategateway}prestashop>billmategateway_bbca05cdad7a4859adb6a148d0fbeac0'] = 'Skapa kreditfaktura vid en inställd status i Billmate Online';
 $_MODULE['<{billmategateway}prestashop>billmategateway_950560c63a1dd4f293f3086db0803df0'] = 'Order status för automatisk kreditering i Billmate Online';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3f90ab86b59f564abc8492f7df7e5f34'] = 'Aktivera Hämta adress';
-$_MODULE['<{billmategateway}prestashop>billmategateway_3c2701f97ac0685a064bea07e36aea6b'] = 'Aktivera hämta adress via personnummer för att förenkla flödet i kassan.';
+$_MODULE['<{billmategateway}prestashop>billmategateway_e051d71ac1233d6f587825c65adacfa8'] = 'Aktivera hämta adress via personnummer för att förenkla flödet i kassan.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3336573a263dde25ad2c0c038607e3dc'] = 'Logotyp som visas på fakturan';
 $_MODULE['<{billmategateway}prestashop>billmategateway_f0511bcd568430a8a1be2c6b5029dc47'] = 'Ange namnet på logotypen (finns i Billmate Online). Lämna tom om ni endast har en logotype.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_f5a8885f26ea1fe06b78b423fa4e9f95'] = 'Generella Inställningar';
