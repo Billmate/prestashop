@@ -55,7 +55,7 @@
 
 			$db = Db::getInstance();
 			//$db->Execute('TRUNCATE TABLE `'._DB_PREFIX_.'billmate_payment_pclasses`');
-			if(self::hasPclasses($language))
+			if(self::hasPclasses($language,true))
 				$db->Execute('DELETE FROM `'._DB_PREFIX_.'billmate_payment_pclasses` WHERE `language` = "'.$language.'"');
 
 			if (!is_array($data))
@@ -148,15 +148,30 @@
 			return $pclasses;
 		}
 
-		public static function hasPclasses($language)
+		public static function hasPclasses($language,$justcount = false)
 		{
+			$date = '';
+			if	($justcount)
+				$date = '" AND expirydate > NOW()';
 			$data = Db::getInstance()->ExecuteS('SELECT count(*) AS total FROM '._DB_PREFIX_.
 												'billmate_payment_pclasses WHERE language = "'.$language.
-												'" AND expirydate > NOW()');
+												$date);
 
 			if ($data[0]['total'] == 0)
 				return false;
 
 			return true;
+		}
+
+		public static function checkPclasses($eid, $secret, $country, $language, $currency, $mode = 'live'){
+
+			$data = Db::getInstance()->ExecuteS('SELECT count(*) AS total FROM '._DB_PREFIX_.
+				'billmate_payment_pclasses WHERE language = "'.$language.
+				'" AND expirydate > NOW()');
+
+			if ($data[0]['total'] == 0)
+			{
+				self::Save($eid, $secret, $country, $language, $currency, $mode);
+			}
 		}
 	}

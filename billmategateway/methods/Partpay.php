@@ -37,6 +37,7 @@
 		 */
 		public function getPaymentInfo($cart)
 		{
+			pClasses::checkPclasses($this->billmate_merchant_id,$this->billmate_secret,'se',Language::getIsoById($cart->id_lang),'SEK');
 			if (!pClasses::hasPclasses(Language::getIsoById($cart->id_lang)) || Configuration::get('BPARTPAY_ENABLED') == 0)
 				return false;
 
