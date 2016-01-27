@@ -53,7 +53,7 @@ $_MODULE['<{billmategateway}prestashop>billmateapi_72dd0900a3fee01d727efa2066a06
 $_MODULE['<{billmategateway}prestashop>billmateapi_104d9898c04874d0fbac36e125fa1369'] = 'Rabatt';
 $_MODULE['<{billmategateway}prestashop>bankpay_71b659c71cb48b160ad36d78db768326'] = 'Billmate Bankbetalning';
 $_MODULE['<{billmategateway}prestashop>bankpay_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
-$_MODULE['<{billmategateway}prestashop>bankpay_3b8ddedcee87c1b0145301029e433b34'] = 'Checka i för att aktivera Billmate Bankbetalning i checkout';
+$_MODULE['<{billmategateway}prestashop>bankpay_ff71dd2a6eed429037bd40958aa28faa'] = 'Aktivera Billmate Bank';
 $_MODULE['<{billmategateway}prestashop>bankpay_03a36f89aad8dd8286bc5fe6692cbbeb'] = 'Testläge';
 $_MODULE['<{billmategateway}prestashop>bankpay_77f13e8055d1867d9a2bf4befa34cd19'] = 'Aktivera Testläge';
 $_MODULE['<{billmategateway}prestashop>bankpay_7e38e3a59c07105630ea943f4156723f'] = 'Betalningsåtgärd';
@@ -65,7 +65,7 @@ $_MODULE['<{billmategateway}prestashop>bankpay_b836c068c07a63081cee72070653b056'
 $_MODULE['<{billmategateway}prestashop>bankpay_c20cc8f5bb7d26404f80b1c990c8a7fd'] = 'Sorteringsordning';
 $_MODULE['<{billmategateway}prestashop>cardpay_ac9b4cabc8547bf458da836da847c84a'] = 'Billmate Kortbetalning';
 $_MODULE['<{billmategateway}prestashop>cardpay_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
-$_MODULE['<{billmategateway}prestashop>cardpay_d6ee063d3b67471ac3bcf72efc6fbdb6'] = 'Checka i för att aktivera Billmate Kortbetalning i checkout';
+$_MODULE['<{billmategateway}prestashop>cardpay_44a308935e1ad35220743d1268ba9834'] = 'Aktivera Billmate Kort';
 $_MODULE['<{billmategateway}prestashop>cardpay_03a36f89aad8dd8286bc5fe6692cbbeb'] = 'Testläge';
 $_MODULE['<{billmategateway}prestashop>cardpay_77f13e8055d1867d9a2bf4befa34cd19'] = 'Aktivera testläge';
 $_MODULE['<{billmategateway}prestashop>cardpay_99e8acb2af8cc867a242143bd7b86105'] = 'Aktivera 3D secure';
@@ -82,7 +82,7 @@ $_MODULE['<{billmategateway}prestashop>invoice_660b3c28387f41fee5b3d65ed30b761e'
 $_MODULE['<{billmategateway}prestashop>invoice_5796704293dee7757c3b6961c16d11cd'] = 'Jag bekräftar även köpvillkoren';
 $_MODULE['<{billmategateway}prestashop>invoice_ee21ea8152cfde71f02f81dfdfd5fcf8'] = 'och accepterar betalningsansvaret.';
 $_MODULE['<{billmategateway}prestashop>invoice_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
-$_MODULE['<{billmategateway}prestashop>invoice_924665d15fb98a8baa6d3b67dd0c9551'] = 'Checka i för att aktivera Billmate Faktura i checkout';
+$_MODULE['<{billmategateway}prestashop>invoice_599d18246e05aa43bf815641114a5823'] = 'Aktivera Billmate Faktura';
 $_MODULE['<{billmategateway}prestashop>invoice_03a36f89aad8dd8286bc5fe6692cbbeb'] = 'Testläge';
 $_MODULE['<{billmategateway}prestashop>invoice_77f13e8055d1867d9a2bf4befa34cd19'] = 'Aktivera testläge';
 $_MODULE['<{billmategateway}prestashop>invoice_1bca999e2d31198cddd3b5044ed1c1c8'] = 'Fakturaavgift ex. moms ';
@@ -97,7 +97,7 @@ $_MODULE['<{billmategateway}prestashop>partpay_660b3c28387f41fee5b3d65ed30b761e'
 $_MODULE['<{billmategateway}prestashop>partpay_5796704293dee7757c3b6961c16d11cd'] = 'Jag bekräftar även köpvillkoren';
 $_MODULE['<{billmategateway}prestashop>partpay_ee21ea8152cfde71f02f81dfdfd5fcf8'] = 'och accepterar betalningsansvaret.';
 $_MODULE['<{billmategateway}prestashop>partpay_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
-$_MODULE['<{billmategateway}prestashop>partpay_33995d5a88490da5c5a04849a9a9e3a3'] = 'Checka i för att aktivera Billmate Delbetalning i checkout';
+$_MODULE['<{billmategateway}prestashop>partpay_15873f53d299b5fc26ef677c976c7875'] = 'Aktivera Billmate Delbetalning';
 $_MODULE['<{billmategateway}prestashop>partpay_03a36f89aad8dd8286bc5fe6692cbbeb'] = 'Testläge';
 $_MODULE['<{billmategateway}prestashop>partpay_77f13e8055d1867d9a2bf4befa34cd19'] = 'Aktivera testläge';
 $_MODULE['<{billmategateway}prestashop>partpay_57336e9fc16799e8a0a59811bd615809'] = 'Sätt orderstatus';

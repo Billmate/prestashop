@@ -72,7 +72,7 @@
 				'required' => false,
 				'type'     => 'checkbox',
 				'label'    => $this->module->l('Enabled','cardpay'),
-				'desc'     => $this->module->l('Should Billmate Cardpay be Enabled','cardpay'),
+				'desc'     => $this->module->l('Enable Billmate Card','cardpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BCARDPAY_ENABLED'))) ? 1 : 0,
 
 			);

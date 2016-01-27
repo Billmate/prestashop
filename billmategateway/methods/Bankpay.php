@@ -73,7 +73,7 @@
 				'required' => true,
 				'type'     => 'checkbox',
 				'label'    => $this->module->l('Enabled','bankpay'),
-				'desc'     => $this->module->l('Should Billmate Bank be Enabled','bankpay'),
+				'desc'     => $this->module->l('Enable Billmate Bank','bankpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BBANKPAY_ENABLED'))) ? 1 : 0,
 
 			);

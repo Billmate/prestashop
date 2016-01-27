@@ -82,7 +82,7 @@
 				'required' => true,
 				'type'     => 'checkbox',
 				'label'    => $this->module->l('Enabled','partpay'),
-				'desc'     => $this->module->l('Should Billmate Partpay be Enabled','partpay'),
+				'desc'     => $this->module->l('Enable Billmate Part payment','partpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BPARTPAY_ENABLED'))) ? 1 : 0,
 
 			);

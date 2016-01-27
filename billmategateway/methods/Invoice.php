@@ -81,7 +81,7 @@
 				'required' => true,
 				'type'     => 'checkbox',
 				'label'    => $this->module->l('Enabled','invoice','invoice'),
-				'desc'     => $this->module->l('Should Billmate Invoice be Enabled','invoice'),
+				'desc'     => $this->module->l('Enable Billmate invoice','invoice'),
 				'value'    => (Tools::safeOutput(Configuration::get('BINVOICE_ENABLED'))) ? 1 : 0,
 
 			);
