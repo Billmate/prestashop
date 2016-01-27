@@ -564,15 +564,15 @@
 							'withouttax' => round(100 * ($price * $product['quantity']))
 					);
 					$total += round(($price * $product['quantity']) * 100);
-					$tax += (100 * ($price * $product['quantity'])) * $calcTax;
+					$tax += round((100 * ($price * $product['quantity'])) * $calcTax);
 				}
 
 
 				$values['Cart']['Total'] = array(
-						'withouttax' => $total,
-						'tax' => $tax,
+						'withouttax' => round($total),
+						'tax' => round($tax),
 						'rounding' => 0,
-						'withtax' => $total + $tax
+						'withtax' => round($total + $tax)
 				);
 				$result = $billmate->creditPayment($values);
 				if (isset($result['code'])) {
@@ -641,7 +641,7 @@
 							'withouttax' => round(100 * ($price * $quantity))
 					);
 					$total += round(($price * $quantity) * 100);
-					$totaltax += (100 * ($price * $quantity)) * $calcTax;
+					$totaltax += round((100 * ($price * $quantity)) * $calcTax);
 				}
 
 
@@ -649,11 +649,11 @@
 
 					$total_shipping_cost  = round($order->total_shipping_tax_excl,2);
 					$values['Cart']['Shipping'] = array(
-							'withouttax' => $total_shipping_cost * 100,
+							'withouttax' => round($total_shipping_cost * 100),
 							'taxrate'    => $taxrate
 					);
-					$total += $total_shipping_cost * 100;
-					$totaltax += ($total_shipping_cost * ($taxrate / 100)) * 100;
+					$total += round($total_shipping_cost * 100);
+					$totaltax += round(($total_shipping_cost * ($taxrate / 100)) * 100);
 
 				if (Configuration::get('BINVOICE_FEE') > 0 && $order->module == 'billmateinvoice')
 				{
@@ -671,14 +671,14 @@
 					);
 
 					$total += $fee * 100;
-					$totaltax += (($tax_rate / 100) * $fee) * 100;
+					$totaltax += round((($tax_rate / 100) * $fee) * 100);
 				}
 
 				$values['Cart']['Total'] = array(
-						'withouttax' => $total,
-						'tax' => $totaltax,
+						'withouttax' => round($total),
+						'tax' => round($totaltax),
 						'rounding' => 0,
-						'withtax' => $total + $totaltax
+						'withtax' => round($total + $totaltax)
 				);
 				$result = $billmate->updatePayment($values);
 				if (isset($result['code'])) {
