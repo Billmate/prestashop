@@ -537,16 +537,17 @@
 				$total = 0;
 				foreach ($productList as $key => $product) {
 
-					$orderDetail = Db::getInstance()->getRow('SELECT product_id,product_name FROM `' . _DB_PREFIX_ . 'order_detail` WHERE `id_order_detail` = ' . (int)$key);
+					$orderDetail = Db::getInstance()->getRow('SELECT * FROM `' . _DB_PREFIX_ . 'order_detail` WHERE `id_order_detail` = ' . (int)$key);
 					$orderDetailTax = Db::getInstance()->getRow('SELECT id_tax FROM `' . _DB_PREFIX_ . 'order_detail_tax` WHERE `id_order_detail` = ' . (int)$key);
 
-					$tax = Db::getInstance()->getRow('SELECT rate FROM `' . _DB_PREFIX_ . 'tax` WHERE id_tax = ' . $orderDetailTax['id_tax']);
+					$taxData = Db::getInstance()->getRow('SELECT rate FROM `' . _DB_PREFIX_ . 'tax` WHERE id_tax = ' . $orderDetailTax['id_tax']);
 					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'order_detail' . print_r($orderDetail, true),
 							FILE_APPEND);
 
 					$prodTmp = new Product($orderDetail['product_id']);
-					$taxRate = $tax['rate'];
+					$taxRate = $taxData['rate'];
 					$calcTax = $taxRate / 100;
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tax' . print_r($product, true), FILE_APPEND);
 					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tax' . print_r($taxRate, true), FILE_APPEND);
 
 					$marginTax = $calcTax / (1 + $calcTax);
@@ -564,7 +565,14 @@
 							'withouttax' => round(100 * ($price * $product['quantity']))
 					);
 					$total += round(($price * $product['quantity']) * 100);
-					$tax += round((100 * ($price * $product['quantity'])) * $calcTax);
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'price' . print_r($price, true), FILE_APPEND);
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'q' . print_r($product['quantity'], true), FILE_APPEND);
+					$tmpTax = round(100 *(($price * $product['quantity']) * $calcTax));
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tmpTax' . print_r($tmpTax, true), FILE_APPEND);
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tax' . print_r($tax, true), FILE_APPEND);
+					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tax+tmp' . print_r($tax+$tmpTax, true), FILE_APPEND);
+
+					$tax += round(100 *(($price * $product['quantity']) * $calcTax));
 				}
 
 
