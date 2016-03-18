@@ -152,9 +152,9 @@
 		{
 			$date = '';
 			if	($justcount)
-				$date = '" AND expirydate > NOW()';
+				$date = ' AND expirydate > NOW()';
 			$data = Db::getInstance()->ExecuteS('SELECT count(*) AS total FROM '._DB_PREFIX_.
-												'billmate_payment_pclasses WHERE language = "'.$language.
+												'billmate_payment_pclasses WHERE language = "'.$language.'"'.
 												$date);
 
 			if ($data[0]['total'] == 0)
