@@ -82,11 +82,12 @@
 			{
 				case 'invoice':
 				case 'partpay':
+					/*
 					$result = $this->checkAddress();
 
 					if (is_array($result))
 						die(Tools::jsonEncode($result));
-
+					*/
 					$data = $this->prepareInvoice($this->method);
 					break;
 				case 'bankpay':
@@ -599,6 +600,13 @@
 					}
 					else
 					{
+						if (in_array($result['code'],array(2401,2402,2403,2304,2405)))
+						{
+							$result = $this->checkAddress();
+
+							if (is_array($result))
+								die(Tools::jsonEncode($result));
+						}
 						Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
 						$return = array('success' => false, 'content' => utf8_encode($result['message']));
 					}
