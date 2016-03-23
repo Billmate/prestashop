@@ -330,20 +330,23 @@
 			$billing  = new Address($this->context->cart->id_address_invoice);
 			$shipping = new Address($this->context->cart->id_address_delivery);
 
-			$user_ship = $shipping->firstname.' '.$shipping->lastname;
-			$user_bill = $billing->firstname.' '.$billing->lastname;
+			$user_ship = $shipping->firstname.' '.$shipping->lastname.' '.$shipping->company;
+			$user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
 
 			$first_arr = explode(' ', $shipping->firstname);
 			$last_arr  = explode(' ', $shipping->lastname);
-
-			$apifirst = explode(' ', $address['firstname']);
-			$apilast  = explode(' ', $address['lastname']);
-
-			$matched_first = array_intersect($first_arr, $apifirst);
-			$matched_last  = array_intersect($last_arr, $apilast);
 			if (empty($address['company']))
+			{
+				$apifirst = explode(' ', $address['firstname']);
+				$apilast = explode(' ', $address['lastname']);
+
+				$matched_first = array_intersect($first_arr, $apifirst);
+				$matched_last = array_intersect($last_arr, $apilast);
+
 				$api_matched_name = !empty($matched_first) && !empty($matched_last);
-			else {
+			}
+			else
+			{
 				$prestacompany = explode(' ', $billing->company);
 				$apicompany = explode(' ', $address['company']);
 				$matched_company = array_intersect($prestacompany, $apicompany);
@@ -468,8 +471,8 @@
 						'method'     => $this->method
 					));
 					$this->context->smarty->assign('company',$address['company']);
-					$this->context->smarty->assign('firstname', $address['firstname']);
-					$this->context->smarty->assign('lastname', $address['lastname']);
+					$this->context->smarty->assign('firstname', isset($address['firstname']) ? $address['firstname'] : '');
+					$this->context->smarty->assign('lastname', isset($address['lastname']) ? $address['lastname'] : '');
 					$this->context->smarty->assign('address', $address['street']);
 					$this->context->smarty->assign('zipcode', $address['zip']);
 					$this->context->smarty->assign('city', $address['city']);
