@@ -9,7 +9,7 @@
 <style>
     #spanMessage .billmate-loader {
         background: url("{$smarty.const._MODULE_DIR_}billmategateway/views/img/ajax-loader.gif") 15px 15px no-repeat #fbfbfb;
-        z-index: 10000
+        z-index: 10000;
         height: 100px;
         width: 100px;
         margin-left: 45%
