@@ -82,6 +82,8 @@
 			{
 				case 'invoice':
 				case 'partpay':
+					if(Tools::getValue('geturl') == 'yes')
+						$this->checkAddress();
 					/*
 					$result = $this->checkAddress();
 

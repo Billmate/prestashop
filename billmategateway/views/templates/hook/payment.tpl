@@ -222,6 +222,19 @@
             getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
         }
     });
+    if($('#pno')){
+        if($('#pno_billmatepartpay')){
+            $('#pno').on('change',function(e){
+                $('#pno_billmatepartpay').val(e.target.value);
+            });
+        }
+        if($('#pno_billmateinvoice')){
+            $('#pno').on('change',function(e){
+                $('#pno_billmateinvoice').val(e.target.value);
+            });
+        }
+
+    }
     $('#billmatecardpay').click(function(e) {
         e.preventDefault();
         getPayment('cardpay');
