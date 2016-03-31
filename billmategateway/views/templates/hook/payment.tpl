@@ -242,10 +242,12 @@
     $('#billmatecardpay').click(function(e) {
         e.preventDefault();
         getPayment('cardpay');
+        return false;
     });
     $('#billmatebankpay').click(function(e) {
         e.preventDefault();
         getPayment('bankpay');
+        return false;
     });
     $('#billmateinvoice').click(function (e) {
         $('a#billmateinvoice').css('padding-bottom','10px');

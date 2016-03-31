@@ -147,8 +147,8 @@
 			Configuration::updateValue('BILLMATE_ACTIVATE', Tools::getIsset('activate') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_ACTIVATE_STATUS', serialize(Tools::getValue('activateStatuses')));
 
-			Configuration::updateValue('BILLMATE_CANCEL', Tools::getIsset('cancel') ? 1 : 0);
-			Configuration::updateValue('BILLMATE_CANCEL_STATUS', serialize(Tools::getValue('cancelStatuses')));
+			Configuration::updateValue('BILLMATE_CANCEL', Tools::getIsset('credit') ? 1 : 0);
+			Configuration::updateValue('BILLMATE_CANCEL_STATUS', serialize(Tools::getValue('creditStatuses')));
 
 			Configuration::updateValue('BILLMATE_SEND_REFERENCE', Tools::getValue('sendOrderReference'));
 			Configuration::updateValue('BILLMATE_GETADDRESS', Tools::getIsset('getaddress') ? 1 : 0);
@@ -991,7 +991,7 @@
 				'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_ACTIVATE_STATUS'))) ? unserialize(Configuration::get('BILLMATE_ACTIVATE_STATUS')) : 0,
 				'options'  => $statuses_array
 			);
-			$credit_status      = Configuration::get('BILLMATE_CREDIT');
+			$credit_status      = Configuration::get('BILLMATE_CANCEL');
 			$settings['credit'] = array(
 					'name'     => 'credit',
 					'required' => true,
@@ -1008,7 +1008,7 @@
 					'type'     => 'multiselect',
 					'label'    => $this->l('Order statuses for automatic order credit in Billmate Online'),
 					'desc'     => '',
-					'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_CREDIT_STATUS'))) ? unserialize(Configuration::get('BILLMATE_CREDIT_STATUS')) : 0,
+					'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_CANCEL_STATUS'))) ? unserialize(Configuration::get('BILLMATE_CANCEL_STATUS')) : 0,
 					'options'  => $statuses_array
 			);
 			$settings['getaddress'] = array(
