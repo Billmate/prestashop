@@ -472,7 +472,7 @@
 						'ps_version' => _PS_VERSION_,
 						'method'     => $this->method
 					));
-					$this->context->smarty->assign('company',$address['company']);
+					$this->context->smarty->assign('company',isset($address['company']) ? $address['company']: $address['company']);
 					$this->context->smarty->assign('firstname', isset($address['firstname']) ? $address['firstname'] : '');
 					$this->context->smarty->assign('lastname', isset($address['lastname']) ? $address['lastname'] : '');
 					$this->context->smarty->assign('address', $address['street']);

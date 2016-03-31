@@ -13,7 +13,9 @@ class BillmateInvoice extends PaymentModule
     public function __construct()
     {
         $this->name = 'billmateinvoice';
-        $this->displayName = 'Billmate Invoice - Support Plugin - No install needed!';
+        $this->displayName = $this->l('Billmate Invoice');
+        $this->description = 'Support plugin - No install needed!';
+
         $this->version    = BILLMATE_PLUGIN_VERSION;
         $this->author     = 'Billmate AB';
 
