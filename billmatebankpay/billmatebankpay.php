@@ -13,7 +13,9 @@ class BillmateBankpay extends PaymentModule
     public function __construct()
     {
         $this->name = 'billmatebankpay';
-        $this->displayName = 'Billmate Bankpay - Support Plugin - No install needed!';
+        $this->displayName = 'Billmate Bankpay';
+        $this->description = 'Support plugin - No install needed!';
+
         $this->version    = BILLMATE_PLUGIN_VERSION;
         $this->author     = 'Billmate AB';
 
