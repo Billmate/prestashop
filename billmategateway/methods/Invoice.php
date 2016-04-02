@@ -368,9 +368,7 @@
 						// if ($order->total_paid != $order->total_paid_real)
 						// We use number_format in order to compare two string
 
-						error_log('amount'.$amount_paid);
-						error_log('cart_'.$cart_total_paid);
-						error_log('billtotal_fee'.$billtotal_fee);
+
 						if ($order_status->logable && number_format($cart_total_paid + $billtotal_fee, 2) != number_format($amount_paid, 2))
 							$id_order_state = Configuration::get('PS_OS_ERROR');
 						if($billmate_invoice_fee > 0){

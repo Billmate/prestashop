@@ -73,6 +73,7 @@
 						? Tools::getValue('pno_billmatepartpay')
 						: ''))
 				: '';
+			$this->pno = $this->method == 'invoiceservice' ? Tools::getValue('pno_billmateinvoiceservice') : $this->pno;
 			/**
 			 * @var $data PaymentData
 			 */
@@ -92,6 +93,7 @@
 					*/
 					$data = $this->prepareInvoice($this->method);
 					break;
+
 				case 'bankpay':
 				case 'cardpay':
 					$data = $this->prepareDirect($this->method);
@@ -503,8 +505,20 @@
 		public function prepareInvoice($method)
 		{
 			$payment_data                = array();
+			$methodValue = 1;
+			switch($method){
+				case 'invoice':
+					$method = 1;
+					break;
+				case 'partpay':
+					$method = 4;
+					break;
+				case 'invoiceservice':
+					$method = 2;
+					break;
+			}
 			$payment_data['PaymentData'] = array(
-				'method'        => ($method == 'invoice') ? 1 : 4,
+				'method'        => $methodValue,
 				'paymentplanid' => ($method == 'partpay') ? Tools::getValue('paymentAccount') : '',
 				'currency'      => Tools::strtoupper($this->context->currency->iso_code),
 				'language'      => Tools::strtolower($this->context->language->iso_code),
@@ -561,6 +575,7 @@
 			{
 				case 'invoice':
 				case 'partpay':
+				case 'invoiceservice':
 					if (!isset($result['code']))
 					{
 						$status   = ($this->method == 'invoice') ? Configuration::get('BINVOICE_ORDER_STATUS') : Configuration::get('BPARTPAY_ORDER_STATUS');

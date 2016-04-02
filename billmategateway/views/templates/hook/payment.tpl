@@ -237,6 +237,11 @@
                 $('#pno_billmateinvoice').val(e.target.value);
             });
         }
+        if($('#pno_billmateinvoiceservice')){
+            $('#pno').on('change',function(e){
+                $('#pno_billmateinvoiceservice').val(e.target.value);
+            });
+        }
 
     }
     $('#billmatecardpay').click(function(e) {
@@ -256,6 +261,20 @@
         $('#billmateinvoice-fields').show();
         if ($('#pno').length) {
             $('#pno_billmateinvoice').val($('#pno').val());
+            $('.pno_container').hide();
+
+        }
+        e.preventDefault();
+    })
+
+    $('#billmateinvoiceservice').click(function (e) {
+        $('a#billmateinvoiceservice').css('padding-bottom','10px');
+        $('a#billmatepartpay').css('padding-bottom','34px');
+        $('#billmatepartpay-fields').hide();
+        $('#billmateinvoice-fields').hide()
+        $('#billmateinvoiceservice-fields').show();
+        if ($('#pno').length) {
+            $('#pno_billmateinvoiceservice').val($('#pno').val());
             $('.pno_container').hide();
 
         }
@@ -285,6 +304,24 @@
         if ($('#agree_with_terms_billmateinvoice').prop('checked') == true) {
             if(!billmateprocessing)
                 getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'invoice');
+        } else {
+            alert($('<textarea/>').html(checkbox_required).text());
+        }
+        e.preventDefault();
+    })
+    $('#billmateinvoiceserviceSubmit').click(function (e) {
+        if($('form.billmateinvoiceservice').length > 1) {
+            var form = $('form.realbillmateinvoiceservice').serializeArray();
+        } else {
+            var form = $('form.billmateinvoiceservice').serializeArray();
+        }
+        if ($.trim($('#pno_billmateinvoiceservice').val()) == '') {
+            alert(emptypersonerror);
+            return;
+        }
+        if ($('#agree_with_terms_billmateinvoiceservice').prop('checked') == true) {
+            if(!billmateprocessing)
+                getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'invoiceservice');
         } else {
             alert($('<textarea/>').html(checkbox_required).text());
         }
