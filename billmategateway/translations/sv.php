@@ -129,7 +129,7 @@ $_MODULE['<{billmategateway}prestashop>payment_044bdbd93862b9660b6493b455160111'
 $_MODULE['<{billmategateway}prestashop>payment_e2df530c0b093bcac893cd2412e8d55f'] = 'Betalningsalternativ';
 $_MODULE['<{billmategateway}prestashop>payment_7436f942d5ea836cb84f1bb2527d8286'] = 'månad';
 $_MODULE['<{billmategateway}prestashop>payment_9faf6f7fc71220e6739d647a1cd8bce1'] = 'Personnummer / Organisationsnummer';
-$_MODULE['<{billmategateway}prestashop>payment_f262fae0a2f17e8c1eb4e9eddb0160e4'] = 'Fortsätt';
+$_MODULE['<{billmategateway}prestashop>payment_f262fae0a2f17e8c1eb4e9eddb0160e4'] = 'Slutför';
 $_MODULE['<{billmategateway}prestashop>payment_e580a2735b1cf3339f84cf1028d4e99b'] = 'Personnummer / Organisationsnummer saknas.';
 $_MODULE['<{billmategateway}prestashop>payment_68dff7ceb4dcf8b754c6b51324a86173'] = 'Vänligen kryssa i kryssrutan för att bekräfta att denna e-postaddress är korrekt och får användas för fakturering';
 $_MODULE['<{billmategateway}prestashop>payment_edc82d9ccafac930ac7a30bd065c1fa8'] = 'Bearbetar....';
