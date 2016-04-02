@@ -14,7 +14,7 @@ class Invoiceservice extends BillmateGateway {
         parent::__construct();
         $this->name                 = 'billmateinvoiceservice';
         $this->module = new BillmateGateway();
-        $this->displayName          = $this->module->l('Billmate Invoice','invoice');
+        $this->displayName          = $this->module->l('Billmate Invoiceservice','invoice');
         $this->testMode             = Configuration::get('BINVOICESERVICE_MOD');
         $this->min_value            = Configuration::get('BINVOICESERVICE_MIN_VALUE');
         $this->max_value            = Configuration::get('BINVOICESERVICE_MAX_VALUE');

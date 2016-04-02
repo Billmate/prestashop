@@ -127,7 +127,7 @@
             text-decoration: underline;
         }
     </style>
-    {if $method.type != 'billmateinvoice' && $method.type != 'billmatepartpay'}
+    {if $method.type != 'billmateinvoice' && $method.type != 'billmatepartpay' && $method.type != 'billmateinvoiceservice'}
         <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller}" id="{$method.type}">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'}</a>
     {else}
         <a {if $template == 'new'} class="{$method.type}"{/if} href="{$method.controller|escape:'url'}" id="{$method.type|escape:'html'}">{if $template == 'legacy'}<img src="{$smarty.const._MODULE_DIR_}{$method.icon}"/>{/if}{$method.name|escape:'html'} {if $method.type == 'billmatepartpay'} {l s='from' mod='billmategateway'} {displayPrice|regex_replace:'/[.,]0+/':'' price=$method.monthly_cost.monthlycost} {l s='/ month' mod='billmategateway'} {elseif $method.invoiceFee.fee > 0} - {l s='Invoice fee' mod='billmategateway'} {displayPrice|regex_replace:'/[.,]0+/':'' price=$method.invoiceFee.fee_incl_tax}  {l s='is added to the order sum' mod='billmategateway'}{/if}

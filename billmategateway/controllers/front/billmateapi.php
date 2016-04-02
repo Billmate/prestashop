@@ -83,6 +83,7 @@
 			{
 				case 'invoice':
 				case 'partpay':
+				case 'invoiceservice':
 					if(Tools::getValue('geturl') == 'yes')
 						$this->checkAddress();
 					/*
@@ -126,7 +127,7 @@
 		{
 			$customer             = array();
 			$customer['nr']       = $this->context->cart->id_customer;
-			$customer['pno']      = ($this->method == 'invoice' || $this->method == 'partpay') ? $this->pno : '';
+			$customer['pno']      = ($this->method == 'invoice' || $this->method == 'partpay' || $this->method == 'invoiceservice') ? $this->pno : '';
 			$billing_address       = new Address($this->context->cart->id_address_invoice);
 			$shipping_address      = new Address($this->context->cart->id_address_delivery);
 
@@ -507,15 +508,16 @@
 			$payment_data                = array();
 			$methodValue = 1;
 			switch($method){
+				case 'invoiceservice':
+					$methodValue = 2;
+					break;
 				case 'invoice':
-					$method = 1;
+					$methodValue = 1;
 					break;
 				case 'partpay':
-					$method = 4;
+					$methodValue = 4;
 					break;
-				case 'invoiceservice':
-					$method = 2;
-					break;
+
 			}
 			$payment_data['PaymentData'] = array(
 				'method'        => $methodValue,
