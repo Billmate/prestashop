@@ -23,6 +23,5 @@ class BillmateInvoice extends PaymentModule
         $this->version    = BILLMATE_PLUGIN_VERSION;
         $this->author     = 'Billmate AB';
 
-
     }
 }
