@@ -20,7 +20,7 @@
             $this->module = new BillmateGateway();
 			$this->testMode             = Configuration::get('BBANKPAY_MOD');
 			$this->displayName          = $this->module->l('Billmate Bankpay','bankpay');
-			$this->limited_countries    = array('se');
+			$this->limited_countries    = array('BE','DK','EE','FI','FR','IE','IT','LV','LT','MT','NL','NO','PL','PT','ES','SE','CZ','DE','AT');
 			$this->allowed_currencies   = array('SEK','EUR','PLN','DKK');
 			$this->min_value            = Configuration::get('BBANKPAY_MIN_VALUE');
 			$this->max_value            = Configuration::get('BBANKPAY_MAX_VALUE');
@@ -45,7 +45,7 @@
 				return false;
 			if (!in_array(strtoupper($this->context->currency->iso_code), $this->allowed_currencies))
 				return false;
-			if (!in_array(Tools::strtolower($this->context->country->iso_code), $this->limited_countries))
+			if (!in_array(Tools::strtoupper($this->context->country->iso_code), $this->limited_countries))
 				return false;
 
 			return array(
