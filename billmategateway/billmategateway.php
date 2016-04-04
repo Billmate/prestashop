@@ -495,11 +495,20 @@
 					unset($this->context->cookie->confirmation_orders);
 				}
 			}
+			if (isset($this->context->cookie->credit_confirmation) && Tools::strlen($this->context->cookie->credit_confirmation) > 2)
+			{
+				if (get_class($this->context->controller) == 'AdminOrdersController')
+				{
+					$this->context->controller->confirmations[] = $this->context->cookie->credit_confirmation;
+					unset($this->context->cookie->credit_confirmation);
+					unset($this->context->cookie->credit_confirmation_orders);
+				}
+			}
 			if (isset($this->context->cookie->error_credit) && Tools::strlen($this->context->cookie->error_credit) > 2)
 			{
 				if (get_class($this->context->controller) == 'AdminOrdersController')
 				{
-					$this->context->controller->error_credits[] = $this->context->cookie->error_credit;
+					$this->context->controller->errors[] = $this->context->cookie->error_credit;
 					unset($this->context->cookie->error_credit);
 					unset($this->context->cookie->credit_orders);
 				}
@@ -508,7 +517,7 @@
 			{
 				if (get_class($this->context->controller) == 'AdminOrdersController')
 				{
-					$this->context->controller->error_credit_activations[] = $this->context->cookie->error_credit_activation;
+					$this->context->controller->errors[] = $this->context->cookie->error_credit_activation;
 					unset($this->context->cookie->error_credit_activation);
 					unset($this->context->cookie->credit_activate_orders);
 				}
@@ -713,6 +722,7 @@
 			$orderStatus = Configuration::get('BILLMATE_ACTIVATE_STATUS');
 			$cancelStatus = Configuration::get('BILLMATE_CANCEL_STATUS');
 			$activate    = Configuration::get('BILLMATE_ACTIVATE');
+			$cancelStatus = unserialize($cancelStatus);
 			$cancelStatus = is_array($cancelStatus) ? $cancelStatus : array($cancelStatus);
 
 			if ($activate && $orderStatus)
@@ -720,12 +730,14 @@
 				$order_id = $params['id_order'];
 
 				$id_status = $params['newOrderStatus']->id;
+
 				$order     = new Order($order_id);
 
 				$payment     = OrderPayment::getByOrderId($order_id);
 				$orderStatus = unserialize($orderStatus);
                 $orderStatus = is_array($orderStatus) ? $orderStatus : array($orderStatus);
 				$modules     = array('billmatecardpay', 'billmatebankpay', 'billmateinvoice', 'billmatepartpay');
+
 
 				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus) && $this->getMethodInfo($order->module, 'authorization_method') != 'sale')
 				{
@@ -788,9 +800,10 @@
 				} elseif(in_array($order->module, $modules) && in_array($id_status, $cancelStatus)){
 					$testMode      = $this->getMethodInfo($order->module, 'testMode');
 					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
+
 					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
 					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
-
+					error_log('pinto'.print_r($payment_info,true));
 					if($payment_status == 'paid' || $payment_status == 'factoring'){
 						$creditResult = $billmate->creditPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id,'partcredit' => false)));
 						if(!isset($creditResult['code'])){
@@ -801,6 +814,9 @@
 
 								$this->context->cookie->credit_activate_orders = isset($this->context->cookie->credit_activate_orders) ? $this->context->cookie->credit_activate_orders.', '.$order_id : $order_id;
 
+							} else {
+								$this->context->cookie->credit_confirmation        = !isset($this->context->cookie->credit_confirmation_orders) ? sprintf($this->l('Order %s has been credited through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been credited through Billmate: %s'), $this->context->cookie->credit_confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+								$this->context->cookie->credit_confirmation_orders = isset($this->context->cookie->credit_confirmation_orders) ? $this->context->cookie->credit_confirmation_orders.', '.$order_id : $order_id;
 							}
 						} else {
 							$this->context->cookie->error_credit        = !isset($this->context->cookie->credit_orders) ? sprintf($this->l('Order %s failed to credit through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to credit through Billmate: %s.'), $this->context->cookie->credit_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
@@ -815,6 +831,9 @@
 
 							$this->context->cookie->credit_orders = isset($this->context->cookie->credit_orders) ? $this->context->cookie->credit_orders.', '.$order_id : $order_id;
 
+						} else {
+							$this->context->cookie->credit_confirmation        = !isset($this->context->cookie->credit_confirmation_orders) ? sprintf($this->l('Order %s has been credited through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been credited through Billmate: %s'), $this->context->cookie->credit_confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+							$this->context->cookie->credit_confirmation_orders = isset($this->context->cookie->credit_confirmation_orders) ? $this->context->cookie->credit_confirmation_orders.', '.$order_id : $order_id;
 						}
 					}
 				}
