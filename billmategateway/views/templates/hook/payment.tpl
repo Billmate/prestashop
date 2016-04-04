@@ -74,7 +74,7 @@
         line-height: 23px;
         color: #333;
         font-weight: bold;
-        padding: 33px 40px 34px 110px;
+        padding: 33px 40px 34px 170px;
         letter-spacing: -1px;
         position: relative;
 

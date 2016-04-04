@@ -21,7 +21,7 @@
 			$this->testMode             = Configuration::get('BBANKPAY_MOD');
 			$this->displayName          = $this->module->l('Billmate Bankpay','bankpay');
 			$this->limited_countries    = array('se');
-			$this->allowed_currencies   = array('SEK');
+			$this->allowed_currencies   = array('SEK','EUR','PLN','DKK');
 			$this->min_value            = Configuration::get('BBANKPAY_MIN_VALUE');
 			$this->max_value            = Configuration::get('BBANKPAY_MAX_VALUE');
 			$this->authorization_method = Configuration::get('BBANKPAY_AUTHORIZATION_METHOD');

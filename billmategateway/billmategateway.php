@@ -33,7 +33,7 @@
 			$this->country           = null;
 			$this->limited_countries = array(
 				'se',
-				'onl',
+				'nl',
 				'dk',
 				'no',
 				'fi',
