@@ -304,6 +304,26 @@
 				$this->totals += $fee * 100;
 				$this->tax += (($tax_rate / 100) * $fee) * 100;
 			}
+			if (Configuration::get('BINVOICESERVICE_FEE') > 0 && $this->method == 'invoiceservice')
+			{
+				$fee           = Configuration::get('BINVOICESERVICE_FEE');
+				$invoice_fee_tax = Configuration::get('BINVOICESERVICE_FEE_TAX');
+
+				$tax                = new Tax($invoice_fee_tax);
+				$tax_calculator      = new TaxCalculator(array($tax));
+				$tax_rate            = $tax_calculator->getTotalRate();
+				$fee = Tools::convertPriceFull($fee,null,$this->context->currency);
+				$fee = round($fee,2);
+				$totals['Handling'] = array(
+					'withouttax' => $fee * 100,
+					'taxrate'    => $tax_rate
+				);
+				$this->handling_fee = $fee;
+				$this->handling_taxrate = $tax_rate;
+				$order_total += $fee * (1 + ($tax_rate / 100));
+				$this->totals += $fee * 100;
+				$this->tax += (($tax_rate / 100) * $fee) * 100;
+			}
 
 			$rounding         = round($order_total * 100) - round($this->tax + $this->totals);
 			$totals['Total']  = array(
