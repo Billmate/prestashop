@@ -388,18 +388,31 @@
 					{
 						if (isset($customer_address['address1']))
 						{
+							$billing  = new Address($customer_address['id_address']);
 
-							if (Common::matchstr($customer_address['address1'], $address['street']) &&
+							$user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+							$company = isset($address['company']) ? $address['company'] : '';
+							$api_name = $address['firstname']. ' '. $address['lastname']. $company;
+
+							if (Common::matchstr($user_bill,$api_name) && Common::matchstr($customer_address['address1'], $address['street']) &&
 							    Common::matchstr($customer_address['postcode'], $address['zip']) &&
 							    Common::matchstr($customer_address['city'], $address['city']) &&
 							    Common::matchstr(Country::getIsoById($customer_address['id_country']), $address['country']))
+
 								$matched_address_id = $customer_address['id_address'];
 						}
 						else
 						{
 							foreach ($customer_address as $c_address)
 							{
-								if (Common::matchstr($c_address['address1'], $address['street']) &&
+								$billing  = new Address($c_address['id_address']);
+
+								$user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+								$company = isset($address['company']) ? $address['company'] : '';
+								$api_name = $address['firstname']. ' '. $address['lastname']. $company;
+
+
+								if (Common::matchstr($user_bill,$api_name) &&  Common::matchstr($c_address['address1'], $address['street']) &&
 								    Common::matchstr($c_address['postcode'], $address['zip']) &&
 								    Common::matchstr($c_address['city'], $address['city']) &&
 								    Common::matchstr(Country::getIsoById($c_address['id_country']), $address['country'])
@@ -475,7 +488,7 @@
 						'ps_version' => _PS_VERSION_,
 						'method'     => $this->method
 					));
-					$this->context->smarty->assign('company',isset($address['company']) ? $address['company']: $address['company']);
+					$this->context->smarty->assign('company',isset($address['company']) ? $address['company']: '');
 					$this->context->smarty->assign('firstname', isset($address['firstname']) ? $address['firstname'] : '');
 					$this->context->smarty->assign('lastname', isset($address['lastname']) ? $address['lastname'] : '');
 					$this->context->smarty->assign('address', $address['street']);
