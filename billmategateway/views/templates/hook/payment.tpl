@@ -299,6 +299,8 @@
         }
         if ($.trim($('#pno_billmateinvoice').val()) == '') {
             alert(emptypersonerror);
+            if($checkoutButton)
+                $checkoutButton.disabled = false;
             return;
         }
         if ($('#agree_with_terms_billmateinvoice').prop('checked') == true) {
@@ -317,6 +319,8 @@
         }
         if ($.trim($('#pno_billmateinvoiceservice').val()) == '') {
             alert(emptypersonerror);
+            if($checkoutButton)
+                $checkoutButton.disabled = false;
             return;
         }
         if ($('#agree_with_terms_billmateinvoiceservice').prop('checked') == true) {
@@ -336,6 +340,8 @@
         }
         if ($.trim($('#pno_billmatepartpay').val()) == '') {
             alert(emptypersonerror);
+            if($checkoutButton)
+                $checkoutButton.disabled = false;
             return;
         }
         if ($('#agree_with_terms_billmatepartpay').prop('checked') == true) {
