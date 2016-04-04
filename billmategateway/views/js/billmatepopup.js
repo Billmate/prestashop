@@ -393,7 +393,7 @@ if (typeof modalWin == 'undefined') {
         return 0;
     };
     function getData(param, form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method) {
-
+        billmateprocessing = true;
         ShowMessage('<div class="billmate-loader"></div>', loadingWindowTitle);
         if (versionCompare(version, '1.6') == 1) {
             $('div.alert-danger').remove();
@@ -404,7 +404,7 @@ if (typeof modalWin == 'undefined') {
             $('#error_billmate'+method).css('padding-bottom','0px');
 
         }
-        billmateprocessing = true;
+
         jQuery.post(ajaxurl + '&method=' + method + param, form, function (json) {
             eval('var response = ' + json);
             billmateprocessing = false;
@@ -427,7 +427,8 @@ if (typeof modalWin == 'undefined') {
                         getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
                     }
                 }
-                $checkoutButton.disabled = false;
+                if($checkoutButton)
+                    $checkoutButton.disabled = false;
             } else {
                 if (typeof response.popup != 'undefined' && response.popup) {
                     ShowMessage(response.content, windowtitlebillmate);

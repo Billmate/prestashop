@@ -713,7 +713,7 @@
 			$orderStatus = Configuration::get('BILLMATE_ACTIVATE_STATUS');
 			$cancelStatus = Configuration::get('BILLMATE_CANCEL_STATUS');
 			$activate    = Configuration::get('BILLMATE_ACTIVATE');
-			$cancelStatus = is_array($cancelStatus) ? $cancelStatus : ($cancelStatus);
+			$cancelStatus = is_array($cancelStatus) ? $cancelStatus : array($cancelStatus);
 
 			if ($activate && $orderStatus)
 			{
