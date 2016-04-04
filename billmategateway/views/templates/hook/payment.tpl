@@ -227,6 +227,7 @@
         }
     });
     if($('#pno')){
+        $('.pno_container').hide();
         if($('#pno_billmatepartpay')){
             $('#pno').on('change',function(e){
                 $('#pno_billmatepartpay').val(e.target.value);
@@ -258,10 +259,18 @@
         $('a#billmateinvoice').css('padding-bottom','10px');
         $('a#billmatepartpay').css('padding-bottom','34px');
         $('#billmatepartpay-fields').hide();
+        $('#billmateinvoiceservice-fields').hide();
         $('#billmateinvoice-fields').show();
-        if ($('#pno').length) {
+        if ($('#pno')) {
+            console.log('pno');
+
             $('#pno_billmateinvoice').val($('#pno').val());
-            $('.pno_container').hide();
+            console.log('pno');
+
+            $('#billmateinvoice-fields .pno_container').hide();
+            console.log('pno');
+
+
 
         }
         e.preventDefault();
@@ -273,9 +282,9 @@
         $('#billmatepartpay-fields').hide();
         $('#billmateinvoice-fields').hide()
         $('#billmateinvoiceservice-fields').show();
-        if ($('#pno').length) {
+        if ($('#pno')) {
             $('#pno_billmateinvoiceservice').val($('#pno').val());
-            $('.pno_container').hide();
+            $('#billmateinvoiceservice-fields .pno_container').hide();
 
         }
         e.preventDefault();
@@ -284,10 +293,11 @@
         $('a#billmateinvoice').css('padding-bottom','34px');
         $('a#billmatepartpay').css('padding-bottom','10px');
         $('#billmateinvoice-fields').hide();
+        $('#billmateinvoiceservice-fields').hide();
         $('#billmatepartpay-fields').show();
-        if ($('#pno').length) {
+        if ($('#pno')) {
             $('#pno_billmatepartpay').val($('#pno').val());
-            $('.pno_container').hide();
+            $('#billmatepartpay-fields .pno_container').hide();
         }
         e.preventDefault();
     })
