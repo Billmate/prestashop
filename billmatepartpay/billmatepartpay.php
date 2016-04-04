@@ -1,11 +1,11 @@
 <?php
-
 /**
  * Created by PhpStorm.
  * User: jesperjohansson
  * Date: 15-09-09
  * Time: 21:21
  */
+
 require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
 
 class BillmatePartpay extends PaymentModule

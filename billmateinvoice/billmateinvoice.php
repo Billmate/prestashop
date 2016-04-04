@@ -1,11 +1,15 @@
 <?php
-
 /**
  * Created by PhpStorm.
+ *
  * User: jesperjohansson
  * Date: 15-09-09
  * Time: 21:25
+ * @author Jesper Johansson <jesper.johansson@billmate.se>
+ * @licence MTL
+ * @copyright Billmate AB
  */
+
 require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
 
 class BillmateInvoice extends PaymentModule
