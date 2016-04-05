@@ -791,7 +791,7 @@
 					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
 					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
 
-					if($payment_status == 'paid' || $payment_status == 'factoring'){
+					if($payment_status == 'paid' || $payment_status == 'factoring' || $payment_status = 'partpayment'){
 						$creditResult = $billmate->creditPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id,'partcredit' => false)));
 						if(!isset($creditResult['code']))
 						{
