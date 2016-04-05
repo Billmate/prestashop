@@ -538,11 +538,10 @@
 		 */
 		public function hookActionOrderSlipAdd($params)
 		{
-			error_log('slipAdd');
+
 			$order = $params['order'];
 			$productList = $params['productList'];
 			$qtyList = $params['qtyList'];
-			error_log('module'.str_replace('billmate','',$order->module));
 			$testMode      = (boolean) $this->getMethodInfo($order->module, 'testMode');
 
 			$billmate = Common::getBillmate($this->billmate_merchant_id,$this->billmate_secret,$testMode);
@@ -561,17 +560,14 @@
 					$orderDetailTax = Db::getInstance()->getRow('SELECT id_tax FROM `' . _DB_PREFIX_ . 'order_detail_tax` WHERE `id_order_detail` = ' . (int)$key);
 
 					$taxData = Db::getInstance()->getRow('SELECT rate FROM `' . _DB_PREFIX_ . 'tax` WHERE id_tax = ' . $orderDetailTax['id_tax']);
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'order_detail' . print_r($orderDetail, true),
-							FILE_APPEND);
+
 
 					$prodTmp = new Product($orderDetail['product_id']);
 					$taxRate = $taxData['rate'];
 					$calcTax = $taxRate / 100;
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tax' . print_r($product, true), FILE_APPEND);
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tax' . print_r($taxRate, true), FILE_APPEND);
+
 
 					$marginTax = $calcTax / (1 + $calcTax);
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'margin' . print_r($marginTax, true), FILE_APPEND);
 
 					$price = $product['unit_price'] * (1 - $marginTax);
 					//$tax = Tax::getProductTaxRate($product->id, $order->id_address_invoice);
@@ -585,12 +581,7 @@
 							'withouttax' => round(100 * ($price * $product['quantity']))
 					);
 					$total += round(($price * $product['quantity']) * 100);
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'price' . print_r($price, true), FILE_APPEND);
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'q' . print_r($product['quantity'], true), FILE_APPEND);
 					$tmpTax = round(100 *(($price * $product['quantity']) * $calcTax));
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tmpTax' . print_r($tmpTax, true), FILE_APPEND);
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tax' . print_r($tax, true), FILE_APPEND);
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tax+tmp' . print_r($tax+$tmpTax, true), FILE_APPEND);
 
 					$tax += round(100 *(($price * $product['quantity']) * $calcTax));
 				}
@@ -645,16 +636,13 @@
 					$orderDetailTax = Db::getInstance()->getRow('SELECT id_tax FROM `' . _DB_PREFIX_ . 'order_detail_tax` WHERE `id_order_detail` = ' . (int)$orderDetail['id_order_detail']);
 
 					$tax = Db::getInstance()->getRow('SELECT rate FROM `' . _DB_PREFIX_ . 'tax` WHERE id_tax = ' . $orderDetailTax['id_tax']);
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'order_detail' . print_r($orderDetail, true),
-							FILE_APPEND);
+
 
 					$prodTmp = new Product($orderDetail['product_id']);
 					$taxRate = $tax['rate'];
 					$calcTax = $taxRate / 100;
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'tax' . print_r($taxRate, true), FILE_APPEND);
 
 					$marginTax = $calcTax / (1 + $calcTax);
-					file_put_contents(_PS_CACHE_DIR_ . 'credit.log', 'margin' . print_r($marginTax, true), FILE_APPEND);
 
 					$price = $orderDetail['unit_price_tax_excl'];
 					//$tax = Tax::getProductTaxRate($orderDetail['product_id'], $order->id_address_invoice);
