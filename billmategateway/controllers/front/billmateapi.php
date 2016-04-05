@@ -614,6 +614,7 @@
 					if (!isset($result['code']))
 					{
 						$status   = ($this->method == 'invoice') ? Configuration::get('BINVOICE_ORDER_STATUS') : Configuration::get('BPARTPAY_ORDER_STATUS');
+						$status = ($this->method == 'invoiceservice') ? Configuration::get('BINVOICESERVICE_ORDER_STATUS') : $status;
 						$status = ($result['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
 						$extra    = array('transaction_id' => $result['number']);
 						$total    = $this->context->cart->getOrderTotal();
@@ -631,7 +632,7 @@
 						else {
 							$this->module->validateOrder((int)$this->context->cart->id,
 								$status,
-								($this->method == 'invoice') ? $this->paid_amount / 100 : $total,
+								($this->method == 'invoice' || $this->method == 'invoiceservice') ? $this->paid_amount / 100 : $total,
 								$this->module->displayName,
 								null, $extra, null, false, $customer->secure_key);
 							$orderId = $this->module->currentOrder;
