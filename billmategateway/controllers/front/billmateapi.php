@@ -199,16 +199,17 @@
 		{
 			$details = $this->context->cart->getSummaryDetails(null, true);
 
+			$totalTemp = $this->totals;
 			$discounts = array();
 			if (!empty($details['total_discounts']))
 			{
 				foreach ($this->prepare_discount as $key => $value)
 				{
 
-					$percent_discount = $value / ($this->totals);
+					$percent_discount = $value / ($totalTemp);
 
-					$discount_amount = round(($percent_discount * $details['total_discounts']) / (1 + ($key / 100)),2);
-
+					$discount_value = $percent_discount * $details['total_discounts'];
+					$discount_amount = round($discount_value / (1 + ($key / 100)),2);
 
 					$discounts[]    = array(
 						'quantity'   => 1,
