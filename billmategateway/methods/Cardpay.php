@@ -86,21 +86,6 @@
 				'value'    => (Tools::safeOutput(Configuration::get('BCARDPAY_MOD'))) ? 1 : 0
 			);
 
-			$settings['3dsecure']   = array(
-				'name'  => 'cardpay3dsecure',
-				'type'  => 'checkbox',
-				'label' => $this->module->l('Enable 3D secure','cardpay'),
-				'desc'  => '',
-				'value' => (Tools::safeOutput(Configuration::get('BCARDPAY_3DSECURE'))) ? 1 : 0
-			);
-			$settings['promptname'] = array(
-				'name'  => 'cardpayPromptname',
-				'type'  => 'checkbox',
-				'label' => $this->module->l('Prompt Name','cardpay'),
-				'desc'  => '',
-				'value' => (Tools::safeOutput(Configuration::get('BCARDPAY_PROMPT'))) ? 1 : 0
-			);
-
 			$settings['authorization'] = array(
 				'name'    => 'cardpayAuthorization',
 				'type'    => 'radio',
