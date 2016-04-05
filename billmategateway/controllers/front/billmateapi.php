@@ -593,8 +593,6 @@
 			);
 
 			$payment_data['Card'] = array(
-				'promptname'   => ($method == 'cardpay' && Configuration::get('BILLMATE_CARD_PROMPT')) ? 1 : 0,
-				'3dsecure'     => ($method == 'cardpay' && Configuration::get('BILLMATE_CARD_3DSECURE')) ? 1 : 0,
 				'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method)),
 				'cancelurl'    => $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method)),
 				'callbackurl'  => $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method)),
