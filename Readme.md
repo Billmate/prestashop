@@ -26,6 +26,9 @@ Read following information to install these plugins
 * Fill in your Billmate ID and Secret, activate the payment methods thats suits you well. 
 * Hit save button and it should be done.
 
+## Testing
+Our plugin is tested with [Browserstack](http://www.browserstack.com) 
+
 
 
 ## Changelog
