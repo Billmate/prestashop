@@ -30,7 +30,7 @@ Read following information to install these plugins
 
 ## Changelog
 
-###2.1
+### 2.1(2016-04-06)
 
 * Enhancement - Credit invoice from store. 
 * Enhancement - Partcredit from store.
