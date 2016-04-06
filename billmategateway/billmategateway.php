@@ -793,7 +793,7 @@
 
 					if($payment_status == 'paid' || $payment_status == 'factoring' || $payment_status = 'partpayment'){
 						$creditResult = $billmate->creditPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id,'partcredit' => false)));
-						if(!isset($creditResult['code']))
+						if(isset($creditResult['code']))
 						{
 							$this->context->cookie->error_credit        = !isset($this->context->cookie->credit_orders) ? sprintf($this->l('Order %s failed to credit through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to credit through Billmate: %s.'), $this->context->cookie->credit_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 
