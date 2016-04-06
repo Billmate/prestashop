@@ -39,10 +39,10 @@ $_MODULE['<{billmategateway}prestashop>billmategateway_d79cf3f429596f77db95c6507
 $_MODULE['<{billmategateway}prestashop>billmategateway_4a749fd3b6a264a6fa279351e06a39f9'] = 'Referens ID';
 $_MODULE['<{billmategateway}prestashop>billmategateway_d2c877438d716fc35d80ef470090ff19'] = 'Order id används av Billmate';
 $_MODULE['<{billmategateway}prestashop>billmategateway_80a82d1e9a70ca738c121a908efba781'] = 'Aktivera Fakturor';
-$_MODULE['<{billmategateway}prestashop>billmategateway_91a8f03a9782bbad1630ce029cbce142'] = 'Aktivera fakturor med inställd status i Billmate Online automatiskt';
+$_MODULE['<{billmategateway}prestashop>billmategateway_91a8f03a9782bbad1630ce029cbce142'] = 'Aktivera fakturor automatiskt i Billmate Online när ordern får vald status:';
 $_MODULE['<{billmategateway}prestashop>billmategateway_4b534e271a8f95a880f2717a4da89d96'] = 'Orderstatus för automatisk order aktivering i Billmate Online.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_ff8bbbeeeaef46e2fb7217ef43b6681b'] = 'Kreditfakturor';
-$_MODULE['<{billmategateway}prestashop>billmategateway_bbca05cdad7a4859adb6a148d0fbeac0'] = 'Skapa kreditfaktura vid en inställd status i Billmate Online';
+$_MODULE['<{billmategateway}prestashop>billmategateway_bbca05cdad7a4859adb6a148d0fbeac0'] = ' Kreditfaktura skapas i Billmate Online när ordern får vald status';
 $_MODULE['<{billmategateway}prestashop>billmategateway_950560c63a1dd4f293f3086db0803df0'] = 'Order status för automatisk kreditering i Billmate Online';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3f90ab86b59f564abc8492f7df7e5f34'] = 'Aktivera Hämta adress';
 $_MODULE['<{billmategateway}prestashop>billmategateway_e051d71ac1233d6f587825c65adacfa8'] = 'Aktivera hämta adress via personnummer för att förenkla flödet i kassan.';
