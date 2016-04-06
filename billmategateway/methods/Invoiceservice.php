@@ -76,8 +76,8 @@ class Invoiceservice extends BillmateGateway {
             'name'     => 'invoiceserviceActivated',
             'required' => true,
             'type'     => 'checkbox',
-            'label'    => $this->module->l('Enabled','invoice','invoice'),
-            'desc'     => $this->module->l('Enable Billmate invoice','invoice'),
+            'label'    => $this->module->l('Enabled','invoice','invoiceservice'),
+            'desc'     => $this->module->l('Enable Billmate invoice','invoiceservice'),
             'value'    => (Tools::safeOutput(Configuration::get('BINVOICESERVICE_ENABLED'))) ? 1 : 0,
 
         );
@@ -86,8 +86,8 @@ class Invoiceservice extends BillmateGateway {
             'name'     => 'invoiceserviceTestmode',
             'required' => true,
             'type'     => 'checkbox',
-            'label'    => $this->module->l('Test Mode','invoice'),
-            'desc'     => $this->module->l('Enable Test Mode','invoice'),
+            'label'    => $this->module->l('Test Mode','invoiceservice'),
+            'desc'     => $this->module->l('Enable Test Mode','invoiceservice'),
             'value'    => (Tools::safeOutput(Configuration::get('BINVOICESERVICE_MOD'))) ? 1 : 0
         );
 
@@ -96,7 +96,7 @@ class Invoiceservice extends BillmateGateway {
             'required' => false,
             'value'    => (float)Configuration::get('BINVOICESERVICE_FEE'),
             'type'     => 'text',
-            'label'    => $this->module->l('Invoice fee ex. VAT ','invoice'),
+            'label'    => $this->module->l('Invoice fee ex. VAT ','invoiceservice'),
             'desc'     => $currency['iso_code'],
         );
 
@@ -104,7 +104,7 @@ class Invoiceservice extends BillmateGateway {
             'name'     => 'invoiceserviceFeeTax',
             'required' => true,
             'type'     => 'select',
-            'label'    => $this->module->l('Set Invoice Fee Tax Class','invoice'),
+            'label'    => $this->module->l('Set Invoice Fee Tax Class','invoiceservice'),
             'desc'     => $this->module->l(''),
             'value'    => (Tools::safeOutput(Configuration::get('BINVOICESERVICE_FEE_TAX'))) ? Tools::safeOutput(Configuration::get('BINVOICESERVICE_FEE_TAX')) : '',
             'options'  => $taxes_array
@@ -115,7 +115,7 @@ class Invoiceservice extends BillmateGateway {
             'name'     => 'invoiceserviceBillmateOrderStatus',
             'required' => true,
             'type'     => 'select',
-            'label'    => $this->module->l('Set Order Status','invoice'),
+            'label'    => $this->module->l('Set Order Status','invoiceservice'),
             'desc'     => $this->module->l(''),
             'value'    => (Tools::safeOutput(Configuration::get('BINVOICESERVICE_ORDER_STATUS'))) ? Tools::safeOutput(Configuration::get('BINVOICESERVICE_ORDER_STATUS')) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
             'options'  => $statuses_array
@@ -125,7 +125,7 @@ class Invoiceservice extends BillmateGateway {
             'required' => false,
             'value'    => (float)Configuration::get('BINVOICESERVICE_MIN_VALUE'),
             'type'     => 'text',
-            'label'    => $this->module->l('Minimum Value ','invoice').' ('.$currency['sign'].')',
+            'label'    => $this->module->l('Minimum Value ','invoiceservice').' ('.$currency['sign'].')',
             'desc'     => $this->module->l(''),
         );
         $settings['maximum_value'] = array(
@@ -133,7 +133,7 @@ class Invoiceservice extends BillmateGateway {
             'required' => false,
             'value'    => Configuration::get('BINVOICESERVICE_MAX_VALUE') != 0 ? (float)Configuration::get('BINVOICESERVICE_MAX_VALUE') : 99999,
             'type'     => 'text',
-            'label'    => $this->module->l('Maximum Value ','invoice').' ('.$currency['sign'].')',
+            'label'    => $this->module->l('Maximum Value ','invoiceservice').' ('.$currency['sign'].')',
             'desc'     => $this->module->l(''),
         );
         $settings['sort'] = array(
@@ -141,7 +141,7 @@ class Invoiceservice extends BillmateGateway {
             'required' => false,
             'value'    => Configuration::get('BINVOICESERVICE_SORTORDER'),
             'type'     => 'text',
-            'label'    => $this->module->l('Sort Order','invoice'),
+            'label'    => $this->module->l('Sort Order','invoiceservice'),
             'desc'     => $this->module->l(''),
         );
 
@@ -507,7 +507,7 @@ class Invoiceservice extends BillmateGateway {
                     if($billmate_invoice_fee > 0){
                         $products_list .= '<tr style="background-color: '.((count($order->product_list) +1) % 2 ? '#DDE2E6' : '#EBECEE').';">
 								<td style="padding: 0.6em 0.4em;width: 15%;">&nbsp;</td>
-								<td style="padding: 0.6em 0.4em;width: 30%;"><strong>'.$this->module->l('Invoicefee tax incl.','invoice').'</strong></td>
+								<td style="padding: 0.6em 0.4em;width: 30%;"><strong>'.$this->module->l('Invoicefee tax incl.','invoiceservice').'</strong></td>
 								<td style="padding: 0.6em 0.4em; width: 20%;">'.Tools::displayPrice(Product::getTaxCalculationMethod((int)$this->context->customer->id) == PS_TAX_EXC ? Tools::ps_round($billmate_invoice_fee, 2) : $total_fee, $this->context->currency, false).'</td>
 								<td style="padding: 0.6em 0.4em; width: 15%;">1</td>
 								<td style="padding: 0.6em 0.4em; width: 20%;">'.Tools::displayPrice((Product::getTaxCalculationMethod() == PS_TAX_EXC ? Tools::ps_round($billmate_invoice_fee, 2) : $total_fee), $this->context->currency, false).'</td>

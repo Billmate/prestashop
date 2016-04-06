@@ -55,7 +55,7 @@ $_MODULE['<{billmategateway}prestashop>bankpay_71b659c71cb48b160ad36d78db768326'
 $_MODULE['<{billmategateway}prestashop>bankpay_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
 $_MODULE['<{billmategateway}prestashop>bankpay_ff71dd2a6eed429037bd40958aa28faa'] = 'Aktivera Billmate Bank';
 $_MODULE['<{billmategateway}prestashop>bankpay_03a36f89aad8dd8286bc5fe6692cbbeb'] = 'Testläge';
-$_MODULE['<{billmategateway}prestashop>bankpay_77f13e8055d1867d9a2bf4befa34cd19'] = 'Aktivera Testläge';
+$_MODULE['<{billmategateway}prestashop>bankpay_77f13e8055d1867d9a2bf4befa34cd19'] = 'Aktivera testläge';
 $_MODULE['<{billmategateway}prestashop>bankpay_7e38e3a59c07105630ea943f4156723f'] = 'Betalningsåtgärd';
 $_MODULE['<{billmategateway}prestashop>bankpay_7f83df9cd29577d544efd9ff66d7118a'] = 'Reservera beloppet';
 $_MODULE['<{billmategateway}prestashop>bankpay_f2cd171bd42220283b7a595c3ff2aaaf'] = 'Debitera beloppet';
@@ -99,7 +99,7 @@ $_MODULE['<{billmategateway}prestashop>invoiceservice_ee21ea8152cfde71f02f81dfdf
 $_MODULE['<{billmategateway}prestashop>invoiceservice_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
 $_MODULE['<{billmategateway}prestashop>invoiceservice_599d18246e05aa43bf815641114a5823'] = 'Aktivera Billmate Fakturaservice';
 $_MODULE['<{billmategateway}prestashop>invoiceservice_03a36f89aad8dd8286bc5fe6692cbbeb'] = 'Testläge';
-$_MODULE['<{billmategateway}prestashop>invoiceservice_77f13e8055d1867d9a2bf4befa34cd19'] = 'Aktivera Testläge';
+$_MODULE['<{billmategateway}prestashop>invoiceservice_77f13e8055d1867d9a2bf4befa34cd19'] = 'Aktivera testläge';
 $_MODULE['<{billmategateway}prestashop>invoiceservice_1bca999e2d31198cddd3b5044ed1c1c8'] = 'Fakturaavgift ex. moms ';
 $_MODULE['<{billmategateway}prestashop>invoiceservice_244806277ec473713bed296969e4a45d'] = 'Välj momssats för fakturaavgiften';
 $_MODULE['<{billmategateway}prestashop>invoiceservice_57336e9fc16799e8a0a59811bd615809'] = 'Sätt orderstatus';
