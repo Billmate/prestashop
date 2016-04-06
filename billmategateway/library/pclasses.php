@@ -62,10 +62,16 @@
 				throw new Exception(strip_tags($data));
 			else
 			{
-				array_walk($data, array($this, 'correct_lang_billmate'));
+				//array_walk($data, 'pClasses::correct_lang_billmate');
 				foreach ($data as $row)
 				{
 					$row['eid'] = $eid;
+					$row['description']  = mb_convert_encoding($row['description'],'UTF-8','auto');
+					$row['startfee']     = $row['startfee'] / 100;
+					$row['handlingfee']  = $row['handlingfee'] / 100;
+					$row['interestrate'] = $row['interestrate'] / 100;
+					$row['minamount']    = $row['minamount'] / 100;
+					$row['maxamount']    = $row['maxamount'] / 100;
 					Db::getInstance()->insert('billmate_payment_pclasses', $row);
 
 				}
