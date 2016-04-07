@@ -26,12 +26,29 @@ Read following information to install these plugins
 * Fill in your Billmate ID and Secret, activate the payment methods thats suits you well. 
 * Hit save button and it should be done.
 
+## Testing
+Our plugin is tested with [Browserstack](http://www.browserstack.com)
+
+
+
 ## Changelog
 
+### 2.1(2016-04-06)
+
+* Enhancement - Credit invoice from store.
+* Enhancement - Partcredit from store.
+* Fix - Improved translations.
+* Enhancement - Improved our logos.
+* Enhancement - Changed address check flow.
+* Enhancement - Improved currency support.
+* Enhancement - Automatically updating paymentplans when expiring.
+
 ### 2.0.9(2016-01-26)
+
 * Fix - Optimized Billmate.php
 
 ### 2.0.8(2016-01-18)
+
 * Fix - Totals rounding.
 
 ### 2.0.7(2015-11-04)

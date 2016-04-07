@@ -37,6 +37,7 @@
 		 */
 		public function getPaymentInfo($cart)
 		{
+			pClasses::checkPclasses($this->billmate_merchant_id,$this->billmate_secret,'se',Language::getIsoById($cart->id_lang),'SEK');
 			if (!pClasses::hasPclasses(Language::getIsoById($cart->id_lang)) || Configuration::get('BPARTPAY_ENABLED') == 0)
 				return false;
 
@@ -44,7 +45,7 @@
 				return false;
 			if ($this->max_value < $this->context->cart->getOrderTotal())
 				return false;
-			if (!in_array($this->context->currency->iso_code, $this->allowed_currencies))
+			if (!in_array(strtoupper($this->context->currency->iso_code), $this->allowed_currencies))
 				return false;
 
 			if (!in_array(Tools::strtolower($this->context->country->iso_code), $this->limited_countries))
@@ -82,7 +83,7 @@
 				'required' => true,
 				'type'     => 'checkbox',
 				'label'    => $this->module->l('Enabled','partpay'),
-				'desc'     => $this->module->l('Should Billmate Partpay be Enabled','partpay'),
+				'desc'     => $this->module->l('Enable Billmate Part payment','partpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BPARTPAY_ENABLED'))) ? 1 : 0,
 
 			);
@@ -155,5 +156,12 @@
 			$pclasses = new pClasses(Configuration::get('BILLMATE_ID'));
 
 			return $pclasses->getCheapestPClass($this->context->cart->getOrderTotal(), BillmateFlags::CHECKOUT_PAGE, $this->context->language->iso_code);
+		}
+
+		public function getCheapestPlan($cost)
+		{
+			$pclasses = new pClasses(Configuration::get('BILLMATE_ID'));
+
+			return $pclasses->getCheapestPClass($cost, BillmateFlags::CHECKOUT_PAGE, $this->context->language->iso_code);
 		}
 	}

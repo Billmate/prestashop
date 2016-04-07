@@ -44,7 +44,7 @@
 			if ($this->max_value < $this->context->cart->getOrderTotal())
 				return false;
 
-			if (!in_array($this->context->currency->iso_code, $this->allowed_currencies))
+			if (!in_array(strtoupper($this->context->currency->iso_code), $this->allowed_currencies))
 				return false;
 
 			return array(
@@ -72,7 +72,7 @@
 				'required' => false,
 				'type'     => 'checkbox',
 				'label'    => $this->module->l('Enabled','cardpay'),
-				'desc'     => $this->module->l('Should Billmate Cardpay be Enabled','cardpay'),
+				'desc'     => $this->module->l('Enable Billmate Card','cardpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BCARDPAY_ENABLED'))) ? 1 : 0,
 
 			);
@@ -84,21 +84,6 @@
 				'label'    => $this->module->l('Test Mode','cardpay'),
 				'desc'     => $this->module->l('Enable Test Mode','cardpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BCARDPAY_MOD'))) ? 1 : 0
-			);
-
-			$settings['3dsecure']   = array(
-				'name'  => 'cardpay3dsecure',
-				'type'  => 'checkbox',
-				'label' => $this->module->l('Enable 3D secure','cardpay'),
-				'desc'  => '',
-				'value' => (Tools::safeOutput(Configuration::get('BCARDPAY_3DSECURE'))) ? 1 : 0
-			);
-			$settings['promptname'] = array(
-				'name'  => 'cardpayPromptname',
-				'type'  => 'checkbox',
-				'label' => $this->module->l('Prompt Name','cardpay'),
-				'desc'  => '',
-				'value' => (Tools::safeOutput(Configuration::get('BCARDPAY_PROMPT'))) ? 1 : 0
 			);
 
 			$settings['authorization'] = array(

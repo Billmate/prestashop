@@ -50,7 +50,7 @@
 			$this->billmate = Common::getBillmate($eid, $secret, $testmode, $ssl, $debug);
 
             $input = Tools::file_get_contents('php://input');
-            $post = empty($input) ? $_GET : Tools::file_get_contents('php://input');
+            $post = is_array($_GET) && isset($_GET['data']) ? $_GET : Tools::file_get_contents('php://input');
 
 			if(is_array($post))
 			{

@@ -73,6 +73,7 @@
 						? Tools::getValue('pno_billmatepartpay')
 						: ''))
 				: '';
+			$this->pno = $this->method == 'invoiceservice' ? Tools::getValue('pno_billmateinvoiceservice') : $this->pno;
 			/**
 			 * @var $data PaymentData
 			 */
@@ -82,13 +83,18 @@
 			{
 				case 'invoice':
 				case 'partpay':
+				case 'invoiceservice':
+					if(Tools::getValue('geturl') == 'yes')
+						$this->checkAddress();
+					/*
 					$result = $this->checkAddress();
 
 					if (is_array($result))
 						die(Tools::jsonEncode($result));
-
+					*/
 					$data = $this->prepareInvoice($this->method);
 					break;
+
 				case 'bankpay':
 				case 'cardpay':
 					$data = $this->prepareDirect($this->method);
@@ -121,10 +127,9 @@
 		{
 			$customer             = array();
 			$customer['nr']       = $this->context->cart->id_customer;
-			$customer['pno']      = ($this->method == 'invoice' || $this->method == 'partpay') ? $this->pno : '';
+			$customer['pno']      = ($this->method == 'invoice' || $this->method == 'partpay' || $this->method == 'invoiceservice') ? $this->pno : '';
 			$billing_address       = new Address($this->context->cart->id_address_invoice);
 			$shipping_address      = new Address($this->context->cart->id_address_delivery);
-			error_log(print_r( $this->context->customer,true));
 
 			$customer['Billing']  = array(
 				'firstname' => mb_convert_encoding($billing_address->firstname,'UTF-8','auto'),
@@ -194,21 +199,22 @@
 		{
 			$details = $this->context->cart->getSummaryDetails(null, true);
 
+			$totalTemp = $this->totals;
 			$discounts = array();
 			if (!empty($details['total_discounts']))
 			{
 				foreach ($this->prepare_discount as $key => $value)
 				{
 
-					$percent_discount = $value / ($this->totals);
+					$percent_discount = $value / ($totalTemp);
 
-					$discount_amount = round(($percent_discount * $details['total_discounts']) / (1 + ($key / 100)),2);
-
+					$discount_value = $percent_discount * $details['total_discounts'];
+					$discount_amount = round($discount_value / (1 + ($key / 100)),2);
 
 					$discounts[]    = array(
 						'quantity'   => 1,
 						'artnr'      => 'discount-'.$key,
-						'title'      => sprintf($this->module->l('Discount %s%% VAT'), $key),
+						'title'      => sprintf($this->coremodule->l('Discount %s%% VAT'), $key),
 						'aprice'     => -($discount_amount * 100),
 						'taxrate'    => $key,
 						'discount'   => 0,
@@ -237,7 +243,7 @@
 					$total          = $discount_amount * $gift['cart_quantity'] * 100;
 					$discounts[]    = array(
 						'quantity'   => $gift['cart_quantity'],
-						'artnr'      => $this->module->l('Discount'),
+						'artnr'      => $this->coremodule->l('Discount'),
 						'title'      => $gift['name'],
 						'aprice'     => $price - round($discount_amount * 100, 0),
 						'taxrate'    => $taxrate,
@@ -299,8 +305,28 @@
 				$this->totals += $fee * 100;
 				$this->tax += (($tax_rate / 100) * $fee) * 100;
 			}
+			if (Configuration::get('BINVOICESERVICE_FEE') > 0 && $this->method == 'invoiceservice')
+			{
+				$fee           = Configuration::get('BINVOICESERVICE_FEE');
+				$invoice_fee_tax = Configuration::get('BINVOICESERVICE_FEE_TAX');
 
-			$rounding         = round(($order_total * 100)) - round($this->tax + $this->totals);
+				$tax                = new Tax($invoice_fee_tax);
+				$tax_calculator      = new TaxCalculator(array($tax));
+				$tax_rate            = $tax_calculator->getTotalRate();
+				$fee = Tools::convertPriceFull($fee,null,$this->context->currency);
+				$fee = round($fee,2);
+				$totals['Handling'] = array(
+					'withouttax' => $fee * 100,
+					'taxrate'    => $tax_rate
+				);
+				$this->handling_fee = $fee;
+				$this->handling_taxrate = $tax_rate;
+				$order_total += $fee * (1 + ($tax_rate / 100));
+				$this->totals += $fee * 100;
+				$this->tax += (($tax_rate / 100) * $fee) * 100;
+			}
+
+			$rounding         = round($order_total * 100) - round($this->tax + $this->totals);
 			$totals['Total']  = array(
 				'withouttax' => round($this->totals),
 				'tax'        => round($this->tax),
@@ -330,20 +356,23 @@
 			$billing  = new Address($this->context->cart->id_address_invoice);
 			$shipping = new Address($this->context->cart->id_address_delivery);
 
-			$user_ship = $shipping->firstname.' '.$shipping->lastname;
-			$user_bill = $billing->firstname.' '.$billing->lastname;
+			$user_ship = $shipping->firstname.' '.$shipping->lastname.' '.$shipping->company;
+			$user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
 
 			$first_arr = explode(' ', $shipping->firstname);
 			$last_arr  = explode(' ', $shipping->lastname);
-
-			$apifirst = explode(' ', $address['firstname']);
-			$apilast  = explode(' ', $address['lastname']);
-
-			$matched_first = array_intersect($first_arr, $apifirst);
-			$matched_last  = array_intersect($last_arr, $apilast);
 			if (empty($address['company']))
+			{
+				$apifirst = explode(' ', $address['firstname']);
+				$apilast = explode(' ', $address['lastname']);
+
+				$matched_first = array_intersect($first_arr, $apifirst);
+				$matched_last = array_intersect($last_arr, $apilast);
+
 				$api_matched_name = !empty($matched_first) && !empty($matched_last);
-			else {
+			}
+			else
+			{
 				$prestacompany = explode(' ', $billing->company);
 				$apicompany = explode(' ', $address['company']);
 				$matched_company = array_intersect($prestacompany, $apicompany);
@@ -380,18 +409,31 @@
 					{
 						if (isset($customer_address['address1']))
 						{
+							$billing  = new Address($customer_address['id_address']);
 
-							if (Common::matchstr($customer_address['address1'], $address['street']) &&
+							$user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+							$company = isset($address['company']) ? $address['company'] : '';
+							$api_name = $address['firstname']. ' '. $address['lastname']. $company;
+
+							if (Common::matchstr($user_bill,$api_name) && Common::matchstr($customer_address['address1'], $address['street']) &&
 							    Common::matchstr($customer_address['postcode'], $address['zip']) &&
 							    Common::matchstr($customer_address['city'], $address['city']) &&
 							    Common::matchstr(Country::getIsoById($customer_address['id_country']), $address['country']))
+
 								$matched_address_id = $customer_address['id_address'];
 						}
 						else
 						{
 							foreach ($customer_address as $c_address)
 							{
-								if (Common::matchstr($c_address['address1'], $address['street']) &&
+								$billing  = new Address($c_address['id_address']);
+
+								$user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+								$company = isset($address['company']) ? $address['company'] : '';
+								$api_name = $address['firstname']. ' '. $address['lastname']. $company;
+
+
+								if (Common::matchstr($user_bill,$api_name) &&  Common::matchstr($c_address['address1'], $address['street']) &&
 								    Common::matchstr($c_address['postcode'], $address['zip']) &&
 								    Common::matchstr($c_address['city'], $address['city']) &&
 								    Common::matchstr(Country::getIsoById($c_address['id_country']), $address['country'])
@@ -424,11 +466,12 @@
 						$matched_address_id = $addressnew->id;
 					}
 					$this->context->cart->updateAddressId($this->context->cart->id_address_delivery, $matched_address_id);
-
+					$this->context->cart->updateAddressId($this->context->cart->id_address_invoice, $matched_address_id);
+/*
 					$this->context->cart->id_address_invoice  = (int)$matched_address_id;
 					$this->context->cart->id_address_delivery = (int)$matched_address_id;
 					$this->context->cart->update();
-
+*/
 					if (Configuration::get('PS_ORDER_PROCESS_TYPE') == 1)
 					{
 						$return = array(
@@ -466,9 +509,9 @@
 						'ps_version' => _PS_VERSION_,
 						'method'     => $this->method
 					));
-					$this->context->smarty->assign('company',$address['company']);
-					$this->context->smarty->assign('firstname', $address['firstname']);
-					$this->context->smarty->assign('lastname', $address['lastname']);
+					$this->context->smarty->assign('company',isset($address['company']) ? $address['company']: '');
+					$this->context->smarty->assign('firstname', isset($address['firstname']) ? $address['firstname'] : '');
+					$this->context->smarty->assign('lastname', isset($address['lastname']) ? $address['lastname'] : '');
 					$this->context->smarty->assign('address', $address['street']);
 					$this->context->smarty->assign('zipcode', $address['zip']);
 					$this->context->smarty->assign('city', $address['city']);
@@ -497,8 +540,21 @@
 		public function prepareInvoice($method)
 		{
 			$payment_data                = array();
+			$methodValue = 1;
+			switch($method){
+				case 'invoiceservice':
+					$methodValue = 2;
+					break;
+				case 'invoice':
+					$methodValue = 1;
+					break;
+				case 'partpay':
+					$methodValue = 4;
+					break;
+
+			}
 			$payment_data['PaymentData'] = array(
-				'method'        => ($method == 'invoice') ? 1 : 4,
+				'method'        => $methodValue,
 				'paymentplanid' => ($method == 'partpay') ? Tools::getValue('paymentAccount') : '',
 				'currency'      => Tools::strtoupper($this->context->currency->iso_code),
 				'language'      => Tools::strtolower($this->context->language->iso_code),
@@ -537,8 +593,6 @@
 			);
 
 			$payment_data['Card'] = array(
-				'promptname'   => ($method == 'cardpay' && Configuration::get('BILLMATE_CARD_PROMPT')) ? 1 : 0,
-				'3dsecure'     => ($method == 'cardpay' && Configuration::get('BILLMATE_CARD_3DSECURE')) ? 1 : 0,
 				'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method)),
 				'cancelurl'    => $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method)),
 				'callbackurl'  => $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method)),
@@ -555,9 +609,11 @@
 			{
 				case 'invoice':
 				case 'partpay':
+				case 'invoiceservice':
 					if (!isset($result['code']))
 					{
 						$status   = ($this->method == 'invoice') ? Configuration::get('BINVOICE_ORDER_STATUS') : Configuration::get('BPARTPAY_ORDER_STATUS');
+						$status = ($this->method == 'invoiceservice') ? Configuration::get('BINVOICESERVICE_ORDER_STATUS') : $status;
 						$status = ($result['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
 						$extra    = array('transaction_id' => $result['number']);
 						$total    = $this->context->cart->getOrderTotal();
@@ -575,7 +631,7 @@
 						else {
 							$this->module->validateOrder((int)$this->context->cart->id,
 								$status,
-								($this->method == 'invoice') ? $this->paid_amount / 100 : $total,
+								($this->method == 'invoice' || $this->method == 'invoiceservice') ? $this->paid_amount / 100 : $total,
 								$this->module->displayName,
 								null, $extra, null, false, $customer->secure_key);
 							$orderId = $this->module->currentOrder;
@@ -599,6 +655,13 @@
 					}
 					else
 					{
+						if (in_array($result['code'],array(2401,2402,2403,2304,2405)))
+						{
+							$result = $this->checkAddress();
+
+							if (is_array($result))
+								die(Tools::jsonEncode($result));
+						}
 						Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
 						$return = array('success' => false, 'content' => utf8_encode($result['message']));
 					}

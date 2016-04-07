@@ -14,10 +14,14 @@
 </div>
 <div style="clear:both"></div>
 <script type="text/javascript">
+
     var getaddressurl = "{$link->getModuleLink('billmategateway','getaddress', ['ajax'=> 0], true)}";
     var errormessage = '{l s='We couldnt find your address, please enter manually' mod='billmategateway'}';
     {literal}
     $(document).ready(function(){
+        if($('.pno_container')) {
+            $('.pno_container').hide();
+        }
         $('#getaddress').click(function(e) {
             e.preventDefault();
             var pno = $('#pno').val();

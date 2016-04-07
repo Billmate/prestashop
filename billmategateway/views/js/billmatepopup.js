@@ -9,6 +9,7 @@
 var $checkoutbtn = null;
 var billmateprocessing = false;
 var billmatepopupLoaded = false;
+var $checkoutButton = null;
 if (navigator.appName != 'Microsoft Internet Explorer') {
 //https://github.com/paulirish/matchMedia.js/
     window.matchMedia || (window.matchMedia = function () {
@@ -305,9 +306,15 @@ if (typeof modalWin == 'undefined') {
 
                             $('#' + methodName + 'Submit').hide();
                             $checkoutbtn = $('.confirm_button')[1].onclick;
+                            $checkoutButton = $checkoutbtn = $('.confirm_button')[1];
                             $('.confirm_button')[1].onclick = function (e) {
-                                $('#' + methodName + 'Submit').click();
-                                e.preventDefault();
+                                if(methodName != 'billmatecardpay' && methodName != 'billmatebankpay') {
+                                    $('#' + methodName + 'Submit').click();
+                                    e.preventDefault();
+                                } else {
+                                    $checkoutbtn.call();
+                                }
+                                $checkoutButton.disabled = true;
                             }
                         }
                     }
@@ -386,7 +393,7 @@ if (typeof modalWin == 'undefined') {
         return 0;
     };
     function getData(param, form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method) {
-
+        billmateprocessing = true;
         ShowMessage('<div class="billmate-loader"></div>', loadingWindowTitle);
         if (versionCompare(version, '1.6') == 1) {
             $('div.alert-danger').remove();
@@ -397,7 +404,7 @@ if (typeof modalWin == 'undefined') {
             $('#error_billmate'+method).css('padding-bottom','0px');
 
         }
-        billmateprocessing = true;
+
         jQuery.post(ajaxurl + '&method=' + method + param, form, function (json) {
             eval('var response = ' + json);
             billmateprocessing = false;
@@ -420,6 +427,8 @@ if (typeof modalWin == 'undefined') {
                         getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
                     }
                 }
+                if($checkoutButton)
+                    $checkoutButton.disabled = false;
             } else {
                 if (typeof response.popup != 'undefined' && response.popup) {
                     ShowMessage(response.content, windowtitlebillmate);
@@ -437,6 +446,7 @@ if (typeof modalWin == 'undefined') {
                         $('<div class="error">' + response.content + '</div>').insertBefore($('#error_billmate'+method).first());
                     }
                 }
+                $checkoutButton.disabled = false;
             }
         });
 

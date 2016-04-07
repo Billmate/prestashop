@@ -22,7 +22,7 @@
 			$this->testMode             = Configuration::get('BINVOICE_MOD');
 			$this->min_value            = Configuration::get('BINVOICE_MIN_VALUE');
 			$this->max_value            = Configuration::get('BINVOICE_MAX_VALUE');
-			$this->sort_order           = (Configuration::get('BINVOICE_SORTORDER')) ? Configuration::get('BINVOICE_SORTORDER') : 1;
+			$this->sort_order           = (Configuration::get('BINVOICE_SORTORDER')) ? Configuration::get('BINVOICE_SORTORDER') : 0;
 			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK','EUR','DKK','NOK','GBP','USD');
 			$this->authorization_method = false;
@@ -45,7 +45,7 @@
 			if ($this->max_value < $this->context->cart->getOrderTotal())
 				return false;
 
-			if (!in_array($this->context->currency->iso_code, $this->allowed_currencies))
+			if (!in_array(strtoupper($this->context->currency->iso_code), $this->allowed_currencies))
 				return false;
 			if (!in_array(Tools::strtolower($this->context->country->iso_code), $this->limited_countries))
 				return false;
@@ -81,7 +81,7 @@
 				'required' => true,
 				'type'     => 'checkbox',
 				'label'    => $this->module->l('Enabled','invoice','invoice'),
-				'desc'     => $this->module->l('Should Billmate Invoice be Enabled','invoice'),
+				'desc'     => $this->module->l('Enable Billmate invoice','invoice'),
 				'value'    => (Tools::safeOutput(Configuration::get('BINVOICE_ENABLED'))) ? 1 : 0,
 
 			);
@@ -368,9 +368,7 @@
 						// if ($order->total_paid != $order->total_paid_real)
 						// We use number_format in order to compare two string
 
-						error_log('amount'.$amount_paid);
-						error_log('cart_'.$cart_total_paid);
-						error_log('billtotal_fee'.$billtotal_fee);
+
 						if ($order_status->logable && number_format($cart_total_paid + $billtotal_fee, 2) != number_format($amount_paid, 2))
 							$id_order_state = Configuration::get('PS_OS_ERROR');
 						if($billmate_invoice_fee > 0){

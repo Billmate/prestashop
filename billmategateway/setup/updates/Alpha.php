@@ -21,7 +21,7 @@ class Alpha implements SetupFileInterface
     {
         try
         {
-            $drop = $this->db->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.'billmate_payment_fees`;CREATE TABLE `'._DB_PREFIX_.'billmate_payment_fees` (
+            $drop = $this->db->execute('CREATE TABLE IF NOT EXISTS`'._DB_PREFIX_.'billmate_payment_fees` (
                                         `id` int AUTO_INCREMENT,
                                         `order_id` int,
                                         `invoice_fee` decimal(11,2),

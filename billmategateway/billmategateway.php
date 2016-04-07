@@ -33,7 +33,7 @@
 			$this->country           = null;
 			$this->limited_countries = array(
 				'se',
-				'onl',
+				'nl',
 				'dk',
 				'no',
 				'fi',
@@ -65,6 +65,8 @@
             $this->l('Billmate Bankpay');
             $this->l('Billmate Invoice');
             $this->l('Billmate Partpay');
+			$this->l('Discount %s%% VAT');
+			$this->l('Discount');
 
         }
 
@@ -144,6 +146,10 @@
 			}
 			Configuration::updateValue('BILLMATE_ACTIVATE', Tools::getIsset('activate') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_ACTIVATE_STATUS', serialize(Tools::getValue('activateStatuses')));
+
+			Configuration::updateValue('BILLMATE_CANCEL', Tools::getIsset('credit') ? 1 : 0);
+			Configuration::updateValue('BILLMATE_CANCEL_STATUS', serialize(Tools::getValue('creditStatuses')));
+
 			Configuration::updateValue('BILLMATE_SEND_REFERENCE', Tools::getValue('sendOrderReference'));
 			Configuration::updateValue('BILLMATE_GETADDRESS', Tools::getIsset('getaddress') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_LOGO',Tools::getValue('logo'));
@@ -160,8 +166,6 @@
 			// Cardpay Settings
 			Configuration::updateValue('BCARDPAY_ENABLED', (Tools::getIsset('cardpayActivated')) ? 1 : 0);
 			Configuration::updateValue('BCARDPAY_MOD', (Tools::getIsset('cardpayTestmode')) ? 1 : 0);
-			Configuration::updateValue('BCARDPAY_3DSECURE', (Tools::getIsset('cardpay3dsecure')) ? 1 : 0);
-			Configuration::updateValue('BCARDPAY_PROMPT', (Tools::getIsset('cardpayPromptname')) ? 1 : 0);
 			Configuration::updateValue('BCARDPAY_ORDER_STATUS', Tools::getValue('cardpayBillmateOrderStatus'));
 			Configuration::updateValue('BCARDPAY_AUTHORIZATION_METHOD', Tools::getValue('cardpayAuthorization'));
 			Configuration::updateValue('BCARDPAY_MIN_VALUE', Tools::getValue('cardpayBillmateMinimumValue'));
@@ -177,6 +181,16 @@
 			Configuration::updateValue('BINVOICE_MIN_VALUE', Tools::getValue('invoiceBillmateMinimumValue'));
 			Configuration::updateValue('BINVOICE_MAX_VALUE', Tools::getValue('invoiceBillmateMaximumValue'));
 			Configuration::updateValue('BINVOICE_SORTORDER', Tools::getValue('invoiceBillmateSortOrder'));
+
+			// Invoice Service Settings
+			Configuration::updateValue('BINVOICESERVICE_ENABLED', (Tools::getIsset('invoiceserviceActivated')) ? 1 : 0);
+			Configuration::updateValue('BINVOICESERVICE_MOD', (Tools::getIsset('invoiceserviceTestmode')) ? 1 : 0);
+			Configuration::updateValue('BINVOICESERVICE_FEE', Tools::getValue('invoiceserviceFee'));
+			Configuration::updateValue('BINVOICESERVICE_FEE_TAX', Tools::getValue('invoiceserviceFeeTax'));
+			Configuration::updateValue('BINVOICESERVICE_ORDER_STATUS', Tools::getValue('invoiceserviceBillmateOrderStatus'));
+			Configuration::updateValue('BINVOICESERVICE_MIN_VALUE', Tools::getValue('invoiceserviceBillmateMinimumValue'));
+			Configuration::updateValue('BINVOICESERVICE_MAX_VALUE', Tools::getValue('invoiceserviceBillmateMaximumValue'));
+			Configuration::updateValue('BINVOICESERVICE_SORTORDER', Tools::getValue('invoiceserviceBillmateSortOrder'));
 
 			// partpay Settings
 			Configuration::updateValue('BPARTPAY_ENABLED', (Tools::getIsset('partpayActivated')) ? 1 : 0);
@@ -269,6 +283,7 @@
 			Configuration::updateValue('BINVOICE_ENABLED', 0);
 			Configuration::updateValue('BCARDPAY_ENABLED', 0);
 			Configuration::updateValue('BBANKPAY_ENABLED', 0);
+			Configuration::updateValue('BINVOICESERVICE_ENABLED',0);
 
 			Configuration::updateValue('BILLMATE_VERSION', $this->version);
 			require_once(_PS_MODULE_DIR_.'/billmategateway/setup/InitInstall.php');
@@ -340,9 +355,27 @@
 				   $this->registerHook('displayBackOfficeHeader') &&
 				   $this->registerHook('displayAdminOrder') &&
 				   $this->registerHook('displayPDFInvoice') &&
-					$this->registerHook('displayCustomerAccountFormTop');
+					$this->registerHook('displayCustomerAccountFormTop') &&
+					$this->registerHook('actionOrderSlipAdd') &&
+					$this->registerHook('orderSlip') &&
+					$this->registerHook('displayProductButtons');
 		}
 
+		public function hookDisplayProductButtons($params)
+		{
+			$cost = (1+($params['product']->tax_rate/100))*$params['product']->base_price;
+
+			require_once(_PS_MODULE_DIR_.'/billmategateway/methods/Partpay.php');
+			$partpay = new Partpay();
+			$plan = $partpay->getCheapestPlan($cost);
+			if($plan) {
+				$this->smarty->assign('icon',$params->icon);
+				$this->smarty->assign('plan', $plan);
+				return $this->display(__FILE__, 'payfrom.tpl');
+			}
+			return '';
+
+		}
 		public function hookDisplayPdfInvoice($params)
 		{
 			$order = new Order($params['object']->id_order);
@@ -460,6 +493,33 @@
 					unset($this->context->cookie->confirmation_orders);
 				}
 			}
+			if (isset($this->context->cookie->credit_confirmation) && Tools::strlen($this->context->cookie->credit_confirmation) > 2)
+			{
+				if (get_class($this->context->controller) == 'AdminOrdersController')
+				{
+					$this->context->controller->confirmations[] = $this->context->cookie->credit_confirmation;
+					unset($this->context->cookie->credit_confirmation);
+					unset($this->context->cookie->credit_confirmation_orders);
+				}
+			}
+			if (isset($this->context->cookie->error_credit) && Tools::strlen($this->context->cookie->error_credit) > 2)
+			{
+				if (get_class($this->context->controller) == 'AdminOrdersController')
+				{
+					$this->context->controller->errors[] = $this->context->cookie->error_credit;
+					unset($this->context->cookie->error_credit);
+					unset($this->context->cookie->credit_orders);
+				}
+			}
+			if (isset($this->context->cookie->error_credit_activation) && Tools::strlen($this->context->cookie->error_credit_activation) > 2)
+			{
+				if (get_class($this->context->controller) == 'AdminOrdersController')
+				{
+					$this->context->controller->errors[] = $this->context->cookie->error_credit_activation;
+					unset($this->context->cookie->error_credit_activation);
+					unset($this->context->cookie->credit_activate_orders);
+				}
+			}
 			/*if (Tools::getValue('controller') == 'AdminModules' && Tools::getValue('configure') == 'billmategateway')
 			{
 				$html = '';
@@ -471,21 +531,199 @@
 
 		}
 
+		/**
+		 * @param $params Array array('order' => $order, 'productList' => $order_detail_list, 'qtyList' => $full_quantity_list)
+		 */
+		public function hookActionOrderSlipAdd($params)
+		{
+
+			$order = $params['order'];
+			$productList = $params['productList'];
+			$qtyList = $params['qtyList'];
+			$testMode      = (boolean) $this->getMethodInfo($order->module, 'testMode');
+
+			$billmate = Common::getBillmate($this->billmate_merchant_id,$this->billmate_secret,$testMode);
+			$payment = OrderPayment::getByOrderId($order->id);
+			$paymentFromBillmate = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+			if($paymentFromBillmate['PaymentData']['status'] != 'Created' && $paymentFromBillmate['PaymentData']['status'] != 'Cancelled') {
+
+				$values['PaymentData']['number'] = $payment[0]->transaction_id;
+				$values['PaymentData']['partcredit'] = true;
+				$values['Articles'] = array();
+				$tax = 0;
+				$total = 0;
+				foreach ($productList as $key => $product) {
+
+					$orderDetail = Db::getInstance()->getRow('SELECT * FROM `' . _DB_PREFIX_ . 'order_detail` WHERE `id_order_detail` = ' . (int)$key);
+					$orderDetailTax = Db::getInstance()->getRow('SELECT id_tax FROM `' . _DB_PREFIX_ . 'order_detail_tax` WHERE `id_order_detail` = ' . (int)$key);
+
+					$taxData = Db::getInstance()->getRow('SELECT rate FROM `' . _DB_PREFIX_ . 'tax` WHERE id_tax = ' . $orderDetailTax['id_tax']);
+
+
+					$prodTmp = new Product($orderDetail['product_id']);
+					$taxRate = $taxData['rate'];
+					$calcTax = $taxRate / 100;
+
+
+					$marginTax = $calcTax / (1 + $calcTax);
+
+					$price = $product['unit_price'] * (1 - $marginTax);
+					//$tax = Tax::getProductTaxRate($product->id, $order->id_address_invoice);
+					$values['Articles'][] = array(
+							'artnr' => (string)$orderDetail['product_reference'],
+							'title' => $orderDetail['product_name'],
+							'quantity' => $product['quantity'],
+							'aprice' => round($price * 100),
+							'taxrate' => $taxRate,
+							'discount' => 0,
+							'withouttax' => round(100 * ($price * $product['quantity']))
+					);
+					$total += round(($price * $product['quantity']) * 100);
+					$tmpTax = round(100 *(($price * $product['quantity']) * $calcTax));
+
+					$tax += round(100 *(($price * $product['quantity']) * $calcTax));
+				}
+
+
+				$values['Cart']['Total'] = array(
+						'withouttax' => round($total),
+						'tax' => round($tax),
+						'rounding' => 0,
+						'withtax' => round($total + $tax)
+				);
+				$result = $billmate->creditPayment($values);
+				if (isset($result['code'])) {
+					$this->context->cookie->api_error = $result['message'];
+					$this->context->cookie->api_error_orders = isset($this->context->cookie->api_error_orders) ? $this->context->cookie->api_error_orders . ', ' . $order->id : $order->id;
+
+				}
+			} else {
+				$orderDetailObject = new OrderDetail();
+				$total = 0;
+				$totaltax = 0;
+				$billing_address       = new Address($order->id_address_invoice);
+				$shipping_address      = new Address($order->id_address_delivery);
+				$values['PaymentData'] = array(
+					'number' => $payment[0]->transaction_id
+				);
+				$values['Customer']['nr'] = $order->id_customer;
+				$values['Customer']['Billing']  = array(
+						'firstname' => mb_convert_encoding($billing_address->firstname,'UTF-8','auto'),
+						'lastname'  => mb_convert_encoding($billing_address->lastname,'UTF-8','auto'),
+						'company'   => mb_convert_encoding($billing_address->company,'UTF-8','auto'),
+						'street'    => mb_convert_encoding($billing_address->address1,'UTF-8','auto'),
+						'street2'   => '',
+						'zip'       => mb_convert_encoding($billing_address->postcode,'UTF-8','auto'),
+						'city'      => mb_convert_encoding($billing_address->city,'UTF-8','auto'),
+						'country'   => mb_convert_encoding(Country::getIsoById($billing_address->id_country),'UTF-8','auto'),
+						'phone'     => mb_convert_encoding($billing_address->phone,'UTF-8','auto'),
+						'email'     => mb_convert_encoding($this->context->customer->email,'UTF-8','auto')
+				);
+				$values['Customer']['Shipping'] = array(
+						'firstname' => mb_convert_encoding($shipping_address->firstname,'UTF-8','auto'),
+						'lastname'  => mb_convert_encoding($shipping_address->lastname,'UTF-8','auto'),
+						'company'   => mb_convert_encoding($shipping_address->company,'UTF-8','auto'),
+						'street'    => mb_convert_encoding($shipping_address->address1,'UTF-8','auto'),
+						'street2'   => '',
+						'zip'       => mb_convert_encoding($shipping_address->postcode,'UTF-8','auto'),
+						'city'      => mb_convert_encoding($shipping_address->city,'UTF-8','auto'),
+						'country'   => mb_convert_encoding(Country::getIsoById($shipping_address->id_country),'UTF-8','auto'),
+						'phone'     => mb_convert_encoding($shipping_address->phone,'UTF-8','auto'),
+				);
+				foreach($orderDetailObject->getList($order->id) as $orderDetail){
+					$orderDetailTax = Db::getInstance()->getRow('SELECT id_tax FROM `' . _DB_PREFIX_ . 'order_detail_tax` WHERE `id_order_detail` = ' . (int)$orderDetail['id_order_detail']);
+
+					$tax = Db::getInstance()->getRow('SELECT rate FROM `' . _DB_PREFIX_ . 'tax` WHERE id_tax = ' . $orderDetailTax['id_tax']);
+
+
+					$prodTmp = new Product($orderDetail['product_id']);
+					$taxRate = $tax['rate'];
+					$calcTax = $taxRate / 100;
+
+					$marginTax = $calcTax / (1 + $calcTax);
+
+					$price = $orderDetail['unit_price_tax_excl'];
+					//$tax = Tax::getProductTaxRate($orderDetail['product_id'], $order->id_address_invoice);
+					$quantity = $orderDetail['product_quantity'] - $orderDetail['product_quantity_refunded'];
+					$values['Articles'][] = array(
+							'artnr' => (string)$orderDetail['product_reference'],
+							'title' => $orderDetail['product_name'],
+							'quantity' => $quantity,
+							'aprice' => round($price * 100),
+							'taxrate' => $taxRate,
+							'discount' => 0,
+							'withouttax' => round(100 * ($price * $quantity))
+					);
+					$total += round(($price * $quantity) * 100);
+					$totaltax += round((100 * ($price * $quantity)) * $calcTax);
+				}
+
+
+					$taxrate    = $order->carrier_tax_rate;
+
+					$total_shipping_cost  = round($order->total_shipping_tax_excl,2);
+					$values['Cart']['Shipping'] = array(
+							'withouttax' => round($total_shipping_cost * 100),
+							'taxrate'    => $taxrate
+					);
+					$total += round($total_shipping_cost * 100);
+					$totaltax += round(($total_shipping_cost * ($taxrate / 100)) * 100);
+
+				if (Configuration::get('BINVOICE_FEE') > 0 && $order->module == 'billmateinvoice')
+				{
+					$fee           = Configuration::get('BINVOICE_FEE');
+					$invoice_fee_tax = Configuration::get('BINVOICE_FEE_TAX');
+
+					$tax                = new Tax($invoice_fee_tax);
+					$tax_calculator      = new TaxCalculator(array($tax));
+					$tax_rate            = $tax_calculator->getTotalRate();
+					$fee = Tools::convertPriceFull($fee,null,$this->context->currency);
+					$fee = round($fee,2);
+					$values['Cart']['Handling'] = array(
+							'withouttax' => $fee * 100,
+							'taxrate'    => $tax_rate
+					);
+
+					$total += $fee * 100;
+					$totaltax += round((($tax_rate / 100) * $fee) * 100);
+				}
+
+				$values['Cart']['Total'] = array(
+						'withouttax' => round($total),
+						'tax' => round($totaltax),
+						'rounding' => 0,
+						'withtax' => round($total + $totaltax)
+				);
+				$result = $billmate->updatePayment($values);
+				if (isset($result['code'])) {
+					$this->context->cookie->api_error = $result['message'];
+					$this->context->cookie->api_error_orders = isset($this->context->cookie->api_error_orders) ? $this->context->cookie->api_error_orders . ', ' . $order->id : $order->id;
+
+				}
+			}
+		}
+
 		public function hookActionOrderStatusUpdate($params)
 		{
 			$orderStatus = Configuration::get('BILLMATE_ACTIVATE_STATUS');
+			$cancelStatus = Configuration::get('BILLMATE_CANCEL_STATUS');
 			$activate    = Configuration::get('BILLMATE_ACTIVATE');
+			$cancelStatus = unserialize($cancelStatus);
+			$cancelStatus = is_array($cancelStatus) ? $cancelStatus : array($cancelStatus);
+
 			if ($activate && $orderStatus)
 			{
 				$order_id = $params['id_order'];
 
 				$id_status = $params['newOrderStatus']->id;
+
 				$order     = new Order($order_id);
 
 				$payment     = OrderPayment::getByOrderId($order_id);
 				$orderStatus = unserialize($orderStatus);
                 $orderStatus = is_array($orderStatus) ? $orderStatus : array($orderStatus);
-				$modules     = array('billmatecardpay', 'billmatebankpay', 'billmateinvoice', 'billmatepartpay');
+				$modules     = array('billmatecardpay', 'billmatebankpay', 'billmateinvoice', 'billmatepartpay','billmateinvoiceservice');
+
 
 				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus) && $this->getMethodInfo($order->module, 'authorization_method') != 'sale')
 				{
@@ -509,11 +747,12 @@
 
 							if (isset($result['code']))
 							{
-								$this->context->cookie->error        = (isset($result['message'])) ? utf8_encode($result['message']) : utf8_encode($result);
+								$this->context->cookie->error        = (isset($result['message'])) ? utf8_encode(utf8_decode($result['message'])) : utf8_encode($result);
 								$this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
+							} else {
+								$this->context->cookie->confirmation = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'), $order_id) . ' (<a target="_blank" href="http://online.billmate.se/faktura">' . $this->l('Open Billmate Online') . '</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s'), $this->context->cookie->confirmation_orders . ', ' . $order_id) . ' (<a target="_blank" href="http://online.billmate.se">' . $this->l('Open Billmate Online') . '</a>)';
+								$this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->confirmation_orders . ', ' . $order_id : $order_id;
 							}
-							$this->context->cookie->confirmation        = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s'), $this->context->cookie->confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
-							$this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->confirmation_orders.', '.$order_id : $order_id;
 						}
 						elseif (isset($payment_info['code']))
 						{
@@ -535,7 +774,7 @@
 							$this->context->cookie->diff_orders = isset($this->context->cookie->diff_orders) ? $this->context->cookie->diff_orders.', '.$order_id : $order_id;
 						}
 					}
-					elseif ($payment_status == 'paid')
+					elseif ($payment_status == 'paid' || $payment_status == 'factoring' || $payment_status == 'partpayment')
 					{
 						$this->context->cookie->information        = !isset($this->context->cookie->information_orders) ? sprintf($this->l('Order %s is already activated through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders has already been activated through Billmate: %s'), $this->context->cookie->information_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 						$this->context->cookie->information_orders = isset($this->context->cookie->information_orders) ? $this->context->cookie->information_orders.', '.$order_id : $order_id;
@@ -544,6 +783,37 @@
 					{
 						$this->context->cookie->error        = !isset($this->context->cookie->error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s.'), $this->context->cookie->error_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 						$this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
+					}
+				} elseif(in_array($order->module, $modules) && in_array($id_status, $cancelStatus)){
+					$testMode      = $this->getMethodInfo($order->module, 'testMode');
+					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
+
+					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
+
+					if($payment_status == 'paid' || $payment_status == 'factoring' || $payment_status = 'partpayment'){
+						$creditResult = $billmate->creditPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id,'partcredit' => false)));
+						if(isset($creditResult['code']))
+						{
+							$this->context->cookie->error_credit        = !isset($this->context->cookie->credit_orders) ? sprintf($this->l('Order %s failed to credit through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to credit through Billmate: %s.'), $this->context->cookie->credit_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+
+							$this->context->cookie->credit_orders = isset($this->context->cookie->credit_orders) ? $this->context->cookie->credit_orders.', '.$order_id : $order_id;
+						} else {
+							$this->context->cookie->credit_confirmation        = !isset($this->context->cookie->credit_confirmation_orders) ? sprintf($this->l('Order %s has been credited through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been credited through Billmate: %s'), $this->context->cookie->credit_confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+							$this->context->cookie->credit_confirmation_orders = isset($this->context->cookie->credit_confirmation_orders) ? $this->context->cookie->credit_confirmation_orders.', '.$order_id : $order_id;
+						}
+					} else {
+						$cancelResult = $billmate->cancelPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id)));
+
+						if(isset($cancelResult['code'])){
+							$this->context->cookie->error_credit        = !isset($this->context->cookie->credit_orders) ? sprintf($this->l('Order %s failed to credit through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to credit through Billmate: %s.'), $this->context->cookie->credit_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+
+							$this->context->cookie->credit_orders = isset($this->context->cookie->credit_orders) ? $this->context->cookie->credit_orders.', '.$order_id : $order_id;
+
+						} else {
+							$this->context->cookie->credit_confirmation        = !isset($this->context->cookie->credit_confirmation_orders) ? sprintf($this->l('Order %s has been credited through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been credited through Billmate: %s'), $this->context->cookie->credit_confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+							$this->context->cookie->credit_confirmation_orders = isset($this->context->cookie->credit_confirmation_orders) ? $this->context->cookie->credit_confirmation_orders.', '.$order_id : $order_id;
+						}
 					}
 				}
 
@@ -565,7 +835,8 @@
 			$template = 'new';
 			if (version_compare(_PS_VERSION_, '1.6', '<'))
 				$template = 'legacy';
-
+			if (version_compare(_PS_VERSION_,'1.6.1','=>'))
+				$template = 'legacy';
 
 			$this->smarty->assign(
 				array(
@@ -635,9 +906,12 @@
 					continue;
 				include_once($file->getPathname());
 				$method = new $class();
+
+
 				if ($method->name == $name)
 				{
-					if (property_exists($class, $key))
+
+					if (property_exists($method, $key))
 						return $method->{$key};
 
 				}
@@ -728,11 +1002,31 @@
 				'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_ACTIVATE_STATUS'))) ? unserialize(Configuration::get('BILLMATE_ACTIVATE_STATUS')) : 0,
 				'options'  => $statuses_array
 			);
+			$credit_status      = Configuration::get('BILLMATE_CANCEL');
+			$settings['credit'] = array(
+					'name'     => 'credit',
+					'required' => true,
+					'type'     => 'checkbox',
+					'label'    => $this->l('Credit Invoices'),
+					'desc'     => $this->l('Credit Invoices with a certain status in Billmate Online'),
+					'value'    => $credit_status
+			);
+
+			$settings['creditStatuses'] = array(
+					'name'     => 'creditStatuses',
+					'id'       => 'credit_options',
+					'required' => true,
+					'type'     => 'multiselect',
+					'label'    => $this->l('Order statuses for automatic order credit in Billmate Online'),
+					'desc'     => '',
+					'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_CANCEL_STATUS'))) ? unserialize(Configuration::get('BILLMATE_CANCEL_STATUS')) : 0,
+					'options'  => $statuses_array
+			);
 			$settings['getaddress'] = array(
 				'name' => 'getaddress',
 				'type' => 'checkbox',
 				'label' => $this->l('Activate GetAddress'),
-				'desc' => $this->l('Activate get adress by social security number to speed up the checkout process.'),
+				'desc' => $this->l('Activate get address by social security number to speed up the checkout process.'),
 				'value' => Configuration::get('BILLMATE_GETADDRESS')
 			);
 			$this->smarty->assign('activation_status', $activate_status);

@@ -55,19 +55,26 @@
 
 			$db = Db::getInstance();
 			//$db->Execute('TRUNCATE TABLE `'._DB_PREFIX_.'billmate_payment_pclasses`');
-			if(self::hasPclasses($language))
+			if(self::hasPclasses($language,true))
 				$db->Execute('DELETE FROM `'._DB_PREFIX_.'billmate_payment_pclasses` WHERE `language` = "'.$language.'"');
 
 			if (!is_array($data))
 				throw new Exception(strip_tags($data));
 			else
 			{
-				array_walk($data, array($this, 'correct_lang_billmate'));
-				foreach ($data as $row)
-				{
-					$row['eid'] = $eid;
-					Db::getInstance()->insert('billmate_payment_pclasses', $row);
+				if(!isset($data['code'])) {
+					//array_walk($data, 'pClasses::correct_lang_billmate');
+					foreach ($data as $row) {
+						$row['eid'] = $eid;
+						$row['description'] = mb_convert_encoding($row['description'], 'UTF-8', 'auto');
+						$row['startfee'] = $row['startfee'] / 100;
+						$row['handlingfee'] = $row['handlingfee'] / 100;
+						$row['interestrate'] = $row['interestrate'] / 100;
+						$row['minamount'] = $row['minamount'] / 100;
+						$row['maxamount'] = $row['maxamount'] / 100;
+						Db::getInstance()->insert('billmate_payment_pclasses', $row);
 
+					}
 				}
 			}
 		}
@@ -148,15 +155,30 @@
 			return $pclasses;
 		}
 
-		public static function hasPclasses($language)
+		public static function hasPclasses($language,$justcount = false)
 		{
+			$date = '';
+			if	($justcount)
+				$date = ' AND expirydate > NOW()';
 			$data = Db::getInstance()->ExecuteS('SELECT count(*) AS total FROM '._DB_PREFIX_.
-												'billmate_payment_pclasses WHERE language = "'.$language.
-												'" AND expirydate > NOW()');
+												'billmate_payment_pclasses WHERE language = "'.$language.'"'.
+												$date);
 
 			if ($data[0]['total'] == 0)
 				return false;
 
 			return true;
+		}
+
+		public static function checkPclasses($eid, $secret, $country, $language, $currency, $mode = 'live'){
+
+			$data = Db::getInstance()->ExecuteS('SELECT count(*) AS total FROM '._DB_PREFIX_.
+				'billmate_payment_pclasses WHERE language = "'.$language.
+				'" AND expirydate > NOW()');
+
+			if ($data[0]['total'] == 0)
+			{
+				self::Save($eid, $secret, $country, $language, $currency, $mode);
+			}
 		}
 	}
