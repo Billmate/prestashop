@@ -33,6 +33,11 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
 
+### 2.1.1(2016-04-07)
+
+* Fix - Pno visible logged in.
+* Fix - Secure links.
+
 ### 2.1(2016-04-06)
 
 * Enhancement - Credit invoice from store.

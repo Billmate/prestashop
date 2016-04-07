@@ -26,7 +26,7 @@
 			$this->limited_countries    = array('se');
 			$this->allowed_currencies   = array('SEK');
 			$this->authorization_method = false;
-			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'partpay'));
+			$this->validation_controller = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'partpay'),true);
 			$this->icon                 = file_exists(_PS_MODULE_DIR_.'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/partpayment.png') ? 'billmategateway/views/img/'.Tools::strtolower($this->context->language->iso_code).'/partpayment.png' : 'billmategateway/views/img/en/partpayment.png';
 		}
 
