@@ -593,9 +593,9 @@
 			);
 
 			$payment_data['Card'] = array(
-				'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method)),
-				'cancelurl'    => $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method)),
-				'callbackurl'  => $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method)),
+				'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method),true),
+				'cancelurl'    => $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method),true),
+				'callbackurl'  => $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method),true),
 				'returnmethod' => (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == "on") ?'POST' : 'GET'
 			);
 
@@ -649,7 +649,7 @@
 						                      '&id_order='.(int)$orderId.
 											  '&key='.$customer->secure_key;
 						$return['success']  = true;
-						$return['redirect'] = $this->context->link->getPageLink($url);
+						$return['redirect'] = $this->context->link->getPageLink($url,true);
 						if(isset($this->context->cookie->billmatepno))
 							unset($this->context->cookie->billmatepno);
 					}

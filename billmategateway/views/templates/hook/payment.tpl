@@ -261,7 +261,7 @@
         $('#billmatepartpay-fields').hide();
         $('#billmateinvoiceservice-fields').hide();
         $('#billmateinvoice-fields').show();
-        if ($('#pno')) {
+        if ($('#pno').length > 0) {
             console.log('pno');
 
             $('#pno_billmateinvoice').val($('#pno').val());
@@ -282,7 +282,7 @@
         $('#billmatepartpay-fields').hide();
         $('#billmateinvoice-fields').hide()
         $('#billmateinvoiceservice-fields').show();
-        if ($('#pno')) {
+        if ($('#pno').length > 0) {
             $('#pno_billmateinvoiceservice').val($('#pno').val());
             $('#billmateinvoiceservice-fields .pno_container').hide();
 
@@ -295,7 +295,7 @@
         $('#billmateinvoice-fields').hide();
         $('#billmateinvoiceservice-fields').hide();
         $('#billmatepartpay-fields').show();
-        if ($('#pno')) {
+        if ($('#pno').length > 0) {
             $('#pno_billmatepartpay').val($('#pno').val());
             $('#billmatepartpay-fields .pno_container').hide();
         }
@@ -376,7 +376,7 @@
                 //$checkoutbtn = $('.confirm_button')[1].onclick;
                 var method = $('#payment_' + value).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').attr('id');
                 var methodName = method.replace('-fields', '');
-                if ($('#pno').length) {
+                if ($('#pno').length > 0) {
                     $('#pno_' + methodName).val($('#pno').val());
                 }
                 $('.confirm_button')[$('.confirm_button').length - 1].onclick = function (e) {
@@ -402,7 +402,7 @@
                     $('.cssback.' + methodName).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').children('.' + methodName).addClass('real' + methodName);
                     $('#' + value).parent('.payment_module').children('.payment-form').remove(methodName);
                     $('#' + method).show();
-                    if ($('#pno').length) {
+                    if ($('#pno').length > 0) {
                         $('#pno_' + methodName).val($('#pno').val());
                     }
                     $('#' + methodName + 'Submit').hide();
