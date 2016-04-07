@@ -226,7 +226,7 @@
             getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
         }
     });
-    if($('#pno')){
+    if($('#pno').length){
         $('.pno_container').hide();
         if($('#pno_billmatepartpay')){
             $('#pno').on('change',function(e){
