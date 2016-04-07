@@ -27,7 +27,7 @@ Read following information to install these plugins
 * Hit save button and it should be done.
 
 ## Testing
-Our plugin is tested with [Browserstack](http://www.browserstack.com) 
+Our plugin is tested with [Browserstack](http://www.browserstack.com)
 
 
 
@@ -35,11 +35,11 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 
 ### 2.1(2016-04-06)
 
-* Enhancement - Credit invoice from store. 
+* Enhancement - Credit invoice from store.
 * Enhancement - Partcredit from store.
 * Fix - Improved translations.
-* Enhancement - Improved our logos. 
-* Enhancement - Changed address check flow. 
+* Enhancement - Improved our logos.
+* Enhancement - Changed address check flow.
 * Enhancement - Improved currency support.
 * Enhancement - Automatically updating paymentplans when expiring.
 
