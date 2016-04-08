@@ -993,7 +993,7 @@
 			);
 
 			$settings['activateStatuses'] = array(
-				'name'     => 'activateStatuses',
+				'name'     => 'activateStatuses[]',
 				'id'       => 'activation_options',
 				'required' => true,
 				'type'     => 'multiselect',
@@ -1013,7 +1013,7 @@
 			);
 
 			$settings['creditStatuses'] = array(
-					'name'     => 'creditStatuses',
+					'name'     => 'creditStatuses[]',
 					'id'       => 'credit_options',
 					'required' => true,
 					'type'     => 'multiselect',
