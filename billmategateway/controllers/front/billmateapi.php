@@ -369,7 +369,7 @@
 				$matched_first = array_intersect($first_arr, $apifirst);
 				$matched_last = array_intersect($last_arr, $apilast);
 
-				$api_matched_name = !empty($matched_first) && !empty($matched_last);
+				$api_matched_name = ((count($matched_first) == count($apifirst)) && (count($matched_last) == count($apilast)));
 			}
 			else
 			{
@@ -413,7 +413,7 @@
 
 							$user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
 							$company = isset($address['company']) ? $address['company'] : '';
-							$api_name = $address['firstname']. ' '. $address['lastname']. $company;
+							$api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
 
 							if (Common::matchstr($user_bill,$api_name) && Common::matchstr($customer_address['address1'], $address['street']) &&
 							    Common::matchstr($customer_address['postcode'], $address['zip']) &&
@@ -430,7 +430,7 @@
 
 								$user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
 								$company = isset($address['company']) ? $address['company'] : '';
-								$api_name = $address['firstname']. ' '. $address['lastname']. $company;
+								$api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
 
 
 								if (Common::matchstr($user_bill,$api_name) &&  Common::matchstr($c_address['address1'], $address['street']) &&
