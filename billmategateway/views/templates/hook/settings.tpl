@@ -47,7 +47,7 @@
                     <span>{$setting.label|escape:'html'}</span>
                     <select multiple="multiple" {if isset($setting.id)}id="{$setting.id}
                     "{/if} {if isset($setting.name)}name="{$setting.name}"{/if}>
-                    {html_options options=$setting.options selected=$setting.value|escape:'html'}
+                    {html_options options=$setting.options selected=$setting.value}
                     </select>
                 </div>
             {/if}

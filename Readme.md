@@ -33,6 +33,9 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
 
+### 2.1.2(2016-04-25)
+* Fix - Multiple payments.
+
 ### 2.1.1(2016-04-07)
 
 * Fix - Pno visible logged in.
