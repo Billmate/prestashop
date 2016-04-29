@@ -40,7 +40,7 @@
 		protected $coremodule;
 		protected $handling_fee = false;
 		protected $handling_taxrate = false;
-
+		protected $invoiceservice = false;
 
 		public function postProcess()
 		{
@@ -84,6 +84,8 @@
 				case 'invoice':
 				case 'partpay':
 				case 'invoiceservice':
+					if(Tools::getIsset('invoice_address'))
+						$this->invoiceservice = true;
 					if(Tools::getValue('geturl') == 'yes')
 						$this->checkAddress();
 					/*
@@ -549,6 +551,8 @@
 					break;
 				case 'invoice':
 					$methodValue = 1;
+					if ($this->invoiceservice)
+						$methodValue = 2;
 					break;
 				case 'partpay':
 					$methodValue = 4;
