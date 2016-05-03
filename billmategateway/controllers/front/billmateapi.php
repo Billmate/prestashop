@@ -200,7 +200,15 @@
 		public function prepareDiscounts()
 		{
 			$details = $this->context->cart->getSummaryDetails(null, true);
-
+			$cartRules = $this->context->cart->getCartRules();
+			$title = '';
+			if (count($cartRules) > 0)
+			{
+				foreach ($cartRules as $cartRule)
+				{
+					$title .= $cartRule['name'].' ';
+				}
+			}
 			$totalTemp = $this->totals;
 			$discounts = array();
 			if (!empty($details['total_discounts']))
@@ -216,7 +224,7 @@
 					$discounts[]    = array(
 						'quantity'   => 1,
 						'artnr'      => 'discount-'.$key,
-						'title'      => sprintf($this->coremodule->l('Discount %s%% VAT'), $key),
+						'title'      => $title.sprintf($this->coremodule->l('Discount %s%% VAT'), $key),
 						'aprice'     => -($discount_amount * 100),
 						'taxrate'    => $key,
 						'discount'   => 0,
