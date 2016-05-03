@@ -370,7 +370,7 @@
 			$partpay = new Partpay();
 			$plan = $partpay->getCheapestPlan($cost);
 			if($plan) {
-				$this->smarty->assign('icon',$params->icon);
+				$this->smarty->assign('icon',$partpay->icon);
 				$this->smarty->assign('plan', $plan);
 				return $this->display(__FILE__, 'payfrom.tpl');
 			}
