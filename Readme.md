@@ -15,6 +15,7 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 * This plugin does not currently support campaigns.
 * The automatic order activation on status change is supported from PrestaShop version 1.5 and above.
 * This module doesnt support 1.4 anymore.
+* Part credit seems to be an issue before prestashop 1.6
 
 
 ## Installation
@@ -32,6 +33,10 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 
 
 ## Changelog
+
+### 2.1.3(2016-05-09)
+* Fix - Discount name on invoice. 
+* Enhancement - localized partpayment logo.
 
 ### 2.1.2(2016-04-25)
 * Fix - Multiple payments.
