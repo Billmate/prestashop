@@ -191,6 +191,7 @@
 			Configuration::updateValue('BINVOICESERVICE_MIN_VALUE', Tools::getValue('invoiceserviceBillmateMinimumValue'));
 			Configuration::updateValue('BINVOICESERVICE_MAX_VALUE', Tools::getValue('invoiceserviceBillmateMaximumValue'));
 			Configuration::updateValue('BINVOICESERVICE_SORTORDER', Tools::getValue('invoiceserviceBillmateSortOrder'));
+			Configuration::updateValue('BINVOICESERVICE_FALLBACK',Tools::getIsset('fallbackWhenDifferentAddress') ? 1 : 0);
 
 			// partpay Settings
 			Configuration::updateValue('BPARTPAY_ENABLED', (Tools::getIsset('partpayActivated')) ? 1 : 0);
@@ -369,7 +370,7 @@
 			$partpay = new Partpay();
 			$plan = $partpay->getCheapestPlan($cost);
 			if($plan) {
-				$this->smarty->assign('icon',$params->icon);
+				$this->smarty->assign('icon',$partpay->icon);
 				$this->smarty->assign('plan', $plan);
 				return $this->display(__FILE__, 'payfrom.tpl');
 			}
