@@ -314,8 +314,11 @@
             return;
         }
         if ($('#agree_with_terms_billmateinvoice').prop('checked') == true) {
+            var data = '';
+            if($('#invoice_address').prop('checked') == true)
+                    data = '&invoice_address=true';
             if(!billmateprocessing)
-                getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'invoice');
+                getData(data, form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'invoice');
         } else {
             alert($('<textarea/>').html(checkbox_required).text());
         }

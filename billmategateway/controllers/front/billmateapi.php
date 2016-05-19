@@ -40,7 +40,7 @@
 		protected $coremodule;
 		protected $handling_fee = false;
 		protected $handling_taxrate = false;
-
+		protected $invoiceservice = false;
 
 		public function postProcess()
 		{
@@ -84,6 +84,8 @@
 				case 'invoice':
 				case 'partpay':
 				case 'invoiceservice':
+					if(Tools::getIsset('invoice_address'))
+						$this->invoiceservice = true;
 					if(Tools::getValue('geturl') == 'yes')
 						$this->checkAddress();
 					/*
@@ -136,7 +138,7 @@
 				'lastname'  => mb_convert_encoding($billing_address->lastname,'UTF-8','auto'),
 				'company'   => mb_convert_encoding($billing_address->company,'UTF-8','auto'),
 				'street'    => mb_convert_encoding($billing_address->address1,'UTF-8','auto'),
-				'street2'   => '',
+				'street2'   => mb_convert_encoding($shipping_address->address2,'UTF-8','auto'),
 				'zip'       => mb_convert_encoding($billing_address->postcode,'UTF-8','auto'),
 				'city'      => mb_convert_encoding($billing_address->city,'UTF-8','auto'),
 				'country'   => mb_convert_encoding(Country::getIsoById($billing_address->id_country),'UTF-8','auto'),
@@ -148,7 +150,7 @@
 				'lastname'  => mb_convert_encoding($shipping_address->lastname,'UTF-8','auto'),
 				'company'   => mb_convert_encoding($shipping_address->company,'UTF-8','auto'),
 				'street'    => mb_convert_encoding($shipping_address->address1,'UTF-8','auto'),
-				'street2'   => '',
+				'street2'   => mb_convert_encoding($shipping_address->address2,'UTF-8','auto'),
 				'zip'       => mb_convert_encoding($shipping_address->postcode,'UTF-8','auto'),
 				'city'      => mb_convert_encoding($shipping_address->city,'UTF-8','auto'),
 				'country'   => mb_convert_encoding(Country::getIsoById($shipping_address->id_country),'UTF-8','auto'),
@@ -198,7 +200,15 @@
 		public function prepareDiscounts()
 		{
 			$details = $this->context->cart->getSummaryDetails(null, true);
-
+			$cartRules = $this->context->cart->getCartRules();
+			$title = '';
+			if (count($cartRules) > 0)
+			{
+				foreach ($cartRules as $cartRule)
+				{
+					$title .= $cartRule['name'].' ';
+				}
+			}
 			$totalTemp = $this->totals;
 			$discounts = array();
 			if (!empty($details['total_discounts']))
@@ -214,7 +224,7 @@
 					$discounts[]    = array(
 						'quantity'   => 1,
 						'artnr'      => 'discount-'.$key,
-						'title'      => sprintf($this->coremodule->l('Discount %s%% VAT'), $key),
+						'title'      => $title.sprintf($this->coremodule->l('Discount %s%% VAT'), $key),
 						'aprice'     => -($discount_amount * 100),
 						'taxrate'    => $key,
 						'discount'   => 0,
@@ -468,7 +478,8 @@
 					/*
 					$this->context->cart->updateAddressId($this->context->cart->id_address_delivery, $matched_address_id);
 					$this->context->cart->updateAddressId($this->context->cart->id_address_invoice, $matched_address_id);
-*/
+					*/
+
 					$this->context->cart->id_address_invoice  = (int)$matched_address_id;
 					$this->context->cart->id_address_delivery = (int)$matched_address_id;
 					$this->context->cart->update();
@@ -548,6 +559,8 @@
 					break;
 				case 'invoice':
 					$methodValue = 1;
+					if ($this->invoiceservice)
+						$methodValue = 2;
 					break;
 				case 'partpay':
 					$methodValue = 4;
