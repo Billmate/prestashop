@@ -116,6 +116,12 @@
 
 			$data['Cart']     = $this->prepareTotals();
 
+			if(file_exists(_PS_MODULE_DIR_.'billmategateway/comment.activate')) {
+				$message = Message::getMessageByCartId($this->context->cart->id);
+				if(strlen($message['message']) > 0)
+				$data['PaymentInfo']['projectname'] = $message['message'];
+			}
+
 			$result = $this->billmate->addPayment($data);
 
 			$this->sendResponse($result);
@@ -379,7 +385,9 @@
 				$matched_first = array_intersect($first_arr, $apifirst);
 				$matched_last = array_intersect($last_arr, $apilast);
 
-				$api_matched_name = ((count($matched_first) == count($apifirst)) && (count($matched_last) == count($apilast)));
+				//$api_matched_name = ((count($matched_first) == count($apifirst)) && (count($matched_last) == count($apilast)));
+				$api_matched_name = Common::matchstr($shipping->firstname,$address['lastname']) && Common::matchstr($shipping->lastname,$address['lastname']);
+
 			}
 			else
 			{
@@ -677,7 +685,7 @@
 							if (is_array($result))
 								die(Tools::jsonEncode($result));
 						}
-						Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
+						//Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
 						$return = array('success' => false, 'content' => utf8_encode($result['message']));
 					}
 
@@ -693,7 +701,7 @@
 
 					else
 					{
-						Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
+						//Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
 						$return = array('success' => false, 'content' => utf8_encode($result['message']));
 					}
 
