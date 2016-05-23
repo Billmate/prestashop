@@ -16,6 +16,7 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 * The automatic order activation on status change is supported from PrestaShop version 1.5 and above.
 * This module doesnt support 1.4 anymore.
 * Part credit seems to be an issue before prestashop 1.6
+* Please let the decimals for currencies be 2 decimals, to prevent rounding issues.
 
 
 ## Installation
@@ -30,7 +31,9 @@ Read following information to install these plugins
 ## Testing
 Our plugin is tested with [Browserstack](http://www.browserstack.com)
 
-
+## FAQ
+* What checkouts do Billmate supports?
+We support Prestashops built-in checkout in 1-step and 5-step settings. We also supports One Page Checkout for Prestashop Module (http://addons.prestashop.com/en/6841-one-page-checkout-for-prestashop.html)
 
 ## Changelog
 
