@@ -34,7 +34,7 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
 
-### 2.1.3(2015-05-23)
+### 2.1.4(2016-05-23)
 * Fix - Check multiple firstnames.
 
 ### 2.1.3(2016-05-09)
