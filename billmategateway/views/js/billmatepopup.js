@@ -446,7 +446,8 @@ if (typeof modalWin == 'undefined') {
                         $('<div class="error">' + response.content + '</div>').insertBefore($('#error_billmate'+method).first());
                     }
                 }
-                $checkoutButton.disabled = false;
+                if($checkoutButton)
+                    $checkoutButton.disabled = false;
             }
         });
 

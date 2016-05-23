@@ -116,6 +116,24 @@
 
 			$data['Cart']     = $this->prepareTotals();
 
+			if(file_exists(_PS_MODULE_DIR_.'billmategateway/comment.activate')) {
+				$message = Message::getMessageByCartId($this->context->cart->id);
+				if(strlen($message['message']) > 0){
+					$data['Articles'][] = array(
+						'quantity'   => 0,
+						'title'      => $message['message'],
+						'artnr'      => 'mess',
+						'aprice'     => 0,
+						'taxrate'    => 0,
+						'discount'   => 0,
+						'withouttax' => 0
+
+					);
+				}
+
+				//$data['PaymentInfo']['projectname'] = $message['message'];
+			}
+
 			$result = $this->billmate->addPayment($data);
 
 			$this->sendResponse($result);
@@ -379,7 +397,9 @@
 				$matched_first = array_intersect($first_arr, $apifirst);
 				$matched_last = array_intersect($last_arr, $apilast);
 
-				$api_matched_name = ((count($matched_first) == count($apifirst)) && (count($matched_last) == count($apilast)));
+				//$api_matched_name = ((count($matched_first) == count($apifirst)) && (count($matched_last) == count($apilast)));
+				$api_matched_name = Common::matchstr($shipping->firstname,$address['lastname']) && Common::matchstr($shipping->lastname,$address['lastname']);
+
 			}
 			else
 			{
@@ -642,7 +662,8 @@
 								null, $extra, null, false, $customer->secure_key);
 							$orderId = $this->module->currentOrder;
 						}
-						else {
+						else 
+						{
 							$this->module->validateOrder((int)$this->context->cart->id,
 								$status,
 								($this->method == 'invoice' || $this->method == 'invoiceservice') ? $this->paid_amount / 100 : $total,
@@ -676,7 +697,7 @@
 							if (is_array($result))
 								die(Tools::jsonEncode($result));
 						}
-						Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
+						//Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
 						$return = array('success' => false, 'content' => utf8_encode($result['message']));
 					}
 
@@ -692,7 +713,7 @@
 
 					else
 					{
-						Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
+						//Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
 						$return = array('success' => false, 'content' => utf8_encode($result['message']));
 					}
 

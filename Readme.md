@@ -34,6 +34,9 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
 
+### 2.1.3(2015-05-23)
+* Fix - Check multiple firstnames.
+
 ### 2.1.3(2016-05-09)
 * Fix - Discount name on invoice. 
 * Enhancement - localized partpayment logo.
