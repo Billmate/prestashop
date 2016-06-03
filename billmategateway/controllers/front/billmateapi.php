@@ -156,7 +156,7 @@
 				'lastname'  => mb_convert_encoding($billing_address->lastname,'UTF-8','auto'),
 				'company'   => mb_convert_encoding($billing_address->company,'UTF-8','auto'),
 				'street'    => mb_convert_encoding($billing_address->address1,'UTF-8','auto'),
-				'street2'   => mb_convert_encoding($shipping_address->address2,'UTF-8','auto'),
+				'street2'   => mb_convert_encoding($billing_address->address2,'UTF-8','auto'),
 				'zip'       => mb_convert_encoding($billing_address->postcode,'UTF-8','auto'),
 				'city'      => mb_convert_encoding($billing_address->city,'UTF-8','auto'),
 				'country'   => mb_convert_encoding(Country::getIsoById($billing_address->id_country),'UTF-8','auto'),
