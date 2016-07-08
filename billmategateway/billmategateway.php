@@ -304,7 +304,7 @@
 		}
 
 		public function uninstall(){
-			if (!parent::install())
+			if (!parent::uninstall())
 				return false;
 
 			$db = Db::getInstance();
