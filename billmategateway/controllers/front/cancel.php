@@ -44,7 +44,9 @@
 				}
 			}
 			$order_url = $this->context->link->getPageLink('order.php', true);
-			$this->redirectWithNotifications($order_url);
-			//Tools::redirectLink($order_url);
+			if (version_compare(_PS_VERSION_,'1.7.0.0-beta.1.0','=>'))
+				$this->redirectWithNotifications($order_url);
+			else
+				Tools::redirectLink($order_url);
 		}
 	}
