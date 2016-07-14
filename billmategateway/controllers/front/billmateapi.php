@@ -49,9 +49,15 @@
 
 			if (!defined('BILLMATE_CLIENT'))
 				define('BILLMATE_CLIENT', 'PrestaShop:'.BILLMATE_PLUGIN_VERSION);
-            if(!defined('BILLMATE_SERVER'))
-                define('BILLMATE_SERVER','2.1.7');
+
 			$this->method = Tools::getValue('method');
+
+			if (!defined('BILLMATE_SERVER')) {
+				if ($this->method == 'cardpay')
+					define('BILLMATE_SERVER', '2.1.9');
+				else
+					define('BILLMATE_SERVER', '2.1.7');
+			}
 
 			$eid    = Configuration::get('BILLMATE_ID');
 			$secret = Configuration::get('BILLMATE_SECRET');
