@@ -20,7 +20,33 @@
 		{
 			$this->context = Context::getContext();
 
+			$eid          = Configuration::get('BILLMATE_ID');
+			$secret       = Configuration::get('BILLMATE_SECRET');
+			$ssl          = true;
+			$debug        = false;
+
+
+			$this->billmate      = Common::getBillmate($eid, $secret, false, $ssl, $debug);
+			$_POST               = !empty($_POST) ? $_POST : $_GET;
+			$data                = $this->billmate->verify_hash($_POST);
+			$this->coremodule = new BillmateGateway();
+			if(isset($data['code'])){
+				$this->errors[] = $this->coremodule->l('Unfortunately your card payment was not processed with the provided card details. Please try again or choose another payment method.');
+			}
+			if(isset($data['status'])){
+				switch(strtolower($data['status'])){
+					case 'failed':
+						$this->errors[] = $this->coremodule->l('Unfortunately your card payment was not processed with the provided card details. Please try again or choose another payment method.');
+						break;
+					case 'cancelled':
+						$this->errors[] = $this->coremodule->l('The card payment has been canceled before it was processed. Please try again or choose a different payment method.');
+						break;
+				}
+			}
 			$order_url = $this->context->link->getPageLink('order.php', true);
-			Tools::redirectLink($order_url);
+			if (version_compare(_PS_VERSION_,'1.7.0.0-beta.1.0','=>'))
+				$this->redirectWithNotifications($order_url);
+			else
+				Tools::redirectLink($order_url);
 		}
 	}

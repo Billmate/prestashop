@@ -49,9 +49,15 @@
 
 			if (!defined('BILLMATE_CLIENT'))
 				define('BILLMATE_CLIENT', 'PrestaShop:'.BILLMATE_PLUGIN_VERSION);
-            if(!defined('BILLMATE_SERVER'))
-                define('BILLMATE_SERVER','2.1.7');
+
 			$this->method = Tools::getValue('method');
+
+			if (!defined('BILLMATE_SERVER')) {
+				if ($this->method == 'cardpay' && version_compare(_PS_VERSION_,'1.7.0.0-beta.1.0','=>'))
+					define('BILLMATE_SERVER', '2.1.9');
+				else
+					define('BILLMATE_SERVER', '2.1.7');
+			}
 
 			$eid    = Configuration::get('BILLMATE_ID');
 			$secret = Configuration::get('BILLMATE_SECRET');
@@ -156,7 +162,7 @@
 				'lastname'  => mb_convert_encoding($billing_address->lastname,'UTF-8','auto'),
 				'company'   => mb_convert_encoding($billing_address->company,'UTF-8','auto'),
 				'street'    => mb_convert_encoding($billing_address->address1,'UTF-8','auto'),
-				'street2'   => mb_convert_encoding($shipping_address->address2,'UTF-8','auto'),
+				'street2'   => mb_convert_encoding($billing_address->address2,'UTF-8','auto'),
 				'zip'       => mb_convert_encoding($billing_address->postcode,'UTF-8','auto'),
 				'city'      => mb_convert_encoding($billing_address->city,'UTF-8','auto'),
 				'country'   => mb_convert_encoding(Country::getIsoById($billing_address->id_country),'UTF-8','auto'),

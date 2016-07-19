@@ -303,6 +303,17 @@
 			return true;
 		}
 
+		public function uninstall(){
+			if (!parent::uninstall())
+				return false;
+
+			$db = Db::getInstance();
+			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatebankpay";');
+			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatepartpay";');
+			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatecardpay";');
+			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmateinvoice";');
+		}
+
 		/**
 		 * Function to update if module is installed.
 		 * Caution need to implement SetupFileInterface to make sure the install function is there
