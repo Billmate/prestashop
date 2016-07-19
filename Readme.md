@@ -37,6 +37,10 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 2.1.5(2016-07-19)
+* Enhancement - Message when payment fails.
+* Fix - Uninstall method.
+
 ### 2.1.4(2016-05-23)
 * Fix - Check multiple firstnames.
 
