@@ -65,7 +65,7 @@
 			$debug  = false;
 			require_once(_PS_MODULE_DIR_.'billmategateway/methods/'.Tools::ucfirst($this->method).'.php');
 
-			$class        = Tools::ucfirst($this->method);
+			$class        = "BillmateMethod".Tools::ucfirst($this->method);
 			$this->module = new $class;
 			$this->coremodule = new BillmateGateway();
 			$testmode = $this->module->testMode;
