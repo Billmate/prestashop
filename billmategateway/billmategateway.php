@@ -378,7 +378,7 @@
 			$cost = (1+($params['product']->tax_rate/100))*$params['product']->base_price;
 
 			require_once(_PS_MODULE_DIR_.'/billmategateway/methods/Partpay.php');
-			$partpay = new Partpay();
+			$partpay = new BillmateMethodPartpay();
 			$plan = $partpay->getCheapestPlan($cost);
 			if($plan) {
 				$this->smarty->assign('icon',$partpay->icon);
@@ -887,6 +887,7 @@
 
 				include_once($file->getPathname());
 
+                $class = "BillmateMethod".$class;
 				$method = new $class();
 				$result = $method->getPaymentInfo($cart);
 
@@ -917,6 +918,8 @@
 				if ($class == 'index')
 					continue;
 				include_once($file->getPathname());
+
+                $class = "BillmateMethod".$class;
 				$method = new $class();
 
 
@@ -944,6 +947,7 @@
 
 				include_once($file->getPathname());
 
+                $class = "BillmateMethod".$class;
 				$method = new $class();
 				$result = $method->getSettings();
 				if (!$result)

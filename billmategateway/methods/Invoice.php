@@ -11,7 +11,7 @@
 	 * Class for BillmateInvoice related stuff
 	 */
 
-	class Invoice extends BillmateGateway {
+	class BillmateMethodInvoice extends BillmateGateway {
 
 		public function __construct()
 		{

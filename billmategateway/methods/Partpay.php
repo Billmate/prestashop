@@ -11,7 +11,7 @@
 	 * Class for BillmatePartpayment related stuff
 	 */
 
-	class Partpay extends BillmateGateway {
+	class BillmateMethodPartpay extends BillmateGateway {
 
 		public function __construct()
 		{

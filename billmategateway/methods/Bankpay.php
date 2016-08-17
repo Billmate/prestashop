@@ -11,7 +11,7 @@
 	 * Class for BillmateBankpay related stuff
 	 */
 
-	class Bankpay extends BillmateGateway {
+	class BillmateMethodBankpay extends BillmateGateway {
 
 		public function __construct()
 		{
