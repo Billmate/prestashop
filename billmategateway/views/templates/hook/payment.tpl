@@ -302,6 +302,9 @@
         e.preventDefault();
     })
     $('#billmateinvoiceSubmit').click(function (e) {
+        if ($('#pno').length > 0) {
+            $("#pno_billmateinvoice").val($('#pno').val());
+        }
         if($('form.billmateinvoice').length > 1) {
             var form = $('form.realbillmateinvoice').serializeArray();
         } else {
@@ -346,6 +349,9 @@
     })
 
     $('#billmatepartpaySubmit').click(function (e) {
+        if ($('#pno').length > 0) {
+            $("#pno_billmatepartpay").val($('#pno').val());
+        }
         if($('form.billmatepartpay').length > 1){
             var form = $('form.realbillmatepartpay').serializeArray();
         } else {
