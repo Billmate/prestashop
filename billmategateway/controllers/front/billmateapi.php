@@ -90,7 +90,7 @@
 				case 'invoice':
 				case 'partpay':
 				case 'invoiceservice':
-					if(Tools::getIsset('invoice_address'))
+					if(Tools::getIsset('invoice_address') && file_exists(_PS_MODULE_DIR_.'billmategateway/methods/Invoiceservice.php'))
 						$this->invoiceservice = true;
 					if(Tools::getValue('geturl') == 'yes')
 						$this->checkAddress();
