@@ -37,6 +37,11 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 2.1.8 (2016-10-17)
+* Fix - Compatibility with PrestaShop 1.5.3.1
+* Enhancement - Link to our manuals.
+* Fix - Activate invoice statuses visible selection.
+
 ### 2.1.6(2016-08-12)
 * Fix - Change classnames to play nicer with other payment modules
 
