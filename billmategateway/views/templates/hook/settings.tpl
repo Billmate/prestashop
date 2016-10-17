@@ -100,6 +100,10 @@
                 </table>
             {/if}
         {/foreach}
+        <div class="input-row">
+            <a target="_blank" href="http://billmate.se/plugins/manual/Installationsmanual_Prestashop_Billmate.pdf">Installationsmanual Billmate Modul ( Manual Svenska ) </a><br/>
+            <a target="_blank" href="http://billmate.se/plugins/manual/Installation_Manual_Prestashop_Billmate.pdf">Installation Manual Billmate ( Manual English )</a>
+        </div>
     </div>
 </fieldset>
 <script type="text/javascript">
