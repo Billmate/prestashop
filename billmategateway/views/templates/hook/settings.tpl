@@ -100,12 +100,41 @@
                 </table>
             {/if}
         {/foreach}
+        <div class="input-row">
+            <a target="_blank" href="http://billmate.se/plugins/manual/Installationsmanual_Prestashop_Billmate.pdf">Installationsmanual Billmate Modul ( Manual Svenska ) </a><br/>
+            <a target="_blank" href="http://billmate.se/plugins/manual/Installation_Manual_Prestashop_Billmate.pdf">Installation Manual Billmate ( Manual English )</a>
+        </div>
     </div>
 </fieldset>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('input[name="activate"]').change(function () {
-            $('#activation_options').toggle();
+        if(jQuery('input[name="credit"]').is(":checked")){
+            $('#credit_options').show();
+        } else {
+            $('#credit_options').hide();
+        }
+
+        if(jQuery('input[name="activate"]').is(":checked")){
+            $('#activation_options').show();
+        } else {
+            $('#activation_options').hide();
+        }
+        $('input[name="activate"]').change(function (event) {
+            if(jQuery(event.target).is(":checked")){
+                $('#activation_options').show();
+            } else {
+                $('#activation_options').hide();
+            }
+
+        })
+
+        $('input[name="credit"]').change(function (event) {
+            if(jQuery(event.target).is(":checked")){
+                $('#credit_options').show();
+            } else {
+                $('#credit_options').hide();
+            }
+
         })
     });
 </script>
