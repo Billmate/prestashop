@@ -44,8 +44,10 @@
 
 		public function postProcess()
 		{
-			if (!defined('BILLMATE_LANGUAGE'))
-				define('BILLMATE_LANGUAGE', $this->context->language->iso_code);
+			if (!defined('BILLMATE_CLIENT')) {
+				$version = defined('_PS_VERSION_') ? _PS_VERSION_ : 'toOld';
+				define('BILLMATE_CLIENT', 'PrestaShop:' .$version. ' PLUGIN:' . BILLMATE_PLUGIN_VERSION);
+			}
 
 			if (!defined('BILLMATE_CLIENT'))
 				define('BILLMATE_CLIENT', 'PrestaShop:'.BILLMATE_PLUGIN_VERSION);
