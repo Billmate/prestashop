@@ -3,6 +3,7 @@ By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
 ## Documentation
 [Installation manual in English](http://billmate.se/plugins/manual/Installation_Manual_Prestashop_Billmate.pdf)
+
 [Installation manual in Swedish](http://billmate.se/plugins/manual/Installationsmanual_Prestashop_Billmate.pdf)
 
 ## Description
