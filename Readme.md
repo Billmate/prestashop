@@ -1,7 +1,9 @@
 # Billmate Payment Gateway for Prestashop
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
-Documentation with instructions on how to setup the plugin can be found [here](http://billmate.se/plugins/manual/Installation_Manual_Prestashop_Billmate.pdf) (Swedish).
+## Documentation
+[Installation manual in English](http://billmate.se/plugins/manual/Installation_Manual_Prestashop_Billmate.pdf)
+[Installation manual in Swedish](http://billmate.se/plugins/manual/Installationsmanual_Prestashop_Billmate.pdf)
 
 ## Description
 
@@ -20,7 +22,7 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 
 
 ## COMPATIBILITY PrestaShop versions
-1.5.3.1 - 1.6.1.5
+1.5.3.1 - 1.6.1.7
 
 ## Checkout Compatibility
 * PrestaShop default checkout 1.5.3.1 - 1.6.1.7
