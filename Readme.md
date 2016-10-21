@@ -1,11 +1,14 @@
 # Billmate Payment Gateway for Prestashop
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
-Documentation with instructions on how to setup the plugin can be found [here](http://billmate.se/plugins/manual/Installation_Manual_Prestashop_Billmate.pdf) (Swedish).
+## Documentation
+[Installation manual in English](http://billmate.se/plugins/manual/Installation_Manual_Prestashop_Billmate.pdf)
+
+[Installation manual in Swedish](http://billmate.se/plugins/manual/Installationsmanual_Prestashop_Billmate.pdf)
 
 ## Description
 
-Billmate Gateway is a plugin that extends Prestashop, allowing your customers to get their products first and pay by invoice to Billmate later (https://www.billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
+Billmate Gateway is a plugin that extends Prestashop, allowing your customers to get their products first and pay by invoice to Billmate later (http://www.billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
 
 When the order is passed to Billmate a credit record of the customer is made. If the check turns out all right, Billmate creates an invoice in their system. After you (as the merchant) completes the order in Prestashop, you need to log in to Billmate to approve/send the invoice.
 
@@ -20,10 +23,10 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 
 
 ## COMPATIBILITY PrestaShop versions
-1.5.3.1 - 1.6.1.5
+1.5.3.1 - 1.6.1.7
 
 ## Checkout Compatibility
-* PrestaShop default checkout 1.5.3.1 - 1.6.1.5
+* PrestaShop default checkout 1.5.3.1 - 1.6.1.7
 * One page checkout for Prestashop Module 2.3.6 - 2.3.9
   http://addons.prestashop.com/en/6841-one-page-checkout-for-prestashop.html
 
@@ -44,6 +47,9 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 We support Prestashops built-in checkout in 1-step and 5-step settings. We also supports One Page Checkout for Prestashop Module (http://addons.prestashop.com/en/6841-one-page-checkout-for-prestashop.html)
 
 ## Changelog
+
+### 2.1.9 (2016-10-21)
+* Fix - Verify zipcode. 
 
 ### 2.1.8 (2016-10-17)
 * Fix - Compatibility with PrestaShop 1.5.3.1

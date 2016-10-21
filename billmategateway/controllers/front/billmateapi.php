@@ -698,7 +698,7 @@
 					}
 					else
 					{
-						if (in_array($result['code'],array(2401,2402,2403,2304,2405)))
+						if (in_array($result['code'],array(2401,2402,2403,2404,2405)))
 						{
 							$result = $this->checkAddress();
 
