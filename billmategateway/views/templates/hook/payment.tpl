@@ -262,16 +262,8 @@
         $('#billmateinvoiceservice-fields').hide();
         $('#billmateinvoice-fields').show();
         if ($('#pno').length > 0) {
-            console.log('pno');
-
             $('#pno_billmateinvoice').val($('#pno').val());
-            console.log('pno');
-
             $('#billmateinvoice-fields .pno_container').hide();
-            console.log('pno');
-
-
-
         }
         e.preventDefault();
     })

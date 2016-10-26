@@ -305,9 +305,10 @@ if (typeof modalWin == 'undefined') {
                             $('#' + method).show();
 
                             $('#' + methodName + 'Submit').hide();
-                            $checkoutbtn = $('.confirm_button')[1].onclick;
-                            $checkoutButton = $checkoutbtn = $('.confirm_button')[1];
-                            $('.confirm_button')[1].onclick = function (e) {
+                            var index = $('.confirm_button').length - 1;
+                            $checkoutbtn = $('.confirm_button')[index].onclick;
+                            $checkoutButton = $checkoutbtn = $('.confirm_button')[index];
+                            $('.confirm_button')[index].onclick = function (e) {
                                 if(methodName != 'billmatecardpay' && methodName != 'billmatebankpay') {
                                     $('#' + methodName + 'Submit').click();
                                     e.preventDefault();
