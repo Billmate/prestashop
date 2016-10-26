@@ -47,6 +47,8 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 We support Prestashops built-in checkout in 1-step and 5-step settings. We also supports One Page Checkout for Prestashop Module (http://addons.prestashop.com/en/6841-one-page-checkout-for-prestashop.html)
 
 ## Changelog
+### 2.1.10 (2016-10-26)
+* Fix - one payment method for Onepagecheckout.
 
 ### 2.1.9 (2016-10-21)
 * Fix - Verify zipcode. 
