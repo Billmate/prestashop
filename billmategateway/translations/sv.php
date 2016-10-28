@@ -46,6 +46,8 @@ $_MODULE['<{billmategateway}prestashop>billmategateway_bbca05cdad7a4859adb6a148d
 $_MODULE['<{billmategateway}prestashop>billmategateway_950560c63a1dd4f293f3086db0803df0'] = 'Order status för automatisk kreditering i Billmate Online';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3f90ab86b59f564abc8492f7df7e5f34'] = 'Aktivera Hämta adress';
 $_MODULE['<{billmategateway}prestashop>billmategateway_e051d71ac1233d6f587825c65adacfa8'] = 'Aktivera hämta adress via personnummer för att förenkla flödet i kassan.';
+$_MODULE['<{billmategateway}prestashop>billmategateway_bde9efce57c6861364bdd8931db14e6a'] = 'Aktivera meddelande på fakturan';
+$_MODULE['<{billmategateway}prestashop>billmategateway_4cebf08e33afe35a8d956998b85eba8e'] = 'Lägg till prestashop meddelande på fakturan genererad av Billmate';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3336573a263dde25ad2c0c038607e3dc'] = 'Logotyp som visas på fakturan';
 $_MODULE['<{billmategateway}prestashop>billmategateway_f0511bcd568430a8a1be2c6b5029dc47'] = 'Ange namnet på logotypen (finns i Billmate Online). Lämna tom om ni endast har en logotype.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_f5a8885f26ea1fe06b78b423fa4e9f95'] = 'Generella Inställningar';
@@ -68,8 +70,6 @@ $_MODULE['<{billmategateway}prestashop>cardpay_00d23a76e43b46dae9ec7aa9dcbebb32'
 $_MODULE['<{billmategateway}prestashop>cardpay_44a308935e1ad35220743d1268ba9834'] = 'Aktivera Billmate Kort';
 $_MODULE['<{billmategateway}prestashop>cardpay_03a36f89aad8dd8286bc5fe6692cbbeb'] = 'Testläge';
 $_MODULE['<{billmategateway}prestashop>cardpay_77f13e8055d1867d9a2bf4befa34cd19'] = 'Aktivera Testläge';
-$_MODULE['<{billmategateway}prestashop>cardpay_99e8acb2af8cc867a242143bd7b86105'] = 'Aktivera 3D secure';
-$_MODULE['<{billmategateway}prestashop>cardpay_77dd59a05f347d11fcab15fcb181d863'] = 'Visa namn i betalfönster';
 $_MODULE['<{billmategateway}prestashop>cardpay_7e38e3a59c07105630ea943f4156723f'] = 'Betalningsåtgärd';
 $_MODULE['<{billmategateway}prestashop>cardpay_7f83df9cd29577d544efd9ff66d7118a'] = 'Reservera belopp';
 $_MODULE['<{billmategateway}prestashop>cardpay_f2cd171bd42220283b7a595c3ff2aaaf'] = 'Debitera belopp';
