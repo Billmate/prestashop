@@ -124,13 +124,24 @@
 
 			$data['Cart']     = $this->prepareTotals();
 
-			if(file_exists(_PS_MODULE_DIR_.'billmategateway/comment.activate')) {
+			if(Configuration::get('BILLMATE_MESSAGE')) {
 				$message = Message::getMessageByCartId($this->context->cart->id);
 				if(strlen($message['message']) > 0){
+
+					$data['Articles'][] = array(
+						'quantity'   => 0,
+						'title'      => ' ',
+						'artnr'      => '--freetext--',
+						'aprice'     => 0,
+						'taxrate'    => 0,
+						'discount'   => 0,
+						'withouttax' => 0
+
+					);
 					$data['Articles'][] = array(
 						'quantity'   => 0,
 						'title'      => $message['message'],
-						'artnr'      => 'mess',
+						'artnr'      => '--freetext--',
 						'aprice'     => 0,
 						'taxrate'    => 0,
 						'discount'   => 0,
