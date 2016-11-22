@@ -287,7 +287,7 @@
 					}
 					$price          = $gift['price'] / $gift['cart_quantity'];
 					$discount_amount = round($discount_amount / $gift['cart_quantity'],2);
-					$total          = $discount_amount * $gift['cart_quantity'] * 100;
+					$total          = -($discount_amount * $gift['cart_quantity'] * 100);
 					$discounts[]    = array(
 						'quantity'   => $gift['cart_quantity'],
 						'artnr'      => $this->coremodule->l('Discount'),
@@ -298,8 +298,8 @@
 						'withouttax' => $total
 					);
 
-					$this->totals -= $total;
-					$this->tax -= $total * ($taxrate / 100);
+					$this->totals += $total;
+					$this->tax += $total * ($taxrate / 100);
 				}
 			}
 
