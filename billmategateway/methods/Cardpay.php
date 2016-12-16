@@ -91,7 +91,7 @@
 				'type'    => 'radio',
 				'label'   => $this->module->l('Authorization Method','cardpay'),
 				'desc'    => '',
-				'value' => Configuration::get('BCARDPAY_AUTHORIZATION_METHOD'),
+				'value' => (Configuration::get('BCARDPAY_AUTHORIZATION_METHOD')) ? Configuration::get('BCARDPAY_AUTHORIZATION_METHOD') : 'authorize',
 				'options' => array(
 					'authorize' => $this->module->l('Authorize','cardpay'),
 					'sale'      => $this->module->l('Sale','cardpay')

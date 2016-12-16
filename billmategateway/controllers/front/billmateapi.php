@@ -519,6 +519,17 @@
 					$this->context->cart->updateAddressId($this->context->cart->id_address_invoice, $matched_address_id);
 					*/
 
+					$sql = 'UPDATE `'._DB_PREFIX_.'cart_product`
+							SET `id_address_delivery` = '.(int)$matched_address_id.'
+							WHERE  `id_cart` = '.(int)$this->context->cart->id;
+					Db::getInstance()->execute($sql);
+
+					$sql = 'UPDATE `'._DB_PREFIX_.'customization`
+							SET `id_address_delivery` = '.(int)$matched_address_id.'
+							WHERE  `id_cart` = '.(int)$this->context->cart->id;
+					Db::getInstance()->execute($sql);
+
+
 					$this->context->cart->id_address_invoice  = (int)$matched_address_id;
 					$this->context->cart->id_address_delivery = (int)$matched_address_id;
 					$this->context->cart->update();
