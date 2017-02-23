@@ -48,6 +48,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 2.1.14(2017-02-23)
+* Enhancement - Improved some logic regarding API communication.
+
 ### 2.1.13(2016-12-16)
 * fix - Multiple addresses on cart.
 * enhancement - Default option selelected in Cardpayment for Authorization Method. 

@@ -674,7 +674,7 @@
 				case 'invoice':
 				case 'partpay':
 				case 'invoiceservice':
-					if (!isset($result['code']))
+					if (!isset($result['code']) && (isset($result['number']) && is_numeric($result['number']) && $result['number'] > 0))
 					{
 						$status   = ($this->method == 'invoice') ? Configuration::get('BINVOICE_ORDER_STATUS') : Configuration::get('BPARTPAY_ORDER_STATUS');
 						$status = ($this->method == 'invoiceservice') ? Configuration::get('BINVOICESERVICE_ORDER_STATUS') : $status;
