@@ -124,7 +124,7 @@ class BillMate{
 		$data = curl_exec($ch);
 		if (curl_errno($ch)){
 	        $curlerror = curl_error($ch);
-	        return json_encode(array("error"=>9510,"message"=>htmlentities($curlerror)));
+	        return json_encode(array("code"=>9510,"message"=>htmlentities($curlerror)));
 		}else curl_close($ch);
 		if(strlen($data) == 0){
 			return json_encode(array("code" => 9510,"message" => htmlentities("Communication Error")));
