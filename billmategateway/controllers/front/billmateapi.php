@@ -530,6 +530,9 @@
 					Db::getInstance()->execute($sql);
 
 
+                    // Update cart delivery method
+                    $this->context->cart->setDeliveryOption(array($this->context->cart->id_address_invoice => $carrier->id));
+
 					$this->context->cart->id_address_invoice  = (int)$matched_address_id;
 					$this->context->cart->id_address_delivery = (int)$matched_address_id;
 					$this->context->cart->update();
