@@ -1,0 +1,47 @@
+/* Loader */
+.billmateoverlay {
+    background: #FFFFFF;
+    display: none;
+    height: 100vh;
+    left: 0;
+    opacity: 0.5;
+    padding-top: 49vh;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    z-index: 2;
+}
+
+.billmateloading {
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    border: 5px solid rgba(0, 0, 0, 0);
+    border-radius: 50%;
+    border-right: 5px solid #0099D3;
+    border-top: 5px solid #0099D3;
+    display: none;
+    height: 100px;
+    left: 50%;
+    margin: -50px 0 0 -50px;
+    position: absolute;
+    top: 50%;
+    width: 100px;
+    z-index: 3;
+}
+
+#checkoutdiv {
+    position: relative;
+    overflow: auto;
+}
+
+#checkoutdiv.loading {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+#checkoutdiv.loading .billmateoverlay,
+#checkoutdiv.loading .billmateloading {
+    display: block;
+}
+/* End Loader */
