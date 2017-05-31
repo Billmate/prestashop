@@ -10,8 +10,10 @@
 	/*
 	 * Class for BillmateInvoice related stuff
 	 */
+require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
 
-	class BillmateMethodInvoice extends BillmateGateway {
+
+class BillmateMethodInvoice extends BillmateGateway {
 
 		public function __construct()
 		{

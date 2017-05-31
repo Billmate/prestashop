@@ -45,3 +45,18 @@
     display: block;
 }
 /* End Loader */
+
+.container #shippingdiv {
+    float:left;
+    width: 49%;
+    padding-right: 1%;
+
+}
+.container #checkoutdiv {
+    float:left;
+    width:49%;
+    padding-left: 1%;
+}
+.step-num > span{
+    display:none;
+}

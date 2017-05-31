@@ -11,6 +11,8 @@
 	 * Class for BillmateCardpay related stuff
 	 */
 
+require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
+
 	class BillmateMethodCardpay extends BillmateGateway {
 
 		public function __construct()

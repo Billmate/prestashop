@@ -5,37 +5,54 @@
 window.method = null;
 window.address_selected = null;
 window.latestScroll = null;
+window.previousSelectedMethod = null;
 var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
     this.updateAddress = function (data) {
         // When address in checkout updates;
-
+        data['action'] = 'setAddress';
+        data['ajax'] = 1;
         jQuery.ajax({
-            url : UPDATE_ADDRESS_URL,
+            url : billmate_checkout_url,
             data: data,
             type: 'POST',
             success: function(response){
-
-
-                jQuery('#shipping-container').html(response);
-                if(jQuery('input[name="estimate_method"]:checked').length != 1){
-                    jQuery('input[name="estimate_method"]:first').click();
-                }
 
                 window.address_selected = true;
             }
         });
 
     };
+    this.updateShippingMethod = function(method){
+        jQuery.ajax({
+            url: UPDATE_SHIPPING_METHOD_URL,
+            data: {'shipping_method': method},
+            type: 'POST',
+            success: function (response) {
+                var result = JSON.parse(response);
+                if (result.success) {
+                    if(result.hasOwnProperty("update_checkout") && result.update_checkout === true)
+                        self.updateCheckout();
+                    if(data.method == 8 || data.method == 16)
+                        self.updateCheckout();
+
+                    window.method = data.method;
+
+                }
+            }
+        });
+    }
     this.updatePaymentMethod = function(data){
         if(window.method != data.method) {
+            data['action'] = 'setPaymentMethod';
+            data['ajax'] = 1;
             jQuery.ajax({
-                url: UPDATE_PAYMENT_METHOD_URL,
+                url: billmate_checkout_url,
                 data: data,
                 type: 'POST',
                 success: function (response) {
-                    var result = response.evalJSON();
+                    var result = JSON.parse(response);
                     if (result.success) {
                         if(result.hasOwnProperty("update_checkout") && result.update_checkout === true)
                             self.updateCheckout();
@@ -55,35 +72,29 @@ var BillmateIframe = new function(){
     }
     this.createOrder = function(data){
         // Create Order
+        data['action'] = 'validateOrder';
+        data['ajax'] = 1;
         jQuery.ajax({
-            url : CREATE_ORDER_URL,
+            url : billmate_checkout_url,
             data: data,
             type: 'POST',
             success: function(response){
-                var result = response.evalJSON();
-                location.href=result.url;
+                var result = JSON.parse(response);
+                if(result.success){
+                    location.href=result.redirect;
+                }
             }
         });
 
     };
-    this.updateTotals = function(){
-        jQuery.ajax({
-            url : UPDATE_TOTALS_URL,
-            type: 'POST',
-            success: function(response){
-                jQuery('#billmate-totals').html(response);
 
-            }
-        });
-    };
     this.initListeners = function () {
-        document.observe('dom:loaded',function () {
+        jQuery(document).ready(function(){
+
             console.log('initEventListeners');
             window.addEventListener("message",self.handleEvent);
+        });
 
-
-
-        })
     }
     this.handleEvent = function(event){
         console.log(event);
@@ -99,7 +110,7 @@ var BillmateIframe = new function(){
                 case 'address_selected':
                     self.updateAddress(json.data);
                     self.updatePaymentMethod(json.data);
-                    self.updateTotals();
+
                     if(window.method == null || window.method == json.data.method) {
                         jQuery('#checkoutdiv').removeClass('loading');
                     }
@@ -107,7 +118,7 @@ var BillmateIframe = new function(){
                 case 'payment_method_selected':
                     if (window.address_selected !== null) {
                         self.updatePaymentMethod(json.data);
-                        self.updateTotals();
+
                         if(window.method == json.data.method) {
                             jQuery('#checkoutdiv').removeClass('loading');
                         }
@@ -145,6 +156,9 @@ var BillmateIframe = new function(){
 
 
 };
+
+var b_iframe = BillmateIframe;
+b_iframe.initListeners();
 jQuery(document).ready(function(){
     jQuery(document).ajaxStart(function(){
         jQuery('#checkoutdiv').addClass('loading');
@@ -152,7 +166,39 @@ jQuery(document).ready(function(){
 
     })
 
+    jQuery(document).ajaxComplete(function(){
+        jQuery('#checkoutdiv').removeClass('loading');
+
+    })
+
+    $("#button_order_cart").attr("href", billmate_checkout_url);
+    $("#layer_cart .layer_cart_cart a.button-medium").attr("href", billmate_checkout_url);
+    $("#order p.cart_navigation a.standard-checkout").attr("href", billmate_checkout_url);
+    $('body').on('click','.delivery_option_radio',function(e){
+        e.preventDefault();
+        var selectedMethod = e.target.value;
+        if(selectedMethod != window.previousSelectedMethod){
+            window.previousSelectedMethod = selectedMethod;
+            var url = billmate_checkout_url
+            var delivery_option = $('.delivery_option_radio:checked').val();
+            var address_id = $('.delivery_option_radio:checked').data('id_address');
+            var values = {};
+            values['delivery_option['+address_id+']'] = delivery_option;
+            values['action'] = 'setShipping';
+            values['ajax'] = 1
+            jQuery.ajax({
+                url: url,
+                data: values,
+                success: function(response){
+                    var result = JSON.parse(response);
+                    console.log(result);
+                    if(result.hasOwnProperty("update_checkout") && result.update_checkout === true){
+                        b_iframe.updateCheckout();
+                    }
+                }
+            })
+        }
+    })
+
 })
-var b_iframe = BillmateIframe;
-b_iframe.initListeners();
 

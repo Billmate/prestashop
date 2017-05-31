@@ -10,6 +10,8 @@
 	/*
 	 * Class for BillmatePartpayment related stuff
 	 */
+require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
+
 
 	class BillmateMethodPartpay extends BillmateGateway {
 
