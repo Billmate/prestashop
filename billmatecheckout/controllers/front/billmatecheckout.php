@@ -52,7 +52,11 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             $result = $this->fetchCheckout();
             $customer = $result['Customer'];
             $address = $customer['Billing'];
-            if($this->context->customer->id == 0){
+            $logfile   = _PS_CACHE_DIR_.'Billmate.log';
+
+            file_put_contents($logfile, 'customer:'.print_r($this->context->customer,true),FILE_APPEND);
+            file_put_contents($logfile, 'cart:'.print_r($this->context->cart,true),FILE_APPEND);
+            if($this->context->cart->id_customer == 0){
                 // Create a guest customer
                 $customerObject = new Customer();
                 $password = Tools::passwdGen(8);
@@ -66,9 +70,12 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                 $customerObject->active = true;
                 $customerObject->is_guest = true;
                 $customerObject->add();
-                $this->context->customer->id = $customerObject->id;
+                $this->context->customer = $customerObject;
+                $this->context->cart->secure_key = $customerObject->secure_key;
                 $this->context->cart->id_customer = $customerObject->id;
             }
+            file_put_contents($logfile, 'customer after:'.print_r($this->context->customer,true),FILE_APPEND);
+            file_put_contents($logfile, 'cart after:'.print_r($this->context->cart,true),FILE_APPEND);
 
             $addressbilling              = new Address();
             $addressbilling->id_customer = (int)$this->context->customer->id;
@@ -90,7 +97,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
 
             $billing_address_id = $shipping_address_id = $addressbilling->id;
 
-            if(isset($customer['Shipping']) && count($result['Shipping']) > 0){
+            if((isset($customer['Shipping']) && count($result['Shipping']) > 0)){
                 $address = $customer['Shipping'];
                 $addressshipping              = new Address();
                 $addressshipping->id_customer = (int)$this->context->customer->id;
@@ -212,7 +219,6 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                         $billmate->updatePayment($values);
                     }
 
-                    $this->context->cookie->__unset('BillmateHash');
                     $url = 'order-confirmation&id_cart=' . (int)$this->context->cart->id .
                         '&id_module=' . (int)$this->getmoduleId('billmate' . $this->method) .
                         '&id_order=' . (int)$orderId .
@@ -236,7 +242,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             case 'bankpay':
             case 'cardpay':
                 if (!isset($result['code'])) {
-                    $this->context->cookie->__unset('BillmateHash');
+                    unset($this->context->cookie->BillmateHash);
                     if ($this->ajax) {
                         $return = array('success' => true, 'redirect' => $result['url']);
                     } else {
@@ -455,7 +461,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         unset($orderValues['Articles']);
         unset($orderValues['Customer']);
         $orderValues['PaymentData']['accepturl'] = $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method),true);
-        $orderValues['PaymentData']['cancelurl']    = $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method),true);
+        $orderValues['PaymentData']['cancelurl']    = $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method, 'type' => 'checkout'),true);
         $orderValues['PaymentData']['callbackurl']  = $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method),true);
         $orderValues['PaymentData']['returnmethod'] = (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == "on") ?'POST' : 'GET';
 

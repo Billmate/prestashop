@@ -76,6 +76,9 @@
 			$this->cart_id        = $order[0];
 			$this->context->cart = new Cart($this->cart_id);
 			$customer            = new Customer($this->context->cart->id_customer);
+			$logfile   = _PS_CACHE_DIR_.'Billmate.log';
+			file_put_contents($logfile, 'data:'.print_r($data,true),FILE_APPEND);
+			file_put_contents($logfile, 'cart:'.print_r($this->context->cart,true),FILE_APPEND);
 
 			if (!isset($data['code']) && !isset($data['error']))
 			{
@@ -100,6 +103,9 @@
 					}
 					if(isset($this->context->cookie->billmatepno))
 						unset($this->context->cookie->billmatepno);
+
+					if(isset($this->context->cookie->BillmateHash))
+						unset($this->context->cookie->BillmateHash);
 					Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.
 					                    '&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->getmoduleId('billmate'.$this->method).
 					                    '&id_order='.(int)$order_id);
@@ -133,6 +139,9 @@
 				unlink($lockfile);
 				if(isset($this->context->cookie->billmatepno))
 					unset($this->context->cookie->billmatepno);
+				if(isset($this->context->cookie->BillmateHash))
+					unset($this->context->cookie->BillmateHash);
+
 				Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?key='.$customer->secure_key.
 									'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->getmoduleId('billmate'.$this->method).
 									'&id_order='.(int)$this->module->currentOrder);
