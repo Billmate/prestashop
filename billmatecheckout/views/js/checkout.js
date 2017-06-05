@@ -9,6 +9,26 @@ window.previousSelectedMethod = null;
 var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
+    this.updatePsCheckout = function(){
+        // When address in checkout updates;
+        var data = {};
+        data['action'] = 'updateCheckout';
+        data['ajax'] = 1;
+        jQuery.ajax({
+            url : billmate_checkout_url,
+            data: data,
+            type: 'POST',
+            success: function(response){
+                var result = JSON.parse(response);
+                if (result.success) {
+                    if(result.hasOwnProperty("update_checkout") && result.update_checkout === true)
+                        self.updateCheckout();
+
+
+                }
+            }
+        });
+    }
     this.updateAddress = function (data) {
         // When address in checkout updates;
         data['action'] = 'setAddress';
@@ -157,8 +177,8 @@ var BillmateIframe = new function(){
 
 };
 
-var b_iframe = BillmateIframe;
-b_iframe.initListeners();
+window.b_iframe = BillmateIframe;
+window.b_iframe.initListeners();
 jQuery(document).ready(function(){
     jQuery(document).ajaxStart(function(){
         jQuery('#checkoutdiv').addClass('loading');
@@ -174,6 +194,9 @@ jQuery(document).ready(function(){
     $("#button_order_cart").attr("href", billmate_checkout_url);
     $("#layer_cart .layer_cart_cart a.button-medium").attr("href", billmate_checkout_url);
     $("#order p.cart_navigation a.standard-checkout").attr("href", billmate_checkout_url);
+    if(window.location.href == billmate_checkout_url) {
+        $('body').attr('id', 'order');
+    }
     $('body').on('click','.delivery_option_radio',function(e){
         e.preventDefault();
         var selectedMethod = e.target.value;
@@ -193,12 +216,17 @@ jQuery(document).ready(function(){
                     var result = JSON.parse(response);
                     console.log(result);
                     if(result.hasOwnProperty("update_checkout") && result.update_checkout === true){
-                        b_iframe.updateCheckout();
+                        window.b_iframe.updateCheckout();
                     }
                 }
             })
         }
     })
 
-})
+});
+function deleteProductFromSummary(id){
+    console.log('product removed');
+
+    window.b_iframe.updatePsCheckout();
+}
 

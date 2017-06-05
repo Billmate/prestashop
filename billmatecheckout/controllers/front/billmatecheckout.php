@@ -37,6 +37,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                         'vouchererrors' => Tools::displayError('Could not save carrier selection'),
                     ));
                 }
+                $this->context->cart->save();
 
                 // Carrier has changed, so we check if the cart rules still apply
                 CartRule::autoRemoveFromCart($this->context);
@@ -44,9 +45,19 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                 $values = $this->fetchCheckout();
                 $result = $this->updateCheckout($values);
                 $result['validatedDelivery'] = $validated;
+                $result['success'] = true;
                 echo Tools::jsonEncode($result);
                 die;
             }
+        }
+        // Cart contents is changed from the dropdown
+        if($this->ajax = Tools::getValue('ajax') && Tools::getValue('action') == 'updateCheckout'){
+            $values = $this->fetchCheckout();
+            $result = $this->updateCheckout($values);
+            $result['success'] = true;
+            echo Tools::jsonEncode($result);
+            die;
+            
         }
         if( $this->ajax = Tools::getValue( "ajax" ) && Tools::getValue('action') == 'setAddress') {
             $result = $this->fetchCheckout();
@@ -97,7 +108,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
 
             $billing_address_id = $shipping_address_id = $addressbilling->id;
 
-            if((isset($customer['Shipping']) && count($result['Shipping']) > 0)){
+            if(isset($customer['Shipping']) && count($result['Shipping']) > 0){
                 $address = $customer['Shipping'];
                 $addressshipping              = new Address();
                 $addressshipping->id_customer = (int)$this->context->customer->id;
