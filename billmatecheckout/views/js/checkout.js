@@ -25,6 +25,8 @@ var BillmateIframe = new function(){
                         self.updateCheckout();
 
 
+                }else {
+                    location.reload();
                 }
             }
         });

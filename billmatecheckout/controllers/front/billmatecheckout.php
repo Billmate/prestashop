@@ -52,6 +52,10 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         }
         // Cart contents is changed from the dropdown
         if($this->ajax = Tools::getValue('ajax') && Tools::getValue('action') == 'updateCheckout'){
+            if($this->context->cart->nbProducts() == 0){
+                echo Tools::jsonEncode(array('success' => false));
+                die();
+            }
             $values = $this->fetchCheckout();
             $result = $this->updateCheckout($values);
             $result['success'] = true;
@@ -274,18 +278,21 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
     public function initContent()
     {
         parent::initContent();
+        if($this->context->cart->nbProducts() == 0){
+            $this->setTemplate('checkout-empty.tpl');
+        } else {
+            CartRule::autoRemoveFromCart($this->context);
+            CartRule::autoAddToCart($this->context);
 
-        CartRule::autoRemoveFromCart($this->context);
-        CartRule::autoAddToCart($this->context);
-        
-        $this->context->smarty->assign('billmatecheckouturl',$this->getCheckout());
+            $this->context->smarty->assign('billmatecheckouturl',$this->getCheckout());
 
 
-        //$this->context->smarty->assign('HOOK_LEFT_COLUMN', Module::hookExec('displayLeftColumn'));
-        $carrierBlock = $this->_getCarrierList();
-        $this->context->smarty->assign('carrier_block',$carrierBlock['carrier_block']);
-        //Cart::addExtraCarriers($result);
-        $this->setTemplate('checkout.tpl');
+            //$this->context->smarty->assign('HOOK_LEFT_COLUMN', Module::hookExec('displayLeftColumn'));
+            $carrierBlock = $this->_getCarrierList();
+            $this->context->smarty->assign('carrier_block',$carrierBlock['carrier_block']);
+            //Cart::addExtraCarriers($result);
+            $this->setTemplate('checkout.tpl');
+        }
     }
 
     protected function validateDeliveryOption($delivery_option)
