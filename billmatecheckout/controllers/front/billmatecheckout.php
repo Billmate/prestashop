@@ -92,6 +92,72 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             file_put_contents($logfile, 'customer after:'.print_r($this->context->customer,true),FILE_APPEND);
             file_put_contents($logfile, 'cart after:'.print_r($this->context->cart,true),FILE_APPEND);
 
+            $customer_addresses = $this->context->customer->getAddresses($this->context->language->id);
+
+            if (count($customer_addresses) == 1)
+                $customer_addresses[] = $customer_addresses;
+
+            $matched_address_id = false;
+            foreach ($customer_addresses as $customer_address)
+            {
+                if (isset($customer_address['address1']))
+                {
+                    $billing  = new Address($customer_address['id_address']);
+
+                    $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+                    $company = isset($address['company']) ? $address['company'] : '';
+                    $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
+
+                    if (Common::matchstr($user_bill,$api_name) && Common::matchstr($customer_address['address1'], $address['street']) &&
+                        Common::matchstr($customer_address['postcode'], $address['zip']) &&
+                        Common::matchstr($customer_address['city'], $address['city']) &&
+                        Common::matchstr(Country::getIsoById($customer_address['id_country']), $address['country']))
+
+                        $matched_address_id = $customer_address['id_address'];
+                }
+                else
+                {
+                    foreach ($customer_address as $c_address)
+                    {
+                        $billing  = new Address($c_address['id_address']);
+
+                        $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+                        $company = isset($address['company']) ? $address['company'] : '';
+                        $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
+
+
+                        if (Common::matchstr($user_bill,$api_name) &&  Common::matchstr($c_address['address1'], $address['street']) &&
+                            Common::matchstr($c_address['postcode'], $address['zip']) &&
+                            Common::matchstr($c_address['city'], $address['city']) &&
+                            Common::matchstr(Country::getIsoById($c_address['id_country']), $address['country'])
+                        )
+                            $matched_address_id = $c_address['id_address'];
+                    }
+                }
+
+            }
+            if (!$matched_address_id)
+            {
+                $addressnew              = new Address();
+                $addressnew->id_customer = (int)$this->context->customer->id;
+
+                $addressnew->firstname = !empty($address['firstname']) ? $address['firstname'] : $billing->firstname;
+                $addressnew->lastname  = !empty($address['lastname']) ? $address['lastname'] : $billing->lastname;
+                $addressnew->company   = isset($address['company']) ? $address['company'] : '';
+
+                $addressnew->phone        = $billing->phone;
+                $addressnew->phone_mobile = $billing->phone_mobile;
+
+                $addressnew->address1 = $address['street'];
+                $addressnew->postcode = $address['zip'];
+                $addressnew->city     = $address['city'];
+                $addressnew->country  = $address['country'];
+                $addressnew->alias    = 'Bimport-'.date('Y-m-d');
+                $addressnew->id_country = Country::getByIso($address['country']);
+                $addressnew->save();
+
+                $matched_address_id = $addressnew->id;
+            }
             $addressbilling              = new Address();
             $addressbilling->id_customer = (int)$this->context->customer->id;
 
@@ -110,29 +176,69 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             $addressbilling->id_country = Country::getByIso($address['country']);
             $addressbilling->save();
 
-            $billing_address_id = $shipping_address_id = $addressbilling->id;
+            $billing_address_id = $shipping_address_id = $matched_address_id;
 
             if(isset($customer['Shipping']) && count($result['Shipping']) > 0){
-                $address = $customer['Shipping'];
-                $addressshipping              = new Address();
-                $addressshipping->id_customer = (int)$this->context->customer->id;
+                foreach ($customer_addresses as $customer_address)
+                {
+                    if (isset($customer_address['address1']))
+                    {
+                        $billing  = new Address($customer_address['id_address']);
 
-                $addressshipping->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
-                $addressshipping->lastname  = !empty($address['lastname']) ? $address['lastname'] : '';
-                $addressshipping->company   = isset($address['company']) ? $address['company'] : '';
+                        $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+                        $company = isset($address['company']) ? $address['company'] : '';
+                        $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
 
-                $addressshipping->phone        = $address['phone'];
-                $addressshipping->phone_mobile = $address['phone'];
+                        if (Common::matchstr($user_bill,$api_name) && Common::matchstr($customer_address['address1'], $address['street']) &&
+                            Common::matchstr($customer_address['postcode'], $address['zip']) &&
+                            Common::matchstr($customer_address['city'], $address['city']) &&
+                            Common::matchstr(Country::getIsoById($customer_address['id_country']), $address['country']))
 
-                $addressshipping->address1 = $address['street'];
-                $addressshipping->postcode = $address['zip'];
-                $addressshipping->city     = $address['city'];
-                $addressshipping->country  = $address['country'];
-                $addressshipping->alias    = 'Bimport-'.date('Y-m-d');
-                $addressshipping->id_country = Country::getByIso($address['country']);
-                $addressshipping->save();
+                            $matched_address_id = $customer_address['id_address'];
+                    }
+                    else
+                    {
+                        foreach ($customer_address as $c_address)
+                        {
+                            $billing  = new Address($c_address['id_address']);
 
-                $shipping_address_id = $addressshipping->id;
+                            $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+                            $company = isset($address['company']) ? $address['company'] : '';
+                            $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
+
+
+                            if (Common::matchstr($user_bill,$api_name) &&  Common::matchstr($c_address['address1'], $address['street']) &&
+                                Common::matchstr($c_address['postcode'], $address['zip']) &&
+                                Common::matchstr($c_address['city'], $address['city']) &&
+                                Common::matchstr(Country::getIsoById($c_address['id_country']), $address['country'])
+                            )
+                                $matched_address_id = $c_address['id_address'];
+                        }
+                    }
+
+                }
+                if(!$matched_address_id) {
+                    $address = $customer['Shipping'];
+                    $addressshipping = new Address();
+                    $addressshipping->id_customer = (int)$this->context->customer->id;
+
+                    $addressshipping->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
+                    $addressshipping->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
+                    $addressshipping->company = isset($address['company']) ? $address['company'] : '';
+
+                    $addressshipping->phone = $address['phone'];
+                    $addressshipping->phone_mobile = $address['phone'];
+
+                    $addressshipping->address1 = $address['street'];
+                    $addressshipping->postcode = $address['zip'];
+                    $addressshipping->city = $address['city'];
+                    $addressshipping->country = $address['country'];
+                    $addressshipping->alias = 'Bimport-' . date('Y-m-d');
+                    $addressshipping->id_country = Country::getByIso($address['country']);
+                    $addressshipping->save();
+
+                    $shipping_address_id = $addressshipping->id;
+                }
             }
 
             $this->context->cart->id_address_invoice  = (int)$billing_address_id;
