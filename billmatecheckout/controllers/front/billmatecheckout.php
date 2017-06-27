@@ -27,27 +27,38 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         if( $this->ajax = Tools::getValue( "ajax" ) && Tools::getValue('action') == 'setShipping') {
             if (Tools::getIsset('delivery_option')) {
                 $validated = false;
-                if ($this->validateDeliveryOption(Tools::getValue('delivery_option'))) {
-                    $validated = true;
-                    $this->context->cart->setDeliveryOption(Tools::getValue('delivery_option'));
+                try {
+                    if ($this->validateDeliveryOption(Tools::getValue('delivery_option'))) {
+                        $validated = true;
+                        $this->context->cart->setDeliveryOption(Tools::getValue('delivery_option'));
+                    }
+                    $updated = false;
+                    if (!$this->context->cart->update()) {
+                        $updated = true;
+                        $this->context->smarty->assign(array(
+                            'vouchererrors' => Tools::displayError('Could not save carrier selection'),
+                        ));
+                    }
+                    $this->context->cart->save();
+
+                    // Carrier has changed, so we check if the cart rules still apply
+                    CartRule::autoRemoveFromCart($this->context);
+                    CartRule::autoAddToCart($this->context);
+                    $values = $this->fetchCheckout();
+                    $result = $this->updateCheckout($values);
+                    $result['validatedDelivery'] = $validated;
+                    $result['updated'] = $updated;
+                    $result['success'] = true;
+                    echo Tools::jsonEncode($result);
+                    die;
+                } catch(Exception $e){
+                    $result['success'] = false;
+                    $result['message'] = $e->getMessage();
+                    $result['trace'] = $e;
+                    echo Tools::jsonEncode($result);
+                    die;
                 }
 
-                if (!$this->context->cart->update()) {
-                    $this->context->smarty->assign(array(
-                        'vouchererrors' => Tools::displayError('Could not save carrier selection'),
-                    ));
-                }
-                $this->context->cart->save();
-
-                // Carrier has changed, so we check if the cart rules still apply
-                CartRule::autoRemoveFromCart($this->context);
-                CartRule::autoAddToCart($this->context);
-                $values = $this->fetchCheckout();
-                $result = $this->updateCheckout($values);
-                $result['validatedDelivery'] = $validated;
-                $result['success'] = true;
-                echo Tools::jsonEncode($result);
-                die;
             }
         }
         // Cart contents is changed from the dropdown
@@ -67,6 +78,8 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             $result = $this->fetchCheckout();
             $customer = $result['Customer'];
             $address = $customer['Billing'];
+            $country = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
+            $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
             $logfile   = _PS_CACHE_DIR_.'Billmate.log';
 
             file_put_contents($logfile, 'customer:'.print_r($this->context->customer,true),FILE_APPEND);
@@ -145,8 +158,8 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                 $addressnew->lastname  = !empty($address['lastname']) ? $address['lastname'] : $billing->lastname;
                 $addressnew->company   = isset($address['company']) ? $address['company'] : '';
 
-                $addressnew->phone        = $billing->phone;
-                $addressnew->phone_mobile = $billing->phone_mobile;
+                $addressnew->phone        = $address['phone'];
+                $addressnew->phone_mobile = $address['phone'];
 
                 $addressnew->address1 = $address['street'];
                 $addressnew->postcode = $address['zip'];
@@ -158,27 +171,16 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
 
                 $matched_address_id = $addressnew->id;
             }
-            $addressbilling              = new Address();
-            $addressbilling->id_customer = (int)$this->context->customer->id;
 
-            $addressbilling->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
-            $addressbilling->lastname  = !empty($address['lastname']) ? $address['lastname'] : '';
-            $addressbilling->company   = isset($address['company']) ? $address['company'] : '';
-
-            $addressbilling->phone        = $address['phone'];
-            $addressbilling->phone_mobile = $address['phone'];
-
-            $addressbilling->address1 = $address['street'];
-            $addressbilling->postcode = $address['zip'];
-            $addressbilling->city     = $address['city'];
-            $addressbilling->country  = $address['country'];
-            $addressbilling->alias    = 'Bimport-'.date('Y-m-d');
-            $addressbilling->id_country = Country::getByIso($address['country']);
-            $addressbilling->save();
 
             $billing_address_id = $shipping_address_id = $matched_address_id;
 
-            if(isset($customer['Shipping']) && count($result['Shipping']) > 0){
+            if(isset($customer['Shipping']) && count($customer['Shipping']) > 0){
+                $address = $customer['Shipping'];
+                file_put_contents($logfile, 'shippingAddress:'.print_r($address,true),FILE_APPEND);
+                file_put_contents($logfile, 'customerAddress:'.print_r($customer_addresses,true),FILE_APPEND);
+
+                $matched_address_id = false;
                 foreach ($customer_addresses as $customer_address)
                 {
                     if (isset($customer_address['address1']))
@@ -226,18 +228,20 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                     $addressshipping->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
                     $addressshipping->company = isset($address['company']) ? $address['company'] : '';
 
-                    $addressshipping->phone = $address['phone'];
-                    $addressshipping->phone_mobile = $address['phone'];
+                    $addressshipping->phone = isset($address['phone']) ? $address['phone'] : $bill_phone;
+                    $addressshipping->phone_mobile = isset($address['phone']) ? $address['phone'] : $bill_phone;
 
                     $addressshipping->address1 = $address['street'];
                     $addressshipping->postcode = $address['zip'];
                     $addressshipping->city = $address['city'];
-                    $addressshipping->country = $address['country'];
+                    $addressshipping->country = isset($address['country']) ? $address['country'] : $country;
                     $addressshipping->alias = 'Bimport-' . date('Y-m-d');
-                    $addressshipping->id_country = Country::getByIso($address['country']);
+                    $addressshipping->id_country = Country::getByIso(isset($address['country']) ? $address['country'] : $country);
                     $addressshipping->save();
 
                     $shipping_address_id = $addressshipping->id;
+                } else {
+                    $shipping_address_id = $matched_address_id;
                 }
             }
 
@@ -246,10 +250,21 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
 
 
             $carrier = new Carrier($this->context->cart->id_carrier,$this->context->cart->id_lang);
-            $this->context->cart->setDeliveryOption(array($this->context->cart->id_address_delivery => $carrier->id));
+            $delivery_option = $this->context->cart->getDeliveryOption();
+            $delivery_option[(int)$this->context->cart->id_address_delivery] = $this->context->cart->id_carrier.',';
+            $this->context->cart->setDeliveryOption($delivery_option);
 
             $this->context->cart->update();
-            echo Tools::jsonEncode(array('success' => true));
+            $this->context->cart->save();
+            CartRule::autoRemoveFromCart($this->context);
+            CartRule::autoAddToCart($this->context);
+            $carrierBlock = $this->_getCarrierList();
+
+
+
+            $response['success'] = true;
+            $response['carrier_block'] = $carrierBlock['carrier_block'];
+            echo Tools::jsonEncode($response);
             die;
         }
         if( $this->ajax = Tools::getValue( "ajax" ) && Tools::getValue('action') == 'setPaymentMethod'){
@@ -394,6 +409,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
 
 
             //$this->context->smarty->assign('HOOK_LEFT_COLUMN', Module::hookExec('displayLeftColumn'));
+
             $carrierBlock = $this->_getCarrierList();
             $this->context->smarty->assign('carrier_block',$carrierBlock['carrier_block']);
             //Cart::addExtraCarriers($result);
@@ -584,6 +600,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         unset($orderValues['Cart']);
         unset($orderValues['Articles']);
         unset($orderValues['Customer']);
+        unset($orderValues['PaymentData']['status']);
         $orderValues['PaymentData']['accepturl'] = $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method),true);
         $orderValues['PaymentData']['cancelurl']    = $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method, 'type' => 'checkout'),true);
         $orderValues['PaymentData']['callbackurl']  = $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method),true);

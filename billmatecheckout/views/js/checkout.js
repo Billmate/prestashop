@@ -40,7 +40,11 @@ var BillmateIframe = new function(){
             data: data,
             type: 'POST',
             success: function(response){
-
+                var result = JSON.parse(response);
+                if(result.success)
+                {
+                    jQuery('#shippingdiv').html(result.carrier_block);
+                }
                 window.address_selected = true;
             }
         });
