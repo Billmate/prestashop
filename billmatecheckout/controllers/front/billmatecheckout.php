@@ -152,7 +152,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             if (!$matched_address_id)
             {
                 $addressnew              = new Address();
-                $addressnew->id_customer = (int)$this->context->customer->id;
+                $addressnew->id_customer = (int)$this->context->cart->id_customer;
 
                 $addressnew->firstname = !empty($address['firstname']) ? $address['firstname'] : $billing->firstname;
                 $addressnew->lastname  = !empty($address['lastname']) ? $address['lastname'] : $billing->lastname;
@@ -194,7 +194,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                         if (Common::matchstr($user_bill,$api_name) && Common::matchstr($customer_address['address1'], $address['street']) &&
                             Common::matchstr($customer_address['postcode'], $address['zip']) &&
                             Common::matchstr($customer_address['city'], $address['city']) &&
-                            Common::matchstr(Country::getIsoById($customer_address['id_country']), $address['country']))
+                            Common::matchstr(Country::getIsoById($customer_address['id_country']), isset($address['country']) ? $address['country'] : $country))
 
                             $matched_address_id = $customer_address['id_address'];
                     }
@@ -212,7 +212,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                             if (Common::matchstr($user_bill,$api_name) &&  Common::matchstr($c_address['address1'], $address['street']) &&
                                 Common::matchstr($c_address['postcode'], $address['zip']) &&
                                 Common::matchstr($c_address['city'], $address['city']) &&
-                                Common::matchstr(Country::getIsoById($c_address['id_country']), $address['country'])
+                                Common::matchstr(Country::getIsoById($c_address['id_country']), isset($address['country']) ? $address['country'] : $country)
                             )
                                 $matched_address_id = $c_address['id_address'];
                         }
@@ -222,7 +222,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                 if(!$matched_address_id) {
                     $address = $customer['Shipping'];
                     $addressshipping = new Address();
-                    $addressshipping->id_customer = (int)$this->context->customer->id;
+                    $addressshipping->id_customer = (int)$this->context->cart->id_customer;
 
                     $addressshipping->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
                     $addressshipping->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
@@ -601,6 +601,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         unset($orderValues['Articles']);
         unset($orderValues['Customer']);
         unset($orderValues['PaymentData']['status']);
+        unset($orderValues['PaymentData']['method']);
         $orderValues['PaymentData']['accepturl'] = $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method),true);
         $orderValues['PaymentData']['cancelurl']    = $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method, 'type' => 'checkout'),true);
         $orderValues['PaymentData']['callbackurl']  = $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method),true);
