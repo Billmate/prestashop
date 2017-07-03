@@ -175,7 +175,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
 
             $billing_address_id = $shipping_address_id = $matched_address_id;
 
-            if(isset($customer['Shipping']) && count($customer['Shipping']) > 0){
+            if(isset($customer['Shipping']) && count($customer['Shipping']) > 0 && isset($customer['Shipping']['street'])){
                 $address = $customer['Shipping'];
                 file_put_contents($logfile, 'shippingAddress:'.print_r($address,true),FILE_APPEND);
                 file_put_contents($logfile, 'customerAddress:'.print_r($customer_addresses,true),FILE_APPEND);
