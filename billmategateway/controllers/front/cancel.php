@@ -44,7 +44,7 @@
 				}
 			}
 			$order_url = $this->context->link->getPageLink('order.php', true);
-			if(isset($_POST['type']) && $_POST['type'] == 'checkout')
+			if(isset($_GET['type']) && $_GET['type'] == 'checkout')
 				$this->context->link->getModuleLink('billmatecheckout', 'billmatecheckout', array(), true);
 
 			if (version_compare(_PS_VERSION_,'1.7.0.0-beta.1.0','=>'))
