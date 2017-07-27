@@ -38,6 +38,10 @@
     overflow: hidden;
 }
 
+#billmate_summary > .cart_navigation,#billmate_summary #cart_voucher #voucher{
+    display: none;
+}
+
 /* Anytime the body has the loading class, our
    modal element will be visible */
 #checkoutdiv.loading .billmateoverlay,

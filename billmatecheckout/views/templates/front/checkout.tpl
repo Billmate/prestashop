@@ -1,4 +1,7 @@
 <div class="container">
+    <div id="billmate_summary">
+        {include file="$tpl_dir/shopping-cart.tpl"}
+    </div>
     <div id="shippingdiv">
         {$carrier_block}
     </div>
