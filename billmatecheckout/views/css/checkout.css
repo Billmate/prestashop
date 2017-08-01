@@ -40,6 +40,7 @@
 
 #billmate_summary > .cart_navigation,#billmate_summary #cart_voucher #voucher{
     display: none;
+    height:0px;
 }
 
 /* Anytime the body has the loading class, our
@@ -63,4 +64,17 @@
 }
 .step-num > span{
     display:none;
+}
+@media screen and (max-width: 600px) {
+    .container #shippingdiv {
+        float:left;
+        width: 100%;
+    }
+    .container #shippingdiv .order_carrier_logo{
+        display:none;
+    }
+    .container #checkoutdiv {
+        float:left;
+        width:100%;
+    }
 }

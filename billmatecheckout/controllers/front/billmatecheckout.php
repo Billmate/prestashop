@@ -96,7 +96,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
 
                 $customerObject->email = $address['email'];
                 $customerObject->active = true;
-                $customerObject->is_guest = true;
+                //$customerObject->is_guest = true;
                 $customerObject->add();
                 $this->context->customer = $customerObject;
                 $this->context->cart->secure_key = $customerObject->secure_key;
@@ -363,6 +363,8 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                     $return['redirect'] = $this->context->link->getPageLink($url, true);
                     if (isset($this->context->cookie->billmatepno))
                         unset($this->context->cookie->billmatepno);
+                    if(isset($this->context->cookie->BillmateHash))
+                        unset($this->context->cookie->BillmateHash);
                 } else {
                     if (in_array($result['code'], array(2401, 2402, 2403, 2404, 2405))) {
                         //$result = $this->checkAddress();
@@ -696,11 +698,18 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         if($hash = $this->context->cookie->__get('BillmateHash')){
             $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
             if(!isset($result['code'])){
-                $updateResult = $this->updateCheckout($result);
+                if(strtolower($result['PaymentData']['order']['status']) != 'created' && strtolower($result['PaymentData']['order']['status']) != 'paid'){
+                    $updateResult = $this->updateCheckout($result);
 
-                if(!isset($updateResult['code'])){
-                    $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
-                    return $result['PaymentData']['url'];
+                    if(!isset($updateResult['code'])){
+                        $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
+                        return $result['PaymentData']['url'];
+                    }
+                } else {
+                    $result = $this->initCheckout();
+                    if(!isset($result['code'])){
+                        return $result['url'];
+                    }
                 }
 
             }
