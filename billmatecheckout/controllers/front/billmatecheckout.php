@@ -354,13 +354,17 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
 
                         $billmate->updatePayment($values);
                     }
+                    $url = $this->context->link->getModuleLink(
+                        'billmatecheckout',
+                        'thankyou',
+                        array('billmate_hash' => $this->context->cookie->BillmateHash));
 
-                    $url = 'order-confirmation&id_cart=' . (int)$this->context->cart->id .
+                    /*$url = 'order-confirmation&id_cart=' . (int)$this->context->cart->id .
                         '&id_module=' . (int)$this->getmoduleId('billmate' . $this->method) .
                         '&id_order=' . (int)$orderId .
-                        '&key=' . $customer->secure_key;
+                        '&key=' . $customer->secure_key;*/
                     $return['success'] = true;
-                    $return['redirect'] = $this->context->link->getPageLink($url, true);
+                    $return['redirect'] = $url; //$this->context->link->getPageLink($url, true);
                     if (isset($this->context->cookie->billmatepno))
                         unset($this->context->cookie->billmatepno);
                     if(isset($this->context->cookie->BillmateHash))
@@ -380,7 +384,6 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             case 'bankpay':
             case 'cardpay':
                 if (!isset($result['code'])) {
-                    unset($this->context->cookie->BillmateHash);
                     if ($this->ajax) {
                         $return = array('success' => true, 'redirect' => $result['url']);
                     } else {
