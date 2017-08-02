@@ -80,6 +80,7 @@
 
 			if (!isset($data['code']) && !isset($data['error']))
 			{
+				$paymentInfo = $this->billmate->getPaymentinfo(array('number' => $data['number']));
 				$lockfile   = _PS_CACHE_DIR_.$data['orderid'];
 				$processing = file_exists($lockfile);
 				if ($this->context->cart->orderExists() || $processing)
@@ -127,6 +128,7 @@
 				$extra  = array('transaction_id' => $data['number']);
 				$status = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
 				$status = ($data['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
+				$total = $paymentInfo['Cart']['Total']['withtax'] / 100;
 				$this->module->validateOrder((int)$this->context->cart->id, $status,
 					$total, $this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$values = array();
