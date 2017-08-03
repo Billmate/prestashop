@@ -67,7 +67,7 @@ class BillmateMethodInvoice extends BillmateGateway {
 		{
 			$settings = array();
 			$statuses = OrderState::getOrderStates((int)$this->context->language->id);
-			$currency = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
+			$currency       = Currency::getDefaultCurrency();
 			$taxes    = Tax::getTaxes($this->context->language->id);
 
 			$taxes_array = array();
@@ -103,7 +103,7 @@ class BillmateMethodInvoice extends BillmateGateway {
 				'value'    => (float)Configuration::get('BINVOICE_FEE'),
 				'type'     => 'text',
 				'label'    => $this->module->l('Invoice fee ex. VAT ','invoice'),
-				'desc'     => $currency['iso_code'],
+				'desc'     => $currency->iso_code,
 			);
 
 			$settings['invoice_fee_tax'] = array(
@@ -131,7 +131,7 @@ class BillmateMethodInvoice extends BillmateGateway {
 				'required' => false,
 				'value'    => (float)Configuration::get('BINVOICE_MIN_VALUE'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Minimum Value ','invoice').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Minimum Value ','invoice').' ('.$currency->sign.')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['maximum_value'] = array(
@@ -139,7 +139,7 @@ class BillmateMethodInvoice extends BillmateGateway {
 				'required' => false,
 				'value'    => Configuration::get('BINVOICE_MAX_VALUE') != 0 ? (float)Configuration::get('BINVOICE_MAX_VALUE') : 99999,
 				'type'     => 'text',
-				'label'    => $this->module->l('Maximum Value ','invoice').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Maximum Value ','invoice').' ('.$currency->sign.')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['sort'] = array(

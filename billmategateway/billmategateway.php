@@ -238,6 +238,7 @@
 				'country'  => 'se'
 			);
 			$result              = $billmate->getPaymentplans($data);
+
 			if (isset($result['code']) && ($result['code'] == '9010' || $result['code'] == '9012' || $result['code'] == '9013'))
 			{
 				$this->postErrors[] = utf8_encode($result['message']);
@@ -317,6 +318,7 @@
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatepartpay";');
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatecardpay";');
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmateinvoice";');
+			return true;
 		}
 
 		/**
@@ -364,6 +366,9 @@
 
 		public function registerHooks()
 		{
+			$extra = true;
+			if(version_compare(_PS_VERSION_,'1.7','>='))
+				$extra = $this->registerHook('paymentOptions');
 			return $this->registerHook('displayPayment') &&
 				   $this->registerHook('payment') &&
 				   $this->registerHook('paymentReturn') &&
@@ -375,11 +380,16 @@
 					$this->registerHook('displayCustomerAccountFormTop') &&
 					$this->registerHook('actionOrderSlipAdd') &&
 					$this->registerHook('orderSlip') &&
-					$this->registerHook('displayProductButtons');
+					$this->registerHook('displayProductButtons') &&
+					$extra;
+
 		}
 
 		public function hookDisplayProductButtons($params)
 		{
+			if(!is_object($params['product'])){
+				return '';
+			}
 			$cost = (1+($params['product']->tax_rate/100))*$params['product']->base_price;
 
 			require_once(_PS_MODULE_DIR_.'/billmategateway/methods/Partpay.php');
@@ -872,9 +882,73 @@
 
 		}
 
+		public function hookPaymentOptions($params)
+		{
+			$methods = $this->getMethodOptions($params['cart']);
+			$this->smarty->assign(
+				array(
+					'var'        => array(
+						'path'          => $this->_path,
+						'this_path_ssl' => (_PS_VERSION_ >= 1.4 ? Tools::getShopDomainSsl(true, true) : '').__PS_BASE_URI__.'modules/'.$this->moduleName.'/'
+					),
+					'template' => 'ps17',
+					'methods'    => $methods,
+					'ps_version' => _PS_VERSION_,
+					'eid' => $this->billmate_merchant_id
+				)
+			);
+
+			return $methods;
+		}
+
 		public function getFileName()
 		{
 			return __FILE__;
+		}
+
+		public function getMethodOptions($cart)
+		{
+			$data = array();
+
+			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'/billmategateway/methods', FilesystemIterator::SKIP_DOTS);
+
+			foreach ($methodFiles as $file)
+			{
+				$class = $file->getBasename('.php');
+				if ($class == 'index')
+					continue;
+
+
+				include_once($file->getPathname());
+
+				$class = "BillmateMethod".$class;
+				$method = new $class();
+				$result = $method->getPaymentInfo($cart);
+
+				if (!$result)
+					continue;
+				$newOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+				$newOption->setModuleName($this->name)
+					->setCallToActionText($result['name'])
+					->setAction($result['controller'])
+					->setLogo($this->context->link->getBaseLink().'/modules/'.$result['icon'])
+					->setAdditionalInformation($this->fetch('module:billmategateway/views/templates/front/'.$result['type'].'.tpl'));
+
+				
+				if ($result['sort_order'])
+				{
+					if (array_key_exists($result['sort_order'], $data))
+						$data[$result['sort_order'] + 1] = $newOption;
+					else
+						$data[$result['sort_order']] = $newOption;
+				}
+				else
+					$data[] = $newOption;
+
+
+			}
+			ksort($data);
+			return $data;
 		}
 
 		public function getMethods($cart)
