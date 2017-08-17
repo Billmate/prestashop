@@ -928,6 +928,7 @@
 				if (!$result)
 					continue;
 				$newOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+				$this->smarty->assign($result);
 				$newOption->setModuleName($this->name)
 					->setCallToActionText($result['name'])
 					->setAction($result['controller'])
