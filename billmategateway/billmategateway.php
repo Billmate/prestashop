@@ -928,14 +928,19 @@
 				if (!$result)
 					continue;
 				$newOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
-				$this->smarty->assign($result);
-				$newOption->setModuleName($this->name)
-					->setCallToActionText($result['name'])
-					->setAction($result['controller'])
-					->setLogo($this->context->link->getBaseLink().'/modules/'.$result['icon'])
-					->setAdditionalInformation($this->fetch('module:billmategateway/views/templates/front/'.$result['type'].'.tpl'));
+				try{
+					$this->smarty->assign($result);
+					$this->smarty->assign(array('eid' => Configuration::get('BILLMATE_ID')));
+					$this->smarty->escape_html = false;
+					$newOption->setModuleName($this->name)
+						->setCallToActionText($result['name'])
+						->setAction($result['controller'])
+						->setLogo($this->context->link->getBaseLink().'/modules/'.$result['icon'])
+						->setAdditionalInformation($this->fetch('module:billmategateway/views/templates/front/'.$result['type'].'.tpl'));
 
-				
+				} catch(Exception $e){
+					die($e->getMessage()."\r\n".$e->getTraceAsString());
+				}
 				if ($result['sort_order'])
 				{
 					if (array_key_exists($result['sort_order'], $data))

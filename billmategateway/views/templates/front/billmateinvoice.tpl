@@ -106,14 +106,14 @@
     }
 </style>
 
-<a class="{$type}" href="{$controller|escape:'url'}" id="{$type|escape:'html'}">{$name|escape:'html'} {if $type == 'billmatepartpay'} {l s='from' mod='billmategateway'} {displayPrice|regex_replace:'/[.,]0+/':'' price=$monthly_cost.monthlycost} {l s='/ month' mod='billmategateway'} {elseif $invoiceFee.fee > 0} - {l s='Invoice fee' mod='billmategateway'} {displayPrice|regex_replace:'/[.,]0+/':'' price=$invoiceFee.fee_incl_tax}  {l s='is added to the order sum' mod='billmategateway'}{/if}
-</a>
-<div style="display:none;" id="{$type}-fields" class="payment-form">
+<span class="{$type}" id="{$type|escape:'html'}">{$name|escape:'html'}{if $invoiceFee.fee > 0} - {l s='Invoice fee' mod='billmategateway'} {$invoiceFee.fee_incl_tax}  {l s='is added to the order sum' mod='billmategateway'}{/if}
+</span>
+<div style="" id="{$type}-fields" class="payment-form">
     <form action="javascript://" class="{$type|escape:'html'}">
         <div style="" id="error_{$type}"></div>
 
         <div class="pno_container" style="padding:10px">
-            <label for="pno_{$type|escape:'html'}" style="display:block; {if $template == 'legacy'}clear:both;{/if}">{l s='Social Security Number / Corporate Registration Number:' mod='billmategateway'}</label>
+            <label for="pno_{$type|escape:'html'}" style="display:block;">{l s='Social Security Number / Corporate Registration Number:' mod='billmategateway'}</label>
             <input id="pno_{$type|escape:'html'}" name="pno_{$type|escape:'html'}" type="text"/>
         </div>
         <div class="agreements" style="padding:10px">
@@ -121,7 +121,7 @@
                 <input type="checkbox" checked="checked" id="agree_with_terms_{$type|escape:'html'}"
                        name="agree_with_terms_{$type|escape:'html'}"/>
             </div>
-            <label for="terms_{$type|escape:'html'}" style="float:left; max-width: 80%;">{$agreements|escape:'quotes'}</label>
+            <label for="terms_{$type|escape:'html'}" style="float:left; max-width: 80%;">{$agreements nofilter}</label>
         </div>
         <div style="padding:10px; padding-top:0px;"><button type="submit" style="margin-bottom:10px;" class="btn btn-default button button-medium pull-right" id="{$type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span></button></div>
         <div style="clear:both;"></div>
@@ -157,10 +157,10 @@
         jQuery(document).Terms('villkor',{ldelim}invoicefee:0{rdelim}, '#terms');
         jQuery(document).Terms('villkor_delbetalning',{ldelim}eid: PARTPAYMENT_EID, effectiverate:34{rdelim},'#terms-partpay');
     }
-    if(!$.fn.Terms){
+    if(!jQuery.fn.Terms){
         jQuery.getScript('https://billmate.se/billmate/base_jquery.js',function(){ldelim}addTerms(){rdelim});
     }
-    var version = "{$ps_version|escape:'html'}"
+    var version = "1.7"
     var PARTPAYMENT_EID = "{$eid}";
     var ajaxurl = "{$link->getModuleLink('billmategateway', 'billmateapi', ['ajax'=> 0], true)}";
 
