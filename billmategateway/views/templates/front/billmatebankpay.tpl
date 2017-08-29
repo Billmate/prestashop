@@ -37,7 +37,7 @@
                     }
                 </style>
 
-                    <a  class="bankpay" href="{$controller|escape:'url'}" id="bankpay">{$name|escape:'html'}
+                    <a  class="bankpay" href="{$controller|escape:'url'}" id="billmatebankpay">{$name|escape:'html'}
                     </a>
 
 
