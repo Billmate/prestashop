@@ -55,7 +55,7 @@
 			$this->method = Tools::getValue('method');
 
 			if (!defined('BILLMATE_SERVER')) {
-				if ($this->method == 'cardpay' && version_compare(_PS_VERSION_,'1.7.0.0-beta.1.0','=>'))
+				if ($this->method == 'cardpay' && version_compare(_PS_VERSION_,'1.7','>='))
 					define('BILLMATE_SERVER', '2.1.9');
 				else
 					define('BILLMATE_SERVER', '2.1.7');
