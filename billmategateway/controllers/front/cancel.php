@@ -47,7 +47,7 @@
 			if(isset($_GET['type']) && $_GET['type'] == 'checkout')
 				$this->context->link->getModuleLink('billmatecheckout', 'billmatecheckout', array(), true);
 
-			if (version_compare(_PS_VERSION_,'1.7.0.0-beta.1.0','=>'))
+			if (version_compare(_PS_VERSION_,'1.7','>='))
 				$this->redirectWithNotifications($order_url);
 			else
 				Tools::redirectLink($order_url);
