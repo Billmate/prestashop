@@ -1160,6 +1160,7 @@
 
 		public function hookOrderConfirmation($params)
 		{
+			$this->smarty->assign('shop_name',Configuration::get('PS_SHOP_NAME'));
 			return $this->display(__FILE__, 'orderconfirmation.tpl');
 		}
 	}

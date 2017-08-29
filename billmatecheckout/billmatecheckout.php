@@ -264,12 +264,17 @@ class BillmateCheckout extends PaymentModule{
 
     public function hookPaymentReturn($params)
     {
-        return $this->hookOrderConfirmation($params);
+        if(Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 1)
+            return $this->hookOrderConfirmation($params);
     }
 
     public function hookOrderConfirmation($params)
     {
-        return $this->display(__FILE__, 'orderconfirmation.tpl');
+        if(Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 1)
+        {   
+            $this->smarty->assign('shop_name',Configuration::get('PS_SHOP_NAME'));
+            return $this->display(__FILE__, 'orderconfirmation.tpl');
+        }
     }
     
 
