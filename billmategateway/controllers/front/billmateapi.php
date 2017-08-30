@@ -94,14 +94,15 @@
 				case 'invoiceservice':
 					if(Tools::getIsset('invoice_address') && file_exists(_PS_MODULE_DIR_.'billmategateway/methods/Invoiceservice.php'))
 						$this->invoiceservice = true;
-					if(Tools::getValue('geturl') == 'yes')
-						$this->checkAddress();
-					/*
-					$result = $this->checkAddress();
+					if(Tools::getValue('geturl') == 'yes') {
+						$result = $this->checkAddress();
+						/*
+						$result = $this->checkAddress();
+						*/
+						/*if (is_array($result))
+							die(Tools::jsonEncode($result));*/
 
-					if (is_array($result))
-						die(Tools::jsonEncode($result));
-					*/
+					}
 					$data = $this->prepareInvoice($this->method);
 					break;
 
@@ -531,8 +532,17 @@
 
 					$this->context->cart->id_address_invoice  = (int)$matched_address_id;
 					$this->context->cart->id_address_delivery = (int)$matched_address_id;
+					if(version_compare(_PS_VERSION_,'1.7','>=')){
 
-                    $this->context->cart->setDeliveryOption(array($this->context->cart->id_address_invoice => $carrier->id));
+						$billing = new Address($this->context->cart->id_address_invoice);
+						$shipping = new Address($this->context->cart->id_address_delivery);
+						$billing->update();
+						$shipping->update();
+						$this->context->cart->checkAndUpdateAddresses();
+
+					}
+
+                    $this->context->cart->setDeliveryOption(array($this->context->cart->id_address_delivery => $carrier->id));
 					$this->context->cart->update();
 
 					if (Configuration::get('PS_ORDER_PROCESS_TYPE') == 1)

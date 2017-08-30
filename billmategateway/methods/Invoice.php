@@ -216,9 +216,10 @@ class BillmateMethodInvoice extends BillmateGateway {
 					die(Tools::displayError());
 
 				// For each package, generate an order
-				$delivery_option_list = $this->context->cart->getDeliveryOptionList();
-				$package_list = $this->context->cart->getPackageList();
-				$cart_delivery_option = $this->context->cart->getDeliveryOption();
+				$delivery_option_list = $this->context->cart->getDeliveryOptionList(null,true);
+				$package_list = $this->context->cart->getPackageList(true);
+				$cart_delivery_option = $this->context->cart->getDeliveryOption(null,false,false);
+
 
 				// If some delivery options are not defined, or not valid, use the first valid option
 				foreach ($delivery_option_list as $id_address => $package)
