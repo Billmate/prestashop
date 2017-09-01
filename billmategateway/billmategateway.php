@@ -318,6 +318,7 @@
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatepartpay";');
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatecardpay";');
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmateinvoice";');
+			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmateinvoiceservice";');
 			return true;
 		}
 
@@ -473,6 +474,30 @@
 			}
 		}
 
+		public function getAvailableMethods()
+		{
+			if($this->billmate_merchant_id && $this->billmate_secret) {
+				$billmate = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, false);
+				$result = $billmate->getAccountinfo(array('time' => time()));
+
+				$mapCodeToMethod = array(
+					1 => 'invoice',
+					2 => 'invoiceservice',
+					4 => 'partpay',
+					8 => 'cardpay',
+					16 => 'bankpay'
+				);
+				$paymentOptions = array();
+				foreach ($result['paymentoptions'] as $option) {
+					$paymentOptions[$option['method']] = $mapCodeToMethod[$option['method']];
+				}
+
+				return $paymentOptions;
+			} else {
+				return array();
+			}
+
+		}
 		public function hookDisplayBackOfficeHeader()
 		{
 			if (isset($this->context->cookie->error) && Tools::strlen($this->context->cookie->error) > 2)
@@ -911,13 +936,15 @@
 			$data = array();
 
 			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'/billmategateway/methods', FilesystemIterator::SKIP_DOTS);
+			$paymentMethodsAvailable = $this->getAvailableMethods();
 
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
 				if ($class == 'index')
 					continue;
-
+				if(!in_array(strtolower($class),$paymentMethodsAvailable))
+					continue;
 
 				include_once($file->getPathname());
 
@@ -962,13 +989,15 @@
 			$data = array();
 
 			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'/billmategateway/methods', FilesystemIterator::SKIP_DOTS);
-
+			$paymentMethodsAvailable = $this->getAvailableMethods();
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
 				if ($class == 'index')
 					continue;
 
+				if(!in_array(strtolower($class),$paymentMethodsAvailable))
+					continue;
 
 				include_once($file->getPathname());
 
@@ -997,11 +1026,16 @@
 		public function getMethodInfo($name, $key)
 		{
 			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'billmategateway/methods', FilesystemIterator::SKIP_DOTS);
+			$paymentMethodsAvailable = $this->getAvailableMethods();
+
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
 				if ($class == 'index')
 					continue;
+				if(!in_array(strtolower($class),$paymentMethodsAvailable))
+					continue;
+
 				include_once($file->getPathname());
 
                 $class = "BillmateMethod".$class;
@@ -1023,11 +1057,14 @@
 			$data = array();
 
 			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'billmategateway/methods', FilesystemIterator::SKIP_DOTS);
+			$paymentMethodsAvailable = $this->getAvailableMethods();
 
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
 				if ($class == 'index')
+					continue;
+				if(!in_array(strtolower($class),$paymentMethodsAvailable))
 					continue;
 
 				include_once($file->getPathname());
