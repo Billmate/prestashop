@@ -27,6 +27,13 @@
                 div.payment_module .error{
                     clear:both;
                 }
+                span ~ img[src*="billmate"]{
+                    float:left;
+                }
+                img[src*="billmate"]{
+                    float:left;
+                    clear:both;
+                }
                 #terms,#terms-partpay{
                     cursor: pointer!important;
                     font-size: inherit;

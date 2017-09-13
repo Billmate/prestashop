@@ -488,8 +488,13 @@
 					16 => 'bankpay'
 				);
 				$paymentOptions = array();
+				$logfile   = _PS_CACHE_DIR_.'Billmate.log';
+				file_put_contents($logfile, print_r($result['paymentoptions'],true),FILE_APPEND);
 				foreach ($result['paymentoptions'] as $option) {
-					$paymentOptions[$option['method']] = $mapCodeToMethod[$option['method']];
+					if(isset($mapCodeToMethod[$option['method']])) {
+						$paymentOptions[$option['method']] = $mapCodeToMethod[$option['method']];
+					} else
+						continue;
 				}
 
 				return $paymentOptions;
@@ -943,6 +948,7 @@
 				$class = $file->getBasename('.php');
 				if ($class == 'index')
 					continue;
+
 				if(!in_array(strtolower($class),$paymentMethodsAvailable))
 					continue;
 
