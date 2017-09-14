@@ -104,12 +104,12 @@
     div.payment_module .error {
         clear: both;
     }
-    span ~ img[src*="billmate"]{
-        float:left;
-    }
     img[src*="billmate"]{
-        float:left;
+        float:right;
         clear:both;
+    }
+    .payment-option > label > span {
+        float: left;
     }
 
     #terms, #terms-partpay {
@@ -138,17 +138,16 @@
             </select>
         </div>
 
-        <div class="pno_container" style="padding:10px">
-            <label for="pno_{$type|escape:'html'}"
-                   style="display:block; {if $template == 'legacy'}clear:both;{/if}">{l s='Social Security Number / Corporate Registration Number:' mod='billmategateway'}</label>
+        <div class="pno_container" style="padding-top:10px">
+            <label for="pno_{$type|escape:'html'}">{l s='Social Security Number / Corporate Registration Number:' mod='billmategateway'}</label>
             <input id="pno_{$type|escape:'html'}" name="pno_{$type|escape:'html'}" type="text"/>
         </div>
-        <div class="agreements" style="padding:10px">
+        <div class="agreements" style="padding-top:10px">
             <div style="float:left;">
                 <input type="checkbox" checked="checked" id="agree_with_terms_{$type|escape:'html'}"
                        name="agree_with_terms_{$type|escape:'html'}"/>
             </div>
-            <label for="terms_{$type|escape:'html'}" style="float:left; max-width: 80%;">{$agreements nofilter}</label>
+            <label for="terms_{$type|escape:'html'}" style="max-width: 80%;">{$agreements nofilter}</label>
         </div>
         <div style="padding:10px; padding-top:0px;">
             <button type="submit" style="margin-bottom:10px;" class="btn btn-default button button-medium pull-right"

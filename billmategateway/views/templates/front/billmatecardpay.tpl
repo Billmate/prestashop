@@ -27,12 +27,12 @@
                 div.payment_module .error{
                     clear:both;
                 }
-                span ~ img[src*="billmate"]{
-                    float:left;
-                }
                 img[src*="billmate"]{
-                    float:left;
+                    float:right;
                     clear:both;
+                }
+                .payment-option > label > span {
+                    float: left;
                 }
                 #terms,#terms-partpay{
                     cursor: pointer!important;
