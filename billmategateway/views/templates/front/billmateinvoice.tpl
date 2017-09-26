@@ -287,7 +287,8 @@
             }
             e.preventDefault();
         })
-        $('#payment-confirmation button[type="submit"]').click(function (e) {
+
+        $('#pay-with-' + $('input[name="payment-option"]:checked').attr('id') + '-form form').on('submit',function (e) {
             if($('#billmateinvoice').is(':visible')) {
                 console.log('testClick');
                 e.preventDefault();
@@ -313,6 +314,7 @@
                     e.preventDefault();
                     if (!billmateprocessing)
                         getData(data, form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'invoice');
+                        return;
                 } else {
                     alert($('<textarea/>').html(checkbox_required).text());
                 }

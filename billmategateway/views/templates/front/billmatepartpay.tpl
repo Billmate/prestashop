@@ -300,7 +300,8 @@
         })
 
 
-        $('#payment-confirmation button[type="submit"]').click(function (e) {
+        $('#pay-with-' + $('input[name="payment-option"]:checked').attr('id') + '-form form').on('submit',function (e) {
+            console.log('test');
             if($('#billmatepartpay').is(':visible')) {
                 e.preventDefault();
                 if ($('#pno').length > 0) {
