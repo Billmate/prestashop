@@ -83,12 +83,12 @@
 
     div.payment_module a.{$type}:after {
         display: block;
-        content: "\f054";
+        /* content: "\f054"; */
         position: absolute;
         right: 15px;
         margin-top: -11px;
         top: 50%;
-        font-family: "FontAwesome";
+        /* font-family: "FontAwesome"; */
         font-size: 25px;
         height: 22px;
         width: 14px;
@@ -105,7 +105,7 @@
         clear: both;
     }
     img[src*="billmate"]{
-        float:right;
+        float:left;
         clear:both;
     }
     .payment-option > label > span {
@@ -122,39 +122,42 @@
     }
 </style>
 <span class="{$type}"
-      id="{$type|escape:'html'}">{$name|escape:'html'}  {l s='from' mod='billmategateway'} {displayPrice|regex_replace:'/[.,]0+/':'' price=$monthly_cost.monthlycost} {l s='/ month' mod='billmategateway'}
+      id="{$type}">{$name}  {l s='from' mod='billmategateway'} {$monthly_cost.monthlycost} {l s='/ month' mod='billmategateway'}
 </span>
 <div style="" id="{$type}-fields" class="payment-form">
     <form action="javascript://" class="{$type|escape:'html'}">
+
         <div style="" id="error_{$type}"></div>
 
-        <div class="accountcontainer">
-            <label style="display:block; padding:10px;">{l s='Payment options:' mod='billmategateway'}</label>
-            <select name="paymentAccount" style="margin-left:10px;">
+        <div class="form-group">
+            <select name="paymentAccount" class="form-control" style="width: 300px;">
                 {foreach $pClasses as $pclass}
-                    <option value="{$pclass.paymentplanid}">{$pclass.description} {displayPrice price=$pclass.monthlycost}
+                    <option value="{$pclass.paymentplanid}">{$pclass.description} {$pclass.monthlycost}
                         / {l s='month' mod='billmategateway'}</option>
                 {/foreach}
             </select>
         </div>
-
-        <div class="pno_container" style="padding-top:10px">
-            <label for="pno_{$type|escape:'html'}">{l s='Social Security Number / Corporate Registration Number:' mod='billmategateway'}</label>
-            <input id="pno_{$type|escape:'html'}" name="pno_{$type|escape:'html'}" type="text"/>
-        </div>
-        <div class="agreements" style="padding-top:10px">
-            <div style="float:left;">
-                <input type="checkbox" checked="checked" id="agree_with_terms_{$type|escape:'html'}"
-                       name="agree_with_terms_{$type|escape:'html'}"/>
+        
+        <div class="form-group">
+            <label for="pno_{$type|escape:'html'}">{l s='Social Security Number / Corporate Registration Number' mod='billmategateway'}</label>
+            <div class="input-group">    
+                <input style="width: 200px;" class="form-control" id="pno_{$type|escape:'html'}" name="pno_{$type|escape:'html'}" type="text" placeholder="xxxxxx-xxxx" />
             </div>
-            <label for="terms_{$type|escape:'html'}" style="max-width: 80%;">{$agreements nofilter}</label>
         </div>
-        <div style="padding:10px; padding-top:0px;">
+               
+        <div class="form-group">
+            <div class="input-group">
+                <input class="form-check-input" type="checkbox" checked="checked" id="agree_with_terms_{$type|escape:'html'}"
+                       name="agree_with_terms_{$type|escape:'html'}"/>
+                       {$agreements nofilter}
+            </div>
+        </div>
+        
+        <!--div style="padding:10px; padding-top:0px;">
             <button type="submit" style="margin-bottom:10px;" class="btn btn-default button button-medium pull-right"
                     id="{$type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span>
             </button>
-        </div>
-        <div style="clear:both;"></div>
+        </div-->
     </form>
 </div>
 <script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
@@ -162,6 +165,7 @@
     function billmatePartpay() {
         var ajaxurl = "{$link->getModuleLink('billmategateway', 'billmateapi', ['ajax'=> 0], true)}";
         ajaxurl = ajaxurl.replace(/&amp;/g, '&');
+        window.checkoutButton = $('#payment-confirmation button[type="submut"]').onclick;
         function getPayment(method) {
             if (typeof submitAccount == 'function')
                 submitAccount();
@@ -179,7 +183,8 @@
             })
             return false;
         }
-
+        var PARTPAYMENT_EID = "{$eid}";
+        window.PARTPAYMENT_EID = PARTPAYMENT_EID;
         if (!billmatepopupLoaded) {
             var script = document.createElement('script');
             script.setAttribute('src', '{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js');
@@ -188,17 +193,14 @@
         }
         function addTerms() {
             jQuery(document).Terms('villkor', {ldelim}invoicefee: 0{rdelim}, '#terms');
-            jQuery(document).Terms('villkor_delbetalning', {
-                ldelim}eid: PARTPAYMENT_EID,
-                effectiverate: 34{rdelim}, '#terms-partpay');
+            jQuery(document).Terms('villkor_delbetalning', {ldelim}eid: PARTPAYMENT_EID, effectiverate: 34{rdelim}, '#terms-partpay');
         }
 
         if (!jQuery.fn.Terms) {
-            jQuery.getScript('https://billmate.se/billmate/base_jquery.js', function () {
-                ldelim}addTerms(){rdelim});
+            jQuery.getScript('https://billmate.se/billmate/base_jquery.js', function () {ldelim}addTerms(){rdelim});
         }
         var version = "1.7"
-        var PARTPAYMENT_EID = "{$eid}";
+
 
         var emptypersonerror = "{l s='PNO/SSN missing' mod='billmategateway'}";
         var checkbox_required = "{l s='Please check the checkbox for confirm this e-mail address is correct and can be used for invoicing.' mod='billmategateway'}";
@@ -211,17 +213,22 @@
         var loadingWindowTitle = '{l s='Processing....' mod='billmategateway'}';
 
         var windowtitlebillmate = "{l s='Pay by invoice can be made only to the address listed in the National Register. Would you make the purchase with address:' mod='billmategateway'}";
-        jQuery(document.body).on('click', '#billmate_button', function () {
-            var method = $(this).data('method');
-            if ($('form.billmate' + method).length > 1)
-                var form = $('form.realbillmate' + method).serializeArray();
-            else
-                var form = $('form.billmate' + method).serializeArray();
-            modalWin.HideModalPopUp();
+        jQuery(document.body).on('click', '#payment-confirmation button[type="submit"]', function (e) {
+            if($('#billmatepartpay').is(':visible')) {
+                e.preventDefault();
 
-            if (!billmateprocessing) {
+                var method = 'partpay';
+                if ($('form.billmate' + method).length > 1)
+                    var form = $('form.realbillmate' + method).serializeArray();
+                else
+                    var form = $('form.billmate' + method).serializeArray();
+                modalWin.HideModalPopUp();
 
-                getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
+                if (!billmateprocessing) {
+                    getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
+
+                }
+                return false;
             }
         });
         if ($('#pno').length) {

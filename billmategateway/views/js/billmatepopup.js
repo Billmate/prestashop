@@ -279,7 +279,7 @@ if (typeof modalWin == 'undefined') {
     });
     function addTerms(){
         jQuery(document).Terms('villkor',{invoicefee:0}, '#terms');
-        jQuery(document).Terms('villkor_delbetalning',{eid: PARTPAYMENT_EID, effectiverate:34},'#terms-partpay');
+        jQuery(document).Terms('villkor_delbetalning',{eid: window.PARTPAYMENT_EID, effectiverate:34},'#terms-partpay');
     }
 
     AddEvent(window,'load',function(){
@@ -393,6 +393,7 @@ if (typeof modalWin == 'undefined') {
 
         return 0;
     };
+    //window.checkoutButton = $('#payment-confirmation button[type="submut"]').length > 0 ? $('#payment-confirmation button[type="submut"]').onclick : null;
     function getData(param, form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method) {
         billmateprocessing = true;
         ShowMessage('<div class="billmate-loader"></div>', loadingWindowTitle);

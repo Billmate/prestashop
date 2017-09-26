@@ -1,4 +1,5 @@
 <style>
+/*
     #spanMessage .billmate-loader {
         background: url("{$smarty.const._MODULE_DIR_}billmategateway/views/img/ajax-loader.gif") 15px 15px no-repeat #fbfbfb;
         z-index: 10000;
@@ -57,7 +58,6 @@
     }
     div.payment_module a {
         display: block;
-        /*border: 1px solid #d6d4d4;*/
         -moz-border-radius: 4px;
         -webkit-border-radius: 4px;
         border-radius: 4px;
@@ -65,16 +65,14 @@
         line-height: 23px;
         color: #333;
         font-weight: bold;
-        padding: 33px 40px 34px 170px;
         letter-spacing: -1px;
         position: relative;
-
     }
 
     div.payment_module a.{$type} {
         background: url("{$smarty.const._MODULE_DIR_}{$icon}") 15px 15px no-repeat #fbfbfb;
-
     }
+    
     div.payment_module a.{$type}:after{
         display: block;
         content: "\f054";
@@ -90,7 +88,7 @@
     }
 
     img[src*="billmate"]{
-        float:right;
+        float:left;
         clear:both;
     }
     .payment-option > label > span {
@@ -112,32 +110,44 @@
         padding: inherit;
         text-decoration: underline;
     }
+    
+*/    
 </style>
 
-<span class="{$type}" id="{$type|escape:'html'}">{$name|escape:'html'}{if $invoiceFee.fee > 0} - {l s='Invoice fee' mod='billmategateway'} {$invoiceFee.fee_incl_tax}  {l s='is added to the order sum' mod='billmategateway'}{/if}
-</span>
-<div style="" id="{$type}-fields" class="payment-form">
-    <form action="javascript://" class="{$type|escape:'html'}">
-        <div style="" id="error_{$type}"></div>
 
-        <div class="pno_container" style="padding-top:10px">
-            <label for="pno_{$type|escape:'html'}">{l s='Social Security Number / Corporate Registration Number:' mod='billmategateway'}</label>
-            <input id="pno_{$type|escape:'html'}" name="pno_{$type|escape:'html'}" type="text"/>
+<div id="{$type}-fields" class="payment-form">
+
+    <form action="javascript://" class="{$type|escape:'html'}">
+        <div class="form-group">
+            <p class="{$type}" id="{$type|escape:'html'}">
+                <!--{$name|escape:'html'}-->{if $invoiceFee.fee > 0}{l s='Invoice fee' mod='billmategateway'} {$invoiceFee.fee_incl_tax}  {l s='is added to the order sum' mod='billmategateway'}{/if}
+            </p>
         </div>
-        <div class="agreements" style="padding:10px">
-            <div style="float:left;">
-                <input type="checkbox" checked="checked" id="agree_with_terms_{$type|escape:'html'}"
-                       name="agree_with_terms_{$type|escape:'html'}"/>
+        <div style="" id="error_{$type}"></div>
+        
+        <div class="form-group">
+            <label for="pno_{$type|escape:'html'}">{l s='Social Security Number / Corporate Registration Number' mod='billmategateway'}</label>
+            <div class="input-group">    
+                <input style="width: 200px;" class="form-control" id="pno_{$type|escape:'html'}" name="pno_{$type|escape:'html'}" type="text" placeholder="xxxxxx-xxxx" />
             </div>
-            <label for="terms_{$type|escape:'html'}" style="max-width: 80%;">{$agreements nofilter}</label>
         </div>
-        <div style="padding:10px; padding-top:0px;"><button type="submit" style="margin-bottom:10px;" class="btn btn-default button button-medium pull-right" id="{$type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span></button></div>
-        <div style="clear:both;"></div>
+        
+        <div class="form-group">
+            <div class="input-group">
+                <input class="form-check-input" type="checkbox" checked="checked" id="agree_with_terms_{$type|escape:'html'}"
+                       name="agree_with_terms_{$type|escape:'html'}"/>
+                       {$agreements nofilter}
+            </div>
+        </div>
+        <!--div class="form-group">
+            <button type="submit" class="btn btn-secondary" id="{$type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span></button>
+        </div-->
     </form>
 </div>
 
 <script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
 <script type="text/javascript">
+
     function billmateInvoice() {
         var ajaxurl = "{$link->getModuleLink('billmategateway', 'billmateapi', ['ajax'=> 0], true)}";
         ajaxurl = ajaxurl.replace(/&amp;/g,'&');
@@ -165,18 +175,18 @@
             script.setAttribute('type', 'text/javascript');
             document.getElementsByTagName('head')[0].appendChild(script);
         }
+        var PARTPAYMENT_EID = "{$eid}";
+        window.PARTPAYMENT_EID = PARTPAYMENT_EID;
         function addTerms() {
             jQuery(document).Terms('villkor', {ldelim}invoicefee: 0{rdelim}, '#terms');
-            jQuery(document).Terms('villkor_delbetalning',
-                    {ldelim}eid: PARTPAYMENT_EID,
-                effectiverate: 34{rdelim}, '#terms-partpay');
+            jQuery(document).Terms('villkor_delbetalning', {ldelim}eid: PARTPAYMENT_EID, effectiverate: 34{rdelim}, '#terms-partpay');
         }
 
         if (!jQuery.fn.Terms) {
             jQuery.getScript('https://billmate.se/billmate/base_jquery.js', function () {ldelim}addTerms(){rdelim});
         }
         var version = "1.7"
-        var PARTPAYMENT_EID = "{$eid}";
+
 
         var emptypersonerror = "{l s='PNO/SSN missing' mod='billmategateway'}";
         var checkbox_required = "{l s='Please check the checkbox for confirm this e-mail address is correct and can be used for invoicing.' mod='billmategateway'}";
@@ -189,17 +199,24 @@
         var loadingWindowTitle = '{l s='Processing....' mod='billmategateway'}';
 
         var windowtitlebillmate = "{l s='Pay by invoice can be made only to the address listed in the National Register. Would you make the purchase with address:' mod='billmategateway'}";
-        jQuery(document.body).on('click', '#billmate_button', function () {
-            var method = $(this).data('method');
-            if ($('form.billmate' + method).length > 1)
-                var form = $('form.realbillmate' + method).serializeArray();
-            else
-                var form = $('form.billmate' + method).serializeArray();
-            modalWin.HideModalPopUp();
+        jQuery(document.body).on('click', '#payment-confirmation button[type="submit"]', function (e) {
+            if($('#billmateinvoice').is(':visible')) {
+                console.log('invoice');
 
-            if (!billmateprocessing) {
+                e.preventDefault();
+                var method = 'invoice';
+                if ($('form.billmate' + method).length > 1)
+                    var form = $('form.realbillmate' + method).serializeArray();
+                else
+                    var form = $('form.billmate' + method).serializeArray();
+                modalWin.HideModalPopUp();
 
-                getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
+                if (!billmateprocessing) {
+                    getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
+
+                }
+                return false;
+
             }
         });
         if ($('#pno').length) {
@@ -411,4 +428,5 @@
     else document.attachEvent('onreadystatechange', function(){
             if (document.readyState=='complete') billmateInvoice();
         });
+
 </script>

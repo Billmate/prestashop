@@ -89,7 +89,7 @@
         color: #777;
     }
     img[src*="billmate"]{
-        float:right;
+        float:left;
         clear:both;
     }
     .payment-option > label > span {
@@ -164,18 +164,17 @@
             script.setAttribute('type', 'text/javascript');
             document.getElementsByTagName('head')[0].appendChild(script);
         }
+        var PARTPAYMENT_EID = "{$eid}";
+        window.PARTPAYMENT_EID = PARTPAYMENT_EID;
         function addTerms() {
             jQuery(document).Terms('villkor', {ldelim}invoicefee: 0{rdelim}, '#terms');
-            jQuery(document).Terms('villkor_delbetalning',
-                    {ldelim}eid: PARTPAYMENT_EID,
-                effectiverate: 34{rdelim}, '#terms-partpay');
+            jQuery(document).Terms('villkor_delbetalning', {ldelim}eid: PARTPAYMENT_EID, effectiverate: 34{rdelim}, '#terms-partpay');
         }
 
         if (!jQuery.fn.Terms) {
             jQuery.getScript('https://billmate.se/billmate/base_jquery.js', function () {ldelim}addTerms(){rdelim});
         }
         var version = "1.7"
-        var PARTPAYMENT_EID = "{$eid}";
 
         var emptypersonerror = "{l s='PNO/SSN missing' mod='billmategateway'}";
         var checkbox_required = "{l s='Please check the checkbox for confirm this e-mail address is correct and can be used for invoicing.' mod='billmategateway'}";
@@ -188,17 +187,23 @@
         var loadingWindowTitle = '{l s='Processing....' mod='billmategateway'}';
 
         var windowtitlebillmate = "{l s='Pay by invoice can be made only to the address listed in the National Register. Would you make the purchase with address:' mod='billmategateway'}";
-        jQuery(document.body).on('click', '#billmate_button', function () {
-            var method = $(this).data('method');
-            if ($('form.billmate' + method).length > 1)
-                var form = $('form.realbillmate' + method).serializeArray();
-            else
-                var form = $('form.billmate' + method).serializeArray();
-            modalWin.HideModalPopUp();
+        jQuery(document.body).on('click', '#payment-confirmation button[type="submit"]', function (e) {
+            if($('#billmateinvoiceservice').is(':visible')) {
+                e.preventDefault();
 
-            if (!billmateprocessing) {
+                var method = 'invoiceservice';
+                if ($('form.billmate' + method).length > 1)
+                    var form = $('form.realbillmate' + method).serializeArray();
+                else
+                    var form = $('form.billmate' + method).serializeArray();
+                modalWin.HideModalPopUp();
 
-                getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
+                if (!billmateprocessing) {
+                    getData('&geturl=yes', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method);
+
+                }
+                return false;
+
             }
         });
         if ($('#pno').length) {

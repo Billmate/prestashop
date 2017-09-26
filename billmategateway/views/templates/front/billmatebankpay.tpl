@@ -1,6 +1,6 @@
- <div class="row">
+ <div class="row" style="display:none">
         <div class="col-xs-12">
-            <div class="payment_module">
+            <div class="payment_module" id="billmate-bankpay">
                 <style>
                     div.payment_module a.bankpay {
                         background: url("{$smarty.const._MODULE_DIR_}{$icon}") 15px 15px no-repeat #fbfbfb;
@@ -28,7 +28,7 @@
                         clear:both;
                     }
                     img[src*="billmate"]{
-                        float:right;
+                        float:left;
                         clear:both;
                     }
                     .payment-option > label > span {
@@ -43,11 +43,7 @@
                         text-decoration: underline;
                     }
                 </style>
-
-                    <a  class="bankpay" href="{$controller|escape:'url'}" id="billmatebankpay">{$name|escape:'html'}
-                    </a>
-
-
+                    <a  class="bankpay" href="{$controller|escape:'url'}" id="billmatebankpay">{$name|escape:'html'}</a>
             </div>
         </div>
     </div>

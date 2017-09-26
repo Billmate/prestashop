@@ -1,10 +1,9 @@
-<div class="row">
+<div class="row" style="display:none">
     <div class="col-xs-12">
-        <div class="payment_module">
+        <div class="payment_module" id="billmate-cardpay">
             <style>
                 div.payment_module a.cardpay {
                     background: url("{$smarty.const._MODULE_DIR_}{$icon}") 15px 15px no-repeat #fbfbfb;
-
                 }
                 div.payment_module a.cardpay:after{
                     display: block;
@@ -28,7 +27,7 @@
                     clear:both;
                 }
                 img[src*="billmate"]{
-                    float:right;
+                    float:left;
                     clear:both;
                 }
                 .payment-option > label > span {

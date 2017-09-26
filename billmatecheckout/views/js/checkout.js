@@ -653,6 +653,9 @@ jQuery(document).ready(function(){
     $("#layer_cart .layer_cart_cart a.button-medium").attr("href", billmate_checkout_url);
     $("#order p.cart_navigation a.standard-checkout").attr("href", billmate_checkout_url);
 
+    $('.cart-summary .checkout .btn').attr("href", billmate_checkout_url);
+    $('.cart-content-btn .btn').attr("href", billmate_checkout_url);
+
     $("#billmate_summary a.cart_quantity_delete").unbind('click').live('click', function(){ window.b_cart.deleteProductFromSummary($(this).attr('id')); return false; });
     $("#billmate_summary a.cart_quantity_up").unbind('click').live('click', function(){ window.b_cart.updateProduct('add',$(this).attr('id').replace('cart_quantity_up_', '')); return false;	});
     $("#billmate_summary a.cart_quantity_down").unbind('click').live('click', function(){ window.b_cart.updateProduct('sub',$(this).attr('id').replace('cart_quantity_down_', '')); return false; });
