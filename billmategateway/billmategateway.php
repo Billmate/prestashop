@@ -205,6 +205,8 @@
 			Configuration::updateValue('BPARTPAY_MIN_VALUE', Tools::getValue('partpayBillmateMinimumValue'));
 			Configuration::updateValue('BPARTPAY_MAX_VALUE', Tools::getValue('partpayBillmateMaximumValue'));
 			Configuration::updateValue('BPARTPAY_SORTORDER', Tools::getValue('partpayBillmateSortOrder'));
+
+			Configuration::updateValue('BSWISH_ORDER_STATUS', Tools::getValue('swishBillmateOrderStatus'));
 			if (Configuration::get('BPARTPAY_ENABLED') == 1 && $credentialvalidated)
 			{
 				$pclasses  = new pClasses();

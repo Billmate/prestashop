@@ -275,32 +275,32 @@
             e.preventDefault();
         })
 
-        $('#pay-with-' + $('input[name="payment-option"]:checked').attr('id')+ '-form form').on('submit',function (e) {
-            if($('#billmateinvoiceservice').is(':visible'))
-            {
-                e.preventDefault();
-                if ($('form.billmateinvoiceservice').length > 1) {
-                    var form = $('form.realbillmateinvoiceservice').serializeArray();
-                } else {
-                    var form = $('form.billmateinvoiceservice').serializeArray();
-                }
-                if ($.trim($('#pno_billmateinvoiceservice').val()) == '') {
-                    alert(emptypersonerror);
-                    if ($checkoutButton)
-                        $checkoutButton.disabled = false;
-                    return;
-                }
-                if ($('#agree_with_terms_billmateinvoiceservice').prop('checked') == true) {
+        $(function() {
+            $('#pay-with-' + $('input[name="payment-option"]:checked').attr('id') + '-form form').on('submit', function (e) {
+                if ($('#billmateinvoiceservice').is(':visible')) {
                     e.preventDefault();
-                    if (!billmateprocessing)
-                        getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'invoiceservice');
-                } else {
-                    alert($('<textarea/>').html(checkbox_required).text());
+                    if ($('form.billmateinvoiceservice').length > 1) {
+                        var form = $('form.realbillmateinvoiceservice').serializeArray();
+                    } else {
+                        var form = $('form.billmateinvoiceservice').serializeArray();
+                    }
+                    if ($.trim($('#pno_billmateinvoiceservice').val()) == '') {
+                        alert(emptypersonerror);
+                        if ($checkoutButton)
+                            $checkoutButton.disabled = false;
+                        return;
+                    }
+                    if ($('#agree_with_terms_billmateinvoiceservice').prop('checked') == true) {
+                        e.preventDefault();
+                        if (!billmateprocessing)
+                            getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'invoiceservice');
+                    } else {
+                        alert($('<textarea/>').html(checkbox_required).text());
+                    }
+
                 }
-
-            }
+            })
         })
-
 
         if ($('input[name="id_payment_method"]').length) {
             $(document).on('click', 'input[name="id_payment_method"]', function (element) {

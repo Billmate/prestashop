@@ -49,6 +49,8 @@
 				$this->db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatepartpay";');
 				$this->db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatecardpay";');
 				$this->db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmateinvoice";');
+				$this->db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmateswish";');
+
 				if(file_exists(_PS_MODULE_DIR_.'/billmategateway/methods/Invoiceservice.php')) {
 					$this->db->execute('DELETE FROM ' . _DB_PREFIX_ . 'module WHERE name = "billmateinvoiceservice";');
 					$this->db->execute('INSERT INTO '._DB_PREFIX_.'module (name,active,version) VALUES("billmateinvoiceservice",1,"2.0.0");');
@@ -57,6 +59,7 @@
 				$this->db->execute('INSERT INTO '._DB_PREFIX_.'module (name,active,version) VALUES("billmateinvoice",1,"2.0.0");');
 				$this->db->execute('INSERT INTO '._DB_PREFIX_.'module (name,active,version) VALUES("billmatecardpay",1,"2.0.0");');
 				$this->db->execute('INSERT INTO '._DB_PREFIX_.'module (name,active,version) VALUES("billmatepartpay",1,"2.0.0");');
+				$this->db->execute('INSERT INTO '._DB_PREFIX_.'module (name,active,version) VALUES("billmateswish",1,"2.0.0");');
 
 			}
 			catch (Exception $e)

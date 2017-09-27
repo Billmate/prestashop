@@ -1011,9 +1011,9 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             'country'       => Tools::strtoupper($this->context->country->iso_code),
             'orderid'       => Tools::substr($this->context->cart->id.'-'.time(), 0, 10),
             'logo' 			=> (Configuration::get('BILLMATE_LOGO')) ? Configuration::get('BILLMATE_LOGO') : '',
-            'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method),true),
-            'cancelurl'    => $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method),true),
-            'callbackurl'  => $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method),true)
+            'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method,'checkout' => true),true),
+            'cancelurl'    => $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method,'checkout' => true),true),
+            'callbackurl'  => $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method, 'checkout' => true),true)
 
         );
 

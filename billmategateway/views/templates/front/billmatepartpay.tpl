@@ -299,35 +299,36 @@
             e.preventDefault();
         })
 
+        $(function() {
+            $('#pay-with-' + $('input[name="payment-option"]:checked').attr('id') + '-form form').on('submit', function (e) {
+                console.log('test');
+                if ($('#billmatepartpay').is(':visible')) {
+                    e.preventDefault();
+                    if ($('#pno').length > 0) {
+                        $("#pno_billmatepartpay").val($('#pno').val());
+                    }
+                    if ($('form.billmatepartpay').length > 1) {
+                        var form = $('form.realbillmatepartpay').serializeArray();
+                    } else {
+                        var form = $('form.billmatepartpay').serializeArray();
+                    }
+                    if ($.trim($('#pno_billmatepartpay').val()) == '') {
+                        alert(emptypersonerror);
+                        if ($checkoutButton)
+                            $checkoutButton.disabled = false;
+                        return;
+                    }
+                    if ($('#agree_with_terms_billmatepartpay').prop('checked') == true) {
 
-        $('#pay-with-' + $('input[name="payment-option"]:checked').attr('id') + '-form form').on('submit',function (e) {
-            console.log('test');
-            if($('#billmatepartpay').is(':visible')) {
-                e.preventDefault();
-                if ($('#pno').length > 0) {
-                    $("#pno_billmatepartpay").val($('#pno').val());
+                        if (!billmateprocessing)
+                            getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'partpay');
+                    } else {
+                        alert($('<textarea/>').html(checkbox_required).text());
+                    }
+                    e.preventDefault();
                 }
-                if ($('form.billmatepartpay').length > 1) {
-                    var form = $('form.realbillmatepartpay').serializeArray();
-                } else {
-                    var form = $('form.billmatepartpay').serializeArray();
-                }
-                if ($.trim($('#pno_billmatepartpay').val()) == '') {
-                    alert(emptypersonerror);
-                    if ($checkoutButton)
-                        $checkoutButton.disabled = false;
-                    return;
-                }
-                if ($('#agree_with_terms_billmatepartpay').prop('checked') == true) {
 
-                    if (!billmateprocessing)
-                        getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'partpay');
-                } else {
-                    alert($('<textarea/>').html(checkbox_required).text());
-                }
-                e.preventDefault();
-            }
-
+            })
         })
         if ($('input[name="id_payment_method"]').length) {
             $(document).on('click', 'input[name="id_payment_method"]', function (element) {
