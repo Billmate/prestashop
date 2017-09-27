@@ -94,7 +94,7 @@
 					$orderObject = new Order($order_id);
 					if($orderObject->current_state == Configuration::get('BILLMATE_PAYMENT_PENDING') && $data['status'] != 'Pending'){
 						$orderHistory = new OrderHistory();
-						$status              = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
+						$status              = Configuration::get('B'.strtoupper($this->method).'_ORDER_STATUS');
 						$status = ($data['status'] == 'Cancelled') ? Configuration::get('PS_OS_CANCELED') : $status;
 						$orderHistory->id_order = (int) $orderObject->id;
 						$orderHistory->changeIdOrderState($status,(int) $orderObject->id, true);
@@ -126,7 +126,7 @@
 
 				$total  = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 				$extra  = array('transaction_id' => $data['number']);
-				$status = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
+				$status = Configuration::get('B'.strtoupper($this->method).'_ORDER_STATUS');;
 				$status = ($data['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
 				$total = $paymentInfo['Cart']['Total']['withtax'] / 100;
 				$this->module->validateOrder((int)$this->context->cart->id, $status,
