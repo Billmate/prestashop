@@ -408,7 +408,12 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
     {
         parent::initContent();
         if($this->context->cart->nbProducts() == 0){
-            $this->setTemplate('checkout-empty.tpl');
+            if(version_compare(_PS_VERSION_,'1.7','>=')){
+                $this->setTemplate('module:billmatecheckout/views/templates/front/checkout-empty17.tpl');
+
+            } else {
+                $this->setTemplate('checkout-empty.tpl');
+            }
         } else {
             CartRule::autoRemoveFromCart($this->context);
             CartRule::autoAddToCart($this->context);
@@ -635,7 +640,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             $temp['logo'] = false;
             $temp['id'] = $carrier['id_carrier'];
             $temp['extraContent'] = '';
-            $carriers17[] = $temp;
+            $carriers17[$carrier['id_carrier']] = $temp;
 
         }
 
