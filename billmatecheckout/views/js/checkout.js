@@ -655,11 +655,24 @@ jQuery(document).ready(function(){
 
     $('.cart-summary .checkout .btn').attr("href", billmate_checkout_url);
     $('.cart-content-btn .btn').attr("href", billmate_checkout_url);
-
-    $("#billmate_summary a.cart_quantity_delete").unbind('click').live('click', function(){ window.b_cart.deleteProductFromSummary($(this).attr('id')); return false; });
-    $("#billmate_summary a.cart_quantity_up").unbind('click').live('click', function(){ window.b_cart.updateProduct('add',$(this).attr('id').replace('cart_quantity_up_', '')); return false;	});
-    $("#billmate_summary a.cart_quantity_down").unbind('click').live('click', function(){ window.b_cart.updateProduct('sub',$(this).attr('id').replace('cart_quantity_down_', '')); return false; });
-
+    if( $("#billmate_summary a.cart_quantity_delete").length) {
+        $("#billmate_summary a.cart_quantity_delete").unbind('click').live('click', function () {
+            window.b_cart.deleteProductFromSummary($(this).attr('id'));
+            return false;
+        });
+    }
+    if($("#billmate_summary a.cart_quantity_up").length) {
+        $("#billmate_summary a.cart_quantity_up").unbind('click').live('click', function () {
+            window.b_cart.updateProduct('add', $(this).attr('id').replace('cart_quantity_up_', ''));
+            return false;
+        });
+    }
+    if($("#billmate_summary a.cart_quantity_down").length) {
+        $("#billmate_summary a.cart_quantity_down").unbind('click').live('click', function () {
+            window.b_cart.updateProduct('sub', $(this).attr('id').replace('cart_quantity_down_', ''));
+            return false;
+        });
+    }
     if(window.location.href == billmate_checkout_url) {
         $('body').attr('id', 'order');
     }
@@ -669,10 +682,11 @@ jQuery(document).ready(function(){
         if(selectedMethod != window.previousSelectedMethod){
             window.previousSelectedMethod = selectedMethod;
             var url = billmate_checkout_url
-            var delivery_option = $('.delivery-option input[type="radio"]').val();
+            var delivery_option = $('.delivery-option input[type="radio"]:checked').val();
+            var name = $('.delivery-option input[type="radio"]:checked').attr('name');
             var address_id = $('.delivery_option_radio:checked').data('id_address');
             var values = {};
-            values['delivery_option['+address_id+']'] = delivery_option;
+            values[name] = delivery_option;
             values['action'] = 'setShipping';
             values['ajax'] = 1
             jQuery.ajax({
