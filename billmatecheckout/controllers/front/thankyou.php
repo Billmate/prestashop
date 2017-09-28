@@ -27,7 +27,12 @@ class BillmatecheckoutThankyouModuleFrontController extends ModuleFrontControlle
 			'billmate_thankyou' => $billmate_url,
 			'HOOK_ORDER_CONFIRMATION' => $this->displayOrderConfirmation((int) ($result['id_order'])),
 		));
-		$this->setTemplate('billmate_thankyou.tpl');
+		if(version_compare(_PS_VERSION_,'1.7','>=')){
+			$this->setTemplate('module:billmatecheckout/views/templates/front/billmate_thankyou.tpl');
+
+		} else {
+			$this->setTemplate('billmate_thankyou.tpl');
+		}
 	}
 
 	public function verifyOrder($id_order)

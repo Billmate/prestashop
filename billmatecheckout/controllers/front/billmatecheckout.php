@@ -30,7 +30,17 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                 try {
                     if ($this->validateDeliveryOption(Tools::getValue('delivery_option'))) {
                         $validated = true;
-                        $this->context->cart->setDeliveryOption(Tools::getValue('delivery_option'));
+                        if(version_compare(_PS_VERSION_,'1.7','>=')) {
+                            $deliveryOption =  Tools::getValue('delivery_option');
+                            $realOption = array();
+                            foreach ($deliveryOption as $key => $value){
+                                $realOption[$key] = Cart::desintifier($value);
+                            }
+                            $this->context->cart->setDeliveryOption($realOption);
+                        }
+                        else
+                            $this->context->cart->setDeliveryOption(Tools::getValue('delivery_option'));
+
                     }
                     $updated = false;
                     if (!$this->context->cart->update()) {
