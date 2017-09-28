@@ -460,7 +460,11 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                 'delivery_option' => $delivery_option,
                 'back' => ''
             ));
-            $this->setTemplate('checkout.tpl');
+            if(version_compare(_PS_VERSION_,'1,7','>=')){
+                $this->setTemplate('module:billmatecheckout/views/templates/front/checkout17.tpl');
+            } else {
+                $this->setTemplate('checkout.tpl');
+            }
         }
     }
 
@@ -625,6 +629,15 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                 break;
             }
         }
+        $carriers17 = array();
+        foreach($carriers as $carrier){
+            $temp = $carrier;
+            $temp['logo'] = false;
+            $temp['id'] = $carrier['id_carrier'];
+            $temp['extraContent'] = '';
+            $carriers17[] = $temp;
+
+        }
 
         $this->context->smarty->assign('isVirtualCart', $this->context->cart->isVirtualCart());
 
@@ -634,6 +647,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             'checkedTOS' => (int)$this->context->cookie->checkedTOS,
             'recyclablePackAllowed' => (int)Configuration::get('PS_RECYCLABLE_PACK'),
             'giftAllowed' => (int)Configuration::get('PS_GIFT_WRAPPING'),
+            'gift' => array('allowed' => (int)Configuration::get('PS_GIFT_WRAPPING')),
             'cms_id' => (int)Configuration::get('PS_CONDITIONS_CMS_ID'),
             'conditions' => (int)Configuration::get('PS_CONDITIONS'),
             'link_conditions' => $link_conditions,
@@ -648,6 +662,21 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             'address_collection' => $this->context->cart->getAddressCollection(),
             'opc' => true,
             'oldMessage' => isset($old_message['message'])? $old_message['message'] : '',
+            'identifier' => 'shipping',
+            'step_is_current' => true,
+            'step_is_reachable' => true,
+            'step_is_complete' => false,
+            'position' => 1,
+            'title' => 'Frakt',
+            'delivery_message' => '',
+            'delivery_options' => $carriers17,//$this->context->cart->getDeliveryOptionList(),
+            'id_address' => $this->context->cart->id_address_delivery,
+            'hookDisplayBeforeCarrier' => Hook::exec('displayBeforeCarrier', array(
+                'carriers' => $carriers,
+                'delivery_option_list' => $this->context->cart->getDeliveryOptionList(),
+                'delivery_option' => $delivery_option
+            )),
+            'hookDisplayAfterCarrier' => '',
             'HOOK_BEFORECARRIER' => Hook::exec('displayBeforeCarrier', array(
                 'carriers' => $carriers,
                 'delivery_option_list' => $this->context->cart->getDeliveryOptionList(),
@@ -658,19 +687,25 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         Cart::addExtraCarriers($vars);
 
         $this->context->smarty->assign($vars);
+        if(version_compare(_PS_VERSION_,'1,7','>=')){
+            $carrierblock = $this->context->smarty->fetch(_PS_THEME_DIR_.'templates/checkout/_partials/steps/shipping.tpl');
+        } else {
+            $carrierblock = $this->context->smarty->fetch(_PS_THEME_DIR_.'order-carrier.tpl');
 
+        }
         if (!Address::isCountryActiveById((int)$this->context->cart->id_address_delivery) && $this->context->cart->id_address_delivery != 0) {
             $this->errors[] = Tools::displayError('This address is not in a valid area.');
         } elseif ((!Validate::isLoadedObject($address_delivery) || $address_delivery->deleted) && $this->context->cart->id_address_delivery != 0) {
             $this->errors[] = Tools::displayError('This address is invalid.');
         } else {
+
             $result = array(
                 'HOOK_BEFORECARRIER' => Hook::exec('displayBeforeCarrier', array(
                     'carriers' => $carriers,
                     'delivery_option_list' => $this->context->cart->getDeliveryOptionList(),
                     'delivery_option' => $this->context->cart->getDeliveryOption(null, true)
                 )),
-                'carrier_block' => $this->context->smarty->fetch(_PS_THEME_DIR_.'order-carrier.tpl')
+                'carrier_block' => $carrierblock
             );
 
             Cart::addExtraCarriers($result);
@@ -680,7 +715,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             return array(
                 'hasError' => true,
                 'errors' => $this->errors,
-                'carrier_block' => $this->context->smarty->fetch(_PS_THEME_DIR_.'order-carrier.tpl')
+                'carrier_block' => $carrierblock
             );
         }
     }
@@ -704,7 +739,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         if($hash = $this->context->cookie->__get('BillmateHash')){
             $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
             if(!isset($result['code'])){
-                if(strtolower($result['PaymentData']['order']['status']) != 'created' && strtolower($result['PaymentData']['order']['status']) != 'paid'){
+                if(isset($result['PaymentData']['order']) && (strtolower($result['PaymentData']['order']['status']) != 'created' && strtolower($result['PaymentData']['order']['status']) != 'paid')){
                     $updateResult = $this->updateCheckout($result);
 
                     if(!isset($updateResult['code'])){

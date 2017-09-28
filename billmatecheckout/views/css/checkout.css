@@ -42,6 +42,9 @@
     display: none;
     height:0px;
 }
+#shippingdiv .order-options{
+    display:none;
+}
 
 /* Anytime the body has the loading class, our
    modal element will be visible */

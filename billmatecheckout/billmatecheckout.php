@@ -186,15 +186,12 @@ class BillmateCheckout extends PaymentModule{
             return;
         }
         $this->context->controller->addCSS(__DIR__.'/views/css/checkout.css', 'all');
-        error_log('folder'.__DIR__);
+        
         if (Configuration::get('BILLMATE_CHECKOUT_ACTIVATE')) {
             $this->context->controller->addJS(__DIR__.'/views/js/checkout.js');
-            $this->smarty->assign(
-                'billmate_checkout_url',
-                $this->context->link->getModuleLink('billmatecheckout', 'billmatecheckout', array(), true)
-            );
+            Media::addJsDef(array('billmate_checkout_url' =>
+                $this->context->link->getModuleLink('billmatecheckout', 'billmatecheckout', array(), true)));
 
-            return $this->display(__FILE__, 'header.tpl');
         }
     }
 
