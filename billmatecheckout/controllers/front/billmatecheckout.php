@@ -739,7 +739,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         if($hash = $this->context->cookie->__get('BillmateHash')){
             $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
             if(!isset($result['code'])){
-                if(isset($result['PaymentData']['order']) && (strtolower($result['PaymentData']['order']['status']) != 'created' && strtolower($result['PaymentData']['order']['status']) != 'paid')){
+                if(isset($result['PaymentData']['order']) && isset($result['PaymentData']['order']['status']) && (strtolower($result['PaymentData']['order']['status']) != 'created' && strtolower($result['PaymentData']['order']['status']) != 'paid')){
                     $updateResult = $this->updateCheckout($result);
 
                     if(!isset($updateResult['code'])){

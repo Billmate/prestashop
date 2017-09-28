@@ -45,6 +45,9 @@
 #shippingdiv .order-options{
     display:none;
 }
+#shippingdiv .delivery-options-list button{
+    display:none;
+}
 
 /* Anytime the body has the loading class, our
    modal element will be visible */
