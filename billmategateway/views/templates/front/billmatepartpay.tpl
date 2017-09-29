@@ -153,11 +153,11 @@
             </div>
         </div>
         
-        <!--div style="padding:10px; padding-top:0px;">
+        <div style="padding:10px; padding-top:0px;">
             <button type="submit" style="margin-bottom:10px;" class="btn btn-default button button-medium pull-right"
                     id="{$type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span>
             </button>
-        </div-->
+        </div>
     </form>
 </div>
 <script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
@@ -299,36 +299,28 @@
             e.preventDefault();
         })
 
-        $(function() {
-            $('#pay-with-' + $('input[name="payment-option"]:checked').attr('id') + '-form form').on('submit', function (e) {
-                console.log('test');
-                if ($('#billmatepartpay').is(':visible')) {
-                    e.preventDefault();
-                    if ($('#pno').length > 0) {
-                        $("#pno_billmatepartpay").val($('#pno').val());
-                    }
-                    if ($('form.billmatepartpay').length > 1) {
-                        var form = $('form.realbillmatepartpay').serializeArray();
-                    } else {
-                        var form = $('form.billmatepartpay').serializeArray();
-                    }
-                    if ($.trim($('#pno_billmatepartpay').val()) == '') {
-                        alert(emptypersonerror);
-                        if ($checkoutButton)
-                            $checkoutButton.disabled = false;
-                        return;
-                    }
-                    if ($('#agree_with_terms_billmatepartpay').prop('checked') == true) {
-
-                        if (!billmateprocessing)
-                            getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'partpay');
-                    } else {
-                        alert($('<textarea/>').html(checkbox_required).text());
-                    }
-                    e.preventDefault();
-                }
-
-            })
+        $('#billmatepartpaySubmit').click(function (e) {
+            if ($('#pno').length > 0) {
+                $("#pno_billmatepartpay").val($('#pno').val());
+            }
+            if ($('form.billmatepartpay').length > 1) {
+                var form = $('form.realbillmatepartpay').serializeArray();
+            } else {
+                var form = $('form.billmatepartpay').serializeArray();
+            }
+            if ($.trim($('#pno_billmatepartpay').val()) == '') {
+                alert(emptypersonerror);
+                if ($checkoutButton)
+                    $checkoutButton.disabled = false;
+                return;
+            }
+            if ($('#agree_with_terms_billmatepartpay').prop('checked') == true) {
+                if (!billmateprocessing)
+                    getData('', form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'partpay');
+            } else {
+                alert($('<textarea/>').html(checkbox_required).text());
+            }
+            e.preventDefault();
         })
         if ($('input[name="id_payment_method"]').length) {
             $(document).on('click', 'input[name="id_payment_method"]', function (element) {

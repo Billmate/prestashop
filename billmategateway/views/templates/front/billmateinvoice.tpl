@@ -139,9 +139,9 @@
                        {$agreements nofilter}
             </div>
         </div>
-        <!--div class="form-group">
+        <div class="form-group">
             <button type="submit" class="btn btn-secondary" id="{$type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span></button>
-        </div-->
+        </div>
     </form>
 </div>
 
@@ -288,41 +288,35 @@
             e.preventDefault();
         })
 
-        $(function() {
-            $('#pay-with-' + $('input[name="payment-option"]:checked').attr('id') + '-form form').on('submit', function (e) {
-                if ($('#billmateinvoice').is(':visible')) {
-                    console.log('testClick');
-                    e.preventDefault();
-                    if ($('#pno').length > 0) {
-                        $("#pno_billmateinvoice").val($('#pno').val());
-                    }
-                    if ($('form.billmateinvoice').length > 1) {
-                        var form = $('form.realbillmateinvoice').serializeArray();
-                    } else {
-                        var form = $('form.billmateinvoice').serializeArray();
-                    }
-                    if ($.trim($('#pno_billmateinvoice').val()) == '') {
-                        alert(emptypersonerror);
-                        if ($checkoutButton)
-                            $checkoutButton.disabled = false;
-                        return;
-                    }
-                    if ($('#agree_with_terms_billmateinvoice').prop('checked') == true) {
-                        console.log(form);
-                        var data = '';
-                        if ($('#invoice_address').prop('checked') == true)
-                            data = '&invoice_address=true';
-                        e.preventDefault();
-                        if (!billmateprocessing)
-                            getData(data, form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'invoice');
-                        return;
-                    } else {
-                        alert($('<textarea/>').html(checkbox_required).text());
-                    }
 
-                }
-            })
-        });
+        $('#billmateinvoiceSubmit').click(function (e) {
+            console.log('testClick');
+            if ($('#pno').length > 0) {
+                $("#pno_billmateinvoice").val($('#pno').val());
+            }
+            if ($('form.billmateinvoice').length > 1) {
+                var form = $('form.realbillmateinvoice').serializeArray();
+            } else {
+                var form = $('form.billmateinvoice').serializeArray();
+            }
+            if ($.trim($('#pno_billmateinvoice').val()) == '') {
+                alert(emptypersonerror);
+                if ($checkoutButton)
+                    $checkoutButton.disabled = false;
+                return;
+            }
+            if ($('#agree_with_terms_billmateinvoice').prop('checked') == true) {
+                console.log(form);
+                var data = '';
+                if ($('#invoice_address').prop('checked') == true)
+                    data = '&invoice_address=true';
+                if (!billmateprocessing)
+                    getData(data, form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, 'invoice');
+            } else {
+                alert($('<textarea/>').html(checkbox_required).text());
+            }
+            e.preventDefault();
+        })
         if ($('input[name="id_payment_method"]').length) {
             $(document).on('click', 'input[name="id_payment_method"]', function (element) {
 
