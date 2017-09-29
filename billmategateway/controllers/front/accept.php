@@ -81,6 +81,30 @@
 			if (!isset($data['code']) && !isset($data['error']))
 			{
 				$paymentInfo = $this->billmate->getPaymentinfo(array('number' => $data['number']));
+
+				if(!isset($paymentInfo['code'])){
+					switch($paymentInfo['PaymentData']['method']){
+						case '4':
+							$this->method = 'partpay';
+							break;
+						case '8':
+							$this->method = 'cardpay';
+							break;
+						case '16':
+							$this->method = 'bankpay';
+							break;
+						case '1024':
+							$this->method = 'swish';
+							break;
+						default:
+							$this->method = 'invoice';
+							break;
+
+					}
+				}
+				$class        = "BillmateMethod".Tools::ucfirst($this->method);
+				$this->module = new $class;
+
 				$lockfile   = _PS_CACHE_DIR_.$data['orderid'];
 				$processing = file_exists($lockfile);
 				if ($this->context->cart->orderExists() || $processing)
