@@ -7,7 +7,7 @@
  */
 class BillmatecheckoutThankyouModuleFrontController extends ModuleFrontController{
 
-	public $display_column_left = false;
+	public $display_column_left = true;
 	public $display_column_right = false;
 	public $ssl = true;
 	public $thankyou_content = null;
@@ -25,10 +25,11 @@ class BillmatecheckoutThankyouModuleFrontController extends ModuleFrontControlle
 
 		$this->context->smarty->assign(array(
 			'billmate_thankyou' => $billmate_url,
+			'HOOK_HEADER' => Hook::exec('displayHeader'),
 			'HOOK_ORDER_CONFIRMATION' => $this->displayOrderConfirmation((int) ($result['id_order'])),
 		));
 		if(version_compare(_PS_VERSION_,'1.7','>=')){
-			$this->setTemplate('module:billmatecheckout/views/templates/front/billmate_thankyou.tpl');
+			$this->setTemplate('module:billmatecheckout/views/templates/front/billmate_thankyou17.tpl');
 
 		} else {
 			$this->setTemplate('billmate_thankyou.tpl');
