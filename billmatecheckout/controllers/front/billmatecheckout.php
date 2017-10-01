@@ -475,7 +475,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                 'delivery_option' => $delivery_option,
                 'back' => ''
             ));
-            if(version_compare(_PS_VERSION_,'1,7','>=')){
+            if(version_compare(_PS_VERSION_,'1.7','>=')){
                 $this->setTemplate('module:billmatecheckout/views/templates/front/checkout17.tpl');
             } else {
                 $this->setTemplate('checkout.tpl');
@@ -702,7 +702,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         Cart::addExtraCarriers($vars);
 
         $this->context->smarty->assign($vars);
-        if(version_compare(_PS_VERSION_,'1,7','>=')){
+        if(version_compare(_PS_VERSION_,'1.7','>=')){
             $carrierblock = $this->context->smarty->fetch(_PS_THEME_DIR_.'templates/checkout/_partials/steps/shipping.tpl');
         } else {
             $carrierblock = $this->context->smarty->fetch(_PS_THEME_DIR_.'order-carrier.tpl');
