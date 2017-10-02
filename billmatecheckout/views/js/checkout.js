@@ -159,7 +159,7 @@ var BillmateIframe = new function(){
                     self.createOrder(json.data);
                     break;
                 case 'content_height':
-                    $('checkout').height = json.data;
+                    $('#checkout').height = json.data;
                     break;
                 case 'content_scroll_position':
                     console.log('Scroll position'+json.data);
