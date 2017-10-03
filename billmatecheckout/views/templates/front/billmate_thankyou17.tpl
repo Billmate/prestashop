@@ -15,7 +15,7 @@
 
 
                     <div id="order-conf">
-                        {$HOOK_ORDER_CONFIRMATION nofilter}
+                        {$order_conf nofilter}
 
                     </div>
 

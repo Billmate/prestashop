@@ -26,7 +26,7 @@ class BillmatecheckoutThankyouModuleFrontController extends ModuleFrontControlle
 		$this->context->smarty->assign(array(
 			'billmate_thankyou' => $billmate_url,
 			'HOOK_HEADER' => Hook::exec('displayHeader'),
-			'HOOK_ORDER_CONFIRMATION' => $this->displayOrderConfirmation((int) ($result['id_order'])),
+			'order_conf' => $this->displayOrderConfirmation((int) ($result['id_order'])),
 		));
 		if(version_compare(_PS_VERSION_,'1.7','>=')){
 			$this->setTemplate('module:billmatecheckout/views/templates/front/billmate_thankyou17.tpl');
