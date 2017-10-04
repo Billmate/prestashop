@@ -120,9 +120,12 @@ var BillmateIframe = new function(){
             console.log('initEventListeners');
             window.addEventListener("message",self.handleEvent);
             if($('#billmate_summary').length) {
-                prestashop.on('updatedCart', function (e) {
-                    location.reload();
-                })
+
+                if(typeof prestashop != 'undefined') {
+                    prestashop.on('updatedCart', function (e) {
+                        location.reload();
+                    })
+                }
             }
         });
 
