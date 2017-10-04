@@ -48,6 +48,16 @@
 #shippingdiv .delivery-options-list button{
     display:none;
 }
+#shippingdiv input[type="radio"]:checked + span {
+    display: block;
+    background-color: gray;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: absolute;
+    left: 0.125rem;
+    top: 0.125rem;
+}
 
 /* Anytime the body has the loading class, our
    modal element will be visible */

@@ -684,14 +684,16 @@ jQuery(document).ready(function(){
     if(window.location.href == billmate_checkout_url) {
         $('body').attr('id', 'order');
     }
-    $('body').on('click','.delivery-option input[type="radio"]',function(e){
-        e.preventDefault();
+    $('body').on('change','.delivery-option input[type="radio"]',function(e){
+
         var selectedMethod = e.target.value;
         if(selectedMethod != window.previousSelectedMethod){
             window.previousSelectedMethod = selectedMethod;
             var url = billmate_checkout_url
             var delivery_option = $('.delivery-option input[type="radio"]:checked').val();
             var name = $('.delivery-option input[type="radio"]:checked').attr('name');
+            var id = $('.delivery-option input[type="radio"]:checked').attr('id');
+
             var address_id = $('.delivery_option_radio:checked').data('id_address');
             var values = {};
             values[name] = delivery_option;
@@ -704,10 +706,12 @@ jQuery(document).ready(function(){
                     var result = JSON.parse(response);
                     console.log(result);
                     if(result.hasOwnProperty("update_checkout") && result.update_checkout === true){
+                        $(id).attr('checked',true);
                         window.b_iframe.updateCheckout();
                     }
                 }
             })
+            e.preventDefault();
         }
     })
     $('body').on('click','.delivery_option_radio',function(e){
