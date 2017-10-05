@@ -205,6 +205,8 @@
 			Configuration::updateValue('BPARTPAY_MIN_VALUE', Tools::getValue('partpayBillmateMinimumValue'));
 			Configuration::updateValue('BPARTPAY_MAX_VALUE', Tools::getValue('partpayBillmateMaximumValue'));
 			Configuration::updateValue('BPARTPAY_SORTORDER', Tools::getValue('partpayBillmateSortOrder'));
+
+			Configuration::updateValue('BSWISH_ORDER_STATUS', Tools::getValue('swishBillmateOrderStatus'));
 			if (Configuration::get('BPARTPAY_ENABLED') == 1 && $credentialvalidated)
 			{
 				$pclasses  = new pClasses();
@@ -238,6 +240,7 @@
 				'country'  => 'se'
 			);
 			$result              = $billmate->getPaymentplans($data);
+
 			if (isset($result['code']) && ($result['code'] == '9010' || $result['code'] == '9012' || $result['code'] == '9013'))
 			{
 				$this->postErrors[] = utf8_encode($result['message']);
@@ -317,6 +320,8 @@
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatepartpay";');
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatecardpay";');
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmateinvoice";');
+			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmateinvoiceservice";');
+			return true;
 		}
 
 		/**
@@ -364,6 +369,9 @@
 
 		public function registerHooks()
 		{
+			$extra = true;
+			if(version_compare(_PS_VERSION_,'1.7','>='))
+				$extra = $this->registerHook('paymentOptions');
 			return $this->registerHook('displayPayment') &&
 				   $this->registerHook('payment') &&
 				   $this->registerHook('paymentReturn') &&
@@ -375,11 +383,16 @@
 					$this->registerHook('displayCustomerAccountFormTop') &&
 					$this->registerHook('actionOrderSlipAdd') &&
 					$this->registerHook('orderSlip') &&
-					$this->registerHook('displayProductButtons');
+					$this->registerHook('displayProductButtons') &&
+					$extra;
+
 		}
 
 		public function hookDisplayProductButtons($params)
 		{
+			if(!is_object($params['product'])){
+				return '';
+			}
 			$cost = (1+($params['product']->tax_rate/100))*$params['product']->base_price;
 
 			require_once(_PS_MODULE_DIR_.'/billmategateway/methods/Partpay.php');
@@ -463,6 +476,35 @@
 			}
 		}
 
+		public function getAvailableMethods()
+		{
+			if($this->billmate_merchant_id && $this->billmate_secret) {
+				$billmate = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, false);
+				$result = $billmate->getAccountinfo(array('time' => time()));
+
+				$mapCodeToMethod = array(
+					1 => 'invoice',
+					2 => 'invoiceservice',
+					4 => 'partpay',
+					8 => 'cardpay',
+					16 => 'bankpay'
+				);
+				$paymentOptions = array();
+				$logfile   = _PS_CACHE_DIR_.'Billmate.log';
+				file_put_contents($logfile, print_r($result['paymentoptions'],true),FILE_APPEND);
+				foreach ($result['paymentoptions'] as $option) {
+					if(isset($mapCodeToMethod[$option['method']])) {
+						$paymentOptions[$option['method']] = $mapCodeToMethod[$option['method']];
+					} else
+						continue;
+				}
+
+				return $paymentOptions;
+			} else {
+				return array();
+			}
+
+		}
 		public function hookDisplayBackOfficeHeader()
 		{
 			if (isset($this->context->cookie->error) && Tools::strlen($this->context->cookie->error) > 2)
@@ -872,16 +914,36 @@
 
 		}
 
+		public function hookPaymentOptions($params)
+		{
+			$methods = $this->getMethodOptions($params['cart']);
+			$this->smarty->assign(
+				array(
+					'var'        => array(
+						'path'          => $this->_path,
+						'this_path_ssl' => (_PS_VERSION_ >= 1.4 ? Tools::getShopDomainSsl(true, true) : '').__PS_BASE_URI__.'modules/'.$this->moduleName.'/'
+					),
+					'template' => 'ps17',
+					'methods'    => $methods,
+					'ps_version' => _PS_VERSION_,
+					'eid' => $this->billmate_merchant_id
+				)
+			);
+
+			return $methods;
+		}
+
 		public function getFileName()
 		{
 			return __FILE__;
 		}
 
-		public function getMethods($cart)
+		public function getMethodOptions($cart)
 		{
 			$data = array();
 
 			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'/billmategateway/methods', FilesystemIterator::SKIP_DOTS);
+			$paymentMethodsAvailable = $this->getAvailableMethods();
 
 			foreach ($methodFiles as $file)
 			{
@@ -889,6 +951,61 @@
 				if ($class == 'index')
 					continue;
 
+				if(!in_array(strtolower($class),$paymentMethodsAvailable))
+					continue;
+
+				include_once($file->getPathname());
+
+				$class = "BillmateMethod".$class;
+				$method = new $class();
+				$result = $method->getPaymentInfo($cart);
+
+				if (!$result)
+					continue;
+				$newOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+				try{
+					$this->smarty->assign($result);
+					$this->smarty->assign(array('eid' => Configuration::get('BILLMATE_ID')));
+					$this->smarty->escape_html = false;
+					$newOption->setModuleName($this->name)
+						->setCallToActionText($result['name'])
+						->setAction($result['controller'])
+						->setLogo($this->context->link->getBaseLink().'/modules/'.$result['icon'])
+						->setAdditionalInformation($this->fetch('module:billmategateway/views/templates/front/'.$result['type'].'.tpl'));
+
+				} catch(Exception $e){
+					die($e->getMessage()."\r\n".$e->getTraceAsString());
+				}
+				if ($result['sort_order'])
+				{
+					if (array_key_exists($result['sort_order'], $data))
+						$data[$result['sort_order'] + 1] = $newOption;
+					else
+						$data[$result['sort_order']] = $newOption;
+				}
+				else
+					$data[] = $newOption;
+
+
+			}
+			ksort($data);
+			return $data;
+		}
+
+		public function getMethods($cart)
+		{
+			$data = array();
+
+			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'/billmategateway/methods', FilesystemIterator::SKIP_DOTS);
+			$paymentMethodsAvailable = $this->getAvailableMethods();
+			foreach ($methodFiles as $file)
+			{
+				$class = $file->getBasename('.php');
+				if ($class == 'index')
+					continue;
+
+				if(!in_array(strtolower($class),$paymentMethodsAvailable))
+					continue;
 
 				include_once($file->getPathname());
 
@@ -917,11 +1034,16 @@
 		public function getMethodInfo($name, $key)
 		{
 			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'billmategateway/methods', FilesystemIterator::SKIP_DOTS);
+			$paymentMethodsAvailable = $this->getAvailableMethods();
+
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
 				if ($class == 'index')
 					continue;
+				if(!in_array(strtolower($class),$paymentMethodsAvailable))
+					continue;
+
 				include_once($file->getPathname());
 
                 $class = "BillmateMethod".$class;
@@ -943,11 +1065,14 @@
 			$data = array();
 
 			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'billmategateway/methods', FilesystemIterator::SKIP_DOTS);
+			$paymentMethodsAvailable = $this->getAvailableMethods();
 
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
 				if ($class == 'index')
+					continue;
+				if(!in_array(strtolower($class),$paymentMethodsAvailable))
 					continue;
 
 				include_once($file->getPathname());
@@ -1075,11 +1200,15 @@
 
 		public function hookPaymentReturn($params)
 		{
-			return $this->hookOrderConfirmation($params);
+			if(Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 0)
+				return $this->hookOrderConfirmation($params);
 		}
 
 		public function hookOrderConfirmation($params)
 		{
-			return $this->display(__FILE__, 'orderconfirmation.tpl');
+			if(Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 0) {
+				$this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
+				return $this->display(__FILE__, 'orderconfirmation.tpl');
+			}
 		}
 	}

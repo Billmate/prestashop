@@ -10,6 +10,8 @@
 	/*
 	 * Class for BillmatePartpayment related stuff
 	 */
+require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
+
 
 	class BillmateMethodPartpay extends BillmateGateway {
 
@@ -62,7 +64,7 @@
 				'type'         => $this->name,
 				'controller'   => $this->validation_controller,
 				'icon'         => $this->icon,
-				'agreements'   => sprintf('<span>'.$this->module->l('My email is accurate and can be used for invoicing.','partpay').'<br/> <a id="terms-partpay" style="cursor:pointer!important">'.$this->module->l('I also confirm the terms for invoice payment','partpay').'</a> '.$this->module->l('and accept the liability.','partpay').'</span>'),
+				'agreements'   => '<span>'.$this->module->l('My email is accurate and can be used for invoicing.','partpay').'<br/> <a id="terms-partpay" style="cursor:pointer!important">'.$this->module->l('I also confirm the terms for invoice payment','partpay').'</a> '.$this->module->l('and accept the liability.','partpay').'</span>',
 				'pClasses'     => $pclasses,
 				'monthly_cost' => $this->getMonthlyCost($cart)
 
@@ -73,7 +75,7 @@
 		{
 			$settings       = array();
 			$statuses       = OrderState::getOrderStates((int)$this->context->language->id);
-			$currency       = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
+			$currency       = Currency::getDefaultCurrency();
 			$statuses_array = array();
 			foreach ($statuses as $status)
 				$statuses_array[$status['id_order_state']] = $status['name'];
@@ -111,7 +113,7 @@
 				'required' => false,
 				'value'    => (float)Configuration::get('BPARTPAY_MIN_VALUE'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Minimum Value ','partpay').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Minimum Value ','partpay').' ('.$currency->sign.')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['maximum_value'] = array(
@@ -119,7 +121,7 @@
 				'required' => false,
 				'value'    => Configuration::get('BPARTPAY_MAX_VALUE') != 0 ? (float)Configuration::get('BPARTPAY_MAX_VALUE') : 99999,
 				'type'     => 'text',
-				'label'    => $this->module->l('Maximum Value ','partpay').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Maximum Value ','partpay').' ('.$currency->sign.')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['sort'] = array(

@@ -11,6 +11,8 @@
 	 * Class for BillmateCardpay related stuff
 	 */
 
+require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
+
 	class BillmateMethodCardpay extends BillmateGateway {
 
 		public function __construct()
@@ -61,7 +63,7 @@
 		{
 			$settings       = array();
 			$statuses       = OrderState::getOrderStates((int)$this->context->language->id);
-			$currency       = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
+			$currency       = Currency::getDefaultCurrency();
 			$statuses_array = array();
 			foreach ($statuses as $status)
 				$statuses_array[$status['id_order_state']] = $status['name'];
@@ -112,7 +114,7 @@
 				'required' => false,
 				'value'    => (float)Configuration::get('BCARDPAY_MIN_VALUE'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Minimum Value ','cardpay').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Minimum Value ','cardpay').' ('.$currency->sign.')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['maximum_value'] = array(
@@ -120,7 +122,7 @@
 				'required' => false,
 				'value'    => Configuration::get('BCARDPAY_MAX_VALUE') != 0 ? (float)Configuration::get('BCARDPAY_MAX_VALUE') : 99999,
 				'type'     => 'text',
-				'label'    => $this->module->l('Maximum Value ','cardpay').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Maximum Value ','cardpay').' ('.$currency->sign.')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['sort'] = array(

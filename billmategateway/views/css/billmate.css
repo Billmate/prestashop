@@ -426,3 +426,10 @@ input#billmate-btn{
     margin: 0px auto;
     width: 974px;
 }
+
+
+img[src*="billmate"]{
+    clear:both;
+    float:left !important;
+
+}

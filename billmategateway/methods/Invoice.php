@@ -10,8 +10,10 @@
 	/*
 	 * Class for BillmateInvoice related stuff
 	 */
+require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
 
-	class BillmateMethodInvoice extends BillmateGateway {
+
+class BillmateMethodInvoice extends BillmateGateway {
 
 		public function __construct()
 		{
@@ -56,7 +58,7 @@
 				'type'       => $this->name,
 				'controller' => $this->validation_controller,
 				'icon'       => $this->icon,
-				'agreements' => sprintf('<span>'.$this->module->l('My email is accurate and can be used for invoicing.','invoice').'<br/> <a id="terms" style="cursor:pointer!important">'.$this->module->l('I also confirm the terms for invoice payment','invoice').'</a> '.$this->module->l('and accept the liability.','invoice').'</span>'),
+				'agreements' => '<span>'.$this->module->l('My email is accurate and can be used for invoicing.','invoice').'<br/> <a id="terms" style="cursor:pointer!important">'.$this->module->l('I also confirm the terms for invoice payment','invoice').'</a> '.$this->module->l('and accept the liability.','invoice').'</span>',
 				'invoiceFee' => $this->getFee()
 			);
 		}
@@ -65,7 +67,7 @@
 		{
 			$settings = array();
 			$statuses = OrderState::getOrderStates((int)$this->context->language->id);
-			$currency = Currency::getCurrency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
+			$currency       = Currency::getDefaultCurrency();
 			$taxes    = Tax::getTaxes($this->context->language->id);
 
 			$taxes_array = array();
@@ -101,7 +103,7 @@
 				'value'    => (float)Configuration::get('BINVOICE_FEE'),
 				'type'     => 'text',
 				'label'    => $this->module->l('Invoice fee ex. VAT ','invoice'),
-				'desc'     => $currency['iso_code'],
+				'desc'     => $currency->iso_code,
 			);
 
 			$settings['invoice_fee_tax'] = array(
@@ -129,7 +131,7 @@
 				'required' => false,
 				'value'    => (float)Configuration::get('BINVOICE_MIN_VALUE'),
 				'type'     => 'text',
-				'label'    => $this->module->l('Minimum Value ','invoice').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Minimum Value ','invoice').' ('.$currency->sign.')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['maximum_value'] = array(
@@ -137,7 +139,7 @@
 				'required' => false,
 				'value'    => Configuration::get('BINVOICE_MAX_VALUE') != 0 ? (float)Configuration::get('BINVOICE_MAX_VALUE') : 99999,
 				'type'     => 'text',
-				'label'    => $this->module->l('Maximum Value ','invoice').' ('.$currency['sign'].')',
+				'label'    => $this->module->l('Maximum Value ','invoice').' ('.$currency->sign.')',
 				'desc'     => $this->module->l(''),
 			);
 			$settings['sort'] = array(
@@ -214,9 +216,10 @@
 					die(Tools::displayError());
 
 				// For each package, generate an order
-				$delivery_option_list = $this->context->cart->getDeliveryOptionList();
-				$package_list = $this->context->cart->getPackageList();
-				$cart_delivery_option = $this->context->cart->getDeliveryOption();
+				$delivery_option_list = $this->context->cart->getDeliveryOptionList(null,true);
+				$package_list = $this->context->cart->getPackageList(true);
+				$cart_delivery_option = $this->context->cart->getDeliveryOption(null,false,false);
+
 
 				// If some delivery options are not defined, or not valid, use the first valid option
 				foreach ($delivery_option_list as $id_address => $package)

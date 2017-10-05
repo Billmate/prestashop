@@ -67,6 +67,29 @@
 
 			if (!isset($data['code']) && !isset($data['error']))
 			{
+				$paymentInfo = $this->billmate->getPaymentinfo(array('number' => $data['number']));
+				if(!isset($paymentInfo['code'])){
+					switch($paymentInfo['PaymentData']['method']){
+						case '4':
+							$this->method = 'partpay';
+							break;
+						case '8':
+							$this->method = 'cardpay';
+							break;
+						case '16':
+							$this->method = 'bankpay';
+							break;
+						case '1024':
+							$this->method = 'swish';
+							break;
+						default:
+							$this->method = 'invoice';
+							break;
+
+					}
+				}
+				$class        = "BillmateMethod".Tools::ucfirst($this->method);
+				$this->module = new $class;
 				$lockfile   = _PS_CACHE_DIR_.$data['orderid'];
 				$processing = file_exists($lockfile);
 				$order        = $data['orderid'];
@@ -87,7 +110,7 @@
 						$orderHistory = new OrderHistory();
 						$orderHistory->id_order = (int) $orderObject->id;
 
-						$status              = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
+						$status              = Configuration::get('B'.strtoupper($this->method).'_ORDER_STATUS');
 						$status = ($data['status'] == 'Cancelled') ? Configuration::get('PS_OS_CANCELED') : $status;
 						$orderHistory->changeIdOrderState($status, $order_id, true);
 						$orderHistory->add();
@@ -105,8 +128,9 @@
 				$customer            = new Customer($this->context->cart->id_customer);
 				$total               = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 				$extra               = array('transaction_id' => $data['number']);
-				$status              = ($this->method == 'cardpay') ? Configuration::get('BCARDPAY_ORDER_STATUS') : Configuration::get('BBANKPAY_ORDER_STATUS');
+				$status              = Configuration::get('B'.strtoupper($this->method).'_ORDER_STATUS');
 				$status = ($data['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
+				$total = $paymentInfo['Cart']['Total']['withtax'] / 100;
 				$this->module->validateOrder((int)$this->context->cart->id, $status, $total,
 					$this->module->displayName, null, $extra, null, false, $customer->secure_key);
 				$values = array();

@@ -52,7 +52,7 @@
 				'language' => $language,//Swedish
 			);
 			$data                  = $billmate->getPaymentplans($values);
-
+			
 			$db = Db::getInstance();
 			//$db->Execute('TRUNCATE TABLE `'._DB_PREFIX_.'billmate_payment_pclasses`');
 			if(self::hasPclasses($language,true))
