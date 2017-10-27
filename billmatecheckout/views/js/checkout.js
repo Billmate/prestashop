@@ -183,19 +183,27 @@ var BillmateIframe = new function(){
     };
 
     this.updateCheckout = function(){
-        console.log('update_checkout');
-        var win = document.getElementById('checkout').contentWindow;
-        win.postMessage(JSON.stringify({event: 'update_checkout'}),'*')
+        var win = $(document).find('#checkout');
+        if ( win.lenght > 0) {
+            win = win.contentWindow;
+            win.postMessage(JSON.stringify({event: 'update_checkout'}),'*');
+        }
     }
 
     this.lock = function() {
-        var win = document.getElementById('checkout').contentWindow;
-        win.postMessage('lock', '*');
+        var win = $(document).find('#checkout');
+        if ( win.lenght > 0) {
+            win = win.contentWindow;
+            win.postMessage('lock', '*');
+        }
     }
 
     this.unlock = function() {
-        var win = document.getElementById('checkout').contentWindow;
-        win.postMessage('unlock', '*');
+        var win = $(document).find('#checkout');
+        if ( win.lenght > 0) {
+            win = win.contentWindow;
+            win.postMessage('unlock', '*');
+        }
     }
 };
 
