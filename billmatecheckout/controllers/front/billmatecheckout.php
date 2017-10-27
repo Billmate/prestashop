@@ -185,7 +185,22 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
 
             $billing_address_id = $shipping_address_id = $matched_address_id;
 
-            if(isset($customer['Shipping']) && count($customer['Shipping']) > 0 && isset($customer['Shipping']['street'])){
+            if (    isset($customer['Shipping']) AND
+                    is_array($customer['Shipping']) AND
+                    isset($customer['Shipping']['firstname']) AND
+                    isset($customer['Shipping']['lastname']) AND
+                    isset($customer['Shipping']['street']) AND
+                    isset($customer['Shipping']['zip']) AND
+                    isset($customer['Shipping']['city']) AND
+
+                    $customer['Shipping']['firstname'] != '' AND
+                    $customer['Shipping']['lastname'] != '' AND
+                    $customer['Shipping']['street'] != '' AND
+                    $customer['Shipping']['zip'] != '' AND
+                    $customer['Shipping']['city'] != ''
+            ) {
+
+
                 $address = $customer['Shipping'];
                 file_put_contents($logfile, 'shippingAddress:'.print_r($address,true),FILE_APPEND);
                 file_put_contents($logfile, 'customerAddress:'.print_r($customer_addresses,true),FILE_APPEND);
@@ -246,9 +261,11 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                     $addressshipping->city = $address['city'];
                     $addressshipping->country = isset($address['country']) ? $address['country'] : $country;
                     $addressshipping->alias = 'Bimport-' . date('Y-m-d');
-                    $addressshipping->id_country = Country::getByIso(isset($address['country']) ? $address['country'] : $country);
-                    $addressshipping->save();
 
+
+                    $_country = (isset($address['country']) AND $address['country'] != '') ? $address['country'] : $country;
+                    $addressshipping->id_country = Country::getByIso($_country);
+                    $addressshipping->save();
                     $shipping_address_id = $addressshipping->id;
                 } else {
                     $shipping_address_id = $matched_address_id;
@@ -313,8 +330,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             die();
         
         }
-
-        }
+    }
 
     public function sendResponse($result)
     {
