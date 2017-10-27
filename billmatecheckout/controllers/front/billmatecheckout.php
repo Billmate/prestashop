@@ -753,18 +753,26 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         $billmate = $this->getBillmate();
         if($hash = $this->context->cookie->__get('BillmateHash')){
             $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
-            if(!isset($result['code'])){
-                if(isset($result['PaymentData']['order']) && isset($result['PaymentData']['order']['status']) && (strtolower($result['PaymentData']['order']['status']) != 'created' && strtolower($result['PaymentData']['order']['status']) != 'paid')){
-                    $updateResult = $this->updateCheckout($result);
+            if (!isset($result['code'])) {
 
-                    if(!isset($updateResult['code'])){
+                if (    isset($result['PaymentData']['order']) AND
+                        isset($result['PaymentData']['order']['status']) AND
+                        (   strtolower($result['PaymentData']['order']['status']) != 'created' OR
+                            strtolower($result['PaymentData']['order']['status']) != 'paid'
+                        )
+                ) {
+                    /** Checkout order paid, init new checkout order */
+                    $result = $this->initCheckout();
+                    if (!isset($result['code'])) {
+                        return $result['url'];
+                    }
+
+                } else {
+                    /** Checkout order not paid, update checkout order */
+                    $updateResult = $this->updateCheckout($result);
+                    if (!isset($updateResult['code'])) {
                         $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
                         return $result['PaymentData']['url'];
-                    }
-                } else {
-                    $result = $this->initCheckout();
-                    if(!isset($result['code'])){
-                        return $result['url'];
                     }
                 }
 
