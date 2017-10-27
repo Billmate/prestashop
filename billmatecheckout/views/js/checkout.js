@@ -146,7 +146,7 @@ var BillmateIframe = new function(){
                     self.updatePaymentMethod(json.data);
 
                     if(window.method == null || window.method == json.data.method) {
-                        jQuery('#checkoutdiv').removeClass('loading');
+                        self.unlock();
                     }
                     break;
                 case 'payment_method_selected':
@@ -154,7 +154,7 @@ var BillmateIframe = new function(){
                         self.updatePaymentMethod(json.data);
 
                         if(window.method == json.data.method) {
-                            jQuery('#checkoutdiv').removeClass('loading');
+                            self.unlock();
                         }
                     }
                     break;
@@ -170,7 +170,7 @@ var BillmateIframe = new function(){
                     jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
                     break;
                 case 'checkout_loaded':
-                    jQuery('#checkoutdiv').removeClass('loading');
+                    self.unlock();
                     break;
                 default:
                     console.log(event);
@@ -188,7 +188,15 @@ var BillmateIframe = new function(){
         win.postMessage(JSON.stringify({event: 'update_checkout'}),'*')
     }
 
+    this.lock = function() {
+        var win = document.getElementById('checkout').contentWindow;
+        win.postMessage('lock', '*');
+    }
 
+    this.unlock = function() {
+        var win = document.getElementById('checkout').contentWindow;
+        win.postMessage('unlock', '*');
+    }
 };
 
 window.b_iframe = BillmateIframe;
@@ -647,13 +655,12 @@ window.b_cart = BillmateCart;
 
 jQuery(document).ready(function(){
     jQuery(document).ajaxStart(function(){
-        jQuery('#checkoutdiv').addClass('loading');
-        jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+        window.b_iframe.lock();
 
     })
 
     jQuery(document).ajaxComplete(function(){
-        jQuery('#checkoutdiv').removeClass('loading');
+        window.b_iframe.unlock();
 
     })
 
