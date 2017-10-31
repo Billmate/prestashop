@@ -428,8 +428,9 @@
 
 		public function hookDisplayCustomerAccountFormTop($params)
 		{
-			if (Configuration::get('BILLMATE_GETADDRESS'))
-			{
+
+            if (Configuration::get('BILLMATE_GETADDRESS') AND Dispatcher::getInstance()->getController() == 'orderopc') {
+                /** Get address is active and customer is on checkout page */
 
 				$this->smarty->assign('pno', (isset($this->context->cookie->billmatepno)) ? $this->context->cookie->billmatepno : '');
 				return $this->display(__FILE__, 'getaddress.tpl');
