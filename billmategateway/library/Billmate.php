@@ -102,6 +102,10 @@ class BillMate{
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->SSL);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,10);
+
+        // Use cacert.pem to make sure server has the latest ssl certs
+        curl_setopt($ch, CURLOPT_CAINFO, __DIR__.'/cacert.pem');
+
 		$vh = $this->SSL?((function_exists("phpversion") && function_exists("version_compare") && version_compare(phpversion(),'5.4','>=')) ? 2 : true):false;
 		if($this->SSL){
 			if(function_exists("phpversion") && function_exists("version_compare")){
