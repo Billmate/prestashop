@@ -206,6 +206,11 @@
 			Configuration::updateValue('BPARTPAY_MAX_VALUE', Tools::getValue('partpayBillmateMaximumValue'));
 			Configuration::updateValue('BPARTPAY_SORTORDER', Tools::getValue('partpayBillmateSortOrder'));
 
+            /** Checkout settings */
+            Configuration::updateValue('BILLMATE_CHECKOUT_ACTIVATE', Tools::getIsset('billmate_checkout_active') ? 1 : 0);
+            Configuration::updateValue('BILLMATE_CHECKOUT_TESTMODE',Tools::getIsset('billmate_checkout_testmode') ? 1 : 0);
+            Configuration::updateValue('BILLMATE_CHECKOUT_ORDER_STATUS', Tools::getValue('billmate_checkout_order_status'));
+
 			Configuration::updateValue('BSWISH_ORDER_STATUS', Tools::getValue('swishBillmateOrderStatus'));
 			if (Configuration::get('BPARTPAY_ENABLED') == 1 && $credentialvalidated)
 			{
@@ -321,6 +326,7 @@
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatecardpay";');
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmateinvoice";');
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmateinvoiceservice";');
+			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatecheckout";');
 			return true;
 		}
 
@@ -384,9 +390,32 @@
 					$this->registerHook('actionOrderSlipAdd') &&
 					$this->registerHook('orderSlip') &&
 					$this->registerHook('displayProductButtons') &&
+
+                    /* Billmate Checkout */
+                    $this->registerHook('displayPayment') &&
+                    $this->registerHook('payment') &&
+                    $this->registerHook('paymentReturn') &&
+                    $this->registerHook('orderConfirmation') &&
+                    $this->registerHook('actionOrderStatusUpdate') &&
+                    $this->registerHook('displayBackOfficeHeader') && $this->registerHook('header') && $this->registerHook('adminTemplate') &&
+
 					$extra;
 
 		}
+
+
+        public function hookHeader()
+        {
+            $css_file   = __DIR__.'/views/css/checkout/checkout.css';
+            $js_file    = __DIR__.'/views/js/checkout/checkout.js';
+
+            $this->context->controller->addCSS($css_file, 'all');
+            if(Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 1) {
+                $this->context->controller->addJS($js_file);
+                Media::addJsDef(array('billmate_checkout_url' =>
+                    $this->context->link->getModuleLink('billmategateway', 'billmatecheckout', array(), true)));
+            }
+        }
 
 		public function hookDisplayProductButtons($params)
 		{
@@ -499,6 +528,11 @@
 					} else
 						continue;
 				}
+
+                // Add checkout as payment option if available
+                if (isset($result['checkout']) AND $result['checkout']) {
+                    $paymentOptions['checkout'] = 'checkout';
+                }
 
 				return $paymentOptions;
 			} else {
@@ -1068,28 +1102,42 @@
 			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'billmategateway/methods', FilesystemIterator::SKIP_DOTS);
 			$paymentMethodsAvailable = $this->getAvailableMethods();
 
-			foreach ($methodFiles as $file)
-			{
-				$class = $file->getBasename('.php');
-				if ($class == 'index')
-					continue;
-				if(!in_array(strtolower($class),$paymentMethodsAvailable))
-					continue;
+            /** Sort payment modules on the order of $paymentMethodsAvailable */
+            $methodFilesData = array();
+            foreach ($methodFiles AS $file) {
+                $class = $file->getBasename('.php');
+                if ($class != 'index' AND in_array(strtolower($class),$paymentMethodsAvailable)) {
+                    $methodFilesData[strtolower($class)] = array(
+                        'basename'  => $file->getBasename(),
+                        'class'     => $class,
+                        'pathname'  => $file->getPathname()
+                    );
+                }
+            }
 
-				include_once($file->getPathname());
+            $_methodFilesData = array();
+            foreach ($paymentMethodsAvailable AS $key => $class) {
+                if (isset($methodFilesData[$class])) {
+                    $_methodFilesData[$key] = $methodFilesData[$class];
+                }
+            }
+            $methodFilesData = $_methodFilesData;
 
-                $class = "BillmateMethod".$class;
-				$method = new $class();
-				$result = $method->getSettings();
-				if (!$result)
-					continue;
+            foreach ($methodFilesData AS $file) {
+                $class = 'BillmateMethod'.$file['class'];
+                require_once($file['pathname']);
 
-				$this->smarty->assign(array('settings' => $result, 'moduleName' => $method->displayName));
-				$data[$method->name]['content'] = $this->display(__FILE__, 'settings.tpl');
-				$data[$method->name]['title']   = $method->displayName;
-			}
+                $method = new $class();
+                $result = $method->getSettings();
+                if (!$result)
+                    continue;
 
-			return $data;
+                $this->smarty->assign(array('settings' => $result, 'moduleName' => $method->displayName));
+                $data[$method->name]['content'] = $this->display(__FILE__, 'settings.tpl');
+                $data[$method->name]['title']   = $method->displayName;
+            }
+
+            return $data;
 		}
 
 		public function getGeneralSettings()
@@ -1199,17 +1247,18 @@
 			return $this->display(__FILE__, 'settings.tpl');
 		}
 
-		public function hookPaymentReturn($params)
-		{
-			if(Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 0)
-				return $this->hookOrderConfirmation($params);
-		}
 
-		public function hookOrderConfirmation($params)
-		{
-			if(Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 0) {
-				$this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
-				return $this->display(__FILE__, 'orderconfirmation.tpl');
-			}
-		}
-	}
+        public function hookPaymentReturn($params)
+        {
+            return $this->hookOrderConfirmation($params);
+        }
+
+
+        public function hookOrderConfirmation($params)
+        {
+            $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
+            return $this->display(__FILE__, '/orderconfirmation.tpl');
+        }
+
+
+    }

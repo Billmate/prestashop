@@ -70,28 +70,7 @@ var BillmateIframe = new function(){
         });
     }
     this.updatePaymentMethod = function(data){
-        if(window.method != data.method) {
-            data['action'] = 'setPaymentMethod';
-            data['ajax'] = 1;
-            jQuery.ajax({
-                url: billmate_checkout_url,
-                data: data,
-                type: 'POST',
-                success: function (response) {
-                    var result = JSON.parse(response);
-                    if (result.success) {
-                        if(result.hasOwnProperty("update_checkout") && result.update_checkout === true)
-                            self.updateCheckout();
-                        if(data.method == 8 || data.method == 16)
-                            self.updateCheckout();
-
-                        window.method = data.method;
-
-                    }
-                }
-            });
-        }
-
+        return true;
     };
     this.updateShippingMethod = function(){
 
@@ -116,8 +95,6 @@ var BillmateIframe = new function(){
 
     this.initListeners = function () {
         jQuery(document).ready(function(){
-
-            console.log('initEventListeners');
             window.addEventListener("message",self.handleEvent);
             if($('#billmate_summary').length) {
 
@@ -131,7 +108,6 @@ var BillmateIframe = new function(){
 
     }
     this.handleEvent = function(event){
-        console.log(event);
         if(event.origin == "https://checkout.billmate.se") {
             try {
                 var json = JSON.parse(event.data);
@@ -139,7 +115,6 @@ var BillmateIframe = new function(){
                 return;
             }
             self.childWindow = json.source;
-            console.log(json);
             switch (json.event) {
                 case 'address_selected':
                     self.updateAddress(json.data);
@@ -165,7 +140,6 @@ var BillmateIframe = new function(){
                     $(document).find('#checkout').height(json.data);
                     break;
                 case 'content_scroll_position':
-                    console.log('Scroll position'+json.data);
                     window.latestScroll = jQuery(document).find( "#checkout" ).offset().top + json.data;
                     jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
                     break;
@@ -173,8 +147,6 @@ var BillmateIframe = new function(){
                     self.unlock();
                     break;
                 default:
-                    console.log(event);
-                    console.log('not implemented')
                     break;
 
             }
@@ -215,8 +187,6 @@ var BillmateCart = new function () {
     this.updateProduct = function(type,id,qty){
         var self = this;
         var val = $('input[name=quantity_'+id+']').val();
-        console.log(val);
-        console.log(qty);
         var newQty = val;
         var action = '';
         if(type == 'sub') {
@@ -232,9 +202,6 @@ var BillmateCart = new function () {
                 qty = 1;
             }
         }
-
-        console.log(qty);
-        console.log(newQty);
 
         var customizationId = 0;
         var productId = 0;
@@ -719,7 +686,6 @@ jQuery(document).ready(function(){
                 data: values,
                 success: function(response){
                     var result = JSON.parse(response);
-                    console.log(result);
                     if(result.hasOwnProperty("update_checkout") && result.update_checkout === true){
                         $(id).attr('checked',true);
                         window.b_iframe.updateCheckout();
@@ -746,7 +712,6 @@ jQuery(document).ready(function(){
                 data: values,
                 success: function(response){
                     var result = JSON.parse(response);
-                    console.log(result);
                     if(result.hasOwnProperty("update_checkout") && result.update_checkout === true){
                         window.b_iframe.updateCheckout();
                     }
@@ -757,8 +722,6 @@ jQuery(document).ready(function(){
 
 });
 function deleteProductFromSummary(id){
-    console.log('product removed');
-
     window.b_iframe.updatePsCheckout();
 }
 

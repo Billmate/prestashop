@@ -6,10 +6,11 @@
  * Date: 2017-03-20
  * Time: 09:03
  */
+
 require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
 
 ini_set('display_errors',1);
-class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontController
+class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontController
 {
     public $display_column_left = false;
     public $display_column_right = false;
@@ -384,7 +385,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                         $billmate->updatePayment($values);
                     }
                     $url = $this->context->link->getModuleLink(
-                        'billmatecheckout',
+                        'billmategateway',
                         'thankyou',
                         array('billmate_hash' => $this->context->cookie->BillmateHash));
 
@@ -399,14 +400,14 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                     if(isset($this->context->cookie->BillmateHash))
                         unset($this->context->cookie->BillmateHash);
                 } else {
-                    if (in_array($result['code'], array(2401, 2402, 2403, 2404, 2405))) {
-                        //$result = $this->checkAddress();
-
-                        if (is_array($result))
+                    if (isset($result['code']) AND in_array($result['code'], array(2401, 2402, 2403, 2404, 2405))) {
+                        if (is_array($result)) {
                             die(Tools::jsonEncode($result));
+                        }
                     }
                     //Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
-                    $return = array('success' => false, 'content' => utf8_encode($result['message']));
+                    $_message = (isset($result['message'])) ? $result['message'] : '';
+                    $return = array('success' => false, 'content' => utf8_encode($_message));
                 }
 
                 break;
@@ -435,16 +436,18 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         parent::initContent();
         if($this->context->cart->nbProducts() == 0){
             if(version_compare(_PS_VERSION_,'1.7','>=')){
-                $this->setTemplate('module:billmatecheckout/views/templates/front/checkout-empty17.tpl');
+                $this->setTemplate('module:billmategateway/views/templates/front/checkout/checkout-empty17.tpl');
 
             } else {
-                $this->setTemplate('checkout-empty.tpl');
+                $this->setTemplate('checkout/checkout-empty.tpl');
             }
         } else {
             CartRule::autoRemoveFromCart($this->context);
             CartRule::autoAddToCart($this->context);
 
-            $this->context->smarty->assign('billmatecheckouturl',$this->getCheckout());
+            $billmatecheckouturl = $this->getCheckout();
+
+            $this->context->smarty->assign('billmatecheckouturl', $billmatecheckouturl);
 
 
             //$this->context->smarty->assign('HOOK_LEFT_COLUMN', Module::hookExec('displayLeftColumn'));
@@ -492,9 +495,9 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                 'back' => ''
             ));
             if(version_compare(_PS_VERSION_,'1.7','>=')){
-                $this->setTemplate('module:billmatecheckout/views/templates/front/checkout17.tpl');
+                $this->setTemplate('module:billmategateway/views/templates/front/checkout/checkout17.tpl');
             } else {
-                $this->setTemplate('checkout.tpl');
+                $this->setTemplate('checkout/checkout.tpl');
             }
         }
     }
@@ -845,15 +848,11 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         $orderValues = $values;
         $previousTotal = $orderValues['Cart']['Total']['withtax'];
 
-        unset($orderValues['Cart']);
-        unset($orderValues['Articles']);
-        unset($orderValues['Customer']);
-        unset($orderValues['PaymentData']['status']);
-        unset($orderValues['PaymentData']['method']);
-        $orderValues['PaymentData']['accepturl'] = $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method),true);
-        $orderValues['PaymentData']['cancelurl']    = $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method, 'type' => 'checkout'),true);
-        $orderValues['PaymentData']['callbackurl']  = $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method),true);
-        $orderValues['PaymentData']['returnmethod'] = (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == "on") ?'POST' : 'GET';
+        $orderValues = array(
+            'PaymentData' => array(
+                'number' => $orderValues['PaymentData']['number']
+            )
+        );
 
         $orderValues['Articles'] = $this->prepareArticles();
         $discounts = $this->prepareDiscounts();
@@ -1088,21 +1087,21 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             'country'       => Tools::strtoupper($this->context->country->iso_code),
             'orderid'       => Tools::substr($this->context->cart->id.'-'.time(), 0, 10),
             'logo' 			=> (Configuration::get('BILLMATE_LOGO')) ? Configuration::get('BILLMATE_LOGO') : '',
-            'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method,'checkout' => true),true),
-            'cancelurl'    => $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method,'checkout' => true),true),
-            'callbackurl'  => $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method, 'checkout' => true),true)
 
+            'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept',      array('method' => 'checkout', 'checkout' => true), true),
+            'cancelurl'    => $this->context->link->getModuleLink('billmategateway', 'cancel',      array('method' => 'checkout', 'checkout' => true), true),
+            'callbackurl'  => $this->context->link->getModuleLink('billmategateway', 'callback',    array('method' => 'checkout', 'checkout' => true), true),
+            'returnmethod' => (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == "on") ?'POST' : 'GET'
         );
 
         $payment_data['CheckoutData'] = array(
-            'terms' => $termsPage,
-            'windowmode' => 'iframe',
-            'sendreciept' => 'yes',
-
+            'terms'             => $termsPage,
+            'windowmode'        => 'iframe',
+            'sendreciept'       => 'yes',
+            'redirectOnSuccess' => 'true'
         );
 
         return $payment_data;
-
     }
 
     public function getmoduleId($method)
