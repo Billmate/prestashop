@@ -390,6 +390,7 @@
 					$this->registerHook('actionOrderSlipAdd') &&
 					$this->registerHook('orderSlip') &&
 					$this->registerHook('displayProductButtons') &&
+                    $this->registerHook('displayOrderDetail') &&
 
                     /* Billmate Checkout */
                     $this->registerHook('displayPayment') &&
@@ -435,6 +436,42 @@
 			return '';
 
 		}
+
+        /** Display handling fee on order details */
+        public function hookDisplayOrderDetail($params)
+        {
+            $order_id = 0;
+            if (isset($params['order']) AND is_object($params['order'])) {
+                $order_id = $params['order']->id;
+            }
+
+            if ($order_id > 0) {
+                $order = new Order($order_id);
+                $result = Db::getInstance()->getRow('SELECT * FROM '._DB_PREFIX_.'billmate_payment_fees WHERE order_id = "'.$order->id.'"');
+                if($result){
+
+                    $payments = $order->getOrderPaymentCollection();
+                    $currency = 0;
+                    foreach($payments as $payment){
+                        $currency = $payment->id_currency;
+                    }
+                    $invoice_fee_tax    = $result['tax_rate'] / 100;
+                    $invoice_fee        = $result['invoice_fee'];
+                    $billmatetax        = $result['invoice_fee'] * $invoice_fee_tax;
+
+                    $total_fee = $invoice_fee + $billmatetax;
+
+                    $this->smarty->assign('invoiceFeeIncl', $total_fee);
+                    $this->smarty->assign('invoiceFeeTax', $billmatetax);
+                    $this->smarty->assign('invoiceFeeCurrency',$currency);
+                    $this->smarty->assign('order', $order);
+
+                    return $this->display(__FILE__, 'invoicefee.tpl');
+                }
+            }
+            return false;
+        }
+
 		public function hookDisplayPdfInvoice($params)
 		{
 			$order = new Order($params['object']->id_order);
