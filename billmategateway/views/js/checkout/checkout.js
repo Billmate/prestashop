@@ -639,6 +639,7 @@ jQuery(document).ready(function(){
 
     })
 
+    $("#header .shopping_cart a").attr("href", billmate_checkout_url);
     $("#button_order_cart").attr("href", billmate_checkout_url);
     $("#layer_cart .layer_cart_cart a.button-medium").attr("href", billmate_checkout_url);
     $("#order p.cart_navigation a.standard-checkout").attr("href", billmate_checkout_url);
