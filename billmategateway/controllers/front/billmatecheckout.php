@@ -790,6 +790,11 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                     /** Checkout order not paid, update checkout order */
                     $updateResult = $this->updateCheckout($result);
                     if (!isset($updateResult['code'])) {
+
+                        /** Store returned hash */
+                        $hash = $this->getHashFromUrl($updateResult['url']);
+                        $this->context->cookie->__set('BillmateHash',$hash);
+
                         $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
                         return $result['PaymentData']['url'];
                     }
@@ -830,13 +835,18 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
         $result = $billmate->initCheckout($orderValues);
         if(!isset($result['code'])){
-            $url = $result['url'];
-            $parts = explode('/',$url);
-            $sum = count($parts);
-            $hash = ($parts[$sum-1] == 'test') ? str_replace('\\','',$parts[$sum-2]) : str_replace('\\','',$parts[$sum-1]);
+            $hash = $this->getHashFromUrl($result['url']);
             $this->context->cookie->__set('BillmateHash',$hash);
         }
         return $result;
+    }
+
+    public function getHashFromUrl($url = '')
+    {
+        $parts = explode('/',$url);
+        $sum = count($parts);
+        $hash = ($parts[$sum-1] == 'test') ? str_replace('\\','',$parts[$sum-2]) : str_replace('\\','',$parts[$sum-1]);
+        return $hash;
     }
 
     public function updateCheckout($values)
