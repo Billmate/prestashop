@@ -32,6 +32,7 @@ var BillmateIframe = new function(){
         });
     }
     this.updateAddress = function (data) {
+        that = this;
         // When address in checkout updates;
         data['action'] = 'setAddress';
         data['ajax'] = 1;
@@ -44,6 +45,7 @@ var BillmateIframe = new function(){
                 if(result.success)
                 {
                     jQuery('#shippingdiv').html(result.carrier_block);
+                    that.hideShippingElements();
                 }
                 window.address_selected = true;
             }
@@ -177,6 +179,14 @@ var BillmateIframe = new function(){
             win.postMessage('unlock', '*');
         }
     }
+
+    this.hideShippingElements = function() {
+        $(document).find('.container #shippingdiv .order_carrier_content p.carrier_title + div').has('textarea').hide();
+        $(document).find('.container #shippingdiv .order_carrier_content hr').hide();
+        $(document).find('.container #shippingdiv .order_carrier_content .box').hide();
+        $(document).find('.container #shippingdiv .order_carrier_content .carrier_title').hide();
+    }
+
 };
 
 window.b_iframe = BillmateIframe;
@@ -632,12 +642,11 @@ jQuery(document).ready(function(){
     jQuery(document).ajaxStart(function(){
         window.b_iframe.lock();
 
-    })
+    });
 
     jQuery(document).ajaxComplete(function(){
         window.b_iframe.unlock();
-
-    })
+    });
 
     $("#header .shopping_cart a").attr("href", billmate_checkout_url);
     $("#button_order_cart").attr("href", billmate_checkout_url);
@@ -695,7 +704,7 @@ jQuery(document).ready(function(){
             })
             e.preventDefault();
         }
-    })
+    });
     $('body').on('click','.delivery_option_radio',function(e){
         e.preventDefault();
         var selectedMethod = e.target.value;
@@ -719,7 +728,11 @@ jQuery(document).ready(function(){
                 }
             })
         }
-    })
+    });
+
+    if (is_billmate_checkout_page == 'yes') {
+        window.b_iframe.hideShippingElements();
+    }
 
 });
 function deleteProductFromSummary(id){
