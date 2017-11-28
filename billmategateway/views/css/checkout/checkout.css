@@ -81,8 +81,10 @@
 .step-num > span{
     display:none;
 }
-@media screen and (max-width: 600px) {
+
+@media (max-width: 1200px) {
     .container #shippingdiv {
+        clear: both;
         float:left;
         width: 100%;
     }
@@ -90,7 +92,8 @@
         display:none;
     }
     .container #checkoutdiv {
-        float:left;
-        width:100%;
+        clear: both;
+        float: left;
+        width: 100%;
     }
 }
