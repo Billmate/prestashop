@@ -32,9 +32,15 @@ var BillmateIframe = new function(){
         });
     }
     this.updateAddress = function (data) {
+
+        if (window.previousSelectedMethod == null) {
+            window.previousSelectedMethod = $(document).find('#shippingdiv input[type=radio]:checked').val();
+        }
+
         that = this;
         // When address in checkout updates;
         data['action'] = 'setAddress';
+        data['delivery_option'] = $(document).find('#shippingdiv input[type=radio]:checked').val();
         data['ajax'] = 1;
         jQuery.ajax({
             url : billmate_checkout_url,
@@ -44,6 +50,7 @@ var BillmateIframe = new function(){
                 var result = JSON.parse(response);
                 if(result.success)
                 {
+                    // Show available shipping methods for saved address
                     jQuery('#shippingdiv').html(result.carrier_block);
                     that.hideShippingElements();
                 }
@@ -52,21 +59,28 @@ var BillmateIframe = new function(){
         });
 
     };
-    this.updateShippingMethod = function(method){
+    this.updateShippingMethod = function(shippingElementKey, reload = false) {
+        var url = billmate_checkout_url;
+        var delivery_option = $(document).find('#shippingdiv input[type=radio]:checked').val();
+        if (shippingElementKey != null) {
+            var delivery_option = shippingElementKey;
+        }
+        var address_id      = $(document).find('.delivery_option_radio:checked').data('id_address');
+
+        var values = {};
+        values['delivery_option['+address_id+']'] = delivery_option;
+        values['action'] = 'setShipping';
+        values['ajax'] = 1;
+
+
         jQuery.ajax({
-            url: UPDATE_SHIPPING_METHOD_URL,
-            data: {'shipping_method': method},
-            type: 'POST',
-            success: function (response) {
-                var result = JSON.parse(response);
-                if (result.success) {
-                    if(result.hasOwnProperty("update_checkout") && result.update_checkout === true)
-                        self.updateCheckout();
-                    if(data.method == 8 || data.method == 16)
-                        self.updateCheckout();
-
-                    window.method = data.method;
-
+            url: url,
+            data: values,
+            success: function(response){
+                if (reload == true) {
+                    location.reload();
+                } else {
+                    window.b_iframe.updateCheckout();
                 }
             }
         });
@@ -74,9 +88,6 @@ var BillmateIframe = new function(){
     this.updatePaymentMethod = function(data){
         return true;
     };
-    this.updateShippingMethod = function(){
-
-    }
     this.createOrder = function(data){
         // Create Order
         data['action'] = 'validateOrder';
@@ -676,59 +687,13 @@ jQuery(document).ready(function(){
     if(window.location.href == billmate_checkout_url) {
         $('body').attr('id', 'order');
     }
-    $('body').on('change','.delivery-option input[type="radio"]',function(e){
 
-        var selectedMethod = e.target.value;
-        if(selectedMethod != window.previousSelectedMethod){
-            window.previousSelectedMethod = selectedMethod;
-            var url = billmate_checkout_url
-            var delivery_option = $('.delivery-option input[type="radio"]:checked').val();
-            var name = $('.delivery-option input[type="radio"]:checked').attr('name');
-            var id = $('.delivery-option input[type="radio"]:checked').attr('id');
-
-            var address_id = $('.delivery_option_radio:checked').data('id_address');
-            var values = {};
-            values[name] = delivery_option;
-            values['action'] = 'setShipping';
-            values['ajax'] = 1
-            jQuery.ajax({
-                url: url,
-                data: values,
-                success: function(response){
-                    var result = JSON.parse(response);
-                    if(result.hasOwnProperty("update_checkout") && result.update_checkout === true){
-                        $(id).attr('checked',true);
-                        window.b_iframe.updateCheckout();
-                    }
-                }
-            })
-            e.preventDefault();
-        }
-    });
-    $('body').on('click','.delivery_option_radio',function(e){
-        e.preventDefault();
-        var selectedMethod = e.target.value;
-        if(selectedMethod != window.previousSelectedMethod){
-            window.previousSelectedMethod = selectedMethod;
-            var url = billmate_checkout_url
-            var delivery_option = $('.delivery_option_radio:checked').val();
-            var address_id = $('.delivery_option_radio:checked').data('id_address');
-            var values = {};
-            values['delivery_option['+address_id+']'] = delivery_option;
-            values['action'] = 'setShipping';
-            values['ajax'] = 1
-            jQuery.ajax({
-                url: url,
-                data: values,
-                success: function(response){
-                    var result = JSON.parse(response);
-                    if(result.hasOwnProperty("update_checkout") && result.update_checkout === true){
-                        window.b_iframe.updateCheckout();
-                    }
-                }
-            })
-        }
-    });
+    if (is_billmate_checkout_page == 'yes') {
+        $('body').on('click','#shippingdiv input[type=radio]', function(e) {
+            var selectedMethod = e.target.value;
+            window.b_iframe.updateShippingMethod(selectedMethod, true);
+        });
+    }
 
     if (is_billmate_checkout_page == 'yes') {
         window.b_iframe.hideShippingElements();

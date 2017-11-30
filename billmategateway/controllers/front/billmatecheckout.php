@@ -22,55 +22,11 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
     public $totals;
     public $tax;
     public $method = 'invoice';
-    public function postProcess()
-    {
+    public function postProcess() {
         // UPDATE CHECKOUT with data
         if( $this->ajax = Tools::getValue( "ajax" ) && Tools::getValue('action') == 'setShipping') {
-            if (Tools::getIsset('delivery_option')) {
-                $validated = false;
-                try {
-                    if ($this->validateDeliveryOption(Tools::getValue('delivery_option'))) {
-                        $validated = true;
-                        if(version_compare(_PS_VERSION_,'1.7','>=')) {
-                            $deliveryOption =  Tools::getValue('delivery_option');
-                            $realOption = array();
-                            foreach ($deliveryOption as $key => $value){
-                                $realOption[$key] = Cart::desintifier($value);
-                            }
-                            $this->context->cart->setDeliveryOption($realOption);
-                        }
-                        else
-                            $this->context->cart->setDeliveryOption(Tools::getValue('delivery_option'));
-
-                    }
-                    $updated = false;
-                    if (!$this->context->cart->update()) {
-                        $updated = true;
-                        $this->context->smarty->assign(array(
-                            'vouchererrors' => Tools::displayError('Could not save carrier selection'),
-                        ));
-                    }
-                    $this->context->cart->save();
-
-                    // Carrier has changed, so we check if the cart rules still apply
-                    CartRule::autoRemoveFromCart($this->context);
-                    CartRule::autoAddToCart($this->context);
-                    $values = $this->fetchCheckout();
-                    $result = $this->updateCheckout($values);
-                    $result['validatedDelivery'] = $validated;
-                    $result['updated'] = $updated;
-                    $result['success'] = true;
-                    echo Tools::jsonEncode($result);
-                    die;
-                } catch(Exception $e){
-                    $result['success'] = false;
-                    $result['message'] = $e->getMessage();
-                    $result['trace'] = $e;
-                    echo Tools::jsonEncode($result);
-                    die;
-                }
-
-            }
+            echo Tools::jsonEncode($this->actionSetShipping());
+            die();
         }
         // Cart contents is changed from the dropdown
         if($this->ajax = Tools::getValue('ajax') && Tools::getValue('action') == 'updateCheckout'){
@@ -276,16 +232,13 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $this->context->cart->id_address_invoice  = (int)$billing_address_id;
             $this->context->cart->id_address_delivery = (int)$shipping_address_id;
 
-
-            $carrier = new Carrier($this->context->cart->id_carrier,$this->context->cart->id_lang);
-            $delivery_option = $this->context->cart->getDeliveryOption();
-            $delivery_option[(int)$this->context->cart->id_address_delivery] = $this->context->cart->id_carrier.',';
-            $this->context->cart->setDeliveryOption($delivery_option);
-
             $this->context->cart->update();
             $this->context->cart->save();
             CartRule::autoRemoveFromCart($this->context);
             CartRule::autoAddToCart($this->context);
+
+            $this->actionSetShipping();
+
             $carrierBlock = $this->_getCarrierList();
 
 
@@ -331,6 +284,54 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             die();
         
         }
+    }
+
+    public function actionSetShipping() {
+        $result = array();
+        if (Tools::getIsset('delivery_option')) {
+            $validated = false;
+            try {
+                if ($this->validateDeliveryOption(Tools::getValue('delivery_option'))) {
+                    $validated = true;
+                    if(version_compare(_PS_VERSION_,'1.7','>=')) {
+                        $deliveryOption =  Tools::getValue('delivery_option');
+                        $realOption = array();
+                        foreach ($deliveryOption as $key => $value){
+                            $realOption[$key] = Cart::desintifier($value);
+                        }
+                        $this->context->cart->setDeliveryOption($realOption);
+                    }
+                    else {
+                        $this->context->cart->setDeliveryOption(Tools::getValue('delivery_option'));
+                    }
+
+                }
+                $updated = true;
+                $cartUpdateResult = $this->context->cart->update();
+                if (!$cartUpdateResult) {
+                    $updated = false;
+                    $this->context->smarty->assign(array(
+                        'vouchererrors' => Tools::displayError('Could not save carrier selection'),
+                    ));
+                }
+                $cartSaveResult = $this->context->cart->save();
+
+                // Carrier has changed, so we check if the cart rules still apply
+                CartRule::autoRemoveFromCart($this->context);
+                CartRule::autoAddToCart($this->context);
+                $values = $this->fetchCheckout();
+                $result = $this->updateCheckout($values);
+                $result['validatedDelivery'] = $validated;
+                $result['updated'] = $updated;
+                $result['success'] = true;
+            } catch(Exception $e){
+                $result['success'] = false;
+                $result['message'] = $e->getMessage();
+                $result['trace'] = $e;
+            }
+
+        }
+        return $result;
     }
 
     public function sendResponse($result)
