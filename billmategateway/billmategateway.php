@@ -434,7 +434,10 @@
 			require_once(_PS_MODULE_DIR_.'/billmategateway/methods/Partpay.php');
 			$partpay = new BillmateMethodPartpay();
 			$plan = $partpay->getCheapestPlan($cost);
-			if($plan) {
+            if (    is_array($plan)
+                    && isset($plan['monthlycost'])
+                    && intval(Configuration::get('BPARTPAY_ENABLED')) > 0
+            ) {
 				$this->smarty->assign('icon',$partpay->icon);
 				$this->smarty->assign('plan', $plan);
 				return $this->display(__FILE__, 'payfrom.tpl');
