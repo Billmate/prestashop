@@ -10,7 +10,7 @@ var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
     this.updatePsCheckout = function(){
-        // When address in checkout updates;
+        /* When address in checkout updates; */
         var data = {};
         data['action'] = 'updateCheckout';
         data['ajax'] = 1;
@@ -38,7 +38,7 @@ var BillmateIframe = new function(){
         }
 
         that = this;
-        // When address in checkout updates;
+        /* When address in checkout updates; */
         data['action'] = 'setAddress';
         data['delivery_option'] = $(document).find('#shippingdiv input[type=radio]:checked').val();
         data['ajax'] = 1;
@@ -50,7 +50,7 @@ var BillmateIframe = new function(){
                 var result = JSON.parse(response);
                 if(result.success)
                 {
-                    // Show available shipping methods for saved address
+                    /* Show available shipping methods for saved address */
                     jQuery('#shippingdiv').html(result.carrier_block);
                     that.hideShippingElements();
                 }
@@ -89,7 +89,7 @@ var BillmateIframe = new function(){
         return true;
     };
     this.createOrder = function(data){
-        // Create Order
+        /* Create Order */
         data['action'] = 'validateOrder';
         data['ajax'] = 1;
         jQuery.ajax({
@@ -333,7 +333,7 @@ var BillmateCart = new function () {
                 {
                     var errors = '';
                     for(var error in jsonData.errors)
-                        //IE6 bug fix
+                        /* IE6 bug fix */
                         if (error !== 'indexOf')
                             errors += jsonData.errors[error] + "\n";
                 }
@@ -344,7 +344,7 @@ var BillmateCart = new function () {
                     if (parseInt(jsonData.summary.products.length) === 0)
                     {
                         if (typeof(orderProcess) === 'undefined' || orderProcess !== 'order-opc')
-                            document.location.href = document.location.href; // redirection
+                            document.location.href = document.location.href; /* redirection */
                         else
                         {
                             $('#center_column').children().each(function() {
@@ -376,7 +376,7 @@ var BillmateCart = new function () {
                         })
 
 
-                        // if all customization removed => delete product line
+                        /* if all customization removed => delete product line */
                         if (!exist && customizationId)
                         {
                             $('#product_' + productId + '_' + productAttributeId + '_0_' + id_address_delivery).fadeOut('slow', function() {
@@ -387,7 +387,6 @@ var BillmateCart = new function () {
                         }
                     }
                     self.updateCart(jsonData.summary);
-                    //updateCustomizedDatas(jsonData.customizedDatas);
                     self.updateHookShoppingCart(jsonData.HOOK_SHOPPING_CART);
                     self.updateHookShoppingCartExtra(jsonData.HOOK_SHOPPING_CART_EXTRA);
                     if (typeof(getCarrierListAndUpdate) !== 'undefined')
@@ -434,7 +433,7 @@ var BillmateCart = new function () {
 
         for (i in product_list)
         {
-            // if reduction, we need to show it in the cart by showing the initial price above the current one
+            /* if reduction, we need to show it in the cart by showing the initial price above the current one */
             var reduction = product_list[i].reduction_applies;
             var reduction_type = product_list[i].reduction_type;
             var reduction_symbol = '';
@@ -504,7 +503,7 @@ var BillmateCart = new function () {
             nbrProducts += parseInt(product_list[i].quantity);
         }
 
-        // Update discounts
+        /* Update discounts */
         if (json.discounts.length === 0)
         {
             $('.cart_discount').each(function(){$(this).remove();});
@@ -544,7 +543,7 @@ var BillmateCart = new function () {
             });
         }
 
-        // Block cart
+        /* Block cart */
         if (priceDisplayMethod !== 0)
         {
             $('#cart_block_shipping_cost').html(formatCurrency(json.total_shipping_tax_exc, currencyFormat, currencySign, currencyBlank));
@@ -559,7 +558,7 @@ var BillmateCart = new function () {
         $('#cart_block_tax_cost').html(formatCurrency(json.total_tax, currencyFormat, currencySign, currencyBlank));
         $('.ajax_cart_quantity').html(nbrProducts);
 
-        // Cart summary
+        /* Cart summary */
         $('#summary_products_quantity').html(nbrProducts+' '+(nbrProducts > 1 ? txtProducts : txtProduct));
         if (priceDisplayMethod !== 0)
         {
@@ -590,7 +589,7 @@ var BillmateCart = new function () {
         }
 
         if($('#total_shipping').html() != window.tmpshippingvalue) {
-            //force page reload
+            /* force page reload */
             location.href = billmate_checkout_url;
         } else {
             window.tmpshippingvalue = $('#total_shipping').html();

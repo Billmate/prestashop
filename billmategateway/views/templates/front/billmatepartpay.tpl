@@ -199,7 +199,7 @@
         if (!jQuery.fn.Terms) {
             jQuery.getScript('https://billmate.se/billmate/base_jquery.js', function () {ldelim}addTerms(){rdelim});
         }
-        var version = "1.7"
+        var version = "1.7";
 
 
         var emptypersonerror = "{l s='PNO/SSN missing' mod='billmategateway'}";
@@ -332,7 +332,6 @@
 
 
                     $('#payment_' + value).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').show();
-                    //$checkoutbtn = $('.confirm_button')[1].onclick;
                     var method = $('#payment_' + value).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').attr('id');
                     var methodName = method.replace('-fields', '');
                     if ($('#pno').length > 0) {
@@ -349,7 +348,6 @@
                 } else if ($('#' + value).parent('.payment_module').children('.payment-form')) {
                     var el = $('#' + value).parent('.payment_module').children('.payment-form');
                     var method = el.attr('id');
-                    //method = method.replace('-fields','');
 
                     if (typeof method != 'undefined') {
                         var methodName = method.replace('-fields', '');
@@ -367,14 +365,12 @@
                         $('#' + methodName + 'Submit').hide();
                         $checkoutbtn = $('.confirm_button')[$('.confirm_button').length - 1].onclick;
                         $('.confirm_button')[$('.confirm_button').length - 1].onclick = function (e) {
-                            //$('#' + methodName + 'Submit').click();
                             submitAccount($('#' + methodName + 'Submit'));
 
                             e.preventDefault();
                         }
                     } else {
                         if ($checkoutbtn != null) {
-                            //$checkoutbtn = $('.confirm_button')[1].onclick;
                             $('.confirm_button')[$('.confirm_button').length - 1].onclick = $checkoutbtn
                         }
                     }
@@ -385,9 +381,9 @@
     }
 
     if (document.readyState != 'loading') billmatePartpay();
-    // modern browsers
+    /* modern browsers */
     else if (document.addEventListener) document.addEventListener('DOMContentLoaded', billmatePartpay);
-    // IE <= 8
+    /* IE <= 8 */
     else document.attachEvent('onreadystatechange', function () {
             if (document.readyState == 'complete') billmatePartpay();
         });
