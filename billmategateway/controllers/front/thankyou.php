@@ -5,7 +5,8 @@
  * Date: 2017-08-01
  * Time: 08:51
  */
-class BillmatecheckoutThankyouModuleFrontController extends ModuleFrontController{
+
+class BillmategatewayThankyouModuleFrontController extends ModuleFrontController{
 
 	public $display_column_left = true;
 	public $display_column_right = false;
@@ -15,7 +16,6 @@ class BillmatecheckoutThankyouModuleFrontController extends ModuleFrontControlle
 	public function initContent()
 	{
 		parent::initContent();
-
 
 		$billmate_url = $this->getThankyou();
 
@@ -29,10 +29,10 @@ class BillmatecheckoutThankyouModuleFrontController extends ModuleFrontControlle
 			'order_conf' => $this->displayOrderConfirmation((int) ($result['id_order'])),
 		));
 		if(version_compare(_PS_VERSION_,'1.7','>=')){
-			$this->setTemplate('module:billmatecheckout/views/templates/front/billmate_thankyou17.tpl');
+			$this->setTemplate('module:billmatecheckout/views/templates/front/checkout/billmate_thankyou17.tpl');
 
 		} else {
-			$this->setTemplate('billmate_thankyou.tpl');
+			$this->setTemplate('checkout/billmate_thankyou.tpl');
 		}
 	}
 

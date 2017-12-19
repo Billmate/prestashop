@@ -6,10 +6,11 @@
  * Date: 2017-03-20
  * Time: 09:03
  */
+
 require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
 
 ini_set('display_errors',1);
-class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontController
+class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontController
 {
     public $display_column_left = false;
     public $display_column_right = false;
@@ -21,55 +22,11 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
     public $totals;
     public $tax;
     public $method = 'invoice';
-    public function postProcess()
-    {
+    public function postProcess() {
         // UPDATE CHECKOUT with data
         if( $this->ajax = Tools::getValue( "ajax" ) && Tools::getValue('action') == 'setShipping') {
-            if (Tools::getIsset('delivery_option')) {
-                $validated = false;
-                try {
-                    if ($this->validateDeliveryOption(Tools::getValue('delivery_option'))) {
-                        $validated = true;
-                        if(version_compare(_PS_VERSION_,'1.7','>=')) {
-                            $deliveryOption =  Tools::getValue('delivery_option');
-                            $realOption = array();
-                            foreach ($deliveryOption as $key => $value){
-                                $realOption[$key] = Cart::desintifier($value);
-                            }
-                            $this->context->cart->setDeliveryOption($realOption);
-                        }
-                        else
-                            $this->context->cart->setDeliveryOption(Tools::getValue('delivery_option'));
-
-                    }
-                    $updated = false;
-                    if (!$this->context->cart->update()) {
-                        $updated = true;
-                        $this->context->smarty->assign(array(
-                            'vouchererrors' => Tools::displayError('Could not save carrier selection'),
-                        ));
-                    }
-                    $this->context->cart->save();
-
-                    // Carrier has changed, so we check if the cart rules still apply
-                    CartRule::autoRemoveFromCart($this->context);
-                    CartRule::autoAddToCart($this->context);
-                    $values = $this->fetchCheckout();
-                    $result = $this->updateCheckout($values);
-                    $result['validatedDelivery'] = $validated;
-                    $result['updated'] = $updated;
-                    $result['success'] = true;
-                    echo Tools::jsonEncode($result);
-                    die;
-                } catch(Exception $e){
-                    $result['success'] = false;
-                    $result['message'] = $e->getMessage();
-                    $result['trace'] = $e;
-                    echo Tools::jsonEncode($result);
-                    die;
-                }
-
-            }
+            echo Tools::jsonEncode($this->actionSetShipping());
+            die();
         }
         // Cart contents is changed from the dropdown
         if($this->ajax = Tools::getValue('ajax') && Tools::getValue('action') == 'updateCheckout'){
@@ -185,7 +142,22 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
 
             $billing_address_id = $shipping_address_id = $matched_address_id;
 
-            if(isset($customer['Shipping']) && count($customer['Shipping']) > 0 && isset($customer['Shipping']['street'])){
+            if (    isset($customer['Shipping']) AND
+                    is_array($customer['Shipping']) AND
+                    isset($customer['Shipping']['firstname']) AND
+                    isset($customer['Shipping']['lastname']) AND
+                    isset($customer['Shipping']['street']) AND
+                    isset($customer['Shipping']['zip']) AND
+                    isset($customer['Shipping']['city']) AND
+
+                    $customer['Shipping']['firstname'] != '' AND
+                    $customer['Shipping']['lastname'] != '' AND
+                    $customer['Shipping']['street'] != '' AND
+                    $customer['Shipping']['zip'] != '' AND
+                    $customer['Shipping']['city'] != ''
+            ) {
+
+
                 $address = $customer['Shipping'];
                 file_put_contents($logfile, 'shippingAddress:'.print_r($address,true),FILE_APPEND);
                 file_put_contents($logfile, 'customerAddress:'.print_r($customer_addresses,true),FILE_APPEND);
@@ -246,9 +218,11 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                     $addressshipping->city = $address['city'];
                     $addressshipping->country = isset($address['country']) ? $address['country'] : $country;
                     $addressshipping->alias = 'Bimport-' . date('Y-m-d');
-                    $addressshipping->id_country = Country::getByIso(isset($address['country']) ? $address['country'] : $country);
-                    $addressshipping->save();
 
+
+                    $_country = (isset($address['country']) AND $address['country'] != '') ? $address['country'] : $country;
+                    $addressshipping->id_country = Country::getByIso($_country);
+                    $addressshipping->save();
                     $shipping_address_id = $addressshipping->id;
                 } else {
                     $shipping_address_id = $matched_address_id;
@@ -258,16 +232,13 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             $this->context->cart->id_address_invoice  = (int)$billing_address_id;
             $this->context->cart->id_address_delivery = (int)$shipping_address_id;
 
-
-            $carrier = new Carrier($this->context->cart->id_carrier,$this->context->cart->id_lang);
-            $delivery_option = $this->context->cart->getDeliveryOption();
-            $delivery_option[(int)$this->context->cart->id_address_delivery] = $this->context->cart->id_carrier.',';
-            $this->context->cart->setDeliveryOption($delivery_option);
-
             $this->context->cart->update();
             $this->context->cart->save();
             CartRule::autoRemoveFromCart($this->context);
             CartRule::autoAddToCart($this->context);
+
+            $this->actionSetShipping();
+
             $carrierBlock = $this->_getCarrierList();
 
 
@@ -313,8 +284,55 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             die();
         
         }
+    }
+
+    public function actionSetShipping() {
+        $result = array();
+        if (Tools::getIsset('delivery_option')) {
+            $validated = false;
+            try {
+                if ($this->validateDeliveryOption(Tools::getValue('delivery_option'))) {
+                    $validated = true;
+                    if(version_compare(_PS_VERSION_,'1.7','>=')) {
+                        $deliveryOption =  Tools::getValue('delivery_option');
+                        $realOption = array();
+                        foreach ($deliveryOption as $key => $value){
+                            $realOption[$key] = Cart::desintifier($value);
+                        }
+                        $this->context->cart->setDeliveryOption($realOption);
+                    }
+                    else {
+                        $this->context->cart->setDeliveryOption(Tools::getValue('delivery_option'));
+                    }
+
+                }
+                $updated = true;
+                $cartUpdateResult = $this->context->cart->update();
+                if (!$cartUpdateResult) {
+                    $updated = false;
+                    $this->context->smarty->assign(array(
+                        'vouchererrors' => Tools::displayError('Could not save carrier selection'),
+                    ));
+                }
+                $cartSaveResult = $this->context->cart->save();
+
+                // Carrier has changed, so we check if the cart rules still apply
+                CartRule::autoRemoveFromCart($this->context);
+                CartRule::autoAddToCart($this->context);
+                $values = $this->fetchCheckout();
+                $result = $this->updateCheckout($values);
+                $result['validatedDelivery'] = $validated;
+                $result['updated'] = $updated;
+                $result['success'] = true;
+            } catch(Exception $e){
+                $result['success'] = false;
+                $result['message'] = $e->getMessage();
+                $result['trace'] = $e;
+            }
 
         }
+        return $result;
+    }
 
     public function sendResponse($result)
     {
@@ -368,7 +386,7 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                         $billmate->updatePayment($values);
                     }
                     $url = $this->context->link->getModuleLink(
-                        'billmatecheckout',
+                        'billmategateway',
                         'thankyou',
                         array('billmate_hash' => $this->context->cookie->BillmateHash));
 
@@ -383,14 +401,14 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                     if(isset($this->context->cookie->BillmateHash))
                         unset($this->context->cookie->BillmateHash);
                 } else {
-                    if (in_array($result['code'], array(2401, 2402, 2403, 2404, 2405))) {
-                        //$result = $this->checkAddress();
-
-                        if (is_array($result))
+                    if (isset($result['code']) AND in_array($result['code'], array(2401, 2402, 2403, 2404, 2405))) {
+                        if (is_array($result)) {
                             die(Tools::jsonEncode($result));
+                        }
                     }
                     //Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
-                    $return = array('success' => false, 'content' => utf8_encode($result['message']));
+                    $_message = (isset($result['message'])) ? $result['message'] : '';
+                    $return = array('success' => false, 'content' => utf8_encode($_message));
                 }
 
                 break;
@@ -419,16 +437,18 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         parent::initContent();
         if($this->context->cart->nbProducts() == 0){
             if(version_compare(_PS_VERSION_,'1.7','>=')){
-                $this->setTemplate('module:billmatecheckout/views/templates/front/checkout-empty17.tpl');
+                $this->setTemplate('module:billmategateway/views/templates/front/checkout/checkout-empty17.tpl');
 
             } else {
-                $this->setTemplate('checkout-empty.tpl');
+                $this->setTemplate('checkout/checkout-empty.tpl');
             }
         } else {
             CartRule::autoRemoveFromCart($this->context);
             CartRule::autoAddToCart($this->context);
 
-            $this->context->smarty->assign('billmatecheckouturl',$this->getCheckout());
+            $billmatecheckouturl = $this->getCheckout();
+
+            $this->context->smarty->assign('billmatecheckouturl', $billmatecheckouturl);
 
 
             //$this->context->smarty->assign('HOOK_LEFT_COLUMN', Module::hookExec('displayLeftColumn'));
@@ -476,9 +496,9 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
                 'back' => ''
             ));
             if(version_compare(_PS_VERSION_,'1.7','>=')){
-                $this->setTemplate('module:billmatecheckout/views/templates/front/checkout17.tpl');
+                $this->setTemplate('module:billmategateway/views/templates/front/checkout/checkout17.tpl');
             } else {
-                $this->setTemplate('checkout.tpl');
+                $this->setTemplate('checkout/checkout.tpl');
             }
         }
     }
@@ -753,18 +773,31 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         $billmate = $this->getBillmate();
         if($hash = $this->context->cookie->__get('BillmateHash')){
             $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
-            if(!isset($result['code'])){
-                if(isset($result['PaymentData']['order']) && isset($result['PaymentData']['order']['status']) && (strtolower($result['PaymentData']['order']['status']) != 'created' && strtolower($result['PaymentData']['order']['status']) != 'paid')){
-                    $updateResult = $this->updateCheckout($result);
+            if (!isset($result['code'])) {
 
-                    if(!isset($updateResult['code'])){
+                if (    isset($result['PaymentData']['order']) AND
+                        isset($result['PaymentData']['order']['status']) AND
+                        (   strtolower($result['PaymentData']['order']['status']) != 'created' OR
+                            strtolower($result['PaymentData']['order']['status']) != 'paid'
+                        )
+                ) {
+                    /** Checkout order paid, init new checkout order */
+                    $result = $this->initCheckout();
+                    if (!isset($result['code'])) {
+                        return $result['url'];
+                    }
+
+                } else {
+                    /** Checkout order not paid, update checkout order */
+                    $updateResult = $this->updateCheckout($result);
+                    if (!isset($updateResult['code'])) {
+
+                        /** Store returned hash */
+                        $hash = $this->getHashFromUrl($updateResult['url']);
+                        $this->context->cookie->__set('BillmateHash',$hash);
+
                         $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
                         return $result['PaymentData']['url'];
-                    }
-                } else {
-                    $result = $this->initCheckout();
-                    if(!isset($result['code'])){
-                        return $result['url'];
                     }
                 }
 
@@ -803,13 +836,18 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
 
         $result = $billmate->initCheckout($orderValues);
         if(!isset($result['code'])){
-            $url = $result['url'];
-            $parts = explode('/',$url);
-            $sum = count($parts);
-            $hash = ($parts[$sum-1] == 'test') ? str_replace('\\','',$parts[$sum-2]) : str_replace('\\','',$parts[$sum-1]);
+            $hash = $this->getHashFromUrl($result['url']);
             $this->context->cookie->__set('BillmateHash',$hash);
         }
         return $result;
+    }
+
+    public function getHashFromUrl($url = '')
+    {
+        $parts = explode('/',$url);
+        $sum = count($parts);
+        $hash = ($parts[$sum-1] == 'test') ? str_replace('\\','',$parts[$sum-2]) : str_replace('\\','',$parts[$sum-1]);
+        return $hash;
     }
 
     public function updateCheckout($values)
@@ -821,15 +859,11 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
         $orderValues = $values;
         $previousTotal = $orderValues['Cart']['Total']['withtax'];
 
-        unset($orderValues['Cart']);
-        unset($orderValues['Articles']);
-        unset($orderValues['Customer']);
-        unset($orderValues['PaymentData']['status']);
-        unset($orderValues['PaymentData']['method']);
-        $orderValues['PaymentData']['accepturl'] = $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method),true);
-        $orderValues['PaymentData']['cancelurl']    = $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method, 'type' => 'checkout'),true);
-        $orderValues['PaymentData']['callbackurl']  = $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method),true);
-        $orderValues['PaymentData']['returnmethod'] = (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == "on") ?'POST' : 'GET';
+        $orderValues = array(
+            'PaymentData' => array(
+                'number' => $orderValues['PaymentData']['number']
+            )
+        );
 
         $orderValues['Articles'] = $this->prepareArticles();
         $discounts = $this->prepareDiscounts();
@@ -1064,21 +1098,21 @@ class BillmateCheckoutBillmatecheckoutModuleFrontController extends ModuleFrontC
             'country'       => Tools::strtoupper($this->context->country->iso_code),
             'orderid'       => Tools::substr($this->context->cart->id.'-'.time(), 0, 10),
             'logo' 			=> (Configuration::get('BILLMATE_LOGO')) ? Configuration::get('BILLMATE_LOGO') : '',
-            'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept', array('method' => $this->method,'checkout' => true),true),
-            'cancelurl'    => $this->context->link->getModuleLink('billmategateway', 'cancel', array('method' => $this->method,'checkout' => true),true),
-            'callbackurl'  => $this->context->link->getModuleLink('billmategateway', 'callback', array('method' => $this->method, 'checkout' => true),true)
 
+            'accepturl'    => $this->context->link->getModuleLink('billmategateway', 'accept',      array('method' => 'checkout', 'checkout' => true), true),
+            'cancelurl'    => $this->context->link->getModuleLink('billmategateway', 'cancel',      array('method' => 'checkout', 'checkout' => true), true),
+            'callbackurl'  => $this->context->link->getModuleLink('billmategateway', 'callback',    array('method' => 'checkout', 'checkout' => true), true),
+            'returnmethod' => (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == "on") ?'POST' : 'GET'
         );
 
         $payment_data['CheckoutData'] = array(
-            'terms' => $termsPage,
-            'windowmode' => 'iframe',
-            'sendreciept' => 'yes',
-
+            'terms'             => $termsPage,
+            'windowmode'        => 'iframe',
+            'sendreciept'       => 'yes',
+            'redirectOnSuccess' => 'true'
         );
 
         return $payment_data;
-
     }
 
     public function getmoduleId($method)

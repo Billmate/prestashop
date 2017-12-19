@@ -10,7 +10,7 @@ var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
     this.updatePsCheckout = function(){
-        // When address in checkout updates;
+        /* When address in checkout updates; */
         var data = {};
         data['action'] = 'updateCheckout';
         data['ajax'] = 1;
@@ -32,8 +32,15 @@ var BillmateIframe = new function(){
         });
     }
     this.updateAddress = function (data) {
-        // When address in checkout updates;
+
+        if (window.previousSelectedMethod == null) {
+            window.previousSelectedMethod = $(document).find('#shippingdiv input[type=radio]:checked').val();
+        }
+
+        that = this;
+        /* When address in checkout updates; */
         data['action'] = 'setAddress';
+        data['delivery_option'] = $(document).find('#shippingdiv input[type=radio]:checked').val();
         data['ajax'] = 1;
         jQuery.ajax({
             url : billmate_checkout_url,
@@ -43,61 +50,46 @@ var BillmateIframe = new function(){
                 var result = JSON.parse(response);
                 if(result.success)
                 {
+                    /* Show available shipping methods for saved address */
                     jQuery('#shippingdiv').html(result.carrier_block);
+                    that.hideShippingElements();
                 }
                 window.address_selected = true;
             }
         });
 
     };
-    this.updateShippingMethod = function(method){
+    this.updateShippingMethod = function(shippingElementKey, reload = false) {
+        var url = billmate_checkout_url;
+        var delivery_option = $(document).find('#shippingdiv input[type=radio]:checked').val();
+        if (shippingElementKey != null) {
+            var delivery_option = shippingElementKey;
+        }
+        var address_id      = $(document).find('.delivery_option_radio:checked').data('id_address');
+
+        var values = {};
+        values['delivery_option['+address_id+']'] = delivery_option;
+        values['action'] = 'setShipping';
+        values['ajax'] = 1;
+
+
         jQuery.ajax({
-            url: UPDATE_SHIPPING_METHOD_URL,
-            data: {'shipping_method': method},
-            type: 'POST',
-            success: function (response) {
-                var result = JSON.parse(response);
-                if (result.success) {
-                    if(result.hasOwnProperty("update_checkout") && result.update_checkout === true)
-                        self.updateCheckout();
-                    if(data.method == 8 || data.method == 16)
-                        self.updateCheckout();
-
-                    window.method = data.method;
-
+            url: url,
+            data: values,
+            success: function(response){
+                if (reload == true) {
+                    location.reload();
+                } else {
+                    window.b_iframe.updateCheckout();
                 }
             }
         });
     }
     this.updatePaymentMethod = function(data){
-        if(window.method != data.method) {
-            data['action'] = 'setPaymentMethod';
-            data['ajax'] = 1;
-            jQuery.ajax({
-                url: billmate_checkout_url,
-                data: data,
-                type: 'POST',
-                success: function (response) {
-                    var result = JSON.parse(response);
-                    if (result.success) {
-                        if(result.hasOwnProperty("update_checkout") && result.update_checkout === true)
-                            self.updateCheckout();
-                        if(data.method == 8 || data.method == 16)
-                            self.updateCheckout();
-
-                        window.method = data.method;
-
-                    }
-                }
-            });
-        }
-
+        return true;
     };
-    this.updateShippingMethod = function(){
-
-    }
     this.createOrder = function(data){
-        // Create Order
+        /* Create Order */
         data['action'] = 'validateOrder';
         data['ajax'] = 1;
         jQuery.ajax({
@@ -116,8 +108,6 @@ var BillmateIframe = new function(){
 
     this.initListeners = function () {
         jQuery(document).ready(function(){
-
-            console.log('initEventListeners');
             window.addEventListener("message",self.handleEvent);
             if($('#billmate_summary').length) {
 
@@ -131,7 +121,6 @@ var BillmateIframe = new function(){
 
     }
     this.handleEvent = function(event){
-        console.log(event);
         if(event.origin == "https://checkout.billmate.se") {
             try {
                 var json = JSON.parse(event.data);
@@ -139,14 +128,13 @@ var BillmateIframe = new function(){
                 return;
             }
             self.childWindow = json.source;
-            console.log(json);
             switch (json.event) {
                 case 'address_selected':
                     self.updateAddress(json.data);
                     self.updatePaymentMethod(json.data);
 
                     if(window.method == null || window.method == json.data.method) {
-                        jQuery('#checkoutdiv').removeClass('loading');
+                        self.unlock();
                     }
                     break;
                 case 'payment_method_selected':
@@ -154,7 +142,7 @@ var BillmateIframe = new function(){
                         self.updatePaymentMethod(json.data);
 
                         if(window.method == json.data.method) {
-                            jQuery('#checkoutdiv').removeClass('loading');
+                            self.unlock();
                         }
                     }
                     break;
@@ -162,19 +150,16 @@ var BillmateIframe = new function(){
                     self.createOrder(json.data);
                     break;
                 case 'content_height':
-                    $('#checkout').height = json.data;
+                    $(document).find('#checkout').height(json.data);
                     break;
                 case 'content_scroll_position':
-                    console.log('Scroll position'+json.data);
                     window.latestScroll = jQuery(document).find( "#checkout" ).offset().top + json.data;
                     jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
                     break;
                 case 'checkout_loaded':
-                    jQuery('#checkoutdiv').removeClass('loading');
+                    self.unlock();
                     break;
                 default:
-                    console.log(event);
-                    console.log('not implemented')
                     break;
 
             }
@@ -183,11 +168,35 @@ var BillmateIframe = new function(){
     };
 
     this.updateCheckout = function(){
-        console.log('update_checkout');
-        var win = document.getElementById('checkout').contentWindow;
-        win.postMessage(JSON.stringify({event: 'update_checkout'}),'*')
+        var win = $(document).find('#checkout');
+        if ( win.lenght > 0) {
+            win = win.contentWindow;
+            win.postMessage(JSON.stringify({event: 'update_checkout'}),'*');
+        }
     }
 
+    this.lock = function() {
+        var win = $(document).find('#checkout');
+        if ( win.lenght > 0) {
+            win = win.contentWindow;
+            win.postMessage('lock', '*');
+        }
+    }
+
+    this.unlock = function() {
+        var win = $(document).find('#checkout');
+        if ( win.lenght > 0) {
+            win = win.contentWindow;
+            win.postMessage('unlock', '*');
+        }
+    }
+
+    this.hideShippingElements = function() {
+        $(document).find('.container #shippingdiv .order_carrier_content p.carrier_title + div').has('textarea').hide();
+        $(document).find('.container #shippingdiv .order_carrier_content hr').hide();
+        $(document).find('.container #shippingdiv .order_carrier_content .box').hide();
+        $(document).find('.container #shippingdiv .order_carrier_content .carrier_title').hide();
+    }
 
 };
 
@@ -199,8 +208,6 @@ var BillmateCart = new function () {
     this.updateProduct = function(type,id,qty){
         var self = this;
         var val = $('input[name=quantity_'+id+']').val();
-        console.log(val);
-        console.log(qty);
         var newQty = val;
         var action = '';
         if(type == 'sub') {
@@ -216,9 +223,6 @@ var BillmateCart = new function () {
                 qty = 1;
             }
         }
-
-        console.log(qty);
-        console.log(newQty);
 
         var customizationId = 0;
         var productId = 0;
@@ -329,7 +333,7 @@ var BillmateCart = new function () {
                 {
                     var errors = '';
                     for(var error in jsonData.errors)
-                        //IE6 bug fix
+                        /* IE6 bug fix */
                         if (error !== 'indexOf')
                             errors += jsonData.errors[error] + "\n";
                 }
@@ -340,7 +344,7 @@ var BillmateCart = new function () {
                     if (parseInt(jsonData.summary.products.length) === 0)
                     {
                         if (typeof(orderProcess) === 'undefined' || orderProcess !== 'order-opc')
-                            document.location.href = document.location.href; // redirection
+                            document.location.href = document.location.href; /* redirection */
                         else
                         {
                             $('#center_column').children().each(function() {
@@ -372,7 +376,7 @@ var BillmateCart = new function () {
                         })
 
 
-                        // if all customization removed => delete product line
+                        /* if all customization removed => delete product line */
                         if (!exist && customizationId)
                         {
                             $('#product_' + productId + '_' + productAttributeId + '_0_' + id_address_delivery).fadeOut('slow', function() {
@@ -383,7 +387,6 @@ var BillmateCart = new function () {
                         }
                     }
                     self.updateCart(jsonData.summary);
-                    //updateCustomizedDatas(jsonData.customizedDatas);
                     self.updateHookShoppingCart(jsonData.HOOK_SHOPPING_CART);
                     self.updateHookShoppingCartExtra(jsonData.HOOK_SHOPPING_CART_EXTRA);
                     if (typeof(getCarrierListAndUpdate) !== 'undefined')
@@ -430,7 +433,7 @@ var BillmateCart = new function () {
 
         for (i in product_list)
         {
-            // if reduction, we need to show it in the cart by showing the initial price above the current one
+            /* if reduction, we need to show it in the cart by showing the initial price above the current one */
             var reduction = product_list[i].reduction_applies;
             var reduction_type = product_list[i].reduction_type;
             var reduction_symbol = '';
@@ -500,7 +503,7 @@ var BillmateCart = new function () {
             nbrProducts += parseInt(product_list[i].quantity);
         }
 
-        // Update discounts
+        /* Update discounts */
         if (json.discounts.length === 0)
         {
             $('.cart_discount').each(function(){$(this).remove();});
@@ -540,7 +543,7 @@ var BillmateCart = new function () {
             });
         }
 
-        // Block cart
+        /* Block cart */
         if (priceDisplayMethod !== 0)
         {
             $('#cart_block_shipping_cost').html(formatCurrency(json.total_shipping_tax_exc, currencyFormat, currencySign, currencyBlank));
@@ -555,7 +558,7 @@ var BillmateCart = new function () {
         $('#cart_block_tax_cost').html(formatCurrency(json.total_tax, currencyFormat, currencySign, currencyBlank));
         $('.ajax_cart_quantity').html(nbrProducts);
 
-        // Cart summary
+        /* Cart summary */
         $('#summary_products_quantity').html(nbrProducts+' '+(nbrProducts > 1 ? txtProducts : txtProduct));
         if (priceDisplayMethod !== 0)
         {
@@ -586,7 +589,7 @@ var BillmateCart = new function () {
         }
 
         if($('#total_shipping').html() != window.tmpshippingvalue) {
-            //force page reload
+            /* force page reload */
             location.href = billmate_checkout_url;
         } else {
             window.tmpshippingvalue = $('#total_shipping').html();
@@ -647,16 +650,15 @@ window.b_cart = BillmateCart;
 
 jQuery(document).ready(function(){
     jQuery(document).ajaxStart(function(){
-        jQuery('#checkoutdiv').addClass('loading');
-        jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+        window.b_iframe.lock();
 
-    })
+    });
 
     jQuery(document).ajaxComplete(function(){
-        jQuery('#checkoutdiv').removeClass('loading');
+        window.b_iframe.unlock();
+    });
 
-    })
-
+    $("#header .shopping_cart a").attr("href", billmate_checkout_url);
     $("#button_order_cart").attr("href", billmate_checkout_url);
     $("#layer_cart .layer_cart_cart a.button-medium").attr("href", billmate_checkout_url);
     $("#order p.cart_navigation a.standard-checkout").attr("href", billmate_checkout_url);
@@ -684,66 +686,20 @@ jQuery(document).ready(function(){
     if(window.location.href == billmate_checkout_url) {
         $('body').attr('id', 'order');
     }
-    $('body').on('change','.delivery-option input[type="radio"]',function(e){
 
-        var selectedMethod = e.target.value;
-        if(selectedMethod != window.previousSelectedMethod){
-            window.previousSelectedMethod = selectedMethod;
-            var url = billmate_checkout_url
-            var delivery_option = $('.delivery-option input[type="radio"]:checked').val();
-            var name = $('.delivery-option input[type="radio"]:checked').attr('name');
-            var id = $('.delivery-option input[type="radio"]:checked').attr('id');
+    if (is_billmate_checkout_page == 'yes') {
+        $('body').on('click','#shippingdiv input[type=radio]', function(e) {
+            var selectedMethod = e.target.value;
+            window.b_iframe.updateShippingMethod(selectedMethod, true);
+        });
+    }
 
-            var address_id = $('.delivery_option_radio:checked').data('id_address');
-            var values = {};
-            values[name] = delivery_option;
-            values['action'] = 'setShipping';
-            values['ajax'] = 1
-            jQuery.ajax({
-                url: url,
-                data: values,
-                success: function(response){
-                    var result = JSON.parse(response);
-                    console.log(result);
-                    if(result.hasOwnProperty("update_checkout") && result.update_checkout === true){
-                        $(id).attr('checked',true);
-                        window.b_iframe.updateCheckout();
-                    }
-                }
-            })
-            e.preventDefault();
-        }
-    })
-    $('body').on('click','.delivery_option_radio',function(e){
-        e.preventDefault();
-        var selectedMethod = e.target.value;
-        if(selectedMethod != window.previousSelectedMethod){
-            window.previousSelectedMethod = selectedMethod;
-            var url = billmate_checkout_url
-            var delivery_option = $('.delivery_option_radio:checked').val();
-            var address_id = $('.delivery_option_radio:checked').data('id_address');
-            var values = {};
-            values['delivery_option['+address_id+']'] = delivery_option;
-            values['action'] = 'setShipping';
-            values['ajax'] = 1
-            jQuery.ajax({
-                url: url,
-                data: values,
-                success: function(response){
-                    var result = JSON.parse(response);
-                    console.log(result);
-                    if(result.hasOwnProperty("update_checkout") && result.update_checkout === true){
-                        window.b_iframe.updateCheckout();
-                    }
-                }
-            })
-        }
-    })
+    if (is_billmate_checkout_page == 'yes') {
+        window.b_iframe.hideShippingElements();
+    }
 
 });
 function deleteProductFromSummary(id){
-    console.log('product removed');
-
     window.b_iframe.updatePsCheckout();
 }
 

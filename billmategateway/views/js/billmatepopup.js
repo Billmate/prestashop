@@ -11,7 +11,7 @@ var billmateprocessing = false;
 var billmatepopupLoaded = false;
 var $checkoutButton = null;
 if (navigator.appName != 'Microsoft Internet Explorer') {
-//https://github.com/paulirish/matchMedia.js/
+    /* https://github.com/paulirish/matchMedia.js/ */
     window.matchMedia || (window.matchMedia = function () {
         "use strict";
         var e = window.styleMedia || window.media;
@@ -38,7 +38,7 @@ if (navigator.appName != 'Microsoft Internet Explorer') {
         }
     }())
 
-//https://raw.github.com/paulirish/matchMedia.js/master/matchMedia.addListener.js
+    /* https://raw.github.com/paulirish/matchMedia.js/master/matchMedia.addListener.js */
     (function () {
         if (window.matchMedia && window.matchMedia("all").addListener) {
             return false
@@ -103,7 +103,6 @@ if (typeof modalWin == 'undefined') {
         var maximize = false;
         div = document.createElement("div");
         div.innerHTML = strOverLayHTML;
-        //document.body.appendChild(div);
         document.body.insertBefore(div, document.body.firstChild);
 
         this.ResizePopUp = function (height, width) {
@@ -159,10 +158,8 @@ if (typeof modalWin == 'undefined') {
             divOverlay.style.width = maxWidth - 2 + "px";
             divOverlay.style.display = "";
             divFrameParent.style.display = "";
-            //$('#divFrameParent').animate({ opacity: 1 }, 2000);
             divFrameParent.style.top = (top - 100) + "px";
             divFrameParent.style.left = left + "px";
-            //divFrameParent.style.height = height + "px";
             divFrameParent.style.width = width + "px";
             onPopUpCloseCallBack = null;
             callbackArray = null;
@@ -229,12 +226,12 @@ if (typeof modalWin == 'undefined') {
 
 
     function AddEvent(html_element, event_name, event_function) {
-        if (html_element.attachEvent) //Internet Explorer
+        if (html_element.attachEvent) /* Internet Explorer */
             html_element.attachEvent("on" + event_name, function () {
                 event_function.call(html_element);
             });
-        else if (html_element.addEventListener) //Firefox & company
-            html_element.addEventListener(event_name, event_function, false); //don't need the 'call' trick because in FF everything already works in the right way
+        else if (html_element.addEventListener) /* Firefox & company */
+            html_element.addEventListener(event_name, event_function, false); /* don't need the 'call' trick because in FF everything already works in the right way */
     }
 
     var modalWin = new CreateModalPopUpObject();
@@ -285,7 +282,7 @@ if (typeof modalWin == 'undefined') {
     AddEvent(window,'load',function(){
         jQuery.getScript('https://billmate.se/billmate/base_jquery.js',function(){addTerms();})
 
-        // is there Radios for Payment methods? In One page checkout they exists
+        /* is there Radios for Payment methods? In One page checkout they exists */
         if($('input[name="id_payment_method"]')) {
             try {
                 var selectedMethod = $('input[name="id_payment_method"]:checked').val();
@@ -293,7 +290,6 @@ if (typeof modalWin == 'undefined') {
                     if ($('#' + selectedMethod).parent('.payment_module').children('.payment-form')) {
                         var el = $('#' + selectedMethod).parent('.payment_module').children('.payment-form');
                         var method = el.attr('id');
-                        //method = method.replace('-fields','');
 
                         if (typeof method != 'undefined') {
                             var methodName = method.replace('-fields', '');
@@ -341,7 +337,7 @@ if (typeof modalWin == 'undefined') {
             divWidth = document.getElementById("divFrameParent").offsetWidth;
             divHeight = document.getElementById("divFrameParent").offsetHeight;
 
-            // Get the x and y coordinates of the center in output browser's window
+            /* Get the x and y coordinates of the center in output browser's window */
             var centerX, centerY;
             if (self.innerHeight) {
                 centerX = self.innerWidth;
@@ -359,8 +355,10 @@ if (typeof modalWin == 'undefined') {
             var offsetLeft = (centerX - divWidth) / 2;
             var offsetTop = (centerY - divHeight) / 2;
 
-            // The initial width and height of the div can be set in the
-            // style sheet with display:none; divid is passed as an argument to // the function
+            /*
+             * The initial width and height of the div can be set in the
+             * style sheet with display:none; divid is passed as an argument to the function
+             */
             var ojbDiv = document.getElementById(divId);
 
             left = (offsetLeft) / 2 + window.scrollX;
@@ -394,7 +392,6 @@ if (typeof modalWin == 'undefined') {
 
         return 0;
     };
-    //window.checkoutButton = $('#payment-confirmation button[type="submut"]').length > 0 ? $('#payment-confirmation button[type="submut"]').onclick : null;
     function getData(param, form, version, ajaxurl, carrierurl, loadingWindowTitle, windowtitlebillmate, method) {
         billmateprocessing = true;
         ShowMessage('<div class="billmate-loader"></div>', loadingWindowTitle);

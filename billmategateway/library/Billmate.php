@@ -38,7 +38,7 @@ class BillMate{
 	var $TEST = false;
 	var $DEBUG = false;
 	var $REFERER = false;
-	function BillMate($id,$key,$ssl=true,$test=false,$debug=false,$referer=array()){
+    public function __construct($id,$key,$ssl=true,$test=false,$debug=false,$referer=array()){
 		$this->ID = $id;
 		$this->KEY = $key;
         defined('BILLMATE_CLIENT') || define('BILLMATE_CLIENT',  "BillMate:2.1.7" );
@@ -102,6 +102,10 @@ class BillMate{
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->SSL);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,10);
+
+        // Use cacert.pem to make sure server has the latest ssl certs
+        curl_setopt($ch, CURLOPT_CAINFO, __DIR__.'/cacert.pem');
+
 		$vh = $this->SSL?((function_exists("phpversion") && function_exists("version_compare") && version_compare(phpversion(),'5.4','>=')) ? 2 : true):false;
 		if($this->SSL){
 			if(function_exists("phpversion") && function_exists("version_compare")){
