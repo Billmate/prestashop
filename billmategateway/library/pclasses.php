@@ -96,7 +96,7 @@
             $p = new pClasses(Configuration::get('BILLMATE_ID'));
             $pclasses = $p->getPClasses();
 
-            if (is_array($pclasses) {
+            if (is_array($pclasses)) {
                 foreach ($pclasses as $pclass) {
                     if (isset($pclass['minamount']) AND $pclass['minamount'] > 0) {
                         $minamounts[] = $pclass['minamount'];
