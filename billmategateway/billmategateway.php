@@ -569,7 +569,15 @@
 				$logfile   = _PS_CACHE_DIR_.'Billmate.log';
 				file_put_contents($logfile, print_r($result['paymentoptions'],true),FILE_APPEND);
 				foreach ($result['paymentoptions'] as $option) {
-					if(isset($mapCodeToMethod[$option['method']])) {
+
+                    /**
+                     * When invoice is unavailable and invoice service is available, use invoice service as invoice
+                     */
+                    if ($option['method'] == '2' AND !isset($paymentOptions['1'])) {
+                        $mapCodeToMethod['2'] = 'invoice';
+                    }
+
+					if(isset($mapCodeToMethod[$option['method']]) AND !in_array($mapCodeToMethod[$option['method']], $paymentOptions)) {
 						$paymentOptions[$option['method']] = $mapCodeToMethod[$option['method']];
 					} else
 						continue;
@@ -579,6 +587,18 @@
                 if (isset($result['checkout']) AND $result['checkout']) {
                     $paymentOptions['checkout'] = 'checkout';
                 }
+
+                /**
+                 * @param int 1|2 The mehtod that will be used in addPayment request when customer pay with invoice
+                 * Method 1 = Invoice , 2 = Invoice service
+                 * Is affected by available payment methods in result from getaccountinfo
+                 * - Default method 1
+                 * - Invoice available, use method 1
+                 * - Invoice and invoiceservice available, use method 1
+                 * - Invoice service availavble and invoice unavailable, use method 2
+                 */
+                $invoiceMethod = (!isset($paymentOptions[1]) && isset($paymentOptions[2])) ? 2 : 1;
+                Configuration::updateValue('BINVOICESERVICE_METHOD', $invoiceMethod);
 
 				return $paymentOptions;
 			} else {

@@ -612,6 +612,7 @@
 		 */
 		public function prepareInvoice($method)
 		{
+            $invoiceMethod = (Configuration::get('BINVOICESERVICE_METHOD') == 2) ? 2 : 1;
 			$payment_data                = array();
 			$methodValue = 1;
 			switch($method){
@@ -619,7 +620,7 @@
 					$methodValue = 2;
 					break;
 				case 'invoice':
-					$methodValue = 1;
+					$methodValue = $invoiceMethod;
 					if ($this->invoiceservice)
 						$methodValue = 2;
 					break;
