@@ -202,9 +202,17 @@
 			Configuration::updateValue('BPARTPAY_ENABLED', (Tools::getIsset('partpayActivated')) ? 1 : 0);
 			Configuration::updateValue('BPARTPAY_MOD', (Tools::getIsset('partpayTestmode')) ? 1 : 0);
 			Configuration::updateValue('BPARTPAY_ORDER_STATUS', Tools::getValue('partpayBillmateOrderStatus'));
-			Configuration::updateValue('BPARTPAY_MIN_VALUE', Tools::getValue('partpayBillmateMinimumValue'));
 			Configuration::updateValue('BPARTPAY_MAX_VALUE', Tools::getValue('partpayBillmateMaximumValue'));
 			Configuration::updateValue('BPARTPAY_SORTORDER', Tools::getValue('partpayBillmateSortOrder'));
+
+            /** Min amount for partpayment cant be less than lowest minamount found in pclasses */
+            $partpayBillmateMinimumValue = Tools::getValue('partpayBillmateMinimumValue');
+            $partpayLowestMinAmount = pClasses::getLowestMinAmount();
+            if ($partpayLowestMinAmount >= $partpayBillmateMinimumValue) {
+                $partpayBillmateMinimumValue = floor($partpayLowestMinAmount);
+            }
+            Configuration::updateValue('BPARTPAY_MIN_VALUE', $partpayBillmateMinimumValue);
+
 
             /** Checkout settings */
             Configuration::updateValue('BILLMATE_CHECKOUT_ACTIVATE', Tools::getIsset('billmate_checkout_active') ? 1 : 0);
