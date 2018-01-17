@@ -9,6 +9,8 @@ window.previousSelectedMethod = null;
 var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
+    var timerPostMessageUpdate;
+
     this.updatePsCheckout = function(){
         /* When address in checkout updates; */
         var data = {};
@@ -167,28 +169,31 @@ var BillmateIframe = new function(){
 
     };
 
-    this.updateCheckout = function(){
+
+    this.checkoutPostMessage = function(message) {
         var win = $(document).find('#checkout');
         if ( win.lenght > 0) {
             win = win.contentWindow;
-            win.postMessage(JSON.stringify({event: 'update_checkout'}),'*');
+            win.postMessage(message, '*');
         }
+    }
+
+    this.updateCheckout = function(){
+        this.lock();
+        that = this;
+        clearTimeout(this.timerPostMessageUpdate);
+        var wait = setTimeout(function() {
+            that.checkoutPostMessage('update');
+        }, 400);
+        this.timerPostMessageUpdate = wait;
     }
 
     this.lock = function() {
-        var win = $(document).find('#checkout');
-        if ( win.lenght > 0) {
-            win = win.contentWindow;
-            win.postMessage('lock', '*');
-        }
+        this.checkoutPostMessage('lock');
     }
 
     this.unlock = function() {
-        var win = $(document).find('#checkout');
-        if ( win.lenght > 0) {
-            win = win.contentWindow;
-            win.postMessage('unlock', '*');
-        }
+        this.checkoutPostMessage('unlock');
     }
 
     this.hideShippingElements = function() {
@@ -273,17 +278,25 @@ var BillmateCart = new function () {
                     }
                     else
                     {
-                        if (jsonData.refresh)
+
+
+                        if (jsonData.hasOwnProperty('refresh')) {
                             location.reload();
-                        self.updateCart(jsonData.summary);
-                        self.updateHookShoppingCart(jsonData.HOOK_SHOPPING_CART);
-                        self.updateHookShoppingCartExtra(jsonData.HOOK_SHOPPING_CART_EXTRA);
+                            return;
+                        } else {
+                            self.updateCart(jsonData.summary);
+                            self.updateHookShoppingCart(jsonData.HOOK_SHOPPING_CART);
+                            self.updateHookShoppingCartExtra(jsonData.HOOK_SHOPPING_CART_EXTRA);
+                            window.b_iframe.updateCheckout();
+                        }
 
-                        if (newQty === 0)
+                        if (newQty === 0) {
                             $('#product_'+id).hide();
+                        }
 
-                        if (typeof(getCarrierListAndUpdate) !== 'undefined')
+                        if (typeof(getCarrierListAndUpdate) !== 'undefined') {
                             getCarrierListAndUpdate();
+                        }
                     }
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
