@@ -9,5 +9,6 @@
 
 <p style="padding: 0px 12px;">{l s='Your order on' mod='billmategateway'} <span class="bold">{$shop_name}</span> {l s='is complete.' mod='billmategateway'}
     <br /><br /><span class="bold">{l s='Your order will be sent very soon.' mod='billmategateway'}</span>
+    {$additional_order_info_html}
     <br /><br />{l s='For any questions or for further information, please contact our' mod='billmategateway'} <a href="{$link->getPageLink('contact-form', true)}">{l s='customer support' mod='billmategateway'}</a>.
 </p>

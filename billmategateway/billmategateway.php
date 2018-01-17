@@ -1330,7 +1330,27 @@
 
         public function hookOrderConfirmation($params)
         {
+            $order = $params['objOrder'];
+            $additional_order_info_html = '';
+            if (    property_exists($order, 'id_customer')
+                    && property_exists($order, 'module')
+                    && $order->id_customer > 0
+                    && in_array($order->module, array('billmateinvoice', 'billmateinvoiceservice', 'billmatepartpay'))
+            ) {
+                $customer = new Customer($order->id_customer);
+                if (property_exists($customer, 'email') AND $customer->email != '') {
+
+                    if ($order->module == 'billmateinvoice' || $order->module == 'billmateinvoiceservice') {
+                        $additional_order_info_html = '<br />'.sprintf($this->l('You have selected to pay with invoice. The invoice will be sent from Billmate to you through email, %s, or your billing address.'), $customer->email);
+                    }
+
+                    if ($order->module == 'billmatepartpay') {
+                        $additional_order_info_html = '<br />'.sprintf($this->l('You have selected to pay with part payment. Information regarding the part payment will be sent from Billmate to your billing address.'), $customer->email);
+                    }
+                }
+            }
             $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
+            $this->smarty->assign('additional_order_info_html', $additional_order_info_html);
             return $this->display(__FILE__, '/orderconfirmation.tpl');
         }
 
