@@ -60,4 +60,21 @@
 
 			return (count($foundName) == count($filterStr1));
 		}
+
+        public static function getCartCheckoutHash() {
+            $context = Context::getContext();
+            return $context->cookie->{'BillmateHash'.$context->cart->id};
+        }
+
+        public static function setCartCheckoutHash($hash = '') {
+            $context = Context::getContext();
+            $context->cookie->{'BillmateHash'.$context->cart->id} = $hash;
+        }
+
+        public static function unsetCartCheckoutHash() {
+            $context = Context::getContext();
+            if (isset($context->cookie->{'BillmateHash'.$context->cart->id})) {
+                unset($context->cookie->{'BillmateHash'.$context->cart->id});
+            }
+        }
 	}

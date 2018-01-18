@@ -388,7 +388,8 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                     $url = $this->context->link->getModuleLink(
                         'billmategateway',
                         'thankyou',
-                        array('billmate_hash' => $this->context->cookie->BillmateHash));
+                        array('billmate_hash' => Common::getCartCheckoutHash())
+                    );
 
                     /*$url = 'order-confirmation&id_cart=' . (int)$this->context->cart->id .
                         '&id_module=' . (int)$this->getmoduleId('billmate' . $this->method) .
@@ -398,8 +399,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                     $return['redirect'] = $url; //$this->context->link->getPageLink($url, true);
                     if (isset($this->context->cookie->billmatepno))
                         unset($this->context->cookie->billmatepno);
-                    if(isset($this->context->cookie->BillmateHash))
-                        unset($this->context->cookie->BillmateHash);
+                    Common::unsetCartCheckoutHash();
                 } else {
                     if (isset($result['code']) AND in_array($result['code'], array(2401, 2402, 2403, 2404, 2405))) {
                         if (is_array($result)) {
@@ -759,7 +759,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
     {
         $billmate = $this->getBillmate();
 
-        if($hash = $this->context->cookie->__get('BillmateHash')){
+        if ($hash = Common::getCartCheckoutHash()) {
             $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
             if(!isset($result['code'])){
                 return $result;
@@ -770,8 +770,9 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
     public function getCheckout()
     {
+
         $billmate = $this->getBillmate();
-        if($hash = $this->context->cookie->__get('BillmateHash')){
+        if ($hash = Common::getCartCheckoutHash()) {
             $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
             if (!isset($result['code'])) {
 
@@ -794,7 +795,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
                         /** Store returned hash */
                         $hash = $this->getHashFromUrl($updateResult['url']);
-                        $this->context->cookie->__set('BillmateHash',$hash);
+                        Common::setCartCheckoutHash($hash);
 
                         $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
                         return $result['PaymentData']['url'];
@@ -837,7 +838,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         $result = $billmate->initCheckout($orderValues);
         if(!isset($result['code'])){
             $hash = $this->getHashFromUrl($result['url']);
-            $this->context->cookie->__set('BillmateHash',$hash);
+            Common::setCartCheckoutHash($hash);
         }
         return $result;
     }
