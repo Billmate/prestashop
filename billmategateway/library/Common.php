@@ -62,6 +62,9 @@
 		}
 
         public static function getCartCheckoutHash() {
+            if (Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') != 1) {
+                Common::unsetCartCheckoutHash();
+            }
             $context = Context::getContext();
             return $context->cookie->{'BillmateHash'.$context->cart->id};
         }
