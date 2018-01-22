@@ -42,7 +42,8 @@ var BillmateIframe = new function(){
         that = this;
         /* When address in checkout updates; */
         data['action'] = 'setAddress';
-        data['delivery_option'] = $(document).find('#shippingdiv input[type=radio]:checked').val();
+        data['delivery_option'] = window.previousSelectedMethod;
+
         data['ajax'] = 1;
         jQuery.ajax({
             url : billmate_checkout_url,
@@ -55,6 +56,12 @@ var BillmateIframe = new function(){
                     /* Show available shipping methods for saved address */
                     jQuery('#shippingdiv').html(result.carrier_block);
                     that.hideShippingElements();
+
+                    jQuery(document).find('#shippingdiv input[type=radio]').closest('span').removeClass('checked');
+                    jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').closest('span').addClass('checked');
+                    jQuery(document).find('#shippingdiv input[type=radio]').attr('checked', false);
+                    jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').attr('checked', true);
+                    jQuery(window).trigger('resize');
                 }
                 window.address_selected = true;
             }
@@ -68,6 +75,9 @@ var BillmateIframe = new function(){
             var delivery_option = shippingElementKey;
         }
         var address_id      = $(document).find('.delivery_option_radio:checked').data('id_address');
+        window.previousSelectedMethod = delivery_option;
+        jQuery(document).find('#shippingdiv input[type=radio]').closest('span').removeClass('checked');
+        jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').closest('span').addClass('checked');
 
         var values = {};
         values['delivery_option['+address_id+']'] = delivery_option;
