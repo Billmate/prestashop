@@ -142,6 +142,7 @@
         <div class="form-group">
             <button type="submit" class="btn btn-secondary" id="{$type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span></button>
         </div>
+        <div class="form-group billmateinvoice-submit-info-wrapper"></div>
     </form>
 </div>
 
@@ -291,6 +292,20 @@
 
         $('#billmateinvoiceSubmit').click(function (e) {
             console.log('testClick');
+
+            if (    $('.billmateinvoice-submit-info-wrapper').is(':visible')
+                    && $('.js-alert-payment-conditions').length > 0
+                    && $(document).find('input[name="conditions_to_approve[terms-and-conditions]"]').length > 0
+            ) {
+                if ($(document).find('input[name="conditions_to_approve[terms-and-conditions]"]').is(':checked') == false) {
+                    /** Customer need to approve store terms */
+                    var orderSubmitPaymentConditionElement = $('.js-alert-payment-conditions').clone();
+                    $('.billmateinvoice-submit-info-wrapper').html(orderSubmitPaymentConditionElement.html());
+                    $('.billmateinvoice-submit-info-wrapper').attr('class', 'billmateinvoice-submit-info-wrapper alert alert-danger mt-2');
+                    return false;
+                }
+            }
+
             if ($('#pno').length > 0) {
                 $("#pno_billmateinvoice").val($('#pno').val());
             }

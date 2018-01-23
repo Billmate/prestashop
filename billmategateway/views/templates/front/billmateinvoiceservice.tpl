@@ -132,6 +132,7 @@
         </div>
         <div style="padding:10px; padding-top:0px;"><button type="submit" style="margin-bottom:10px;" class="btn btn-default button button-medium pull-right" id="{$type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span></button></div>
         <div style="clear:both;"></div>
+        <div class="form-group billmateinvoiceservice-submit-info-wrapper"></div>
     </form>
 </div>
 
@@ -276,6 +277,20 @@
         })
 
         $('#billmateinvoiceserviceSubmit').click(function (e) {
+
+            if (    $('.billmateinvoiceservice-submit-info-wrapper').is(':visible')
+                    && $('.js-alert-payment-conditions').length > 0
+                    && $(document).find('input[name="conditions_to_approve[terms-and-conditions]"]').length > 0
+            ) {
+                if ($(document).find('input[name="conditions_to_approve[terms-and-conditions]"]').is(':checked') == false) {
+                    /** Customer need to approve store terms */
+                    var orderSubmitPaymentConditionElement = $('.js-alert-payment-conditions').clone();
+                    $('.billmateinvoiceservice-submit-info-wrapper').html(orderSubmitPaymentConditionElement.html());
+                    $('.billmateinvoiceservice-submit-info-wrapper').attr('class', 'billmateinvoiceservice-submit-info-wrapper alert alert-danger mt-2');
+                    return false;
+                }
+            }
+
             if ($('form.billmateinvoiceservice').length > 1) {
                 var form = $('form.realbillmateinvoiceservice').serializeArray();
             } else {
