@@ -127,6 +127,11 @@
 
 			if(Configuration::get('BILLMATE_MESSAGE')) {
 				$message = Message::getMessageByCartId($this->context->cart->id);
+
+                if (is_array($message) && isset($message['message'])) {
+                    $message['message'] = html_entity_decode($message['message']);
+                }
+
 				if(strlen($message['message']) > 0){
 
 					$data['Articles'][] = array(
