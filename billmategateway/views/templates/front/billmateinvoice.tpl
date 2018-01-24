@@ -202,7 +202,6 @@
         var windowtitlebillmate = "{l s='Pay by invoice can be made only to the address listed in the National Register. Would you make the purchase with address:' mod='billmategateway'}";
         jQuery(document.body).on('click', '#billmate_button', function (e) {
             if($('#billmateinvoice').is(':visible')) {
-                console.log('invoice');
 
                 e.preventDefault();
                 var method = 'invoice';
@@ -250,7 +249,6 @@
             return false;
         });
         $('#billmateinvoice').click(function (e) {
-            console.log('clickTest');
             $('a#billmateinvoice').css('padding-bottom', '10px');
             $('a#billmatepartpay').css('padding-bottom', '34px');
             $('#billmatepartpay-fields').hide();
@@ -291,7 +289,6 @@
 
 
         $('#billmateinvoiceSubmit').click(function (e) {
-            console.log('testClick');
 
             if (    $('.billmateinvoice-submit-info-wrapper').is(':visible')
                     && $('.js-alert-payment-conditions').length > 0
@@ -321,7 +318,6 @@
                 return;
             }
             if ($('#agree_with_terms_billmateinvoice').prop('checked') == true) {
-                console.log(form);
                 var data = '';
                 if ($('#invoice_address').prop('checked') == true)
                     data = '&invoice_address=true';

@@ -237,7 +237,6 @@
             return false;
         });
         $('#billmateinvoice').click(function (e) {
-            console.log('clickTest');
             $('a#billmateinvoice').css('padding-bottom', '10px');
             $('a#billmatepartpay').css('padding-bottom', '34px');
             $('#billmatepartpay-fields').hide();
