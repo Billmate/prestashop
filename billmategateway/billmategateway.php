@@ -1330,7 +1330,12 @@
 
         public function hookOrderConfirmation($params)
         {
-            $order = $params['objOrder'];
+            if (!isset($params['objOrder']) && isset($params['order'])) {
+                $order = $params['order'];
+            } else {
+                $order = $params['objOrder'];
+            }
+
             $additional_order_info_html = '';
             if (    property_exists($order, 'id_customer')
                     && property_exists($order, 'module')
@@ -1349,10 +1354,15 @@
                     }
                 }
             }
-            $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
-            $this->smarty->assign('additional_order_info_html', $additional_order_info_html);
-            return $this->display(__FILE__, '/orderconfirmation.tpl');
+
+            if (version_compare(_PS_VERSION_, '1.7', '>=')) {
+                $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
+                $this->smarty->assign('additional_order_info_html', $additional_order_info_html);
+                return $this->fetch('module:billmategateway/views/templates/hook/orderconfirmation.tpl');
+            } else {
+                $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
+                $this->smarty->assign('additional_order_info_html', $additional_order_info_html);
+                return $this->display(__FILE__, '/orderconfirmation.tpl');
+            }
         }
-
-
     }
