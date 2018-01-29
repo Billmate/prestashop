@@ -34,9 +34,8 @@ var BillmateIframe = new function(){
         });
     }
     this.updateAddress = function (data) {
-
-        if (window.previousSelectedMethod == null) {
-            window.previousSelectedMethod = $(document).find('#shippingdiv input[type=radio]:checked').val();
+        if (typeof(window.previousSelectedMethod) == 'undefined' || window.previousSelectedMethod == null) {
+            window.previousSelectedMethod = $(document).find('input[type="radio"][name^="delivery_option["]:checked').val();
         }
 
         that = this;
@@ -57,10 +56,13 @@ var BillmateIframe = new function(){
                     jQuery('#shippingdiv').html(result.carrier_block);
                     that.hideShippingElements();
 
-                    jQuery(document).find('#shippingdiv input[type=radio]').closest('span').removeClass('checked');
-                    jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').closest('span').addClass('checked');
-                    jQuery(document).find('#shippingdiv input[type=radio]').attr('checked', false);
-                    jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').attr('checked', true);
+                    if (jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').length > 0) {
+                        jQuery(document).find('#shippingdiv input[type=radio]').closest('span').removeClass('checked');
+                        jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').closest('span').addClass('checked');
+                        jQuery(document).find('#shippingdiv input[type=radio]').attr('checked', false);
+                        jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').attr('checked', true);
+                    }
+
                     jQuery(window).trigger('resize');
                 }
                 window.address_selected = true;
@@ -70,14 +72,20 @@ var BillmateIframe = new function(){
     };
     this.updateShippingMethod = function(shippingElementKey, reload = false) {
         var url = billmate_checkout_url;
-        var delivery_option = $(document).find('#shippingdiv input[type=radio]:checked').val();
+        var delivery_option = $(document).find('input[type="radio"][name^="delivery_option["]:checked').val();
         if (shippingElementKey != null) {
             var delivery_option = shippingElementKey;
         }
-        var address_id      = $(document).find('.delivery_option_radio:checked').data('id_address');
+
+        var elementName = $(document).find('input[type="radio"][name^="delivery_option["]:checked').attr('name');
+        var address_id = parseInt(elementName.match(/[0-9]+/));
+
         window.previousSelectedMethod = delivery_option;
-        jQuery(document).find('#shippingdiv input[type=radio]').closest('span').removeClass('checked');
-        jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').closest('span').addClass('checked');
+
+        if (jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').length > 0) {
+            jQuery(document).find('#shippingdiv input[type=radio]').closest('span').removeClass('checked');
+            jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').closest('span').addClass('checked');
+        }
 
         var values = {};
         values['delivery_option['+address_id+']'] = delivery_option;
@@ -166,7 +174,9 @@ var BillmateIframe = new function(){
                     break;
                 case 'content_scroll_position':
                     window.latestScroll = jQuery(document).find( "#checkout" ).offset().top + json.data;
-                    jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
+                    if (jQuery(document).scrollTop() > 0) {
+                        jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
+                    }
                     break;
                 case 'checkout_loaded':
                     self.unlock();
@@ -711,7 +721,18 @@ jQuery(document).ready(function(){
     }
 
     if (is_billmate_checkout_page == 'yes') {
-        $('body').on('click','#shippingdiv input[type=radio]', function(e) {
+        if ($(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').length > 0) {
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').find('textarea').closest('div').remove();
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').find('button').remove();
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').closest('section#shipping').find('h1 i').remove();
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').closest('section#shipping').find('h1 span').remove();
+
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').removeAttr('data-url-update');
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').removeAttr('method');
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').removeAttr('id');
+        }
+
+        $('body').on('click', 'input[type="radio"][name^="delivery_option["]', function(e) {
             var selectedMethod = e.target.value;
             window.b_iframe.updateShippingMethod(selectedMethod, true);
         });

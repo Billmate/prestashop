@@ -684,6 +684,10 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
         $this->context->smarty->assign('isVirtualCart', $this->context->cart->isVirtualCart());
 
+        if (version_compare(_PS_VERSION_,'1.7','>=')){
+            $delivery_option = $this->context->cart->simulateCarrierSelectedOutput();
+        }
+
         $vars = array(
             'advanced_payment_api' => (bool)Configuration::get('PS_ADVANCED_PAYMENT_API'),
             'free_shipping' => $free_shipping,
@@ -712,7 +716,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             'position' => 1,
             'title' => 'Frakt',
             'delivery_message' => '',
-            'delivery_options' => $carriers17,//$this->context->cart->getDeliveryOptionList(),
+            'delivery_options' => $carriers17,
             'id_address' => $this->context->cart->id_address_delivery,
             'hookDisplayBeforeCarrier' => Hook::exec('displayBeforeCarrier', array(
                 'carriers' => $carriers,

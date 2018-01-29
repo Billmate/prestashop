@@ -29,7 +29,7 @@ class BillmategatewayThankyouModuleFrontController extends ModuleFrontController
 			'order_conf' => $this->displayOrderConfirmation((int) ($result['id_order'])),
 		));
 		if(version_compare(_PS_VERSION_,'1.7','>=')){
-			$this->setTemplate('module:billmatecheckout/views/templates/front/checkout/billmate_thankyou17.tpl');
+			$this->setTemplate('module:billmategateway/views/templates/front/checkout/billmate_thankyou17.tpl');
 
 		} else {
 			$this->setTemplate('checkout/billmate_thankyou.tpl');

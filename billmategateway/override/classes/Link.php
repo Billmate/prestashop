@@ -4,7 +4,15 @@ class Link extends LinkCore
 {
     public function getPageLink($controller, $ssl = null, $id_lang = null, $request = null, $request_url_encode = false, $id_shop = null, $relative_protocol = false)
     {
-        if (    $controller == 'order-opc'
+        $isController = false;
+        $isController = ($controller == 'order-opc') ? true : $isController;
+        if (version_compare(_PS_VERSION_, '1.7', '>=')) {
+            if ($controller == 'order') {
+                $isController = true;
+            }
+        }
+
+        if (    $isController == true
                 && Module::isInstalled('billmategateway')
                 && Module::isEnabled('billmategateway')
                 && version_compare(Configuration::get('BILLMATE_VERSION'), '3.0.0', '>=')

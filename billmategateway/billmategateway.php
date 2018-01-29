@@ -418,9 +418,20 @@
             $css_file   = __DIR__.'/views/css/checkout/checkout.css';
             $js_file    = __DIR__.'/views/js/checkout/checkout.js';
 
-            $this->context->controller->addCSS($css_file, 'all');
+            if (version_compare(_PS_VERSION_,'1.7','>=')) {
+                $this->context->controller->registerStylesheet('module-billmategateway', 'modules/billmategateway/views/css/checkout/checkout.css', ['media' => 'all', 'priority' => 150]);
+            } else {
+                $this->context->controller->addCSS($css_file, 'all');
+            }
+
             if(Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 1) {
-                $this->context->controller->addJS($js_file);
+
+                if (version_compare(_PS_VERSION_,'1.7','>=')) {
+                    $this->context->controller->registerJavascript('module-billmategateway', 'modules/billmategateway/views/js/checkout/checkout.js', ['position' => 'bottom', 'priority' => 150]);
+                } else {
+                    $this->context->controller->addJS($js_file);
+                }
+
                 Media::addJsDef(array('billmate_checkout_url' =>
                     $this->context->link->getModuleLink('billmategateway', 'billmatecheckout', array(), true)));
 
