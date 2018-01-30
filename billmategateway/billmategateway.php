@@ -202,9 +202,17 @@
 			Configuration::updateValue('BPARTPAY_ENABLED', (Tools::getIsset('partpayActivated')) ? 1 : 0);
 			Configuration::updateValue('BPARTPAY_MOD', (Tools::getIsset('partpayTestmode')) ? 1 : 0);
 			Configuration::updateValue('BPARTPAY_ORDER_STATUS', Tools::getValue('partpayBillmateOrderStatus'));
-			Configuration::updateValue('BPARTPAY_MIN_VALUE', Tools::getValue('partpayBillmateMinimumValue'));
 			Configuration::updateValue('BPARTPAY_MAX_VALUE', Tools::getValue('partpayBillmateMaximumValue'));
 			Configuration::updateValue('BPARTPAY_SORTORDER', Tools::getValue('partpayBillmateSortOrder'));
+
+            /** Min amount for partpayment cant be less than lowest minamount found in pclasses */
+            $partpayBillmateMinimumValue = Tools::getValue('partpayBillmateMinimumValue');
+            $partpayLowestMinAmount = pClasses::getLowestMinAmount();
+            if ($partpayLowestMinAmount >= $partpayBillmateMinimumValue) {
+                $partpayBillmateMinimumValue = floor($partpayLowestMinAmount);
+            }
+            Configuration::updateValue('BPARTPAY_MIN_VALUE', $partpayBillmateMinimumValue);
+
 
             /** Checkout settings */
             Configuration::updateValue('BILLMATE_CHECKOUT_ACTIVATE', Tools::getIsset('billmate_checkout_active') ? 1 : 0);
@@ -410,9 +418,20 @@
             $css_file   = __DIR__.'/views/css/checkout/checkout.css';
             $js_file    = __DIR__.'/views/js/checkout/checkout.js';
 
-            $this->context->controller->addCSS($css_file, 'all');
+            if (version_compare(_PS_VERSION_,'1.7','>=')) {
+                $this->context->controller->registerStylesheet('module-billmategateway', 'modules/billmategateway/views/css/checkout/checkout.css', ['media' => 'all', 'priority' => 150]);
+            } else {
+                $this->context->controller->addCSS($css_file, 'all');
+            }
+
             if(Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 1) {
-                $this->context->controller->addJS($js_file);
+
+                if (version_compare(_PS_VERSION_,'1.7','>=')) {
+                    $this->context->controller->registerJavascript('module-billmategateway', 'modules/billmategateway/views/js/checkout/checkout.js', ['position' => 'bottom', 'priority' => 150]);
+                } else {
+                    $this->context->controller->addJS($js_file);
+                }
+
                 Media::addJsDef(array('billmate_checkout_url' =>
                     $this->context->link->getModuleLink('billmategateway', 'billmatecheckout', array(), true)));
 
@@ -569,7 +588,15 @@
 				$logfile   = _PS_CACHE_DIR_.'Billmate.log';
 				file_put_contents($logfile, print_r($result['paymentoptions'],true),FILE_APPEND);
 				foreach ($result['paymentoptions'] as $option) {
-					if(isset($mapCodeToMethod[$option['method']])) {
+
+                    /**
+                     * When invoice is unavailable and invoice service is available, use invoice service as invoice
+                     */
+                    if ($option['method'] == '2' AND !isset($paymentOptions['1'])) {
+                        $mapCodeToMethod['2'] = 'invoice';
+                    }
+
+					if(isset($mapCodeToMethod[$option['method']]) AND !in_array($mapCodeToMethod[$option['method']], $paymentOptions)) {
 						$paymentOptions[$option['method']] = $mapCodeToMethod[$option['method']];
 					} else
 						continue;
@@ -579,6 +606,18 @@
                 if (isset($result['checkout']) AND $result['checkout']) {
                     $paymentOptions['checkout'] = 'checkout';
                 }
+
+                /**
+                 * @param int 1|2 The mehtod that will be used in addPayment request when customer pay with invoice
+                 * Method 1 = Invoice , 2 = Invoice service
+                 * Is affected by available payment methods in result from getaccountinfo
+                 * - Default method 1
+                 * - Invoice available, use method 1
+                 * - Invoice and invoiceservice available, use method 1
+                 * - Invoice service availavble and invoice unavailable, use method 2
+                 */
+                $invoiceMethod = (!isset($paymentOptions[1]) && isset($paymentOptions[2])) ? 2 : 1;
+                Configuration::updateValue('BINVOICESERVICE_METHOD', $invoiceMethod);
 
 				return $paymentOptions;
 			} else {
@@ -1302,9 +1341,39 @@
 
         public function hookOrderConfirmation($params)
         {
-            $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
-            return $this->display(__FILE__, '/orderconfirmation.tpl');
+            if (!isset($params['objOrder']) && isset($params['order'])) {
+                $order = $params['order'];
+            } else {
+                $order = $params['objOrder'];
+            }
+
+            $additional_order_info_html = '';
+            if (    property_exists($order, 'id_customer')
+                    && property_exists($order, 'module')
+                    && $order->id_customer > 0
+                    && in_array($order->module, array('billmateinvoice', 'billmateinvoiceservice', 'billmatepartpay'))
+            ) {
+                $customer = new Customer($order->id_customer);
+                if (property_exists($customer, 'email') AND $customer->email != '') {
+
+                    if ($order->module == 'billmateinvoice' || $order->module == 'billmateinvoiceservice') {
+                        $additional_order_info_html = '<br />'.sprintf($this->l('You have selected to pay with invoice. The invoice will be sent from Billmate to you through email, %s, or your billing address.'), $customer->email);
+                    }
+
+                    if ($order->module == 'billmatepartpay') {
+                        $additional_order_info_html = '<br />'.sprintf($this->l('You have selected to pay with part payment. Information regarding the part payment will be sent from Billmate to your billing address.'), $customer->email);
+                    }
+                }
+            }
+
+            if (version_compare(_PS_VERSION_, '1.7', '>=')) {
+                $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
+                $this->smarty->assign('additional_order_info_html', $additional_order_info_html);
+                return $this->fetch('module:billmategateway/views/templates/hook/orderconfirmation.tpl');
+            } else {
+                $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
+                $this->smarty->assign('additional_order_info_html', $additional_order_info_html);
+                return $this->display(__FILE__, '/orderconfirmation.tpl');
+            }
         }
-
-
     }

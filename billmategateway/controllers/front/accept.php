@@ -154,9 +154,9 @@
 					if(isset($this->context->cookie->billmatepno))
 						unset($this->context->cookie->billmatepno);
 
-					if(isset($this->context->cookie->BillmateHash)){
-						$hash = $this->context->cookie->BillmateHash;
-						unset($this->context->cookie->BillmateHash);
+                    if ('' != Common::getCartCheckoutHash()) {
+                        $hash = Common::getCartCheckoutHash();
+                        Common::unsetCartCheckoutHash();
 						$url = $this->context->link->getModuleLink(
 							'billmategateway',
 							'thankyou',
@@ -225,14 +225,12 @@
                     $url = $this->context->link->getModuleLink(
                         'billmatecheckout',
                         'thankyou',
-                        array('billmate_hash' => $this->context->cookie->BillmateHash));
+                        array('BillmateHash' => Common::getCartCheckoutHash())
+                    );
 
                     $return['success'] = true;
                     $return['redirect'] = $url;
-                    if (isset($this->context->cookie->billmatepno))
-                        unset($this->context->cookie->billmatepno);
-                    if(isset($this->context->cookie->BillmateHash))
-                        unset($this->context->cookie->BillmateHash);
+                    Common::unsetCartCheckoutHash();
                 } else {
                     if (isset($result['code']) AND in_array($result['code'], array(2401, 2402, 2403, 2404, 2405))) {
                         if (is_array($result)) {
@@ -280,9 +278,10 @@
 				unlink($lockfile);
 				if(isset($this->context->cookie->billmatepno))
 					unset($this->context->cookie->billmatepno);
-				if(isset($this->context->cookie->BillmateHash)){
-					$hash = $this->context->cookie->BillmateHash;
-					unset($this->context->cookie->BillmateHash);
+
+                if ('' != Common::getCartCheckoutHash()) {
+                    $hash = Common::getCartCheckoutHash();
+                    Common::unsetCartCheckoutHash();
 					$url = $this->context->link->getModuleLink(
 						'billmategateway',
 						'thankyou',

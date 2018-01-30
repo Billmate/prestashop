@@ -51,6 +51,8 @@ $_MODULE['<{billmategateway}prestashop>billmategateway_4cebf08e33afe35a8d956998b
 $_MODULE['<{billmategateway}prestashop>billmategateway_3336573a263dde25ad2c0c038607e3dc'] = 'Logotyp som visas på fakturan';
 $_MODULE['<{billmategateway}prestashop>billmategateway_f0511bcd568430a8a1be2c6b5029dc47'] = 'Ange namnet på logotypen (finns i Billmate Online). Lämna tom om ni endast har en logotype.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_f5a8885f26ea1fe06b78b423fa4e9f95'] = 'Generella Inställningar';
+$_MODULE['<{billmategateway}prestashop>billmategateway_410f17344ad05b8bb805c3f91d0e3388'] = 'Du har valt att betala med faktura och fakturan skickas separat av Billmate till din epost, %s, eller fakturaadress.';
+$_MODULE['<{billmategateway}prestashop>billmategateway_c76145e380c20df74b0becc228abaad3'] = 'Du har valt att betala med delbetalning och information gällande din delbetalning skickas separat av Billmate till din fakturaadress.';
 $_MODULE['<{billmategateway}prestashop>billmateapi_72dd0900a3fee01d727efa2066a06b11'] = 'Rabatt %s%% Moms';
 $_MODULE['<{billmategateway}prestashop>billmateapi_104d9898c04874d0fbac36e125fa1369'] = 'Rabatt';
 $_MODULE['<{billmategateway}prestashop>bankpay_71b659c71cb48b160ad36d78db768326'] = 'Billmate Bankbetalning';

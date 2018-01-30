@@ -72,7 +72,8 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             file_put_contents($logfile, 'customer after:'.print_r($this->context->customer,true),FILE_APPEND);
             file_put_contents($logfile, 'cart after:'.print_r($this->context->cart,true),FILE_APPEND);
 
-            $customer_addresses = $this->context->customer->getAddresses($this->context->language->id);
+            $_customer = new Customer($this->context->cart->id_customer);
+            $customer_addresses = $_customer->getAddresses($this->context->language->id);
 
             if (count($customer_addresses) == 1)
                 $customer_addresses[] = $customer_addresses;
@@ -291,10 +292,17 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         if (Tools::getIsset('delivery_option')) {
             $validated = false;
             try {
-                if ($this->validateDeliveryOption(Tools::getValue('delivery_option'))) {
+                $delivery_option = Tools::getValue('delivery_option');
+                if (!is_array($delivery_option)) {
+                    $delivery_option = array(
+                        $this->context->cart->id_address_delivery => $delivery_option
+                    );
+                }
+
+                if ($this->validateDeliveryOption($delivery_option)) {
                     $validated = true;
                     if(version_compare(_PS_VERSION_,'1.7','>=')) {
-                        $deliveryOption =  Tools::getValue('delivery_option');
+                        $deliveryOption =  $delivery_option;
                         $realOption = array();
                         foreach ($deliveryOption as $key => $value){
                             $realOption[$key] = Cart::desintifier($value);
@@ -302,7 +310,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                         $this->context->cart->setDeliveryOption($realOption);
                     }
                     else {
-                        $this->context->cart->setDeliveryOption(Tools::getValue('delivery_option'));
+                        $this->context->cart->setDeliveryOption($delivery_option);
                     }
 
                 }
@@ -388,7 +396,8 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                     $url = $this->context->link->getModuleLink(
                         'billmategateway',
                         'thankyou',
-                        array('billmate_hash' => $this->context->cookie->BillmateHash));
+                        array('billmate_hash' => Common::getCartCheckoutHash())
+                    );
 
                     /*$url = 'order-confirmation&id_cart=' . (int)$this->context->cart->id .
                         '&id_module=' . (int)$this->getmoduleId('billmate' . $this->method) .
@@ -398,8 +407,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                     $return['redirect'] = $url; //$this->context->link->getPageLink($url, true);
                     if (isset($this->context->cookie->billmatepno))
                         unset($this->context->cookie->billmatepno);
-                    if(isset($this->context->cookie->BillmateHash))
-                        unset($this->context->cookie->BillmateHash);
+                    Common::unsetCartCheckoutHash();
                 } else {
                     if (isset($result['code']) AND in_array($result['code'], array(2401, 2402, 2403, 2404, 2405))) {
                         if (is_array($result)) {
@@ -676,6 +684,10 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
         $this->context->smarty->assign('isVirtualCart', $this->context->cart->isVirtualCart());
 
+        if (version_compare(_PS_VERSION_,'1.7','>=')){
+            $delivery_option = $this->context->cart->simulateCarrierSelectedOutput();
+        }
+
         $vars = array(
             'advanced_payment_api' => (bool)Configuration::get('PS_ADVANCED_PAYMENT_API'),
             'free_shipping' => $free_shipping,
@@ -704,7 +716,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             'position' => 1,
             'title' => 'Frakt',
             'delivery_message' => '',
-            'delivery_options' => $carriers17,//$this->context->cart->getDeliveryOptionList(),
+            'delivery_options' => $carriers17,
             'id_address' => $this->context->cart->id_address_delivery,
             'hookDisplayBeforeCarrier' => Hook::exec('displayBeforeCarrier', array(
                 'carriers' => $carriers,
@@ -759,7 +771,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
     {
         $billmate = $this->getBillmate();
 
-        if($hash = $this->context->cookie->__get('BillmateHash')){
+        if ($hash = Common::getCartCheckoutHash()) {
             $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
             if(!isset($result['code'])){
                 return $result;
@@ -770,8 +782,9 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
     public function getCheckout()
     {
+
         $billmate = $this->getBillmate();
-        if($hash = $this->context->cookie->__get('BillmateHash')){
+        if ($hash = Common::getCartCheckoutHash()) {
             $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
             if (!isset($result['code'])) {
 
@@ -794,7 +807,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
                         /** Store returned hash */
                         $hash = $this->getHashFromUrl($updateResult['url']);
-                        $this->context->cookie->__set('BillmateHash',$hash);
+                        Common::setCartCheckoutHash($hash);
 
                         $result = $billmate->getCheckout(array('PaymentData' => array('hash' => $hash)));
                         return $result['PaymentData']['url'];
@@ -837,7 +850,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         $result = $billmate->initCheckout($orderValues);
         if(!isset($result['code'])){
             $hash = $this->getHashFromUrl($result['url']);
-            $this->context->cookie->__set('BillmateHash',$hash);
+            Common::setCartCheckoutHash($hash);
         }
         return $result;
     }

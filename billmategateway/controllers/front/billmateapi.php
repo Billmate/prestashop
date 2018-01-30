@@ -127,6 +127,11 @@
 
 			if(Configuration::get('BILLMATE_MESSAGE')) {
 				$message = Message::getMessageByCartId($this->context->cart->id);
+
+                if (is_array($message) && isset($message['message'])) {
+                    $message['message'] = html_entity_decode($message['message']);
+                }
+
 				if(strlen($message['message']) > 0){
 
 					$data['Articles'][] = array(
@@ -612,6 +617,7 @@
 		 */
 		public function prepareInvoice($method)
 		{
+            $invoiceMethod = (Configuration::get('BINVOICESERVICE_METHOD') == 2) ? 2 : 1;
 			$payment_data                = array();
 			$methodValue = 1;
 			switch($method){
@@ -619,7 +625,7 @@
 					$methodValue = 2;
 					break;
 				case 'invoice':
-					$methodValue = 1;
+					$methodValue = $invoiceMethod;
 					if ($this->invoiceservice)
 						$methodValue = 2;
 					break;

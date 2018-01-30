@@ -158,6 +158,7 @@
                     id="{$type|escape:'html'}Submit" value=""><span>{l s='Proceed' mod='billmategateway'}</span>
             </button>
         </div>
+        <div class="form-group billmatepartpay-submit-info-wrapper"></div>
     </form>
 </div>
 <script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
@@ -300,6 +301,20 @@
         })
 
         $('#billmatepartpaySubmit').click(function (e) {
+
+            if (    $('.billmatepartpay-submit-info-wrapper').is(':visible')
+                    && $('.js-alert-payment-conditions').length > 0
+                    && $(document).find('input[name="conditions_to_approve[terms-and-conditions]"]').length > 0
+            ) {
+                if ($(document).find('input[name="conditions_to_approve[terms-and-conditions]"]').is(':checked') == false) {
+                    /** Customer need to approve store terms */
+                    var orderSubmitPaymentConditionElement = $('.js-alert-payment-conditions').clone();
+                    $('.billmatepartpay-submit-info-wrapper').html(orderSubmitPaymentConditionElement.html());
+                    $('.billmatepartpay-submit-info-wrapper').attr('class', 'billmatepartpay-submit-info-wrapper alert alert-danger mt-2');
+                    return false;
+                }
+            }
+
             if ($('#pno').length > 0) {
                 $("#pno_billmatepartpay").val($('#pno').val());
             }

@@ -90,6 +90,27 @@
 
 		}
 
+        public static function getLowestMinAmount() {
+            $minamount = 0;
+            $minamounts = array();
+            $p = new pClasses(Configuration::get('BILLMATE_ID'));
+            $pclasses = $p->getPClasses();
+
+            if (is_array($pclasses)) {
+                foreach ($pclasses as $pclass) {
+                    if (isset($pclass['minamount']) AND $pclass['minamount'] > 0) {
+                        $minamounts[] = $pclass['minamount'];
+                    }
+                }
+            }
+
+            if (count($minamounts) > 0) {
+                $minamount = min($minamounts);
+            }
+
+            return $minamount;
+        }
+
 		public function getCheapestPClass($sum, $flags, $language)
 		{
 			$lowest_pp = $lowest = false;

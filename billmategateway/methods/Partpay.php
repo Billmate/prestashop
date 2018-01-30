@@ -114,7 +114,7 @@ require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
 				'value'    => (float)Configuration::get('BPARTPAY_MIN_VALUE'),
 				'type'     => 'text',
 				'label'    => $this->module->l('Minimum Value ','partpay').' ('.$currency->sign.')',
-				'desc'     => $this->module->l(''),
+				'desc'     => '('.$this->module->l('Minimum Value ','partpay').': '.floor(pClasses::getLowestMinAmount()).')',
 			);
 			$settings['maximum_value'] = array(
 				'name'     => 'partpayBillmateMaximumValue',

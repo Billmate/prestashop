@@ -9,6 +9,8 @@ window.previousSelectedMethod = null;
 var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
+    var timerPostMessageUpdate;
+
     this.updatePsCheckout = function(){
         /* When address in checkout updates; */
         var data = {};
@@ -32,15 +34,15 @@ var BillmateIframe = new function(){
         });
     }
     this.updateAddress = function (data) {
-
-        if (window.previousSelectedMethod == null) {
-            window.previousSelectedMethod = $(document).find('#shippingdiv input[type=radio]:checked').val();
+        if (typeof(window.previousSelectedMethod) == 'undefined' || window.previousSelectedMethod == null) {
+            window.previousSelectedMethod = $(document).find('input[type="radio"][name^="delivery_option["]:checked').val();
         }
 
         that = this;
         /* When address in checkout updates; */
         data['action'] = 'setAddress';
-        data['delivery_option'] = $(document).find('#shippingdiv input[type=radio]:checked').val();
+        data['delivery_option'] = window.previousSelectedMethod;
+
         data['ajax'] = 1;
         jQuery.ajax({
             url : billmate_checkout_url,
@@ -53,6 +55,15 @@ var BillmateIframe = new function(){
                     /* Show available shipping methods for saved address */
                     jQuery('#shippingdiv').html(result.carrier_block);
                     that.hideShippingElements();
+
+                    if (jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').length > 0) {
+                        jQuery(document).find('#shippingdiv input[type=radio]').closest('span').removeClass('checked');
+                        jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').closest('span').addClass('checked');
+                        jQuery(document).find('#shippingdiv input[type=radio]').attr('checked', false);
+                        jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').attr('checked', true);
+                    }
+
+                    jQuery(window).trigger('resize');
                 }
                 window.address_selected = true;
             }
@@ -61,11 +72,20 @@ var BillmateIframe = new function(){
     };
     this.updateShippingMethod = function(shippingElementKey, reload = false) {
         var url = billmate_checkout_url;
-        var delivery_option = $(document).find('#shippingdiv input[type=radio]:checked').val();
+        var delivery_option = $(document).find('input[type="radio"][name^="delivery_option["]:checked').val();
         if (shippingElementKey != null) {
             var delivery_option = shippingElementKey;
         }
-        var address_id      = $(document).find('.delivery_option_radio:checked').data('id_address');
+
+        var elementName = $(document).find('input[type="radio"][name^="delivery_option["]:checked').attr('name');
+        var address_id = parseInt(elementName.match(/[0-9]+/));
+
+        window.previousSelectedMethod = delivery_option;
+
+        if (jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').length > 0) {
+            jQuery(document).find('#shippingdiv input[type=radio]').closest('span').removeClass('checked');
+            jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').closest('span').addClass('checked');
+        }
 
         var values = {};
         values['delivery_option['+address_id+']'] = delivery_option;
@@ -154,7 +174,9 @@ var BillmateIframe = new function(){
                     break;
                 case 'content_scroll_position':
                     window.latestScroll = jQuery(document).find( "#checkout" ).offset().top + json.data;
-                    jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
+                    if (jQuery(document).scrollTop() > 0) {
+                        jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
+                    }
                     break;
                 case 'checkout_loaded':
                     self.unlock();
@@ -167,28 +189,31 @@ var BillmateIframe = new function(){
 
     };
 
-    this.updateCheckout = function(){
+
+    this.checkoutPostMessage = function(message) {
         var win = $(document).find('#checkout');
         if ( win.lenght > 0) {
             win = win.contentWindow;
-            win.postMessage(JSON.stringify({event: 'update_checkout'}),'*');
+            win.postMessage(message, '*');
         }
+    }
+
+    this.updateCheckout = function(){
+        this.lock();
+        that = this;
+        clearTimeout(this.timerPostMessageUpdate);
+        var wait = setTimeout(function() {
+            that.checkoutPostMessage('update');
+        }, 400);
+        this.timerPostMessageUpdate = wait;
     }
 
     this.lock = function() {
-        var win = $(document).find('#checkout');
-        if ( win.lenght > 0) {
-            win = win.contentWindow;
-            win.postMessage('lock', '*');
-        }
+        this.checkoutPostMessage('lock');
     }
 
     this.unlock = function() {
-        var win = $(document).find('#checkout');
-        if ( win.lenght > 0) {
-            win = win.contentWindow;
-            win.postMessage('unlock', '*');
-        }
+        this.checkoutPostMessage('unlock');
     }
 
     this.hideShippingElements = function() {
@@ -273,17 +298,25 @@ var BillmateCart = new function () {
                     }
                     else
                     {
-                        if (jsonData.refresh)
+
+
+                        if (jsonData.hasOwnProperty('refresh')) {
                             location.reload();
-                        self.updateCart(jsonData.summary);
-                        self.updateHookShoppingCart(jsonData.HOOK_SHOPPING_CART);
-                        self.updateHookShoppingCartExtra(jsonData.HOOK_SHOPPING_CART_EXTRA);
+                            return;
+                        } else {
+                            self.updateCart(jsonData.summary);
+                            self.updateHookShoppingCart(jsonData.HOOK_SHOPPING_CART);
+                            self.updateHookShoppingCartExtra(jsonData.HOOK_SHOPPING_CART_EXTRA);
+                            window.b_iframe.updateCheckout();
+                        }
 
-                        if (newQty === 0)
+                        if (newQty === 0) {
                             $('#product_'+id).hide();
+                        }
 
-                        if (typeof(getCarrierListAndUpdate) !== 'undefined')
+                        if (typeof(getCarrierListAndUpdate) !== 'undefined') {
                             getCarrierListAndUpdate();
+                        }
                     }
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -688,7 +721,18 @@ jQuery(document).ready(function(){
     }
 
     if (is_billmate_checkout_page == 'yes') {
-        $('body').on('click','#shippingdiv input[type=radio]', function(e) {
+        if ($(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').length > 0) {
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').find('textarea').closest('div').remove();
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').find('button').remove();
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').closest('section#shipping').find('h1 i').remove();
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').closest('section#shipping').find('h1 span').remove();
+
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').removeAttr('data-url-update');
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').removeAttr('method');
+            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').removeAttr('id');
+        }
+
+        $('body').on('click', 'input[type="radio"][name^="delivery_option["]', function(e) {
             var selectedMethod = e.target.value;
             window.b_iframe.updateShippingMethod(selectedMethod, true);
         });

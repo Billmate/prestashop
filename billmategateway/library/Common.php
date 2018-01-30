@@ -14,7 +14,7 @@
 	require_once 'Billmate.php';
 	require_once 'Encoding.php';
 	require_once 'Utf8.php';
-    define('BILLMATE_PLUGIN_VERSION','3.0.0');
+    define('BILLMATE_PLUGIN_VERSION','3.1.0');
 	class Common {
 
 		public static function getBillmate($eid, $secret, $testmode, $ssl = true, $debug = false)
@@ -60,4 +60,24 @@
 
 			return (count($foundName) == count($filterStr1));
 		}
+
+        public static function getCartCheckoutHash() {
+            if (Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') != 1) {
+                Common::unsetCartCheckoutHash();
+            }
+            $context = Context::getContext();
+            return $context->cookie->{'BillmateHash'.$context->cart->id};
+        }
+
+        public static function setCartCheckoutHash($hash = '') {
+            $context = Context::getContext();
+            $context->cookie->{'BillmateHash'.$context->cart->id} = $hash;
+        }
+
+        public static function unsetCartCheckoutHash() {
+            $context = Context::getContext();
+            if (isset($context->cookie->{'BillmateHash'.$context->cart->id})) {
+                unset($context->cookie->{'BillmateHash'.$context->cart->id});
+            }
+        }
 	}
