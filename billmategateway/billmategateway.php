@@ -376,6 +376,9 @@
 
 			}
 
+            $this->uninstallOverrides();
+            $this->installOverrides();
+
 			Configuration::updateValue('BILLMATE_UPDATES',implode(',',$installed));
 			Configuration::updateValue('BILLMATE_VERSION', $this->version);
 
