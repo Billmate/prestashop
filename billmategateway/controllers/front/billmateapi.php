@@ -319,25 +319,20 @@
 		public function prepareTotals()
 		{
 			$totals     = array();
-			$details    = $this->context->cart->getSummaryDetails(null, true);
-
-			$carrier    = $details['carrier'];
 			$order_total = $this->context->cart->getOrderTotal();
-			$notfree    = !(isset($details['free_ship']) && $details['free_ship'] == 1);
 
-			if ($carrier->active && $notfree)
-			{
-				$carrier_obj = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
-				$taxrate    = $carrier_obj->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
+            /** Shipping */
+            $shipping = $this->getCartShipping();
+            if ($shipping['withouttax'] > 0) {
+                $totals['Shipping'] = array(
+                    'withouttax'    => $shipping['withouttax'],
+                    'taxrate'       => $shipping['taxrate']
+                );
 
-				$total_shipping_cost  = round($this->context->cart->getTotalShippingCost(null, false),2);
-				$totals['Shipping'] = array(
-					'withouttax' => $total_shipping_cost * 100,
-					'taxrate'    => $taxrate
-				);
-				$this->totals += $total_shipping_cost * 100;
-				$this->tax += ($total_shipping_cost * ($taxrate / 100)) * 100;
-			}
+                $this->totals       += $shipping['withouttax'];
+                $this->tax          += $shipping['tax'];
+            }
+
 			if (Configuration::get('BINVOICE_FEE') > 0 && $this->method == 'invoice')
 			{
 				$fee           = Configuration::get('BINVOICE_FEE');
@@ -390,6 +385,57 @@
 
 			return $totals;
 		}
+
+        /**
+         * @return array with withouttax, tax, taxrate
+         */
+        public function getCartShipping() {
+
+            $details    = $this->context->cart->getSummaryDetails(null, true);
+            $carrier    = $details['carrier'];
+            $notfree    = !(isset($details['free_ship']) && $details['free_ship'] == 1);
+
+            $total_shipping_cost  = round($this->context->cart->getTotalShippingCost(null, false),2);
+
+            $withouttax     = 0;
+            $taxrate        = 0;
+            $tax            = 0;
+
+            if (    method_exists($this->context->cart, 'isMultiAddressDelivery')
+                    && $this->context->cart->isMultiAddressDelivery() == true
+            ) {
+                /** Multiple shipping addresses, get highest shipping fee taxrate */
+                $_cart_carrier_ids = $this->context->cart->getDeliveryOption();
+                foreach ($_cart_carrier_ids AS $_address_id => $_cart_carrier_id) {
+                    $_carrier = new Carrier($_cart_carrier_id, $this->context->cart->id_lang);
+                    if ($_carrier->id > 0) {
+                        $_address = new Address($_address_id);
+                        $_taxrate = $_carrier->getTaxesRate($_address);
+                        $taxrate = ($_taxrate >= $taxrate) ? $_taxrate : $taxrate;
+                    }
+                }
+            } else {
+                /** Single shipping address */
+                if ($carrier->active && $notfree) {
+                    $carrier_obj    = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
+                    $_address       = new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
+                    $taxrate        = $carrier_obj->getTaxesRate($_address);
+                }
+            }
+
+            if ($total_shipping_cost > 0) {
+                $withouttax = $total_shipping_cost * 100;
+                if ($taxrate > 0) {
+                    $tax = ($withouttax * ($taxrate / 100));
+                }
+            }
+
+            return array(
+                'withouttax'    => $withouttax,
+                'taxrate'       => $taxrate,
+                'tax'           => $tax
+            );
+        }
 
 		/**
 		 * Check if the address is matched with our Api
