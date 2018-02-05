@@ -48,6 +48,10 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.1.1 (2018-02-05)
+* Fix - Update override Link class on module update
+* Fix - Get taxrate when multiple delivery addresses
+
 ### 3.1.0 (2018-01-30)
 * Feature - Support for PrestaShop version 1.7
 * Feature - When payment is made with invoice or part payment an additional message is shown on the order confirmation page.
