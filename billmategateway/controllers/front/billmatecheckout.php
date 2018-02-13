@@ -12,6 +12,9 @@ require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
 ini_set('display_errors',1);
 class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontController
 {
+
+    public $php_self = 'order-opc';
+
     public $display_column_left = false;
     public $display_column_right = false;
     public $ssl = true;
