@@ -110,9 +110,6 @@
 						case '16':
 							$this->method = 'bankpay';
 							break;
-						case '1024':
-							$this->method = 'swish';
-							break;
 						default:
 							$this->method = 'invoice';
 							break;
