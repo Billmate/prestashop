@@ -81,7 +81,7 @@ $_MODULE['<{billmategateway}prestashop>cardpay_b836c068c07a63081cee72070653b056'
 $_MODULE['<{billmategateway}prestashop>cardpay_c20cc8f5bb7d26404f80b1c990c8a7fd'] = 'Sorteringsordning';
 $_MODULE['<{billmategateway}prestashop>invoice_c79f3b0a3c5936107bfd51556e2d3dd5'] = 'Billmate Faktura';
 $_MODULE['<{billmategateway}prestashop>invoice_660b3c28387f41fee5b3d65ed30b761e'] = 'Min e-post är korrekt och får användas för fakturering.';
-$_MODULE['<{billmategateway}prestashop>invoice_5796704293dee7757c3b6961c16d11cd'] = 'Jag bekräftar Billmate köpvillkor';
+$_MODULE['<{billmategateway}prestashop>invoice_5796704293dee7757c3b6961c16d11cd'] = 'Jag bekräftar Billmates köpvillkor';
 $_MODULE['<{billmategateway}prestashop>invoice_fa2ead697d9998cbc65c81384e6533d5'] = 'integritetspolicy';
 $_MODULE['<{billmategateway}prestashop>invoice_ee21ea8152cfde71f02f81dfdfd5fcf8'] = 'samt accepterar betalningsansvaret.';
 $_MODULE['<{billmategateway}prestashop>invoice_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
@@ -97,7 +97,7 @@ $_MODULE['<{billmategateway}prestashop>invoice_c20cc8f5bb7d26404f80b1c990c8a7fd'
 $_MODULE['<{billmategateway}prestashop>invoice_2c2e385ee12076f630a9bf42e27ffde7'] = 'Fakturaavgift inkl. moms';
 $_MODULE['<{billmategateway}prestashop>invoiceservice_92bbbef3ada6db8954f59d88dd8d5bf0'] = 'Billmate Fakturaservice';
 $_MODULE['<{billmategateway}prestashop>invoiceservice_660b3c28387f41fee5b3d65ed30b761e'] = 'Min e-post är korrekt och får användas för fakturering.';
-$_MODULE['<{billmategateway}prestashop>invoiceservice_5796704293dee7757c3b6961c16d11cd'] = 'Jag bekräftar Billmate köpvillkor';
+$_MODULE['<{billmategateway}prestashop>invoiceservice_5796704293dee7757c3b6961c16d11cd'] = 'Jag bekräftar Billmates köpvillkor';
 $_MODULE['<{billmategateway}prestashop>invoiceservice_ee21ea8152cfde71f02f81dfdfd5fcf8'] = 'samt accepterar betalningsansvaret.';
 $_MODULE['<{billmategateway}prestashop>invoiceservice_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
 $_MODULE['<{billmategateway}prestashop>invoiceservice_599d18246e05aa43bf815641114a5823'] = 'Aktivera Billmate Fakturaservice';
@@ -112,7 +112,7 @@ $_MODULE['<{billmategateway}prestashop>invoiceservice_c20cc8f5bb7d26404f80b1c990
 $_MODULE['<{billmategateway}prestashop>invoiceservice_2c2e385ee12076f630a9bf42e27ffde7'] = 'Fakturaavgift inkl. moms';
 $_MODULE['<{billmategateway}prestashop>partpay_0bbca79ade444fffaefd5036532c81ef'] = 'Billmate Delbetalning';
 $_MODULE['<{billmategateway}prestashop>partpay_660b3c28387f41fee5b3d65ed30b761e'] = 'Min e-post är korrekt och får användas för fakturering.';
-$_MODULE['<{billmategateway}prestashop>partpay_5796704293dee7757c3b6961c16d11cd'] = 'Jag bekräftar Billmate köpvillkor';
+$_MODULE['<{billmategateway}prestashop>partpay_5796704293dee7757c3b6961c16d11cd'] = 'Jag bekräftar Billmates köpvillkor';
 $_MODULE['<{billmategateway}prestashop>partpay_fa2ead697d9998cbc65c81384e6533d5'] = 'integritetspolicy';
 $_MODULE['<{billmategateway}prestashop>partpay_ee21ea8152cfde71f02f81dfdfd5fcf8'] = 'samt accepterar betalningsansvaret.';
 $_MODULE['<{billmategateway}prestashop>partpay_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktiverad';
