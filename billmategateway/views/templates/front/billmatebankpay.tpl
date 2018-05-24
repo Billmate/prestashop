@@ -34,7 +34,10 @@
                     .payment-option > label > span {
                         float: left;
                     }
-                    #terms,#terms-partpay{
+
+                    #terms,
+                    #terms-partpay,
+                    a#billmate-privacy-policy {
                         cursor: pointer!important;
                         font-size: inherit;
                         display: inherit;

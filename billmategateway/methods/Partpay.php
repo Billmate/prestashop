@@ -64,7 +64,7 @@ require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
 				'type'         => $this->name,
 				'controller'   => $this->validation_controller,
 				'icon'         => $this->icon,
-				'agreements'   => '<span>'.$this->module->l('My email is accurate and can be used for invoicing.','partpay').'<br/> <a id="terms-partpay" style="cursor:pointer!important">'.$this->module->l('I also confirm the terms for invoice payment','partpay').'</a> '.$this->module->l('and accept the liability.','partpay').'</span>',
+				'agreements'   => '<span>'.$this->module->l('My email is accurate and can be used for invoicing.','partpay').'<br/> <a id="terms-partpay" style="cursor:pointer!important">'.$this->module->l('I also confirm the terms for invoice payment','partpay').'</a>, <a id="billmate-privacy-policy" href="https://www.billmate.se/integritetspolicy/" target="_blank">'.$this->module->l('Privacy Policy', 'partpay').'</a> '.$this->module->l('and accept the liability.','partpay').'</span>',
 				'pClasses'     => $pclasses,
 				'monthly_cost' => $this->getMonthlyCost($cart)
 
