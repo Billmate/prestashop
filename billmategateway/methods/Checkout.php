@@ -45,6 +45,12 @@ class BillmateMethodCheckout extends BillmateGateway {
                 $statuses_array[$status['id_order_state']] = $status['name'];
             }
 
+            // CMS pages
+            $cms_pages = array(0 => $this->l('None'));
+            foreach (CMS::listCms($this->context->language->id) as $cms_file) {
+                $cms_pages[$cms_file['id_cms']] = $cms_file['meta_title'];
+            }
+
             $activate_status      = Configuration::get('BILLMATE_CHECKOUT_ACTIVATE');
             $settings['billmate_checkout_active'] = array(
                 'name'     => 'billmate_checkout_active',
@@ -74,6 +80,18 @@ class BillmateMethodCheckout extends BillmateGateway {
                 'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_ORDER_STATUS'))) ? Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_ORDER_STATUS')) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
                 'options'  => $statuses_array
             );
+
+
+            $settings['billmate_checkout_privacy_policy'] = array(
+                'name' => 'billmate_checkout_privacy_policy',
+                'label' => $this->l('CMS page for the GDPR terms'),
+                'desc' => $this->l('Choose the CMS page which contains your store\'s privacy policy.'),
+                'type' => 'select',
+                'options' => $cms_pages,
+                'value'    => ((Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_PRIVACY_POLICY'))) ? Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_PRIVACY_POLICY')) : 0),
+                'cast' => 'intval'
+            );
+
             return $settings;
 
         }

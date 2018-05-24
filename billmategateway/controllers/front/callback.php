@@ -65,6 +65,19 @@
 			}
 			$data = $this->billmate->verify_hash($post);
 
+            $paymentInfo = array();
+            if (!isset($data['code']) && !isset($data['error'])) {
+                $paymentInfo = $this->billmate->getPaymentinfo(array('number' => $data['number']));
+            }
+
+            $displayName = $this->module->displayName;
+            if ($this->method == 'checkout') {
+                /** When checkout, check for selected payment method found in $paymentInfo.PaymentData.method_name */
+                if (isset($paymentInfo['PaymentData']['method_name']) AND $paymentInfo['PaymentData']['method_name'] != '') {
+                    $displayName = $displayName.' ('.$paymentInfo['PaymentData']['method_name'].')';
+                }
+            }
+
 			if (!isset($data['code']) && !isset($data['error']))
 			{
 				$paymentInfo = $this->billmate->getPaymentinfo(array('number' => $data['number']));
@@ -79,15 +92,15 @@
 						case '16':
 							$this->method = 'bankpay';
 							break;
-						case '1024':
-							$this->method = 'swish';
-							break;
 						default:
 							$this->method = 'invoice';
 							break;
 
 					}
 				}
+
+                $class_file = _PS_MODULE_DIR_.'billmategateway/methods/'.Tools::ucfirst($this->method).'.php';
+                require_once($class_file);
 				$class        = "BillmateMethod".Tools::ucfirst($this->method);
 				$this->module = new $class;
 				$lockfile   = _PS_CACHE_DIR_.$data['orderid'];
@@ -131,8 +144,16 @@
 				$status              = Configuration::get('B'.strtoupper($this->method).'_ORDER_STATUS');
 				$status = ($data['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
 				$total = $paymentInfo['Cart']['Total']['withtax'] / 100;
-				$this->module->validateOrder((int)$this->context->cart->id, $status, $total,
-					$this->module->displayName, null, $extra, null, false, $customer->secure_key);
+                $this->module->validateOrder((int)$this->context->cart->id,
+                    $status,
+                    $total,
+                    $displayName,
+                    null,
+                    $extra,
+                    null,
+                    false,
+                    $customer->secure_key
+                );
 				$values = array();
 
 				$values['PaymentData'] = array(

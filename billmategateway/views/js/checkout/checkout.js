@@ -10,6 +10,7 @@ var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
     var timerPostMessageUpdate;
+    var timerPostMessageLock;
 
     this.updatePsCheckout = function(){
         /* When address in checkout updates; */
@@ -191,10 +192,9 @@ var BillmateIframe = new function(){
 
 
     this.checkoutPostMessage = function(message) {
-        var win = $(document).find('#checkout');
-        if ( win.lenght > 0) {
-            win = win.contentWindow;
-            win.postMessage(message, '*');
+        if(window.location.href == billmate_checkout_url) {
+            var win = document.getElementById('checkout').contentWindow;
+            win.postMessage(message,'*');
         }
     }
 
@@ -209,11 +209,19 @@ var BillmateIframe = new function(){
     }
 
     this.lock = function() {
-        this.checkoutPostMessage('lock');
+        that = this;
+        var wait = setTimeout(function() {
+            that.checkoutPostMessage('lock');
+        }, 400);
+        this.timerPostMessageLock = wait;
     }
 
     this.unlock = function() {
-        this.checkoutPostMessage('unlock');
+        that = this;
+        var wait = setTimeout(function() {
+            that.checkoutPostMessage('unlock');
+        }, 400);
+        this.timerPostMessageLock = wait;
     }
 
     this.hideShippingElements = function() {
@@ -372,14 +380,14 @@ var BillmateCart = new function () {
                 }
                 else
                 {
-                    if (jsonData.refresh)
+                    if (jsonData.refresh) {
                         location.reload();
+                    }
                     if (parseInt(jsonData.summary.products.length) === 0)
                     {
-                        if (typeof(orderProcess) === 'undefined' || orderProcess !== 'order-opc')
+                        if (typeof(orderProcess) === 'undefined' || orderProcess !== 'order-opc') {
                             document.location.href = document.location.href; /* redirection */
-                        else
-                        {
+                        } else {
                             $('#center_column').children().each(function() {
                                 if ($(this).attr('id') !== 'emptyCartWarning' && $(this).attr('class') !== 'breadcrumb' && $(this).attr('id') !== 'cart_title')
                                 {

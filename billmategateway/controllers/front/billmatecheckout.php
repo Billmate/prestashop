@@ -12,6 +12,9 @@ require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
 ini_set('display_errors',1);
 class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontController
 {
+
+    public $php_self = 'order-opc';
+
     public $display_column_left = false;
     public $display_column_right = false;
     public $ssl = true;
@@ -1124,6 +1127,19 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             'sendreciept'       => 'yes',
             'redirectOnSuccess' => 'true'
         );
+
+        // When available Add store Privacy Policy page
+        $config_billmate_checkout_privacy_policy_page_id = (int)Configuration::get('BILLMATE_CHECKOUT_PRIVACY_POLICY');
+        if ($config_billmate_checkout_privacy_policy_page_id > 0) {
+            $cms = new CMS(
+                (int) ($config_billmate_checkout_privacy_policy_page_id),
+                (int) ($this->context->cookie->id_lang)
+            );
+            $privacy_policy_url = $this->context->link->getCMSLink($cms, $cms->link_rewrite, true);
+            if ($privacy_policy_url != '') {
+                $payment_data['CheckoutData']['privacyPolicy'] = $privacy_policy_url;
+            }
+        }
 
         return $payment_data;
     }
