@@ -243,7 +243,7 @@ class BillmateMethodInvoice extends BillmateGateway {
                         is_array($delivery_option_list)
                         && isset($delivery_option_list[$id_address])
                         && is_array($delivery_option_list[$id_address])
-                        && isset($$delivery_option_list[$id_address][$key_carriers])
+                        && isset($delivery_option_list[$id_address][$key_carriers])
                         && is_array($delivery_option_list[$id_address][$key_carriers])
                         && isset($delivery_option_list[$id_address][$key_carriers]['carrier_list'])
                         && is_array($delivery_option_list[$id_address][$key_carriers]['carrier_list'])
