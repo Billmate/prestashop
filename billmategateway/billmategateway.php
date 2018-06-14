@@ -905,7 +905,14 @@
 				$payment     = OrderPayment::getByOrderId($order_id);
 				$orderStatus = unserialize($orderStatus);
                 $orderStatus = is_array($orderStatus) ? $orderStatus : array($orderStatus);
-				$modules     = array('billmatecardpay', 'billmatebankpay', 'billmateinvoice', 'billmatepartpay','billmateinvoiceservice');
+				$modules     = array(
+                    'billmatebankpay',
+                    'billmatecardpay',
+                    'billmatecheckout',
+                    'billmateinvoice',
+                    'billmateinvoiceservice',
+                    'billmatepartpay'
+                );
 
 
 				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus) && $this->getMethodInfo($order->module, 'authorization_method') != 'sale')
