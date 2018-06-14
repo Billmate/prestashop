@@ -143,6 +143,8 @@
 				$credentialvalidated = true;
 				Configuration::updateValue('BILLMATE_ID', $billmateId);
 				Configuration::updateValue('BILLMATE_SECRET', $billmateSecret);
+                $this->billmate_merchant_id = $billmateId;
+                $this->billmate_secret = $billmateSecret;
 			}
 			Configuration::updateValue('BILLMATE_ACTIVATE', Tools::getIsset('activate') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_ACTIVATE_STATUS', serialize(Tools::getValue('activateStatuses')));
