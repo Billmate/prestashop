@@ -915,10 +915,10 @@
                 );
 
 
-				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus) && $this->getMethodInfo($order->module, 'authorization_method') != 'sale')
+				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus) && $this->getMethodInfo($order->module, 'authorization_method', false) != 'sale')
 				{
 
-					$testMode      = $this->getMethodInfo($order->module, 'testMode');
+					$testMode      = $this->getMethodInfo($order->module, 'testMode', false);
 					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
 					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
 					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
@@ -975,7 +975,7 @@
 						$this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
 					}
 				} elseif(in_array($order->module, $modules) && in_array($id_status, $cancelStatus)){
-					$testMode      = $this->getMethodInfo($order->module, 'testMode');
+					$testMode      = $this->getMethodInfo($order->module, 'testMode', false);
 					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
 
 					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
@@ -1162,18 +1162,25 @@
 			return $data;
 		}
 
-		public function getMethodInfo($name, $key)
+		public function getMethodInfo($name, $key, $checkIfAvailable = true)
 		{
 			$methodFiles = new FilesystemIterator(_PS_MODULE_DIR_.'billmategateway/methods', FilesystemIterator::SKIP_DOTS);
-			$paymentMethodsAvailable = $this->getAvailableMethods();
+
+            if ($checkIfAvailable ==  true) {
+                $paymentMethodsAvailable = $this->getAvailableMethods();
+            }
 
 			foreach ($methodFiles as $file)
 			{
 				$class = $file->getBasename('.php');
 				if ($class == 'index')
 					continue;
-				if(!in_array(strtolower($class),$paymentMethodsAvailable))
-					continue;
+
+                if ($checkIfAvailable ==  true) {
+                    if(!in_array(strtolower($class), $paymentMethodsAvailable)) {
+                        continue;
+                    }
+                }
 
 				include_once($file->getPathname());
 
