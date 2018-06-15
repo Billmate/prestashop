@@ -1040,10 +1040,31 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             }
 
             // Maybe calculate shipping taxrate
+            $total_shipping_cost_inc_tax = 0;
             if ($taxrate == 0) {
                 $total_shipping_cost_inc_tax  = round($this->context->cart->getTotalShippingCost(null, true),2);
                 if ($total_shipping_cost < $total_shipping_cost_inc_tax && $total_shipping_cost > 0 && $total_shipping_cost_inc_tax > 0) {
                     $taxrate = round((($total_shipping_cost_inc_tax - $total_shipping_cost) / $total_shipping_cost) * 100);
+                }
+            }
+
+            /**
+             * Calculate shipping cost without tax when
+             * - store might show prices with 0 decimals
+             * - we have not calculated taxrate based on cost with and without tax
+             */
+            if (
+                $total_shipping_cost_inc_tax == 0
+                && $taxrate > 0
+                && $total_shipping_cost > 0
+                && intval($total_shipping_cost) == $total_shipping_cost
+            ) {
+                if ($total_shipping_cost_inc_tax == 0) {
+                    $total_shipping_cost_inc_tax  = round($this->context->cart->getTotalShippingCost(null, true) ,2);
+                }
+                if ($total_shipping_cost < $total_shipping_cost_inc_tax && $total_shipping_cost > 0 && $total_shipping_cost_inc_tax > 0) {
+                    $total_shipping_cost = ($total_shipping_cost_inc_tax / (1 + ($taxrate/100)));
+                    $total_shipping_cost = round($total_shipping_cost ,2);
                 }
             }
 
