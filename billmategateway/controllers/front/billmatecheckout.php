@@ -1031,6 +1031,15 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $taxrate    = $carrier_obj->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
 
             $total_shipping_cost  = round($this->context->cart->getTotalShippingCost(null, false),2);
+
+            // Maybe calculate shipping taxrate
+            if ($taxrate == 0) {
+                $total_shipping_cost_inc_tax  = round($this->context->cart->getTotalShippingCost(null, true),2);
+                if ($total_shipping_cost < $total_shipping_cost_inc_tax && $total_shipping_cost > 0 && $total_shipping_cost_inc_tax > 0) {
+                    $taxrate = round((($total_shipping_cost_inc_tax - $total_shipping_cost) / $total_shipping_cost) * 100);
+                }
+            }
+
             $totals['Shipping'] = array(
                 'withouttax' => $total_shipping_cost * 100,
                 'taxrate'    => $taxrate
