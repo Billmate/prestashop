@@ -1032,6 +1032,13 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
             $total_shipping_cost  = round($this->context->cart->getTotalShippingCost(null, false),2);
 
+            // Try get shipping taxrate with no address
+            if ($taxrate == 0) {
+                $selected_deliver_option_id = (int)current($this->context->cart->getDeliveryOption());
+                $carrier = new Carrier($selected_deliver_option_id, $this->context->cart->id_lang);
+                $taxrate = $carrier->getTaxesRate(Address::initialize(0));
+            }
+
             // Maybe calculate shipping taxrate
             if ($taxrate == 0) {
                 $total_shipping_cost_inc_tax  = round($this->context->cart->getTotalShippingCost(null, true),2);
