@@ -1031,6 +1031,43 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $taxrate    = $carrier_obj->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
 
             $total_shipping_cost  = round($this->context->cart->getTotalShippingCost(null, false),2);
+
+            // Try get shipping taxrate with no address
+            if ($taxrate == 0) {
+                $selected_deliver_option_id = (int)current($this->context->cart->getDeliveryOption());
+                $carrier = new Carrier($selected_deliver_option_id, $this->context->cart->id_lang);
+                $taxrate = $carrier->getTaxesRate(Address::initialize(0));
+            }
+
+            // Maybe calculate shipping taxrate
+            $total_shipping_cost_inc_tax = 0;
+            if ($taxrate == 0) {
+                $total_shipping_cost_inc_tax  = round($this->context->cart->getTotalShippingCost(null, true),2);
+                if ($total_shipping_cost < $total_shipping_cost_inc_tax && $total_shipping_cost > 0 && $total_shipping_cost_inc_tax > 0) {
+                    $taxrate = round((($total_shipping_cost_inc_tax - $total_shipping_cost) / $total_shipping_cost) * 100);
+                }
+            }
+
+            /**
+             * Calculate shipping cost without tax when
+             * - store might show prices with 0 decimals
+             * - we have not calculated taxrate based on cost with and without tax
+             */
+            if (
+                $total_shipping_cost_inc_tax == 0
+                && $taxrate > 0
+                && $total_shipping_cost > 0
+                && intval($total_shipping_cost) == $total_shipping_cost
+            ) {
+                if ($total_shipping_cost_inc_tax == 0) {
+                    $total_shipping_cost_inc_tax  = round($this->context->cart->getTotalShippingCost(null, true) ,2);
+                }
+                if ($total_shipping_cost < $total_shipping_cost_inc_tax && $total_shipping_cost > 0 && $total_shipping_cost_inc_tax > 0) {
+                    $total_shipping_cost = ($total_shipping_cost_inc_tax / (1 + ($taxrate/100)));
+                    $total_shipping_cost = round($total_shipping_cost ,2);
+                }
+            }
+
             $totals['Shipping'] = array(
                 'withouttax' => $total_shipping_cost * 100,
                 'taxrate'    => $taxrate

@@ -23,10 +23,10 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 
 
 ## COMPATIBILITY PrestaShop versions
-1.5.3.1 - 1.7.2.4
+1.5.3.1 - 1.7.3.3
 
 ## Checkout Compatibility
-* PrestaShop default checkout 1.5.3.1 - 1.7.2
+* PrestaShop default checkout 1.5.3.1 - 1.7.3.3
 * One page checkout for Prestashop Module 2.3.6 - 2.3.10
   http://addons.prestashop.com/en/6841-one-page-checkout-for-prestashop.html
 

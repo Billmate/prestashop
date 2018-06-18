@@ -216,8 +216,8 @@ class BillmateMethodInvoice extends BillmateGateway {
 					die(Tools::displayError());
 
 				// For each package, generate an order
-				$delivery_option_list = $this->context->cart->getDeliveryOptionList(null,true);
 				$package_list = $this->context->cart->getPackageList(true);
+                $delivery_option_list = $this->context->cart->getDeliveryOptionList(null,true);
 				$cart_delivery_option = $this->context->cart->getDeliveryOption(null,false,false);
 
 
@@ -238,14 +238,25 @@ class BillmateMethodInvoice extends BillmateGateway {
 				$order_creation_failed = false;
 				$cart_total_paid = (float)Tools::ps_round((float)$this->context->cart->getOrderTotal(true, Cart::BOTH), 2);
 
-				foreach ($cart_delivery_option as $id_address => $key_carriers)
-					foreach ($delivery_option_list[$id_address][$key_carriers]['carrier_list'] as $id_carrier => $data)
-						foreach ($data['package_list'] as $id_package)
-						{
-							// Rewrite the id_warehouse
-							$package_list[$id_address][$id_package]['id_warehouse'] = (int)$this->context->cart->getPackageIdWarehouse($package_list[$id_address][$id_package], (int)$id_carrier);
-							$package_list[$id_address][$id_package]['id_carrier'] = $id_carrier;
-						}
+                foreach ($cart_delivery_option as $id_address => $key_carriers) {
+                    if (
+                        is_array($delivery_option_list)
+                        && isset($delivery_option_list[$id_address])
+                        && is_array($delivery_option_list[$id_address])
+                        && isset($delivery_option_list[$id_address][$key_carriers])
+                        && is_array($delivery_option_list[$id_address][$key_carriers])
+                        && isset($delivery_option_list[$id_address][$key_carriers]['carrier_list'])
+                        && is_array($delivery_option_list[$id_address][$key_carriers]['carrier_list'])
+                    ) {
+                        foreach ($delivery_option_list[$id_address][$key_carriers]['carrier_list'] as $id_carrier => $data) {
+                            foreach ($data['package_list'] as $id_package) {
+                                // Rewrite the id_warehouse
+                                $package_list[$id_address][$id_package]['id_warehouse'] = (int)$this->context->cart->getPackageIdWarehouse($package_list[$id_address][$id_package], (int)$id_carrier);
+                                $package_list[$id_address][$id_package]['id_carrier'] = $id_carrier;
+                            }
+                        }
+                    }
+                }
 				// Make sure CarRule caches are empty
 				CartRule::cleanCache();
 				$deliveries = 0;
