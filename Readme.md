@@ -48,6 +48,14 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.2.1 (2018-06-18)
+* Fix - Show payment method tabs in admin when set credentials for the first time
+* Fix - Check if shipping isset when validate order
+* Fix - Check if paid via Billmate Checkout on callback
+* Enhancement - Improve get shipping taxrate when Billmate Checkout
+* Enhancement - No checking accountinfo when activate payment
+* Enhancement - Remove allow modals from Billmate Checkout iframe
+
 ### 3.2.0 (2018-05-24)
 * Feature - Privacy policy support for payment methods and Billmate Checkout
 * Enhancement - Improve communication between Store and Billmate Checkout
