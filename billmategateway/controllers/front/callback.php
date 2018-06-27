@@ -139,10 +139,17 @@
 
 				$customer            = new Customer($this->context->cart->id_customer);
 				$total               = $this->context->cart->getOrderTotal(true, Cart::BOTH);
-				$extra               = array('transaction_id' => $data['number']);
-				$status              = Configuration::get('B'.strtoupper($this->method).'_ORDER_STATUS');
-				$status = ($data['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
-				$total = $paymentInfo['Cart']['Total']['withtax'] / 100;
+                $extra               = array('transaction_id' => $data['number']);
+
+                $total = $paymentInfo['Cart']['Total']['withtax'] / 100;
+
+                $status_key = 'B'.strtoupper($this->method).'_ORDER_STATUS';
+                if ($this->method == 'checkout') {
+                    $status_key = 'BILLMATE_CHECKOUT_ORDER_STATUS';
+                }
+                $status = Configuration::get($status_key);
+                $status = ($data['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
+
                 $this->module->validateOrder((int)$this->context->cart->id,
                     $status,
                     $total,
