@@ -242,6 +242,9 @@
 
 		public function prepareDiscounts()
 		{
+            if (!isset($this->coremodule) || !is_object($this->coremodule)) {
+                $this->coremodule = new BillmateGateway();
+            }
 			$details = $this->context->cart->getSummaryDetails(null, true);
 			$cartRules = $this->context->cart->getCartRules();
 			$title = '';
