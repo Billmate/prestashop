@@ -48,6 +48,10 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.2.2 (2018-06-28)
+* Fix - Use checkout order status on callback
+* Fix - Add store customer address on accept/callback when missing
+
 ### 3.2.1 (2018-06-18)
 * Fix - Show payment method tabs in admin when set credentials for the first time
 * Fix - Check if shipping isset when validate order
