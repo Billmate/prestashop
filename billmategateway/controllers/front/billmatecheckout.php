@@ -45,8 +45,13 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             
         }
         if( $this->ajax = Tools::getValue( "ajax" ) && Tools::getValue('action') == 'setAddress') {
-            $result = $this->fetchCheckout();
-            $customer = $result['Customer'];
+            if (isset($_POST['Customer'])) {
+                $customer = $_POST['Customer'];
+            } else {
+                $result = $this->fetchCheckout();
+                $customer = $result['Customer'];
+            }
+
             $address = $customer['Billing'];
             $country = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
             $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';

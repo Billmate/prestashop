@@ -44,6 +44,10 @@ var BillmateIframe = new function(){
         data['action'] = 'setAddress';
         data['delivery_option'] = window.previousSelectedMethod;
 
+        if (data.hasOwnProperty('Customer') && data.hasOwnProperty('billingAddress')) {
+            data.Customer.Billing = data.billingAddress;
+        }
+
         data['ajax'] = 1;
         jQuery.ajax({
             url : billmate_checkout_url,
