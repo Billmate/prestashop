@@ -54,23 +54,27 @@ var BillmateIframe = new function(){
             data: data,
             type: 'POST',
             success: function(response){
-                var result = JSON.parse(response);
-                if(result.success)
-                {
-                    /* Show available shipping methods for saved address */
-                    jQuery('#shippingdiv').html(result.carrier_block);
-                    that.hideShippingElements();
+                try {
+                    var result = JSON.parse(response);
+                    if(result.success)
+                    {
+                        /* Show available shipping methods for saved address */
+                        jQuery('#shippingdiv').html(result.carrier_block);
+                        that.hideShippingElements();
 
-                    if (jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').length > 0) {
-                        jQuery(document).find('#shippingdiv input[type=radio]').closest('span').removeClass('checked');
-                        jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').closest('span').addClass('checked');
-                        jQuery(document).find('#shippingdiv input[type=radio]').attr('checked', false);
-                        jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').attr('checked', true);
+                        if (jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').length > 0) {
+                            jQuery(document).find('#shippingdiv input[type=radio]').closest('span').removeClass('checked');
+                            jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').closest('span').addClass('checked');
+                            jQuery(document).find('#shippingdiv input[type=radio]').attr('checked', false);
+                            jQuery(document).find('#shippingdiv input[type=radio][data-key="'+window.previousSelectedMethod+'"]').attr('checked', true);
+                        }
+
+                        jQuery(window).trigger('resize');
                     }
-
-                    jQuery(window).trigger('resize');
+                    window.address_selected = true;
+                } catch (err) {
+                    // Silent fail
                 }
-                window.address_selected = true;
             }
         });
 
@@ -154,6 +158,24 @@ var BillmateIframe = new function(){
             }
             self.childWindow = json.source;
             switch (json.event) {
+
+                case 'show_overlay':
+                    if ($(document).find('#billmateCheckoutOverlay').length < 1) {
+                        var $div = $('<div />').appendTo('body');
+                        $div.attr('id', 'billmateCheckoutOverlay');
+                    }
+                    resizeBillmateCheckoutOverlay();
+                    $(document).find("#billmateCheckoutOverlay").show();
+                    break;
+
+                case 'hide_overlay':
+                    $(document).find("#billmateCheckoutOverlay").hide();
+                    break;
+
+                case 'go_to':
+                    location.href = json.data;
+                    break;
+
                 case 'address_selected':
                     self.updateAddress(json.data);
                     self.updatePaymentMethod(json.data);
@@ -236,6 +258,30 @@ var BillmateIframe = new function(){
     }
 
 };
+
+function resizeBillmateCheckoutOverlay() {
+    if ($(document).find('#billmateCheckoutOverlay').length > 0) {
+        height = $(document).innerHeight();
+        if ($(window).height() + $(window).scrollTop() > height) {
+            height = $(window).height() + $(window).scrollTop();
+        }
+        width = $(document).innerWidth();
+        $("#billmateCheckoutOverlay").height(height);
+        $("#billmateCheckoutOverlay").width(width);
+    }
+}
+
+$(window).resize(function () {
+    resizeBillmateCheckoutOverlay();
+});
+
+$(document).resize(function () {
+    resizeBillmateCheckoutOverlay();
+});
+
+$(document).scroll(function() {
+    resizeBillmateCheckoutOverlay();
+});
 
 window.b_iframe = BillmateIframe;
 window.b_iframe.initListeners();
