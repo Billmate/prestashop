@@ -26,6 +26,43 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
     public $tax;
     public $method = 'invoice';
     public function postProcess() {
+
+        $response = array();
+
+        /**
+         * Discount codes
+         * Based on code found in ParentOrderControllerCore
+         */
+        if (CartRule::isFeatureActive()) {
+            if (Tools::isSubmit('submitAddDiscount')) {
+                if (!($code = trim(Tools::getValue('discount_name')))) {
+                    $this->errors[] = Tools::displayError('You must enter a voucher code.');
+                } elseif (!Validate::isCleanHtml($code)) {
+                    $this->errors[] = Tools::displayError('The voucher code is invalid.');
+                } else {
+                    if (($cartRule = new CartRule(CartRule::getIdByCode($code))) && Validate::isLoadedObject($cartRule)) {
+                        if ($error = $cartRule->checkValidity($this->context, false, true)) {
+                            $this->errors[] = $error;
+                        } else {
+                            $this->context->cart->addCartRule($cartRule->id);
+                            CartRule::autoAddToCart($this->context);
+                            if (Configuration::get('PS_ORDER_PROCESS_TYPE') == 1) {
+                            }
+                        }
+                    } else {
+                        $this->errors[] = Tools::displayError('This voucher does not exists.');
+                    }
+                }
+                $this->context->smarty->assign(array(
+                    'errors' => $this->errors,
+                    'discount_name' => Tools::safeOutput($code)
+                ));
+            } elseif (($id_cart_rule = (int)Tools::getValue('deleteDiscount')) && Validate::isUnsignedId($id_cart_rule)) {
+                $this->context->cart->removeCartRule($id_cart_rule);
+                CartRule::autoAddToCart($this->context);
+            }
+        }
+
         // UPDATE CHECKOUT with data
         if( $this->ajax = Tools::getValue( "ajax" ) && Tools::getValue('action') == 'setShipping') {
             echo Tools::jsonEncode($this->actionSetShipping());

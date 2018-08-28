@@ -49,10 +49,7 @@
     overflow: hidden;
 }
 
-#billmate_summary > .cart_navigation,#billmate_summary #cart_voucher #voucher{
-    display: none;
-    height:0px;
-}
+
 #shippingdiv .order-options{
     display:none;
 }
