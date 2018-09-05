@@ -18,7 +18,7 @@ class Link extends LinkCore
                 && version_compare(Configuration::get('BILLMATE_VERSION'), '3.0.0', '>=')
                 && Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 1
         ) {
-            $return = $this->getBaseLink($id_shop, $ssl, $relative_protocol).'module/billmategateway/billmatecheckout';
+            $return = $this->getModuleLink('billmategateway', 'billmatecheckout');
         } else {
             $return = parent::getPageLink($controller, $ssl, $id_lang, $request, $request_url_encode, $id_shop, $relative_protocol);
         }
