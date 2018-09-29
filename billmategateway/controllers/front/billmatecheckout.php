@@ -33,6 +33,9 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
         $logfile   = _PS_CACHE_DIR_.'Billmate.log';
 
+        $isNewCustomer = false;
+        $deliveryOption = $this->getDeliveryOption();
+
         if($this->context->cart->id_customer == 0) {
             // Create a guest customer
             $customerObject = new Customer();
@@ -49,6 +52,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $this->context->customer = $customerObject;
             $this->context->cart->secure_key = $customerObject->secure_key;
             $this->context->cart->id_customer = $customerObject->id;
+            $isNewCustomer = true;
         }
 
         $_customer = new Customer($this->context->cart->id_customer);
@@ -198,6 +202,17 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         CartRule::autoAddToCart($this->context);
 
         $this->actionSetShipping();
+
+        if ($isNewCustomer) {
+            if (is_array($deliveryOption) && isset($deliveryOption[0])) {
+                $deliveryOption = $deliveryOption[0];
+            }
+            $this->context->cart->setDeliveryOption(array($this->context->cart->id_address_delivery => $deliveryOption));
+            $this->context->cart->update();
+            $this->context->cart->save();
+            CartRule::autoRemoveFromCart($this->context);
+            CartRule::autoAddToCart($this->context);
+        }
     }
 
     public function postProcess() {
