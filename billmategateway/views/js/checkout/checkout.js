@@ -165,11 +165,11 @@ var BillmateIframe = new function(){
                         $div.attr('id', 'billmateCheckoutOverlay');
                     }
                     resizeBillmateCheckoutOverlay();
-                    $(document).find("#billmateCheckoutOverlay").show();
+                    $('body').addClass('billmate-checkout-overlay');
                     break;
 
                 case 'hide_overlay':
-                    $(document).find("#billmateCheckoutOverlay").hide();
+                    $('body').removeClass('billmate-checkout-overlay');
                     break;
 
                 case 'go_to':
