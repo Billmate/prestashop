@@ -48,6 +48,13 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.3.0 (2018-10-11)
+* Feature - Voucher support on Billmate Checkout page
+* Feature - Support for redirect and show overlay from checkout event
+* Fix - Improve save customer address in store
+* Fix - Improve get permalink for checkout page
+* Fix - Improve shipping option selection when customer address is missing
+
 ### 3.2.2 (2018-06-28)
 * Fix - Use checkout order status on callback
 * Fix - Add store customer address on accept/callback when missing
