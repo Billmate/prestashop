@@ -25,8 +25,197 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
     public $totals;
     public $tax;
     public $method = 'invoice';
-    public function postProcess() {
 
+    public function setAddress($customer = array()) {
+
+        $address = $customer['Billing'];
+        $country = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
+        $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
+        $logfile   = _PS_CACHE_DIR_.'Billmate.log';
+
+        $isNewCustomer = false;
+        $deliveryOption = $this->getDeliveryOption();
+
+        if($this->context->cart->id_customer == 0) {
+            // Create a guest customer
+            $customerObject = new Customer();
+            $password = Tools::passwdGen(8);
+            $customerObject->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
+            $customerObject->lastname  = !empty($address['lastname']) ? $address['lastname'] : '';
+            $customerObject->company   = isset($address['company']) ? $address['company'] : '';
+            $customerObject->passwd = $password;
+            $customerObject->id_default_group = (int) (Configuration::get('PS_CUSTOMER_GROUP', null, $this->context->cart->id_shop));
+            $customerObject->email = $address['email'];
+            $customerObject->active = true;
+            $customerObject->is_guest = true;
+            $customerObject->add();
+            $this->context->customer = $customerObject;
+            $this->context->cart->secure_key = $customerObject->secure_key;
+            $this->context->cart->id_customer = $customerObject->id;
+            $isNewCustomer = true;
+        }
+
+        $_customer = new Customer($this->context->cart->id_customer);
+        $customer_addresses = $_customer->getAddresses($this->context->language->id);
+
+        if (count($customer_addresses) == 1)
+            $customer_addresses[] = $customer_addresses;
+
+        $matched_address_id = false;
+        foreach ($customer_addresses as $customer_address)
+        {
+            if (isset($customer_address['address1']))
+            {
+                $billing  = new Address($customer_address['id_address']);
+
+                $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+                $company = isset($address['company']) ? $address['company'] : '';
+                $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
+
+                if (Common::matchstr($user_bill,$api_name) && Common::matchstr($customer_address['address1'], $address['street']) &&
+                    Common::matchstr($customer_address['postcode'], $address['zip']) &&
+                    Common::matchstr($customer_address['city'], $address['city']) &&
+                    Common::matchstr(Country::getIsoById($customer_address['id_country']), $address['country']))
+
+                    $matched_address_id = $customer_address['id_address'];
+            }
+            else
+            {
+                foreach ($customer_address as $c_address)
+                {
+                    $billing  = new Address($c_address['id_address']);
+
+                    $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+                    $company = isset($address['company']) ? $address['company'] : '';
+                    $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
+
+
+                    if (Common::matchstr($user_bill,$api_name) &&  Common::matchstr($c_address['address1'], $address['street']) &&
+                        Common::matchstr($c_address['postcode'], $address['zip']) &&
+                        Common::matchstr($c_address['city'], $address['city']) &&
+                        Common::matchstr(Country::getIsoById($c_address['id_country']), $address['country'])
+                    )
+                        $matched_address_id = $c_address['id_address'];
+                }
+            }
+
+        }
+        if (!$matched_address_id)
+        {
+            $addressnew              = new Address();
+            $addressnew->id_customer = (int)$this->context->cart->id_customer;
+            $addressnew->firstname = !empty($address['firstname']) ? $address['firstname'] : $billing->firstname;
+            $addressnew->lastname  = !empty($address['lastname']) ? $address['lastname'] : $billing->lastname;
+            $addressnew->company   = isset($address['company']) ? $address['company'] : '';
+            $addressnew->phone        = $address['phone'];
+            $addressnew->phone_mobile = $address['phone'];
+            $addressnew->address1 = $address['street'];
+            $addressnew->postcode = $address['zip'];
+            $addressnew->city     = $address['city'];
+            $addressnew->country  = $address['country'];
+            $addressnew->alias    = 'Bimport-'.date('Y-m-d');
+            $addressnew->id_country = Country::getByIso($address['country']);
+            $addressnew->save();
+            $matched_address_id = $addressnew->id;
+        }
+        $billing_address_id = $shipping_address_id = $matched_address_id;
+
+        if (    isset($customer['Shipping']) AND
+                is_array($customer['Shipping']) AND
+                isset($customer['Shipping']['firstname']) AND
+                isset($customer['Shipping']['lastname']) AND
+                isset($customer['Shipping']['street']) AND
+                isset($customer['Shipping']['zip']) AND
+                isset($customer['Shipping']['city']) AND
+
+                $customer['Shipping']['firstname'] != '' AND
+                $customer['Shipping']['lastname'] != '' AND
+                $customer['Shipping']['street'] != '' AND
+                $customer['Shipping']['zip'] != '' AND
+                $customer['Shipping']['city'] != ''
+        ) {
+            $address = $customer['Shipping'];
+            file_put_contents($logfile, 'shippingAddress:'.print_r($address,true),FILE_APPEND);
+            file_put_contents($logfile, 'customerAddress:'.print_r($customer_addresses,true),FILE_APPEND);
+            $matched_address_id = false;
+            foreach ($customer_addresses as $customer_address)
+            {
+                if (isset($customer_address['address1']))
+                {
+                    $billing  = new Address($customer_address['id_address']);
+                    $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+                    $company = isset($address['company']) ? $address['company'] : '';
+                    $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
+                    if (Common::matchstr($user_bill,$api_name) && Common::matchstr($customer_address['address1'], $address['street']) &&
+                        Common::matchstr($customer_address['postcode'], $address['zip']) &&
+                        Common::matchstr($customer_address['city'], $address['city']) &&
+                        Common::matchstr(Country::getIsoById($customer_address['id_country']), isset($address['country']) ? $address['country'] : $country))
+                        $matched_address_id = $customer_address['id_address'];
+                }
+                else
+                {
+                    foreach ($customer_address as $c_address)
+                    {
+                        $billing  = new Address($c_address['id_address']);
+                        $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+                        $company = isset($address['company']) ? $address['company'] : '';
+                        $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
+                        if (Common::matchstr($user_bill,$api_name) &&  Common::matchstr($c_address['address1'], $address['street']) &&
+                            Common::matchstr($c_address['postcode'], $address['zip']) &&
+                            Common::matchstr($c_address['city'], $address['city']) &&
+                            Common::matchstr(Country::getIsoById($c_address['id_country']), isset($address['country']) ? $address['country'] : $country)
+                        )
+                            $matched_address_id = $c_address['id_address'];
+                    }
+                }
+            }
+
+            if(!$matched_address_id) {
+                $address = $customer['Shipping'];
+                $addressshipping = new Address();
+                $addressshipping->id_customer = (int)$this->context->cart->id_customer;
+                $addressshipping->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
+                $addressshipping->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
+                $addressshipping->company = isset($address['company']) ? $address['company'] : '';
+                $addressshipping->phone = isset($address['phone']) ? $address['phone'] : $bill_phone;
+                $addressshipping->phone_mobile = isset($address['phone']) ? $address['phone'] : $bill_phone;
+                $addressshipping->address1 = $address['street'];
+                $addressshipping->postcode = $address['zip'];
+                $addressshipping->city = $address['city'];
+                $addressshipping->country = isset($address['country']) ? $address['country'] : $country;
+                $addressshipping->alias = 'Bimport-' . date('Y-m-d');
+                $_country = (isset($address['country']) AND $address['country'] != '') ? $address['country'] : $country;
+                $addressshipping->id_country = Country::getByIso($_country);
+                $addressshipping->save();
+                $shipping_address_id = $addressshipping->id;
+            } else {
+                $shipping_address_id = $matched_address_id;
+            }
+        }
+
+        $this->context->cart->id_address_invoice  = (int)$billing_address_id;
+        $this->context->cart->id_address_delivery = (int)$shipping_address_id;
+
+        $this->context->cart->update();
+        $this->context->cart->save();
+        CartRule::autoRemoveFromCart($this->context);
+        CartRule::autoAddToCart($this->context);
+
+        $this->actionSetShipping();
+
+        if ($isNewCustomer) {
+            if (is_array($deliveryOption) && isset($deliveryOption[0])) {
+                $deliveryOption = $deliveryOption[0];
+            }
+            $this->context->cart->setDeliveryOption(array($this->context->cart->id_address_delivery => $deliveryOption));
+            $this->context->cart->update();
+            $this->context->cart->save();
+            CartRule::autoRemoveFromCart($this->context);
+            CartRule::autoAddToCart($this->context);
+        }
+    }
+
+    public function postProcess() {
         $response = array();
 
         /**
@@ -89,211 +278,14 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                 $customer = $result['Customer'];
             }
 
-            $address = $customer['Billing'];
-            $country = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
-            $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
-            $logfile   = _PS_CACHE_DIR_.'Billmate.log';
-
-            file_put_contents($logfile, 'customer:'.print_r($this->context->customer,true),FILE_APPEND);
-            file_put_contents($logfile, 'cart:'.print_r($this->context->cart,true),FILE_APPEND);
-            if($this->context->cart->id_customer == 0){
-                // Create a guest customer
-                $customerObject = new Customer();
-                $password = Tools::passwdGen(8);
-                $customerObject->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
-                $customerObject->lastname  = !empty($address['lastname']) ? $address['lastname'] : '';
-                $customerObject->company   = isset($address['company']) ? $address['company'] : '';
-                $customerObject->passwd = $password;
-                $customerObject->id_default_group = (int) (Configuration::get('PS_CUSTOMER_GROUP', null, $this->context->cart->id_shop));
-
-                $customerObject->email = $address['email'];
-                $customerObject->active = true;
-                //$customerObject->is_guest = true;
-                $customerObject->add();
-                $this->context->customer = $customerObject;
-                $this->context->cart->secure_key = $customerObject->secure_key;
-                $this->context->cart->id_customer = $customerObject->id;
-            }
-            file_put_contents($logfile, 'customer after:'.print_r($this->context->customer,true),FILE_APPEND);
-            file_put_contents($logfile, 'cart after:'.print_r($this->context->cart,true),FILE_APPEND);
-
-            $_customer = new Customer($this->context->cart->id_customer);
-            $customer_addresses = $_customer->getAddresses($this->context->language->id);
-
-            if (count($customer_addresses) == 1)
-                $customer_addresses[] = $customer_addresses;
-
-            $matched_address_id = false;
-            foreach ($customer_addresses as $customer_address)
-            {
-                if (isset($customer_address['address1']))
-                {
-                    $billing  = new Address($customer_address['id_address']);
-
-                    $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
-                    $company = isset($address['company']) ? $address['company'] : '';
-                    $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
-
-                    if (Common::matchstr($user_bill,$api_name) && Common::matchstr($customer_address['address1'], $address['street']) &&
-                        Common::matchstr($customer_address['postcode'], $address['zip']) &&
-                        Common::matchstr($customer_address['city'], $address['city']) &&
-                        Common::matchstr(Country::getIsoById($customer_address['id_country']), $address['country']))
-
-                        $matched_address_id = $customer_address['id_address'];
-                }
-                else
-                {
-                    foreach ($customer_address as $c_address)
-                    {
-                        $billing  = new Address($c_address['id_address']);
-
-                        $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
-                        $company = isset($address['company']) ? $address['company'] : '';
-                        $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
-
-
-                        if (Common::matchstr($user_bill,$api_name) &&  Common::matchstr($c_address['address1'], $address['street']) &&
-                            Common::matchstr($c_address['postcode'], $address['zip']) &&
-                            Common::matchstr($c_address['city'], $address['city']) &&
-                            Common::matchstr(Country::getIsoById($c_address['id_country']), $address['country'])
-                        )
-                            $matched_address_id = $c_address['id_address'];
-                    }
-                }
-
-            }
-            if (!$matched_address_id)
-            {
-                $addressnew              = new Address();
-                $addressnew->id_customer = (int)$this->context->cart->id_customer;
-
-                $addressnew->firstname = !empty($address['firstname']) ? $address['firstname'] : $billing->firstname;
-                $addressnew->lastname  = !empty($address['lastname']) ? $address['lastname'] : $billing->lastname;
-                $addressnew->company   = isset($address['company']) ? $address['company'] : '';
-
-                $addressnew->phone        = $address['phone'];
-                $addressnew->phone_mobile = $address['phone'];
-
-                $addressnew->address1 = $address['street'];
-                $addressnew->postcode = $address['zip'];
-                $addressnew->city     = $address['city'];
-                $addressnew->country  = $address['country'];
-                $addressnew->alias    = 'Bimport-'.date('Y-m-d');
-                $addressnew->id_country = Country::getByIso($address['country']);
-                $addressnew->save();
-
-                $matched_address_id = $addressnew->id;
-            }
-
-
-            $billing_address_id = $shipping_address_id = $matched_address_id;
-
-            if (    isset($customer['Shipping']) AND
-                    is_array($customer['Shipping']) AND
-                    isset($customer['Shipping']['firstname']) AND
-                    isset($customer['Shipping']['lastname']) AND
-                    isset($customer['Shipping']['street']) AND
-                    isset($customer['Shipping']['zip']) AND
-                    isset($customer['Shipping']['city']) AND
-
-                    $customer['Shipping']['firstname'] != '' AND
-                    $customer['Shipping']['lastname'] != '' AND
-                    $customer['Shipping']['street'] != '' AND
-                    $customer['Shipping']['zip'] != '' AND
-                    $customer['Shipping']['city'] != ''
-            ) {
-
-
-                $address = $customer['Shipping'];
-                file_put_contents($logfile, 'shippingAddress:'.print_r($address,true),FILE_APPEND);
-                file_put_contents($logfile, 'customerAddress:'.print_r($customer_addresses,true),FILE_APPEND);
-
-                $matched_address_id = false;
-                foreach ($customer_addresses as $customer_address)
-                {
-                    if (isset($customer_address['address1']))
-                    {
-                        $billing  = new Address($customer_address['id_address']);
-
-                        $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
-                        $company = isset($address['company']) ? $address['company'] : '';
-                        $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
-
-                        if (Common::matchstr($user_bill,$api_name) && Common::matchstr($customer_address['address1'], $address['street']) &&
-                            Common::matchstr($customer_address['postcode'], $address['zip']) &&
-                            Common::matchstr($customer_address['city'], $address['city']) &&
-                            Common::matchstr(Country::getIsoById($customer_address['id_country']), isset($address['country']) ? $address['country'] : $country))
-
-                            $matched_address_id = $customer_address['id_address'];
-                    }
-                    else
-                    {
-                        foreach ($customer_address as $c_address)
-                        {
-                            $billing  = new Address($c_address['id_address']);
-
-                            $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
-                            $company = isset($address['company']) ? $address['company'] : '';
-                            $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
-
-
-                            if (Common::matchstr($user_bill,$api_name) &&  Common::matchstr($c_address['address1'], $address['street']) &&
-                                Common::matchstr($c_address['postcode'], $address['zip']) &&
-                                Common::matchstr($c_address['city'], $address['city']) &&
-                                Common::matchstr(Country::getIsoById($c_address['id_country']), isset($address['country']) ? $address['country'] : $country)
-                            )
-                                $matched_address_id = $c_address['id_address'];
-                        }
-                    }
-
-                }
-                if(!$matched_address_id) {
-                    $address = $customer['Shipping'];
-                    $addressshipping = new Address();
-                    $addressshipping->id_customer = (int)$this->context->cart->id_customer;
-
-                    $addressshipping->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
-                    $addressshipping->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
-                    $addressshipping->company = isset($address['company']) ? $address['company'] : '';
-
-                    $addressshipping->phone = isset($address['phone']) ? $address['phone'] : $bill_phone;
-                    $addressshipping->phone_mobile = isset($address['phone']) ? $address['phone'] : $bill_phone;
-
-                    $addressshipping->address1 = $address['street'];
-                    $addressshipping->postcode = $address['zip'];
-                    $addressshipping->city = $address['city'];
-                    $addressshipping->country = isset($address['country']) ? $address['country'] : $country;
-                    $addressshipping->alias = 'Bimport-' . date('Y-m-d');
-
-
-                    $_country = (isset($address['country']) AND $address['country'] != '') ? $address['country'] : $country;
-                    $addressshipping->id_country = Country::getByIso($_country);
-                    $addressshipping->save();
-                    $shipping_address_id = $addressshipping->id;
-                } else {
-                    $shipping_address_id = $matched_address_id;
-                }
-            }
-
-            $this->context->cart->id_address_invoice  = (int)$billing_address_id;
-            $this->context->cart->id_address_delivery = (int)$shipping_address_id;
-
-            $this->context->cart->update();
-            $this->context->cart->save();
-            CartRule::autoRemoveFromCart($this->context);
-            CartRule::autoAddToCart($this->context);
-
-            $this->actionSetShipping();
-
+            $this->setAddress($customer);
             $carrierBlock = $this->_getCarrierList();
-
-
-
             $response['success'] = true;
             $response['carrier_block'] = $carrierBlock['carrier_block'];
             echo Tools::jsonEncode($response);
             die;
         }
+
         if( $this->ajax = Tools::getValue( "ajax" ) && Tools::getValue('action') == 'setPaymentMethod'){
             $checkout = $this->fetchCheckout();
             if(!isset($checkout['code'])){
@@ -349,8 +341,12 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                     if(version_compare(_PS_VERSION_,'1.7','>=')) {
                         $deliveryOption =  $delivery_option;
                         $realOption = array();
-                        foreach ($deliveryOption as $key => $value){
-                            $realOption[$key] = Cart::desintifier($value);
+                        foreach ($deliveryOption as $key => $value) {
+                            if($this->context->cart->id_customer == 0) {
+                                $realOption[$key] = $value . ',';
+                            } else {
+                                $realOption[$key] = Cart::desintifier($value);
+                            }
                         }
                         $this->context->cart->setDeliveryOption($realOption);
                     }
@@ -517,29 +513,15 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                 }
             }
 
-            $country = 0;
-            if ($this->context->cart->id_address_delivery > 0) {
-                $delivery_address = new Address($this->context->cart->id_address_delivery);
-                if(isset($delivery_address->id_country)) {
-                    $country = $delivery_address->id_country;
-                    $delivery_option_list = $this->context->cart->getDeliveryOptionList(
-                        new Country($delivery_address->id_country),
-                        true
-                    );
-                } else {
-                    $delivery_option_list = $this->context->cart->getDeliveryOptionList();
+            $delivery_option = $this->getDeliveryOption();
+            $delivery_option_list = $this->getDeliveryOptions();
 
+            if(version_compare(_PS_VERSION_,'1.7','>=')) {
+                if (intval($this->context->cart->id_customer) > 0) {
+                    $delivery_option = Cart::intifier($delivery_option);
                 }
-            } else {
-                $delivery_option_list = $this->context->cart->getDeliveryOptionList();
-
             }
 
-            $delivery_option = $this->context->cart->getDeliveryOption(
-                new Country($country),
-                false,
-                false
-            );
             $this->assignSummary();
             $this->context->smarty->assign(array(
                 'free_shipping' => $free_shipping,
@@ -548,6 +530,43 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                 'delivery_option' => $delivery_option,
                 'back' => ''
             ));
+
+            $delivery_option_data = $this->getDeliveryOptionData();
+            $shipping_price_with_tax = $delivery_option_data['price_with_tax'];
+            $shipping_price_without_tax = $delivery_option_data['price_without_tax'];
+            $shippin_tax = $shipping_price_with_tax - $shipping_price_without_tax;
+
+            if ($shipping_price_with_tax > 0) {
+                $shipping_price_with_tax = $delivery_option_data['price_with_tax'];
+                $shipping_price_without_tax = $delivery_option_data['price_without_tax'];
+                $shippin_tax = $shipping_price_with_tax - $shipping_price_without_tax;
+
+                if(version_compare(_PS_VERSION_,'1.7','>=')) {
+                    $priceFormatter = new PrestaShop\PrestaShop\Adapter\Product\PriceFormatter();
+                    $taxConfiguration = new TaxConfiguration();
+                    $getTemplateVars = $this->context->smarty->getTemplateVars();
+                    $templateCart = $getTemplateVars['cart'];
+                    if ($templateCart['subtotals']['shipping']['amount'] < 1) {
+                        $templateCart['totals']['total_including_tax']['amount'] += $shipping_price_with_tax;
+                        $templateCart['totals']['total_including_tax']['value'] = $priceFormatter->format($templateCart['totals']['total_including_tax']['amount']);
+                        $templateCart['totals']['total_excluding_tax']['amount'] += $shipping_price_without_tax;
+                        $templateCart['totals']['total_excluding_tax']['value'] = $priceFormatter->format($templateCart['totals']['total_excluding_tax']['amount']);
+                        $templateCart['totals']['total']['amount'] = $templateCart['totals']['total_including_tax']['amount'];
+                        $templateCart['totals']['total']['value'] = $templateCart['totals']['total_including_tax']['value'];
+
+                        if (!$taxConfiguration->includeTaxes()) {
+                            // Show prices excluding tax
+                            $templateCart['totals']['total']['amount'] = $templateCart['totals']['total_excluding_tax']['amount'];
+                            $templateCart['totals']['total']['value'] = $templateCart['totals']['total_excluding_tax']['value'];
+                        }
+
+                        $templateCart['subtotals']['shipping']['amount'] = $shipping_price_with_tax;
+                        $templateCart['subtotals']['shipping']['value'] = $priceFormatter->format($shipping_price_with_tax);
+                        $this->context->smarty->assign('cart', $templateCart);
+                    }
+                }
+            }
+
             if(version_compare(_PS_VERSION_,'1.7','>=')){
                 $this->setTemplate('module:billmategateway/views/templates/front/checkout/checkout17.tpl');
             } else {
@@ -691,6 +710,185 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         return true;
     }
 
+    private function getCarriers() {
+        if (intval($this->context->cart->id_customer) > 0) {
+            $carriers = $this->context->cart->simulateCarriersOutput();
+        } else {
+            // Cart have no customer
+            $country_id = Country::getByIso('SE');
+            $country = new Country($country_id);
+            $id_zone = $country->id_zone;
+            $ps_guest_group = Configuration::get('PS_GUEST_GROUP');
+            $groups = array($ps_guest_group);
+            $carriers = Carrier::getCarriersForOrder($id_zone, $groups);
+        }
+        return $carriers;
+    }
+
+    /**
+     * Get selected delivery option
+     * If no delivery option is selected, select cheapest one
+     */
+    private function getDeliveryOption() {
+
+        $delivery_option = null;
+
+        if (intval($this->context->cart->id_customer) > 0) {
+            $delivery_option = $this->context->cart->getDeliveryOption(null, false, false);
+            if (version_compare(_PS_VERSION_,'1.7','>=')) {
+                $delivery_option = $this->context->cart->simulateCarrierSelectedOutput();
+                // $delivery_option = Cart::intifier($delivery_option);
+                $delivery_option = Cart::desintifier($delivery_option);
+            }
+        } else {
+            // Cart have no customer
+            $delivery_option = $this->context->cart->getDeliveryOption(null, false, false);
+            if (version_compare(_PS_VERSION_,'1.7','>=')) {
+                $delivery_option_seriaized = $this->context->cart->delivery_option;
+                $delivery_option_unserialized = unserialize($delivery_option_seriaized);
+                if (is_array($delivery_option_unserialized) && isset($delivery_option_unserialized[0])) {
+                    $delivery_option = $delivery_option_unserialized[0];
+                }
+            }
+        }
+
+        if (!$delivery_option) {
+            $delivery_option_list = $this->getDeliveryOptions();
+            foreach ($delivery_option_list AS $i => $packages) {
+                foreach ($packages AS $iii => $carriers) {
+                    if ($carriers['is_best_price']) {
+                        $delivery_option = $iii;
+                        break;
+                    }
+                }
+            }
+            if (version_compare(_PS_VERSION_,'1.7','<')) {
+                $delivery_option = array(
+                    0 => $delivery_option
+                );
+            }
+        }
+        return $delivery_option;
+    }
+
+    private function getDeliveryOptionData() {
+        $delivery_option = $this->getDeliveryOption();
+        if (is_array($delivery_option)) {
+            $delivery_option = current($delivery_option);
+        }
+        $delivery_option_list = $this->getDeliveryOptions();
+        foreach ($delivery_option_list AS $i => $packages) {
+            foreach ($packages AS $iii => $carriers) {
+                if ($iii == $delivery_option) {
+                    foreach ($carriers['carrier_list'] AS $iv => $carrier) {
+                        return $carrier;
+                    }
+                    break;
+                }
+            }
+        }
+        return array();
+    }
+
+    private function getDeliveryOptions() {
+        if (intval($this->context->cart->id_customer) > 0) {
+            $country = 0;
+            if ($this->context->cart->id_address_delivery > 0) {
+                $delivery_address = new Address($this->context->cart->id_address_delivery);
+                if(isset($delivery_address->id_country)) {
+                    $country = $delivery_address->id_country;
+                    $delivery_option_list = $this->context->cart->getDeliveryOptionList(
+                        new Country($delivery_address->id_country),
+                        true
+                    );
+                } else {
+                    $delivery_option_list = $this->context->cart->getDeliveryOptionList();
+                }
+            } else {
+                $delivery_option_list = $this->context->cart->getDeliveryOptionList();
+            }
+
+            foreach ($delivery_option_list AS $i => $packages) {
+                foreach ($packages AS $iii => $carriers) {
+                    foreach ($carriers['carrier_list'] AS $iv => $carrier) {
+                        if (isset($delivery_option_list[$i][$iii]['carrier_list'][$iv]['instance'])) {
+                            unset($delivery_option_list[$i][$iii]['carrier_list'][$iv]['instance']);
+                        }
+                        if (isset($delivery_option_list[$i][$iii]['carrier_list'][$iv]['package_list'])) {
+                            unset($delivery_option_list[$i][$iii]['carrier_list'][$iv]['package_list']);
+                        }
+                        if (isset($delivery_option_list[$i][$iii]['carrier_list'][$iv]['product_list'])) {
+                            unset($delivery_option_list[$i][$iii]['carrier_list'][$iv]['product_list']);
+                        }
+                        $delivery_option_list[$i][$iii]['carrier_list'][$iv]['instance'] = new Carrier($iv);
+                    }
+                }
+            }
+            return $delivery_option_list;
+        }
+
+        /**
+         * Below, get shipping options when no customer saved on cart
+         */
+        $carriers = $this->getCarriers();
+
+        $delivery_option_list_from_carriers =  array(
+            0 => array()
+        );
+        $grades = array();  // id => grade
+        $prices = array();  // id => price
+        $instances = array(); // id => instance
+        foreach ($carriers AS $carrier) {
+            $id_carrier = $carrier['id_carrier'];
+            $instance = new Carrier($id_carrier);
+            $instances[$id_carrier] = $instance;
+            $grades[$id_carrier] = $instance->grade;
+            $prices[$id_carrier] = $carrier['price'];
+        }
+
+        $best_grade     = null;
+        $best_grade_id  = null;
+        $best_price     = null;
+        $best_price_id  = null;
+
+        foreach ($carriers AS $carrier) {
+            $id_carrier = $carrier['id_carrier'];
+            $grade = $grades[$id_carrier];
+            $price_with_tax = $prices[$id_carrier];
+            if (is_null($best_price) || $price_with_tax < $best_price) {
+                $best_price = $price_with_tax;
+                $best_price_carrier = $id_carrier;
+            }
+            if (is_null($best_grade) || $grade > $best_grade) {
+                $best_grade = $grade;
+                $best_grade_carrier = $id_carrier;
+            }
+        }
+
+        foreach ($carriers AS $carrier) {
+            $id_carrier = $carrier['id_carrier'];
+            $key = $id_carrier . ',';
+            $delivery_option_list_from_carriers[0][$key] = array(
+                'carrier_list' => array(
+                    $id_carrier => array(
+                        'price_with_tax' => $carrier['price'],
+                        'price_without_tax' => $carrier['price_tax_exc'],
+                        'logo' => $carrier['img'],
+                        'instance' => $instances[$id_carrier]
+                    )
+                ),
+                'is_best_price' => ($best_price_carrier == $id_carrier),
+                'is_best_grade' => ($best_grade_carrier == $id_carrier),
+                'unique_carrier' => true,
+                'total_price_with_tax' => $carrier['price'],
+                'total_price_without_tax' => $carrier['price_tax_exc'],
+                'is_free' => null,
+                'position' => $carrier['position'],
+            );
+        }
+        return $delivery_option_list_from_carriers;
+    }
+
     protected function _getCarrierList()
     {
         $address_delivery = new Address($this->context->cart->id_address_delivery);
@@ -703,8 +901,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $link_conditions .= '&content_only=1';
         }
 
-        $carriers = $this->context->cart->simulateCarriersOutput();
-        $delivery_option = $this->context->cart->getDeliveryOption(null, false, false);
+        $carriers = $this->getCarriers();
 
         $wrapping_fees = $this->context->cart->getGiftWrappingPrice(false);
         $wrapping_fees_tax_inc = $this->context->cart->getGiftWrappingPrice();
@@ -724,13 +921,17 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $temp['id'] = $carrier['id_carrier'];
             $temp['extraContent'] = '';
             $carriers17[$carrier['id_carrier']] = $temp;
-
         }
 
         $this->context->smarty->assign('isVirtualCart', $this->context->cart->isVirtualCart());
 
-        if (version_compare(_PS_VERSION_,'1.7','>=')){
-            $delivery_option = $this->context->cart->simulateCarrierSelectedOutput();
+        $delivery_option = $this->getDeliveryOption();
+        $delivery_option_list = $this->getDeliveryOptions();
+
+        if(version_compare(_PS_VERSION_,'1.7','>=')) {
+            if (intval($this->context->cart->id_customer) > 0) {
+                $delivery_option = Cart::intifier($delivery_option);
+            }
         }
 
         $vars = array(
@@ -747,7 +948,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             'gift_wrapping_price' => (float)$wrapping_fees,
             'total_wrapping_cost' => Tools::convertPrice($wrapping_fees_tax_inc, $this->context->currency),
             'total_wrapping_tax_exc_cost' => Tools::convertPrice($wrapping_fees, $this->context->currency),
-            'delivery_option_list' => $this->context->cart->getDeliveryOptionList(),
+            'delivery_option_list' => $delivery_option_list,
             'carriers' => $carriers,
             'checked' => $this->context->cart->simulateCarrierSelectedOutput(),
             'delivery_option' => $delivery_option,
@@ -1070,47 +1271,65 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         $order_total = $this->context->cart->getOrderTotal();
         $notfree    = !(isset($details['free_ship']) && $details['free_ship'] == 1);
 
+        $total_shipping_cost  = round($this->context->cart->getTotalShippingCost(null, false),2);
+        $total_shipping_cost_inc_tax = 0;
+        $taxrate = 0;
+
         if ($carrier->active && $notfree)
         {
-            $carrier_obj = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
-            $taxrate    = $carrier_obj->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
+            if (intval($carrier->id_reference) > 0) {
+                // Address saved in store
+                $carrier_obj = new Carrier($this->context->cart->id_carrier, $this->context->cart->id_lang);
+                $taxrate    = $carrier_obj->getTaxesRate(new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
 
-            $total_shipping_cost  = round($this->context->cart->getTotalShippingCost(null, false),2);
-
-            // Try get shipping taxrate with no address
-            if ($taxrate == 0) {
-                $selected_deliver_option_id = (int)current($this->context->cart->getDeliveryOption());
-                $carrier = new Carrier($selected_deliver_option_id, $this->context->cart->id_lang);
-                $taxrate = $carrier->getTaxesRate(Address::initialize(0));
-            }
-
-            // Maybe calculate shipping taxrate
-            $total_shipping_cost_inc_tax = 0;
-            if ($taxrate == 0) {
-                $total_shipping_cost_inc_tax  = round($this->context->cart->getTotalShippingCost(null, true),2);
-                if ($total_shipping_cost < $total_shipping_cost_inc_tax && $total_shipping_cost > 0 && $total_shipping_cost_inc_tax > 0) {
-                    $taxrate = round((($total_shipping_cost_inc_tax - $total_shipping_cost) / $total_shipping_cost) * 100);
+                // Try get shipping taxrate with no address
+                if ($taxrate == 0) {
+                    $selected_deliver_option_id = (int)current($this->context->cart->getDeliveryOption());
+                    $carrier = new Carrier($selected_deliver_option_id, $this->context->cart->id_lang);
+                    $taxrate = $carrier->getTaxesRate(Address::initialize(0));
                 }
-            }
 
-            /**
-             * Calculate shipping cost without tax when
-             * - store might show prices with 0 decimals
-             * - we have not calculated taxrate based on cost with and without tax
-             */
-            if (
-                $total_shipping_cost_inc_tax == 0
-                && $taxrate > 0
-                && $total_shipping_cost > 0
-                && intval($total_shipping_cost) == $total_shipping_cost
-            ) {
-                if ($total_shipping_cost_inc_tax == 0) {
-                    $total_shipping_cost_inc_tax  = round($this->context->cart->getTotalShippingCost(null, true) ,2);
+                // Maybe calculate shipping taxrate
+                $total_shipping_cost_inc_tax = 0;
+                if ($taxrate == 0) {
+                    $total_shipping_cost_inc_tax  = round($this->context->cart->getTotalShippingCost(null, true),2);
+                    if ($total_shipping_cost < $total_shipping_cost_inc_tax && $total_shipping_cost > 0 && $total_shipping_cost_inc_tax > 0) {
+                        $taxrate = round((($total_shipping_cost_inc_tax - $total_shipping_cost) / $total_shipping_cost) * 100);
+                    }
                 }
-                if ($total_shipping_cost < $total_shipping_cost_inc_tax && $total_shipping_cost > 0 && $total_shipping_cost_inc_tax > 0) {
-                    $total_shipping_cost = ($total_shipping_cost_inc_tax / (1 + ($taxrate/100)));
-                    $total_shipping_cost = round($total_shipping_cost ,2);
+
+                /**
+                 * Calculate shipping cost without tax when
+                 * - store might show prices with 0 decimals
+                 * - we have not calculated taxrate based on cost with and without tax
+                 */
+                if (
+                    $total_shipping_cost_inc_tax == 0
+                    && $taxrate > 0
+                    && $total_shipping_cost > 0
+                    && intval($total_shipping_cost) == $total_shipping_cost
+                ) {
+                    if ($total_shipping_cost_inc_tax == 0) {
+                        $total_shipping_cost_inc_tax  = round($this->context->cart->getTotalShippingCost(null, true) ,2);
+                    }
+                    if ($total_shipping_cost < $total_shipping_cost_inc_tax && $total_shipping_cost > 0 && $total_shipping_cost_inc_tax > 0) {
+                        $total_shipping_cost = ($total_shipping_cost_inc_tax / (1 + ($taxrate/100)));
+                        $total_shipping_cost = round($total_shipping_cost ,2);
+                    }
                 }
+            } elseif ($total_shipping_cost == 0) {
+                // Address not yet saved in store
+                $deliveryOptionData = $this->getDeliveryOptionData();
+                $total_shipping_cost = $deliveryOptionData['price_without_tax'];
+                $total_shipping_cost_inc_tax = $deliveryOptionData['price_with_tax'];
+
+                // Maybe calculate shipping taxrate
+                if ($taxrate == 0) {
+                    if ($total_shipping_cost < $total_shipping_cost_inc_tax && $total_shipping_cost > 0 && $total_shipping_cost_inc_tax > 0) {
+                        $taxrate = round((($total_shipping_cost_inc_tax - $total_shipping_cost) / $total_shipping_cost) * 100);
+                    }
+                }
+                $order_total += $total_shipping_cost_inc_tax;
             }
 
             $totals['Shipping'] = array(

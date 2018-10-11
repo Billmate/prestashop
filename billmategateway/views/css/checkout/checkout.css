@@ -30,19 +30,24 @@
 }
 
 #billmateCheckoutOverlay {
+    display: none;
+}
+
+.billmate-checkout-overlay #billmateCheckoutOverlay {
+    display: block;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: rgba(255, 255, 255, 0.8);
-    z-index: 6000;
+    z-index: 9000;
 }
 
-#checkoutdiv {
-    z-index: 6001;
+.billmate-checkout-overlay #checkoutdiv {
+    z-index: 9001;
     position: relative;
-    overflow: auto;
+    overflow: hidden;
 }
 
 #checkoutdiv.loading {
