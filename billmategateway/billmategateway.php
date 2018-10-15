@@ -424,13 +424,18 @@
             $css_file   = __DIR__.'/views/css/checkout/checkout.css';
             $js_file    = __DIR__.'/views/js/checkout/checkout.js';
 
-            if (version_compare(_PS_VERSION_,'1.7','>=')) {
-                $this->context->controller->registerStylesheet('module-billmategateway', 'modules/billmategateway/views/css/checkout/checkout.css', ['media' => 'all', 'priority' => 150]);
-            } else {
-                $this->context->controller->addCSS($css_file, 'all');
-            }
-
             if(Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 1) {
+
+                $is_billmate_checkout_page = 'no';
+                if (Dispatcher::getInstance()->getController() == 'billmatecheckout') {
+                    $is_billmate_checkout_page = 'yes';
+
+                    if (version_compare(_PS_VERSION_,'1.7','>=')) {
+                        $this->context->controller->registerStylesheet('module-billmategateway', 'modules/billmategateway/views/css/checkout/checkout.css', ['media' => 'all', 'priority' => 150]);
+                    } else {
+                        $this->context->controller->addCSS($css_file, 'all');
+                    }
+                }
 
                 if (version_compare(_PS_VERSION_,'1.7','>=')) {
                     $this->context->controller->registerJavascript('module-billmategateway', 'modules/billmategateway/views/js/checkout/checkout.js', ['position' => 'bottom', 'priority' => 150]);
@@ -441,10 +446,6 @@
                 Media::addJsDef(array('billmate_checkout_url' =>
                     $this->context->link->getModuleLink('billmategateway', 'billmatecheckout', array(), true)));
 
-                $is_billmate_checkout_page = 'no';
-                if (Dispatcher::getInstance()->getController() == 'billmatecheckout') {
-                    $is_billmate_checkout_page = 'yes';
-                }
                 Media::addJsDef(array('is_billmate_checkout_page' => $is_billmate_checkout_page));
             }
         }
