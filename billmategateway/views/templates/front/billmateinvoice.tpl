@@ -150,6 +150,23 @@
 <script type="text/javascript">
 
     function billmateInvoice() {
+
+        // Use checkout page submit button when available instead of payment option form submit button
+        if ($('#payment-confirmation button[type="submit"]').length > 0) {
+            $('form.billmateinvoice button[type="submit"]').hide();
+        }
+        $(document).on('submit', 'form', function (e) {
+            if ($('form.billmateinvoice').is(':visible')) {
+                e.preventDefault();
+            }
+        });
+        jQuery(document).on('click', '#payment-confirmation button[type="submit"]', function (e) {
+            if ($('form.billmateinvoice').is(':visible')) {
+                e.preventDefault();
+                $("#billmateinvoiceSubmit").click();
+            }
+        });
+
         var ajaxurl = "{$link->getModuleLink('billmategateway', 'billmateapi', ['ajax'=> 0], true)}";
         ajaxurl = ajaxurl.replace(/&amp;/g,'&');
         function getPayment(method) {

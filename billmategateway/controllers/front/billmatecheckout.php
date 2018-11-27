@@ -745,7 +745,11 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $delivery_option = $this->context->cart->getDeliveryOption(null, false, false);
             if (version_compare(_PS_VERSION_,'1.7','>=')) {
                 $delivery_option_seriaized = $this->context->cart->delivery_option;
-                $delivery_option_unserialized = unserialize($delivery_option_seriaized);
+                if (version_compare(_PS_VERSION_,'1.7.4.4','>=')) {
+                    $delivery_option_unserialized = json_decode($delivery_option_seriaized);
+                } else {
+                    $delivery_option_unserialized = unserialize($delivery_option_seriaized);
+                }
                 if (is_array($delivery_option_unserialized) && isset($delivery_option_unserialized[0])) {
                     $delivery_option = $delivery_option_unserialized[0];
                 }
@@ -934,6 +938,10 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             }
         }
 
+        if(version_compare(_PS_VERSION_,'1.7.4.4','>=') && is_array($delivery_option)) {
+            $delivery_option = current($delivery_option);
+        }
+
         $vars = array(
             'advanced_payment_api' => (bool)Configuration::get('PS_ADVANCED_PAYMENT_API'),
             'free_shipping' => $free_shipping,
@@ -1120,7 +1128,8 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
         $orderValues = array(
             'PaymentData' => array(
-                'number' => $orderValues['PaymentData']['number']
+                'number' => $orderValues['PaymentData']['number'],
+                'currency' => Tools::strtoupper($this->context->currency->iso_code)
             )
         );
 
