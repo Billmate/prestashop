@@ -1128,7 +1128,8 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
         $orderValues = array(
             'PaymentData' => array(
-                'number' => $orderValues['PaymentData']['number']
+                'number' => $orderValues['PaymentData']['number'],
+                'currency' => Tools::strtoupper($this->context->currency->iso_code)
             )
         );
 
