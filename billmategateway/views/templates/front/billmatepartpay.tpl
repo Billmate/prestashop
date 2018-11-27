@@ -166,6 +166,23 @@
 <script type="text/javascript" src="{$smarty.const._MODULE_DIR_}billmategateway/views/js/billmatepopup.js"></script>
 <script type="text/javascript">
     function billmatePartpay() {
+
+        // Use checkout page submit button when available instead of payment option form submit button
+        if ($('#payment-confirmation button[type="submit"]').length > 0) {
+            $('form.billmatepartpay button[type="submit"]').hide();
+        }
+        $(document).on('submit', 'form', function (e) {
+            if ($('form.billmatepartpay').is(':visible')) {
+                e.preventDefault();
+            }
+        });
+        jQuery(document).on('click', '#payment-confirmation button[type="submit"]', function (e) {
+            if ($('form.billmatepartpay').is(':visible')) {
+                e.preventDefault();
+                $("#billmatepartpaySubmit").click();
+            }
+        });
+
         var ajaxurl = "{$link->getModuleLink('billmategateway', 'billmateapi', ['ajax'=> 0], true)}";
         ajaxurl = ajaxurl.replace(/&amp;/g, '&');
         window.checkoutButton = $('#payment-confirmation button[type="submut"]').onclick;

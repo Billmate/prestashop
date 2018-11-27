@@ -86,6 +86,13 @@
     padding-right: 1%;
 
 }
+
+.container .card .card-block #checkoutdiv {
+    clear: both;
+    float: left;
+    width: 100%;
+}
+
 .container #checkoutdiv {
     float:left;
     width:49%;
