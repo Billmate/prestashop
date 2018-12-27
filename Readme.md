@@ -48,6 +48,10 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.3.2 (2018-12-27)
+* Fix - Check if countable before count
+* Fix - Try get shipping taxrate one more time
+
 ### 3.3.1 (2018-11-27)
 * Fix - Only include Billmate Checkout css on checkout-page
 * Fix - Billmate Checkout iframe width when PS 1.7

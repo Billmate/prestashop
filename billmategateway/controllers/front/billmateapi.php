@@ -426,6 +426,15 @@
                 }
             }
 
+            // Try get shipping taxrate one more time if not already found
+            if ($taxrate == 0) {
+                $total_shipping_cost_with_tax  = round($this->context->cart->getTotalShippingCost(null, true),2);
+                if ($total_shipping_cost_with_tax > $total_shipping_cost) {
+                    $tax = $total_shipping_cost_with_tax - $total_shipping_cost;
+                    $taxrate = round(($tax / $total_shipping_cost) * 100);
+                }
+            }
+
             if ($total_shipping_cost > 0) {
                 $withouttax = $total_shipping_cost * 100;
                 if ($taxrate > 0) {

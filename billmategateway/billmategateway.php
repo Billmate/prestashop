@@ -77,11 +77,13 @@
 			if (!empty($_POST) && Tools::getIsset('billmateSubmit'))
 			{
 				$this->_postValidation();
-				if (count($this->postValidations))
-					$html .= $this->displayValidations();
+                if (isset($this->postValidations) && is_array($this->postValidations) && count($this->postValidations) > 0) {
+                    $html .= $this->displayValidations();
+                }
 
-				if (count($this->postErrors))
-					$html .= $this->displayErrors();
+                if (isset($this->postErrors) && is_array($this->postErrors) && count($this->postErrors) > 0) {
+                    $html .= $this->displayErrors();
+                }
 
 			}
 
