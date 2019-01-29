@@ -79,7 +79,7 @@ var BillmateIframe = new function(){
         });
 
     };
-    this.updateShippingMethod = function(shippingElementKey, reload = false) {
+    this.updateShippingMethod = function(shippingElementKey, reload) {
         var url = billmate_checkout_url;
         var delivery_option = $(document).find('input[type="radio"][name^="delivery_option["]:checked').val();
         if (shippingElementKey != null) {
