@@ -454,25 +454,50 @@
 
 		public function hookDisplayProductButtons($params)
 		{
-			if(!is_object($params['product'])){
-				return '';
+			if (!Configuration::get('BPARTPAY_ENABLED')||
+                !isset($params['product'])
+            ) {
+                return '';
 			}
-			$cost = (1+($params['product']->tax_rate/100))*$params['product']->base_price;
+
+			try {
+                $productPriceTaxIncl = $this->getPriceTaxInc($params['product']);
+            } catch (Error $exception) {
+                $exception->getMessage();
+                return '';
+            }
 
 			require_once(_PS_MODULE_DIR_.'/billmategateway/methods/Partpay.php');
 			$partpay = new BillmateMethodPartpay();
-			$plan = $partpay->getCheapestPlan($cost);
-            if (    is_array($plan)
-                    && isset($plan['monthlycost'])
-                    && intval(Configuration::get('BPARTPAY_ENABLED')) > 0
-            ) {
-				$this->smarty->assign('icon',$partpay->icon);
-				$this->smarty->assign('plan', $plan);
-				return $this->display(__FILE__, 'payfrom.tpl');
-			}
-			return '';
+			$plan = $partpay->getCheapestPlan($productPriceTaxIncl);
 
+            if (is_array($plan) && isset($plan['monthlycost'])) {
+				$this->smarty->assign('icon',$partpay->icon);
+				$this->smarty->assign('plan_price', Tools::displayPrice($plan['monthlycost']));
+                $partPayContent = $this->display(__FILE__, 'payfrom.tpl');
+			}
+			return $partPayContent;
 		}
+
+		protected function getPriceTaxInc($product)
+        {
+            $id_product = 0;
+            if (version_compare(_PS_VERSION_, "1.7.5.0", ">=")) {
+                    $id_product = $product->getId();
+            } else {
+                if (is_object($product)) {
+                    $id_product = $product->id_product;
+                } elseif (is_array($product)) {
+                    $id_product = $product['id_product'];
+                }
+            }
+
+            if (!$id_product) {
+               return 0;
+            }
+
+            return Product::getPriceStatic($id_product);
+        }
 
         /** Display handling fee on order details */
         public function hookDisplayOrderDetail($params)
