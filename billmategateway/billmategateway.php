@@ -474,9 +474,9 @@
             if (is_array($plan) && isset($plan['monthlycost'])) {
 				$this->smarty->assign('icon',$partpay->icon);
 				$this->smarty->assign('plan_price', Tools::displayPrice($plan['monthlycost']));
-                $partPayContent = $this->display(__FILE__, 'payfrom.tpl');
+                return $this->display(__FILE__, 'payfrom.tpl');
 			}
-			return $partPayContent;
+			return '';
 		}
 
 		protected function getPriceTaxInc($product)
