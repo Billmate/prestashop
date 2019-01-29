@@ -176,7 +176,7 @@
                 e.preventDefault();
             }
         });
-        jQuery(document).on('click', '#payment-confirmation button[type="submit"]', function (e) {
+        jQuery(document).on('submit', '#payment-form', function (e) {
             if ($('form.billmatepartpay').is(':visible')) {
                 e.preventDefault();
                 $("#billmatepartpaySubmit").click();

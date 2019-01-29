@@ -160,7 +160,7 @@
                 e.preventDefault();
             }
         });
-        jQuery(document).on('click', '#payment-confirmation button[type="submit"]', function (e) {
+        jQuery(document).on('submit', '#payment-form', function (e) {
             if ($('form.billmateinvoice').is(':visible')) {
                 e.preventDefault();
                 $("#billmateinvoiceSubmit").click();
