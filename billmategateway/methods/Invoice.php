@@ -772,20 +772,6 @@ class BillmateMethodInvoice extends BillmateGateway {
 							}
 							else
 								$file_attachement = null;
-
-							if (Validate::isEmail($this->context->customer->email))
-								Mail::Send(
-									(int)$order->id_lang,
-									'order_conf',
-									Mail::l('Order confirmation', (int)$order->id_lang),
-									$data,
-									$this->context->customer->email,
-									$this->context->customer->firstname.' '.$this->context->customer->lastname,
-									null,
-									null,
-									$file_attachement,
-									null, _PS_MAIL_DIR_, false, (int)$order->id_shop
-								);
 						}
 
 						// updates stock in shops
