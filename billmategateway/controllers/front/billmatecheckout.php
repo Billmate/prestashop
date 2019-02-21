@@ -1274,6 +1274,8 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
     public function prepareTotals()
     {
         $totals     = array();
+        $delivery_option = $this->getDeliveryOption();
+        $this->context->cart->setDeliveryOption($delivery_option);
         $details    = $this->context->cart->getSummaryDetails(null, true);
 
         $carrier    = $details['carrier'];
