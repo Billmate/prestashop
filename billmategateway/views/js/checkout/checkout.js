@@ -11,7 +11,7 @@ var BillmateIframe = new function(){
     var childWindow = null;
     var timerPostMessageUpdate;
     var timerPostMessageLock;
-
+    var readyToListen = false;
     this.updatePsCheckout = function(){
         /* When address in checkout updates; */
         var data = {};
@@ -136,8 +136,9 @@ var BillmateIframe = new function(){
     };
 
     this.initListeners = function () {
-        jQuery(document).ready(function(){
+        jQuery(document).ready(function() {
             window.addEventListener("message",self.handleEvent);
+
             if($('#billmate_summary').length) {
 
                 if(typeof prestashop != 'undefined') {
@@ -177,7 +178,12 @@ var BillmateIframe = new function(){
                     break;
 
                 case 'address_selected':
-                    self.updateAddress(json.data);
+                    if (readyToListen) {
+                        self.updateAddress(json.data);
+                    } else {
+                        readyToListen = true
+                    }
+
                     self.updatePaymentMethod(json.data);
 
                     if(window.method == null || window.method == json.data.method) {
