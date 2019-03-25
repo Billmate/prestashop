@@ -46,7 +46,7 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
-### 3.3.4 (2019-03-20)
+### 3.3.4 (2019-03-25)
 * Fix - Shipping costs are now added correctly when you changed shipping methods. (PS 1.7) [CustomPay]
 * Fix - Improved taxrate handling for shipping methods.
 
