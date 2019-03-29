@@ -1,4 +1,4 @@
-# Billmate Payment Gateway for Prestashop
+# Billmate Payment Gateway for Prestashoper
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
 ## Documentation
