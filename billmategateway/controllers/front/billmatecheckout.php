@@ -1281,8 +1281,12 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         $notfree    = !(isset($details['free_ship']) && $details['free_ship'] == 1);
 
         $total_shipping_cost  = round($this->context->cart->getTotalShippingCost(null, false),2);
-        $total_shipping_cost_inc_tax = 0;
+        $total_shipping_cost_inc_tax = round($this->context->cart->getTotalShippingCost(null, true),2);
         $taxrate = 0;
+
+        if ($total_shipping_cost) {
+            $taxrate = (($total_shipping_cost_inc_tax - $total_shipping_cost)/$total_shipping_cost * 100);
+        }
 
         if ($carrier->active && $notfree)
         {
