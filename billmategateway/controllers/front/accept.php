@@ -578,7 +578,10 @@
 
                 if ($validateOptionResult) {
                     $validated = true;
-                    if(version_compare(_PS_VERSION_,'1.7','>=')) {
+                    if(version_compare(_PS_VERSION_,'1.7','>=')
+                        &&
+                        !(version_compare(_PS_VERSION_,'1.7.5','>='))
+                    ) {
                         $deliveryOption =  $delivery_option;
                         $realOption = array();
                         foreach ($deliveryOption as $key => $value){

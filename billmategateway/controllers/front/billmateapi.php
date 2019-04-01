@@ -595,7 +595,7 @@
 
 					$this->context->cart->id_address_invoice  = (int)$matched_address_id;
 					$this->context->cart->id_address_delivery = (int)$matched_address_id;
-					if(version_compare(_PS_VERSION_,'1.7','>=')){
+					if(version_compare(_PS_VERSION_,'1.7','>=')) {
 
 						$billing = new Address($this->context->cart->id_address_invoice);
 						$shipping = new Address($this->context->cart->id_address_delivery);
@@ -605,7 +605,9 @@
 
 					}
 
-                    $this->context->cart->setDeliveryOption(array($this->context->cart->id_address_delivery => $carrier->id));
+                    $this->context->cart->setDeliveryOption([
+                        $this->context->cart->id_address_delivery => $carrier->id . ','
+                    ]);
 					$this->context->cart->update();
 
 					if (Configuration::get('PS_ORDER_PROCESS_TYPE') == 1)

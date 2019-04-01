@@ -745,7 +745,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $delivery_option = $this->context->cart->getDeliveryOption(null, false, false);
             if (version_compare(_PS_VERSION_,'1.7','>=')) {
                 $delivery_option_seriaized = $this->context->cart->delivery_option;
-                if (version_compare(_PS_VERSION_,'1.7.4.4','>=')) {
+                if (version_compare(_PS_VERSION_,'1.7.3.3','>=')) {
                     $delivery_option_unserialized = json_decode($delivery_option_seriaized);
                 } else {
                     $delivery_option_unserialized = unserialize($delivery_option_seriaized);
@@ -1281,8 +1281,12 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         $notfree    = !(isset($details['free_ship']) && $details['free_ship'] == 1);
 
         $total_shipping_cost  = round($this->context->cart->getTotalShippingCost(null, false),2);
-        $total_shipping_cost_inc_tax = 0;
+        $total_shipping_cost_inc_tax = round($this->context->cart->getTotalShippingCost(null, true),2);
         $taxrate = 0;
+
+        if ($total_shipping_cost) {
+            $taxrate = (($total_shipping_cost_inc_tax - $total_shipping_cost)/$total_shipping_cost * 100);
+        }
 
         if ($carrier->active && $notfree)
         {
