@@ -9,12 +9,18 @@
 
 	require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
 	require_once(_PS_MODULE_DIR_.'/billmategateway/library/pclasses.php');
+	require_once(_PS_MODULE_DIR_.'/billmategateway/classes/CustomerConfig.php');
 
 	class BillmateGateway extends PaymentModule {
 
 		protected $allowed_currencies;
 		protected $postValidations;
 		protected $postErrors;
+
+        /**
+         * @var CustomerConfig
+         */
+		protected $customerConfig;
 
 		public function __construct()
 		{
@@ -25,6 +31,7 @@
 			$this->author     = 'Billmate AB';
 
 			$this->currencies      = true;
+			$this->customerConfig      = new CustomerConfig();
 			$this->currencies_mode = 'checkbox';
 
 			parent::__construct();
@@ -311,8 +318,15 @@
 			Configuration::updateValue('BCARDPAY_ENABLED', 0);
 			Configuration::updateValue('BBANKPAY_ENABLED', 0);
 			Configuration::updateValue('BINVOICESERVICE_ENABLED',0);
-
 			Configuration::updateValue('BILLMATE_VERSION', $this->version);
+
+            $customer = $this->customerConfig->getDefaultCustomer();
+			if (!$customer) {
+                $this->_errors[] = $this->l('Errors during default customer creation');
+			    return false;
+            }
+
+
 			require_once(_PS_MODULE_DIR_.'/billmategateway/setup/InitInstall.php');
 			$installer = new InitInstall(Db::getInstance());
 			$installer->install();
@@ -342,6 +356,11 @@
 			$db->execute('DELETE FROM '._DB_PREFIX_.'module WHERE name = "billmatecheckout";');
 			return true;
 		}
+
+		public function getCustomerConfig()
+        {
+            return $this->customerConfig;
+        }
 
 		/**
 		 * Function to update if module is installed.

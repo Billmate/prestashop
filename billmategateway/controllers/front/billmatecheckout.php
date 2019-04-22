@@ -8,8 +8,8 @@
  */
 
 require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
+require_once(_PS_MODULE_DIR_.'/billmategateway/classes/CustomerConfig.php');
 
-ini_set('display_errors',1);
 class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontController
 {
 
@@ -471,19 +471,20 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                     }
                 }
                 else {
-                    //Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
                     $return = array('success' => false, 'content' => utf8_encode($result['message']));
                 }
 
 
                 break;
         }
-        return $return;//die(Tools::JsonEncode($return));
+        return $return;
     }
 
     public function initContent()
     {
+        $this->initCustomer();
         parent::initContent();
+
         if($this->context->cart->nbProducts() == 0){
             if(version_compare(_PS_VERSION_,'1.7','>=')){
                 $this->setTemplate('module:billmategateway/views/templates/front/checkout/checkout-empty17.tpl');
@@ -1468,5 +1469,17 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             }
         }
         return $id2name[$method];
+    }
+
+    /**
+     * @return $this
+     */
+    public function initCustomer()
+    {
+        $customer = $this->context->customer;
+        if ($customer->id_guest) {
+            $customerConfig = new CustomerConfig();
+            $customerConfig->addDefaultAddress($customer->id_guest);
+        }
     }
 }
