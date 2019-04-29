@@ -395,28 +395,30 @@
 			if(version_compare(_PS_VERSION_,'1.7','>='))
 				$extra = $this->registerHook('paymentOptions');
 			return $this->registerHook('displayPayment') &&
-				   $this->registerHook('payment') &&
-				   $this->registerHook('paymentReturn') &&
-				   $this->registerHook('orderConfirmation') &&
-				   $this->registerHook('actionOrderStatusUpdate') &&
-				   $this->registerHook('displayBackOfficeHeader') &&
-				   $this->registerHook('displayAdminOrder') &&
-				   $this->registerHook('displayPDFInvoice') &&
-					$this->registerHook('displayCustomerAccountFormTop') &&
-					$this->registerHook('actionOrderSlipAdd') &&
-					$this->registerHook('orderSlip') &&
-					$this->registerHook('displayProductButtons') &&
-                    $this->registerHook('displayOrderDetail') &&
+                $this->registerHook('payment') &&
+                $this->registerHook('paymentReturn') &&
+                $this->registerHook('orderConfirmation') &&
+                $this->registerHook('actionOrderStatusUpdate') &&
+                $this->registerHook('displayBackOfficeHeader') &&
+                $this->registerHook('displayAdminOrder') &&
+                $this->registerHook('displayPDFInvoice') &&
+                $this->registerHook('displayShoppingCart') &&
+                $this->registerHook('displayReassurance') &&
+                $this->registerHook('displayCustomerAccountFormTop') &&
+                $this->registerHook('actionOrderSlipAdd') &&
+                $this->registerHook('orderSlip') &&
+                $this->registerHook('displayProductButtons') &&
+                $this->registerHook('displayOrderDetail') &&
 
-                    /* Billmate Checkout */
-                    $this->registerHook('displayPayment') &&
-                    $this->registerHook('payment') &&
-                    $this->registerHook('paymentReturn') &&
-                    $this->registerHook('orderConfirmation') &&
-                    $this->registerHook('actionOrderStatusUpdate') &&
-                    $this->registerHook('displayBackOfficeHeader') && $this->registerHook('header') && $this->registerHook('adminTemplate') &&
+                /* Billmate Checkout */
+                $this->registerHook('displayPayment') &&
+                $this->registerHook('payment') &&
+                $this->registerHook('paymentReturn') &&
+                $this->registerHook('orderConfirmation') &&
+                $this->registerHook('actionOrderStatusUpdate') &&
+                $this->registerHook('displayBackOfficeHeader') && $this->registerHook('header') && $this->registerHook('adminTemplate') &&
 
-					$extra;
+                $extra;
 
 		}
 
@@ -478,6 +480,80 @@
 			}
 			return '';
 		}
+
+        /**
+         * @param array $params
+         *
+         * @return string|void
+         */
+		public function hookDisplayShoppingCart($params = [])
+        {
+            if ($this->isPS17()) {
+                return '';
+            }
+            return $this->hookDisplayReassurance($params);
+        }
+
+        public function hookDisplayReassurance($params)
+        {
+            if (!$this->isOneOfPaymentEnabled() ||
+                !$this->isActiveCheckoutFunction()
+            ) {
+                return ;
+            }
+            $this->smarty->assign('switchDirection', $this->getSwitchDirection());
+            return $this->display(__FILE__, 'use-regular-checkout.tpl');
+        }
+
+        /**
+         * @return int
+         */
+        protected function getSwitchDirection()
+        {
+            return Tools::getValue('switch')? 0 : 1;
+        }
+
+        /**
+         * @param $controller
+         *
+         * @return bool
+         */
+        public function isBmCheckoutEnabled($controller)
+        {
+            $psRegularControllers = [
+                'order-opc',
+                'order'
+            ];
+
+            $switchCheckout = Tools::getValue('switch');
+            return !$switchCheckout
+                && in_array($controller, $psRegularControllers)
+                && $this->isActiveCheckoutFunction();
+        }
+
+        /**
+         * @return bool
+         */
+        protected function isActiveCheckoutFunction()
+        {
+            return Module::isInstalled('billmategateway')
+                && Module::isEnabled('billmategateway')
+                && version_compare(Configuration::get('BILLMATE_VERSION'), '3.0.0', '>=')
+                && Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 1;
+        }
+
+        /**
+         * @return bool
+         */
+        protected function isOneOfPaymentEnabled()
+        {
+            return
+                Configuration::get('BINVOICE_ENABLED')
+                || Configuration::get('BCARDPAY_ENABLED')
+                || Configuration::get('BBANKPAY_ENABLED')
+                || Configuration::get('BINVOICESERVICE_ENABLED')
+                || Configuration::get('BPARTPAY_ENABLED');
+        }
 
 		protected function getPriceTaxInc($product)
         {
@@ -1414,14 +1490,23 @@
                 }
             }
 
-            if (version_compare(_PS_VERSION_, '1.7', '>=')) {
+            if ($this->isPS17()) {
                 $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
                 $this->smarty->assign('additional_order_info_html', $additional_order_info_html);
                 return $this->fetch('module:billmategateway/views/templates/hook/orderconfirmation.tpl');
-            } else {
-                $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
-                $this->smarty->assign('additional_order_info_html', $additional_order_info_html);
-                return $this->display(__FILE__, '/orderconfirmation.tpl');
             }
+
+            $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
+            $this->smarty->assign('additional_order_info_html', $additional_order_info_html);
+            return $this->display(__FILE__, '/orderconfirmation.tpl');
+            
+        }
+
+        /**
+         * @return mixed
+         */
+        protected function isPS17()
+        {
+            return version_compare(_PS_VERSION_, '1.7', '>=');
         }
     }
