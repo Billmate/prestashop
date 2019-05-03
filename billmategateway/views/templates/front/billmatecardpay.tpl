@@ -118,7 +118,7 @@
                     $('#payment_' + value).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').show();
                     var method = $('#payment_' + value).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').attr('id');
                     var methodName = method.replace('-fields', '');
-                    if ($('#pno').length > 0) {
+                    if ($('#pno').length > 0 && $('#pno').val()) {
                         $('#pno_' + methodName).val($('#pno').val());
                     }
                     $('.confirm_button')[$('.confirm_button').length - 1].onclick = function (e) {
@@ -143,7 +143,7 @@
                         $('.cssback.' + methodName).parents('.item,.alternate_item').children('.payment_description').children('.payment-form').children('.' + methodName).addClass('real' + methodName);
                         $('#' + value).parent('.payment_module').children('.payment-form').remove(methodName);
                         $('#' + method).show();
-                        if ($('#pno').length > 0) {
+                        if ($('#pno').length > 0 && $('#pno').val()) {
                             $('#pno_' + methodName).val($('#pno').val());
                         }
                         $('#' + methodName + 'Submit').hide();

@@ -11,12 +11,11 @@ class Link extends LinkCore
                 $isController = true;
             }
         }
-
         if (    $isController == true
-                && Module::isInstalled('billmategateway')
-                && Module::isEnabled('billmategateway')
-                && version_compare(Configuration::get('BILLMATE_VERSION'), '3.0.0', '>=')
-                && Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 1
+            && Module::isInstalled('billmategateway')
+            && Module::isEnabled('billmategateway')
+            && version_compare(Configuration::get('BILLMATE_VERSION'), '3.0.0', '>=')
+            && Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 1
         ) {
             $return = $this->getModuleLink('billmategateway', 'billmatecheckout');
         } else {
