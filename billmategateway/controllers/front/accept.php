@@ -173,10 +173,10 @@
 
                     if ($paymentInfo['PaymentData']['method'] == '1' OR '2' == $paymentInfo['PaymentData']['method']) {
                         /** Paid with invoice */
-                        $this->method = 'invoice';
-                        $class_file = _PS_MODULE_DIR_.'billmategateway/methods/'.Tools::ucfirst($this->method).'.php';
+                        $this->paymentClass = 'invoice';
+                        $class_file = _PS_MODULE_DIR_.'billmategateway/methods/'.Tools::ucfirst($this->paymentClass).'.php';
                         require_once($class_file);
-                        $class        = "BillmateMethod".Tools::ucfirst($this->method);
+                        $class        = "BillmateMethod".Tools::ucfirst($this->paymentClass);
                         $this->module = new $class;
                     }
 
