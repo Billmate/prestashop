@@ -79,12 +79,12 @@ $_MODULE['<{billmategateway}prestashop>cardpay_57336e9fc16799e8a0a59811bd615809'
 $_MODULE['<{billmategateway}prestashop>cardpay_0f3b6306a7efddf2ecf85698370d4762'] = 'Minsta orderbelopp';
 $_MODULE['<{billmategateway}prestashop>cardpay_b836c068c07a63081cee72070653b056'] = 'Max orderbelopp';
 $_MODULE['<{billmategateway}prestashop>cardpay_c20cc8f5bb7d26404f80b1c990c8a7fd'] = 'Sorteringsordning';
-$_MODULE['<{billmategateway}prestashop>checkout_2d68f85f0dfdff6de48830481ad85b54'] = 'Billmate Checka ut';
+$_MODULE['<{billmategateway}prestashop>checkout_2d68f85f0dfdff6de48830481ad85b54'] = 'Billmate Checkout';
 $_MODULE['<{billmategateway}prestashop>checkout_6adf97f83acf6453d4a6a4b1070f3754'] = 'Ingen';
-$_MODULE['<{billmategateway}prestashop>checkout_bab83da2f32d9f40eb29bd1f474b1c90'] = 'Billmate Checka ut Aktiva';
-$_MODULE['<{billmategateway}prestashop>checkout_82c9bf7e58157bcf449dccadfdbc0819'] = 'Aktivera Billmate checkout';
+$_MODULE['<{billmategateway}prestashop>checkout_bab83da2f32d9f40eb29bd1f474b1c90'] = 'Aktiverad';
+$_MODULE['<{billmategateway}prestashop>checkout_82c9bf7e58157bcf449dccadfdbc0819'] = 'Aktivera Billmate Checkout';
 $_MODULE['<{billmategateway}prestashop>checkout_428bfc853e841c0df085fdbf545a9921'] = 'Testläge';
-$_MODULE['<{billmategateway}prestashop>checkout_371c815da65c708c25f113aca071e821'] = 'Kör Checka ut i testläget';
+$_MODULE['<{billmategateway}prestashop>checkout_371c815da65c708c25f113aca071e821'] = ' Aktivera Testläge';
 $_MODULE['<{billmategateway}prestashop>checkout_57336e9fc16799e8a0a59811bd615809'] = 'Sätt orderstatus';
 $_MODULE['<{billmategateway}prestashop>checkout_25556b88e88536b01a72175b74dab409'] = 'CMS-sida för GDPR-termerna';
 $_MODULE['<{billmategateway}prestashop>checkout_e52e0f1c96b48ad4d22066d1571b27e0'] = 'Välj CMS-sidan som innehåller din butiks sekretesspolicy.';
