@@ -16,10 +16,10 @@ class BillmateMethodCheckout extends BillmateGateway {
         parent::__construct();
         $this->name                     = 'billmatecheckout';
         $this->module                   = new BillmateGateway();
-        $this->displayName              = $this->module->l('Billmate Checkout','cardpay');
+        $this->displayName              = $this->module->l('Billmate Checkout', 'checkout');
         $this->testMode                 = Configuration::get('BILLMATE_CHECKOUT_TESTMODE');
         $this->sort_order               = 1;
-        $this->limited_countries        = array('se');
+        $this->module->limited_countries        = array('se');
         $this->allowed_currencies       = array('SEK','EUR','DKK','NOK','GBP','USD');
         $this->authorization_method     = Configuration::get('BCARDPAY_AUTHORIZATION_METHOD');
         $this->validation_controller    = $this->context->link->getModuleLink('billmategateway', 'billmateapi', array('method' => 'cardpay'),true);
@@ -46,7 +46,7 @@ class BillmateMethodCheckout extends BillmateGateway {
             }
 
             // CMS pages
-            $cms_pages = array(0 => $this->l('None'));
+            $cms_pages = array(0 => $this->module->l('None'), 'checkout');
             foreach (CMS::listCms($this->context->language->id) as $cms_file) {
                 $cms_pages[$cms_file['id_cms']] = $cms_file['meta_title'];
             }
@@ -56,8 +56,8 @@ class BillmateMethodCheckout extends BillmateGateway {
                 'name'     => 'billmate_checkout_active',
                 'required' => true,
                 'type'     => 'checkbox',
-                'label'    => $this->l('Billmate Checkout Active'),
-                'desc'     => $this->l('Activate Billmate checkout'),
+                'label'    => $this->module->l('Billmate Checkout Active', 'checkout'),
+                'desc'     => $this->module->l('Activate Billmate checkout', 'checkout'),
                 'value'    => $activate_status
             );
 
@@ -66,8 +66,8 @@ class BillmateMethodCheckout extends BillmateGateway {
                 'name'     => 'billmate_checkout_testmode',
                 'required' => true,
                 'type'     => 'checkbox',
-                'label'    => $this->l('Testmode'),
-                'desc'     => $this->l('Run Checkout in testmode'),
+                'label'    => $this->module->l('Testmode', 'checkout'),
+                'desc'     => $this->module->l('Run Checkout in testmode', 'checkout'),
                 'value'    => $testmode_status
             );
 
@@ -75,8 +75,8 @@ class BillmateMethodCheckout extends BillmateGateway {
                 'name'     => 'billmate_checkout_order_status',
                 'required' => true,
                 'type'     => 'select',
-                'label'    => $this->l('Set Order Status'),
-                'desc'     => $this->l(''),
+                'label'    => $this->module->l('Set Order Status', 'checkout'),
+                'desc'     => $this->module->l(''),
                 'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_ORDER_STATUS'))) ? Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_ORDER_STATUS')) : Tools::safeOutput(Configuration::get('PS_OS_PAYMENT')),
                 'options'  => $statuses_array
             );
@@ -84,8 +84,8 @@ class BillmateMethodCheckout extends BillmateGateway {
 
             $settings['billmate_checkout_privacy_policy'] = array(
                 'name' => 'billmate_checkout_privacy_policy',
-                'label' => $this->l('CMS page for the GDPR terms'),
-                'desc' => $this->l('Choose the CMS page which contains your store\'s privacy policy.'),
+                'label' => $this->module->l('CMS page for the GDPR terms', 'checkout'),
+                'desc' => $this->module->l('Choose the CMS page which contains your store\'s privacy policy.', 'checkout'),
                 'type' => 'select',
                 'options' => $cms_pages,
                 'value'    => ((Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_PRIVACY_POLICY'))) ? Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_PRIVACY_POLICY')) : 0),
