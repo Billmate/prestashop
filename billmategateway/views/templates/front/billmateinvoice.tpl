@@ -208,6 +208,8 @@
 
         var emptypersonerror = "{l s='PNO/SSN missing' mod='billmategateway'}";
         var checkbox_required = "{l s='Please check the checkbox for confirm this e-mail address is correct and can be used for invoicing.' mod='billmategateway'}";
+        var ps_condition_message = "{l s='Please confirm the terms of purchase.' mod='billmategateway'}";
+
         var carrierurl;
         {if $opc|default:false }
         carrierurl = "{$link->getPageLink("order-opc", true)}";
@@ -318,6 +320,9 @@
                     $('.billmateinvoice-submit-info-wrapper').attr('class', 'billmateinvoice-submit-info-wrapper alert alert-danger mt-2');
                     return false;
                 }
+            } else if(!$(document).find('input[name="conditions_to_approve[terms-and-conditions]"]').is(':checked')) {
+                alert(ps_condition_message);
+                return false;
             }
 
             if ($('#pno').length > 0 && $('#pno').val()) {
