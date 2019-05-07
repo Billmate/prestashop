@@ -47,6 +47,15 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.3.6 (2019-05-07)
+* Fix - invoice approved without checking accept terms.
+
+### 3.3.5 (2019-05-03)
+* Fix - Add functionality to getAddress from a social security number
+* Fix - Billmate Checkout status is main status when you make a invoice payment
+* Fix - Custom pay uses Billmate's new logos
+* Enhancement - Swedish translations for Billmate Checkout setting.
+
 ### 3.3.5 (2019-05-03)
 * Fix - Add functionality to getAddress from a social security number
 * Fix - Billmate Checkout status is main status when you make a invoice payment
