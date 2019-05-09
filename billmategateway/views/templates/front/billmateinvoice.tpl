@@ -1,126 +1,15 @@
-<style>
-/*
-    #spanMessage .billmate-loader {
-        background: url("{$smarty.const._MODULE_DIR_}billmategateway/views/img/ajax-loader.gif") 15px 15px no-repeat #fbfbfb;
-        z-index: 10000;
-        height: 100px;
-        width: 100px;
-        margin-left: 45%
-    }
-
-    @media screen and (max-width: 768px) {
-        #facebox img{
-            width: 90%!important;
-        }
-        #facebox{
-            width: 80%!important;
-            right:10%!important;
-            left: 10%!important;
-        }
-    }
-
-    #divFrameParent * {
-        text-align: center!important;
-        font-size: 1em;
-        font-family: tahoma!important;
-    }
-
-    #divFrameParent .checkout-heading {
-        color: #000000!important;
-        font-weight: bold!important;
-        font-size: 13px!important;
-        margin-bottom: 15px!important;
-        padding: 8px!important;
-    }
-    #divFrameParent .button:hover{
-        background:#0B6187!important;
-    }
-    #divFrameParent .button {
-        background-color: #1DA9E7!important;
-        background: #1DA9E7!important;
-        border: 0 none!important;
-        border-radius: 8px!important;
-        box-shadow: 2px 2px 2px 1px #EAEAEA!important;
-        color: #FFFFFF!important;
-        cursor: pointer!important;
-        font-family: arial!important;
-        font-size: 14px!important;
-        font-weight: bold!important;
-        padding: 3px 17px!important;
-    }
-    div.payment_module {
-        border: 1px solid #d6d4d4;
-        background: #fbfbfb;
-        margin-bottom: 10px;
-        -moz-border-radius: 4px;
-        -webkit-border-radius: 4px;
-        border-radius: 4px;
-    }
-    div.payment_module a {
-        display: block;
-        -moz-border-radius: 4px;
-        -webkit-border-radius: 4px;
-        border-radius: 4px;
-        font-size: 17px;
-        line-height: 23px;
-        color: #333;
-        font-weight: bold;
-        letter-spacing: -1px;
-        position: relative;
-    }
-
-    div.payment_module a.{$type} {
-        background: url("{$smarty.const._MODULE_DIR_}{$icon}") 15px 15px no-repeat #fbfbfb;
-    }
-    
-    div.payment_module a.{$type}:after{
-        display: block;
-        content: "\f054";
-        position: absolute;
-        right: 15px;
-        margin-top: -11px;
-        top: 50%;
-        font-family: "FontAwesome";
-        font-size: 25px;
-        height: 22px;
-        width: 14px;
-        color: #777;
-    }
-
-    img[src*="billmate"]{
-        float:left;
-        clear:both;
-    }
-    .payment-option > label > span {
-        float: left;
-    }
-    div.payment_module a.{$type}:hover,
-    div.payment_module a.{$type}:visited,
-    div.payment_module a.{$type}:active{
-        text-decoration: none;
-    }
-    div.payment_module .error{
-        clear:both;
-    }
-    #terms,#terms-partpay{
-        cursor: pointer!important;
-        font-size: inherit;
-        display: inherit;
-        border: none;
-        padding: inherit;
-        text-decoration: underline;
-    }
-    
-*/    
-</style>
-
-
 <div id="{$type}-fields" class="payment-form">
 
     <form action="javascript://" class="{$type|escape:'html'}">
         <div class="form-group">
             <p class="{$type}" id="{$type|escape:'html'}">
-                <!--{$name|escape:'html'}-->{if $invoiceFee.fee > 0}{l s='Invoice fee' mod='billmategateway'} {$invoiceFee.fee_incl_tax}  {l s='is added to the order sum' mod='billmategateway'}{/if}
+                {if $invoiceFee.fee > 0}
+                    <b>
+                        {l s='Invoice fee' mod='billmategateway'}
+                            {$invoiceFee.fee_incl_formatted}
+                        {l s='is added to the order sum' mod='billmategateway'}
+                    </b>
+                {/if}
             </p>
         </div>
         <div style="" id="error_{$type}"></div>
@@ -221,7 +110,6 @@
         var windowtitlebillmate = "{l s='Pay by invoice can be made only to the address listed in the National Register. Would you make the purchase with address:' mod='billmategateway'}";
         jQuery(document.body).on('click', '#billmate_button', function (e) {
             if($('#billmateinvoice').is(':visible')) {
-
                 e.preventDefault();
                 var method = 'invoice';
                 if ($('form.billmate' + method).length > 1)
@@ -266,6 +154,9 @@
             e.preventDefault();
             getPayment('bankpay');
             return false;
+        });
+        $('#billmateinvoice').click(function (e) {
+           /*alert(32);*/
         });
         $('#billmateinvoice').click(function (e) {
             $('a#billmateinvoice').css('padding-bottom', '10px');
