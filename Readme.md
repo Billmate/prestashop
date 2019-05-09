@@ -47,8 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
-### 3.3.6 (2019-05-07)
+### 3.3.6 (2019-05-09)
 * Fix - invoice approved without checking accept terms.
+* Fix - Invoice fee shows more clearly in the checkout.
 
 ### 3.3.5 (2019-05-03)
 * Fix - Add functionality to getAddress from a social security number
