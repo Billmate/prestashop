@@ -96,7 +96,7 @@ $_MODULE['<{billmategateway}prestashop>payment_f4089e7fcaf8095dbfc44a69424f7e8c'
 $_MODULE['<{billmategateway}prestashop>wrongaddress_b863f99770e69cf22b40c822f729abb3'] = 'Ja, genomför köp med denna address.';
 $_MODULE['<{billmategateway}prestashop>wrongaddress_040604da72e02c86f502e4d30fdf5ce1'] = 'Nej, jag vill ange ett annat personnummer eller byta betalsätt';
 $_MODULE['<{billmategateway}prestashop>billmateinvoice_607c5925805c644aa7af92999dd1264d'] = 'En fakturaavgift på';
-$_MODULE['<{billmategateway}prestashop>billmateinvoice_044bdbd93862b9660b6493b455160111'] = 'kr tillkommer på orderbeloppet';
+$_MODULE['<{billmategateway}prestashop>billmateinvoice_044bdbd93862b9660b6493b455160111'] = 'tillkommer på orderbeloppet';
 $_MODULE['<{billmategateway}prestashop>billmateinvoice_1fb08895a8cc342b7622cce1a47f6222'] = 'Säkerhetsnummer / Företagsregistreringsnummer';
 $_MODULE['<{billmategateway}prestashop>billmateinvoice_f262fae0a2f17e8c1eb4e9eddb0160e4'] = 'Fortsätt';
 $_MODULE['<{billmategateway}prestashop>billmateinvoice_e580a2735b1cf3339f84cf1028d4e99b'] = 'PNO / SSN saknas';
