@@ -12,9 +12,16 @@
 
 	class BillmateGateway extends PaymentModule {
 
+	    const COOKIE_SWITCH_KEY = 'use_regular_checkout';
+
 		protected $allowed_currencies;
 		protected $postValidations;
 		protected $postErrors;
+
+        protected $psRegularControllers = [
+                'order-opc',
+                'order'
+            ];
 
 		public function __construct()
 		{
@@ -510,7 +517,7 @@
          */
         protected function getSwitchDirection()
         {
-            return Tools::getValue('switch')? 0 : 1;
+            return $this->context->cookie->__get(self::COOKIE_SWITCH_KEY) ? 0 : 1;
         }
 
         /**
@@ -520,14 +527,14 @@
          */
         public function isBmCheckoutEnabled($controller)
         {
-            $psRegularControllers = [
-                'order-opc',
-                'order'
-            ];
-
             $switchCheckout = Tools::getValue('switch');
-            return !$switchCheckout
-                && in_array($controller, $psRegularControllers)
+            if ($switchCheckout !== false) {
+                $this->context->cookie->__set(self::COOKIE_SWITCH_KEY, $switchCheckout);
+            }
+            $useRegularCheckout = $this->context->cookie->__get(self::COOKIE_SWITCH_KEY);
+
+            return !$useRegularCheckout
+                && in_array($controller, $this->psRegularControllers)
                 && $this->isActiveCheckoutFunction();
         }
 
