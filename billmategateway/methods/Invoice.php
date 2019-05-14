@@ -39,9 +39,6 @@ class BillmateMethodInvoice extends BillmateGateway {
 		 */
 		public function getPaymentInfo($cart)
 		{
-			if (Configuration::get('BINVOICE_ENABLED') == 0)
-				return false;
-
 			if ($this->min_value > $this->context->cart->getOrderTotal())
 				return false;
 			if ($this->max_value < $this->context->cart->getOrderTotal())
@@ -77,16 +74,6 @@ class BillmateMethodInvoice extends BillmateGateway {
 			$statuses_array = array();
 			foreach ($statuses as $status)
 				$statuses_array[$status['id_order_state']] = $status['name'];
-
-			$settings['activated'] = array(
-				'name'     => 'invoiceActivated',
-				'required' => true,
-				'type'     => 'checkbox',
-				'label'    => $this->module->l('Enabled','invoice','invoice'),
-				'desc'     => $this->module->l('Enable Billmate invoice','invoice'),
-				'value'    => (Tools::safeOutput(Configuration::get('BINVOICE_ENABLED'))) ? 1 : 0,
-
-			);
 
 			$settings['testmode'] = array(
 				'name'     => 'invoiceTestmode',

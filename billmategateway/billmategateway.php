@@ -140,14 +140,15 @@
 			$billmateSecret = Tools::getValue('billmateSecret');
 
 			$credentialvalidated = false;
-			if ($this->validateCredentials($billmateId, $billmateSecret))
-			{
+			if ($this->validateCredentials($billmateId, $billmateSecret)) {
 				$credentialvalidated = true;
 				Configuration::updateValue('BILLMATE_ID', $billmateId);
 				Configuration::updateValue('BILLMATE_SECRET', $billmateSecret);
                 $this->billmate_merchant_id = $billmateId;
                 $this->billmate_secret = $billmateSecret;
 			}
+
+
 			Configuration::updateValue('BILLMATE_ACTIVATE', Tools::getIsset('activate') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_ACTIVATE_STATUS', serialize(Tools::getValue('activateStatuses')));
 
@@ -157,14 +158,11 @@
 
 			Configuration::updateValue('BILLMATE_MESSAGE', Tools::getIsset('message') ? 1 : 0);
 
-
-
 			Configuration::updateValue('BILLMATE_SEND_REFERENCE', Tools::getValue('sendOrderReference'));
 			Configuration::updateValue('BILLMATE_GETADDRESS', Tools::getIsset('getaddress') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_LOGO',Tools::getValue('logo'));
 
 			// Bankpay Settings
-			Configuration::updateValue('BBANKPAY_ENABLED', (Tools::getIsset('bankpayActivated')) ? 1 : 0);
 			Configuration::updateValue('BBANKPAY_MOD', (Tools::getIsset('bankpayTestmode')) ? 1 : 0);
 			//Configuration::updateValue('BBANKPAY_AUTHORIZATION_METHOD', Tools::getValue('bankpayAuthorization'));
 			Configuration::updateValue('BBANKPAY_ORDER_STATUS', Tools::getValue('bankpayBillmateOrderStatus'));
@@ -173,7 +171,6 @@
 			Configuration::updateValue('BBANKPAY_SORTORDER', Tools::getValue('bankpayBillmateSortOrder'));
 
 			// Cardpay Settings
-			Configuration::updateValue('BCARDPAY_ENABLED', (Tools::getIsset('cardpayActivated')) ? 1 : 0);
 			Configuration::updateValue('BCARDPAY_MOD', (Tools::getIsset('cardpayTestmode')) ? 1 : 0);
 			Configuration::updateValue('BCARDPAY_ORDER_STATUS', Tools::getValue('cardpayBillmateOrderStatus'));
 			Configuration::updateValue('BCARDPAY_AUTHORIZATION_METHOD', Tools::getValue('cardpayAuthorization'));
@@ -182,7 +179,6 @@
 			Configuration::updateValue('BCARDPAY_SORTORDER', Tools::getValue('cardpayBillmateSortOrder'));
 
 			// Invoice Settings
-			Configuration::updateValue('BINVOICE_ENABLED', (Tools::getIsset('invoiceActivated')) ? 1 : 0);
 			Configuration::updateValue('BINVOICE_MOD', (Tools::getIsset('invoiceTestmode')) ? 1 : 0);
 			Configuration::updateValue('BINVOICE_FEE', Tools::getValue('invoiceFee'));
 			Configuration::updateValue('BINVOICE_FEE_TAX', Tools::getValue('invoiceFeeTax'));
@@ -192,7 +188,6 @@
 			Configuration::updateValue('BINVOICE_SORTORDER', Tools::getValue('invoiceBillmateSortOrder'));
 
 			// Invoice Service Settings
-			Configuration::updateValue('BINVOICESERVICE_ENABLED', (Tools::getIsset('invoiceserviceActivated')) ? 1 : 0);
 			Configuration::updateValue('BINVOICESERVICE_MOD', (Tools::getIsset('invoiceserviceTestmode')) ? 1 : 0);
 			Configuration::updateValue('BINVOICESERVICE_FEE', Tools::getValue('invoiceserviceFee'));
 			Configuration::updateValue('BINVOICESERVICE_FEE_TAX', Tools::getValue('invoiceserviceFeeTax'));
@@ -203,11 +198,13 @@
 			Configuration::updateValue('BINVOICESERVICE_FALLBACK',Tools::getIsset('fallbackWhenDifferentAddress') ? 1 : 0);
 
 			// partpay Settings
-			Configuration::updateValue('BPARTPAY_ENABLED', (Tools::getIsset('partpayActivated')) ? 1 : 0);
+
 			Configuration::updateValue('BPARTPAY_MOD', (Tools::getIsset('partpayTestmode')) ? 1 : 0);
 			Configuration::updateValue('BPARTPAY_ORDER_STATUS', Tools::getValue('partpayBillmateOrderStatus'));
 			Configuration::updateValue('BPARTPAY_MAX_VALUE', Tools::getValue('partpayBillmateMaximumValue'));
 			Configuration::updateValue('BPARTPAY_SORTORDER', Tools::getValue('partpayBillmateSortOrder'));
+
+
 
             /** Min amount for partpayment cant be less than lowest minamount found in pclasses */
             $partpayBillmateMinimumValue = Tools::getValue('partpayBillmateMinimumValue');
@@ -225,30 +222,109 @@
             Configuration::updateValue('BILLMATE_CHECKOUT_PRIVACY_POLICY', Tools::getValue('billmate_checkout_privacy_policy'));
 
 			Configuration::updateValue('BSWISH_ORDER_STATUS', Tools::getValue('swishBillmateOrderStatus'));
-			if (Configuration::get('BPARTPAY_ENABLED') == 1 && $credentialvalidated)
-			{
+			if ($credentialvalidated) {
 				$pclasses  = new pClasses();
 				$languages = Language::getLanguages();
 				foreach ($languages as $language)
 					$pclasses->Save($this->billmate_merchant_id, $this->billmate_secret, 'se', $language['iso_code'], 'SEK');
 
 			}
+            $this->checkAvailabilityTestMode();
 		}
 
+		public function checkAvailabilityTestMode()
+        {
+            $eid = Configuration::get('BILLMATE_ID');
+            $secretKey = Configuration::get('BILLMATE_SECRET');
+            $bmConnection = Common::getBillmate($eid, $secretKey, false);
+            $data = [];
+            $data['PaymentData'] = [
+                'currency' => 'SEK',
+                'language' => 'sv',
+                'country'  => 'se'
+            ];
+
+            $accountInfo = $bmConnection->getAccountInfo($data);
+            $methodsConfigMap = $this->getMethodsMap();
+            if (isset($accountInfo['paymentoptions'])) {
+                $preparedOptions = $this->prepareAccountOptions($accountInfo['paymentoptions']);
+                foreach ($methodsConfigMap as $paymentCode => $option) {
+                     if ( isset($preparedOptions[$paymentCode])
+                         || Configuration::get($option['config_code'])
+                     ) {
+                         continue;
+                     } else {
+                         Configuration::updateValue($option['config_code'], 1);
+                         $this->postErrors[] = $option['error_message'];
+                     }
+                }
+            } else {
+                $this->postErrors[] = $this->l('Invalid Billmate credentials');
+            }
+
+            return $this->postErrors;
+        }
+
+        public function getMethodsMap()
+        {
+            $methodsConfigMap = [
+                1 => [
+                    'config_code' => 'BINVOICE_MOD',
+                    'error_message' => $this->l('The Invoice method not available for you Billmate account')
+                ],
+                4 => [
+                    'config_code' => 'BPARTPAY_MOD',
+                    'error_message' => $this->l('The Partpay method not available for you Billmate account')
+                ],
+                8 => [
+                    'config_code' => 'BCARDPAY_MOD',
+                    'error_message' => $this->l('The Cardpay method not available for you Billmate account')
+                ],
+                16 => [
+                    'config_code' => 'BBANKPAY_MOD',
+                    'error_message' => $this->l('The Bankpay method not available for you Billmate account')
+                ],
+                32 => [
+                    'config_code' => 'BINVOICESERVICE_MOD',
+                    'error_message' => $this->l('The InvoiceService method not available for you Billmate account')
+                ]
+            ];
+
+            return $methodsConfigMap;
+        }
+
+        /**
+         * @param $paymentOptions
+         *
+         * @return array
+         */
+        public function prepareAccountOptions($paymentOptions)
+        {
+            $activeOptions = [];
+            foreach ($paymentOptions as $paymentOption ) {
+                $activeOptions[$paymentOption['method']] = true;
+            }
+
+            return $activeOptions;
+        }
+
+        /**
+         * @param $eid
+         * @param $secret
+         *
+         * @return bool
+         */
 		public function validateCredentials($eid, $secret)
 		{
-			if (empty($eid))
-			{
+			if (empty($eid)) {
 				$this->postErrors[] = $this->l('You must insert a Billmate ID');
 				return false;
 			}
 
-			if (empty($secret))
-			{
+			if (empty($secret)) {
 				$this->postErrors[] = $this->l('You must insert a Billmate Secret');
 				return false;
 			}
-
 
 			$billmate            = Common::getBillmate($eid, $secret, false);
 			$data                = array();
@@ -257,11 +333,13 @@
 				'language' => 'sv',
 				'country'  => 'se'
 			);
-			$result              = $billmate->getPaymentplans($data);
+			$paymentPlans = $billmate->getPaymentplans($data);
+            $listErrors = ['9010', '9011', '9012', '9013'];
 
-			if (isset($result['code']) && ($result['code'] == '9010' || $result['code'] == '9012' || $result['code'] == '9013'))
-			{
-				$this->postErrors[] = utf8_encode($result['message']);
+			if (isset($paymentPlans['code'])
+                && in_array($paymentPlans['code'], $listErrors)
+            ) {
+				$this->postErrors[] = utf8_encode($paymentPlans['message']);
 
 				return false;
 			}
@@ -303,26 +381,26 @@
 				return false;
 
 
-			if (!Configuration::get('BILLMATE_PAYMENT_PENDING'))
-				Configuration::updateValue('BILLMATE_PAYMENT_PENDING', $this->addState('Billmate : payment pending', '#DDEEFF'));
-			// Inactivate status for modules
-			Configuration::updateValue('BPARTPAY_ENABLED', 0);
-			Configuration::updateValue('BINVOICE_ENABLED', 0);
-			Configuration::updateValue('BCARDPAY_ENABLED', 0);
-			Configuration::updateValue('BBANKPAY_ENABLED', 0);
-			Configuration::updateValue('BINVOICESERVICE_ENABLED',0);
+			if (!Configuration::get('BILLMATE_PAYMENT_PENDING')) {
+                Configuration::updateValue(
+                    'BILLMATE_PAYMENT_PENDING',
+                    $this->addState('Billmate : payment pending', '#DDEEFF')
+                );
+            }
 
 			Configuration::updateValue('BILLMATE_VERSION', $this->version);
 			require_once(_PS_MODULE_DIR_.'/billmategateway/setup/InitInstall.php');
 			$installer = new InitInstall(Db::getInstance());
 			$installer->install();
 			$this->update();
-			if (!$this->registerHooks())
-				return false;
+			if (!$this->registerHooks()) {
+                return false;
+            }
 
-			if (!function_exists('curl_version'))
-			{
-				$this->_errors[] = $this->l('Sorry, this module requires the cURL PHP Extension (http://www.php.net/curl), which is not enabled on your server. Please ask your hosting provider for assistance.');
+			if (!function_exists('curl_version')) {
+				$this->_errors[] = $this->l(
+				    'Sorry, this module requires the cURL PHP Extension (http://www.php.net/curl), which is not enabled on your server. Please ask your hosting provider for assistance.'
+                );
 				return false;
 			}
 
@@ -481,9 +559,7 @@
 
 		public function hookDisplayProductButtons($params)
 		{
-			if (!Configuration::get('BPARTPAY_ENABLED')||
-                !isset($params['product'])
-            ) {
+			if (!isset($params['product'])){
                 return '';
 			}
 

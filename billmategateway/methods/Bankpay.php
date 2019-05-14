@@ -39,8 +39,6 @@ require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
 		 */
 		public function getPaymentInfo($cart)
 		{
-			if (Configuration::get('BBANKPAY_ENABLED') == 0)
-				return false;
 			if ($this->min_value > $this->context->cart->getOrderTotal())
 				return false;
 			if ($this->max_value < $this->context->cart->getOrderTotal())
@@ -69,17 +67,6 @@ require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
 			foreach ($statuses as $status)
 				$statuses_array[$status['id_order_state']] = $status['name'];
 
-
-			$settings['activated'] = array(
-				'name'     => 'bankpayActivated',
-				'required' => true,
-				'type'     => 'checkbox',
-				'label'    => $this->module->l('Enabled','bankpay'),
-				'desc'     => $this->module->l('Enable Billmate Bank','bankpay'),
-				'value'    => (Tools::safeOutput(Configuration::get('BBANKPAY_ENABLED'))) ? 1 : 0,
-
-			);
-
 			$settings['testmode']      = array(
 				'name'     => 'bankpayTestmode',
 				'required' => true,
@@ -88,17 +75,6 @@ require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
 				'desc'     => $this->module->l('Enable Test Mode','bankpay'),
 				'value'    => (Tools::safeOutput(Configuration::get('BBANKPAY_MOD'))) ? 1 : 0
 			);
-			/*$settings['authorization'] = array(
-				'name'    => 'bankpayAuthorization',
-				'type'    => 'radio',
-				'label'   => $this->module->l('Authorization Method'),
-				'desc'    => '',
-				'value' => Configuration::get('BBANKPAY_AUTHORIZATION_METHOD'),
-				'options' => array(
-					'authorize' => $this->module->l('Authorize','bankpay'),
-					'sale'      => $this->module->l('Sale','bankpay')
-				)
-			);*/
 
 			$settings['order_status']  = array(
 				'name'     => 'bankpayBillmateOrderStatus',
