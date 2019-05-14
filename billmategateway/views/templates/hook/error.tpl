@@ -6,8 +6,11 @@
 * @author Jesper Johansson jesper@boxedlogistics.se
 * @copyright Billmate AB 2015
 *}
-<div class="error">
-    {foreach $billmateError as $error}
-        {$error|escape:'html'}</br>
-  {/foreach}
+
+<div class="bootstrap">
+    <div class="alert alert-warning">
+        {foreach $billmateError as $error}
+            {$error|escape:'html'}</br>
+      {/foreach}
+    </div>
 </div>
