@@ -426,7 +426,7 @@
             $css_file   = __DIR__.'/views/css/checkout/checkout.css';
             $js_file    = __DIR__.'/views/js/checkout/checkout.js';
 
-            if(Configuration::get('BILLMATE_CHECKOUT_ACTIVATE') == 1) {
+            if((bool)Configuration::get('BILLMATE_CHECKOUT_ACTIVATE')) {
 
                 $is_billmate_checkout_page = 'no';
                 if (Dispatcher::getInstance()->getController() == 'billmatecheckout') {
@@ -435,7 +435,7 @@
                     if (version_compare(_PS_VERSION_,'1.7','>=')) {
                         $this->context->controller
                             ->registerStylesheet(
-                                'module-billmategateway',
+                                'module-billmategateway-checkout',
                                 'modules/billmategateway/views/css/checkout/checkout.css',
                                 ['media' => 'all', 'priority' => 150]
                             );
@@ -446,7 +446,7 @@
 
                 if (version_compare(_PS_VERSION_,'1.7','>=')) {
                     $this->context->controller->registerJavascript(
-                        'module-billmategateway',
+                        'module-billmategateway-checkout',
                         'modules/billmategateway/views/js/checkout/checkout.js',
                         ['position' => 'bottom', 'priority' => 150]
                     );
@@ -467,10 +467,12 @@
                 ]);
                 if (version_compare(_PS_VERSION_,'1.7','>=')) {
                     $this->context->controller->registerJavascript(
-                        'module-billmategateway',
+                        'module-billmategateway-address',
                         'modules/billmategateway/views/js/checkout/get_bm_address.js',
-                        ['position' => 'bottom',
-                         'priority' => 250]
+                        [
+                            'position' => 'bottom',
+                            'priority' => 250
+                        ]
                     );
                 } else {
                     $this->context->controller->addJS(__DIR__ . '/views/js/checkout/get_bm_address.js');
