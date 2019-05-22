@@ -9,8 +9,7 @@
 
 require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
 
-ini_set('display_errors',1);
-class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontController
+class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontControllerCore
 {
 
     public $php_self = 'order-opc';
@@ -26,7 +25,16 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
     public $tax;
     public $method = 'invoice';
 
-    public function setAddress($customer = array()) {
+    public function __construct()
+    {
+        parent::__construct();
+        if (version_compare(_PS_VERSION_,'1.7','>=')) {
+            $this->php_self = 'order';
+        }
+    }
+
+    public function setAddress($customer = array())
+    {
 
         $address = $customer['Billing'];
         $country = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
