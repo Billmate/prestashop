@@ -466,6 +466,7 @@
                 Media::addJsDef(array('billmate_checkout_url' =>
                     $this->context->link->getModuleLink('billmategateway', 'billmatecheckout', array(), true)));
                 Media::addJsDef(array('is_billmate_checkout_page' => $is_billmate_checkout_page));
+                Media::addJsDef(array('is_allowed_invoice_messaging' => (bool)Configuration::get('BILLMATE_MESSAGE')));
             }
 
             if ((bool)Configuration::get('BILLMATE_GETADDRESS')) {

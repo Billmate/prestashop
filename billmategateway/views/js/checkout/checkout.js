@@ -26,8 +26,6 @@ var BillmateIframe = new function(){
                 if (result.success) {
                     if(result.hasOwnProperty("update_checkout") && result.update_checkout === true)
                         self.updateCheckout();
-
-
                 }else {
                     location.reload();
                 }
@@ -139,17 +137,36 @@ var BillmateIframe = new function(){
         jQuery(document).ready(function() {
             window.addEventListener("message",self.handleEvent);
 
-            if($('#billmate_summary').length) {
-
+            if ($('#billmate_summary').length) {
                 if(typeof prestashop != 'undefined') {
                     prestashop.on('updatedCart', function (e) {
                         location.reload();
                     })
                 }
             }
-        });
 
+            $('body').on('change','#message, #delivery_message', function() {
+                window.b_iframe.saveOrderComment($(this).val())
+            });
+        });
     }
+
+    this.saveOrderComment = function(comment){
+        var requestData = {
+            action: 'addComment',
+            order_comment: comment,
+            ajax:1
+        };
+        jQuery.ajax({
+            url : billmate_checkout_url,
+            data: requestData,
+            type: 'POST',
+            success: function(response){
+
+            }
+        });
+    };
+
     this.handleEvent = function(event){
         if(event.origin == "https://checkout.billmate.se") {
             try {
@@ -222,6 +239,21 @@ var BillmateIframe = new function(){
 
     };
 
+    this.hideDeliveryOptions = function() {
+        var deliveryOptionBlock = $(document).find('input[type="radio"][name^="delivery_option["]');
+        if (!is_allowed_invoice_messaging) {
+            deliveryOptionBlock.closest('form[id="js-delivery"]').find('textarea').closest('div').remove();
+        }
+
+        deliveryOptionBlock.closest('form[id="js-delivery"]').find('button').remove();
+        deliveryOptionBlock.closest('form[id="js-delivery"]').closest('section#shipping').find('h1 i').remove();
+        deliveryOptionBlock.closest('form[id="js-delivery"]').closest('section#shipping').find('h1 span').remove();
+
+        deliveryOptionBlock.closest('form[id="js-delivery"]').removeAttr('data-url-update');
+        deliveryOptionBlock.closest('form[id="js-delivery"]').removeAttr('method');
+        deliveryOptionBlock.closest('form[id="js-delivery"]').removeAttr('id');
+    };
+
 
     this.checkoutPostMessage = function(message) {
         if(window.location.href == billmate_checkout_url) {
@@ -257,7 +289,9 @@ var BillmateIframe = new function(){
     }
 
     this.hideShippingElements = function() {
-        $(document).find('.container #shippingdiv .order_carrier_content p.carrier_title + div').has('textarea').hide();
+        if (!is_allowed_invoice_messaging) {
+            $(document).find('.container #shippingdiv .order_carrier_content p.carrier_title + div').has('textarea').hide();
+        }
         $(document).find('.container #shippingdiv .order_carrier_content hr').hide();
         $(document).find('.container #shippingdiv .order_carrier_content .box').hide();
         $(document).find('.container #shippingdiv .order_carrier_content .carrier_title').hide();
@@ -786,14 +820,7 @@ jQuery(document).ready(function(){
 
     if (is_billmate_checkout_page == 'yes') {
         if ($(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').length > 0) {
-            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').find('textarea').closest('div').remove();
-            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').find('button').remove();
-            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').closest('section#shipping').find('h1 i').remove();
-            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').closest('section#shipping').find('h1 span').remove();
-
-            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').removeAttr('data-url-update');
-            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').removeAttr('method');
-            $(document).find('input[type="radio"][name^="delivery_option["]').closest('form[id="js-delivery"]').removeAttr('id');
+            window.b_iframe.hideDeliveryOptions();
         }
 
         $('body').on('click', 'input[type="radio"][name^="delivery_option["]', function(e) {

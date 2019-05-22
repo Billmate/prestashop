@@ -278,6 +278,17 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             die;
             
         }
+
+        if($this->ajax = Tools::getValue('ajax') && Tools::getValue('action') == 'addComment'){
+
+            $comment = Tools::getValue('order_comment');
+            $response = $this->_updateMessage($comment);
+            $result['success'] = $response;
+            echo Tools::jsonEncode($result);
+            die;
+
+        }
+
         if( $this->ajax = Tools::getValue( "ajax" ) && Tools::getValue('action') == 'setAddress') {
             if (isset($_POST['Customer'])) {
                 $customer = $_POST['Customer'];
@@ -973,7 +984,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             'step_is_complete' => false,
             'position' => 1,
             'title' => 'Frakt',
-            'delivery_message' => '',
+            'delivery_message' => isset($old_message['message'])? $old_message['message'] : '',
             'delivery_options' => $carriers17,
             'id_address' => $this->context->cart->id_address_delivery,
             'hookDisplayBeforeCarrier' => Hook::exec('displayBeforeCarrier', array(
@@ -1472,5 +1483,30 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             }
         }
         return $id2name[$method];
+    }
+
+    protected function _updateMessage($messageContent)
+    {
+        if ($messageContent) {
+            if (!Validate::isMessage($messageContent)) {
+                $this->errors[] = Tools::displayError('Invalid message');
+            } elseif ($oldMessage = Message::getMessageByCartId((int)$this->context->cart->id)) {
+                $message = new Message((int)$oldMessage['id_message']);
+                $message->message = $messageContent;
+                $message->update();
+            } else {
+                $message = new Message();
+                $message->message = $messageContent;
+                $message->id_cart = (int)$this->context->cart->id;
+                $message->id_customer = (int)$this->context->cart->id_customer;
+                $message->add();
+            }
+        } else {
+            if ($oldMessage = Message::getMessageByCartId($this->context->cart->id)) {
+                $message = new Message($oldMessage['id_message']);
+                $message->delete();
+            }
+        }
+        return true;
     }
 }
