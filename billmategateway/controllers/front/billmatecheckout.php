@@ -540,16 +540,12 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             ));
 
             $delivery_option_data = $this->getDeliveryOptionData();
-            $shipping_price_with_tax = $delivery_option_data['price_with_tax'];
-            $shipping_price_without_tax = $delivery_option_data['price_without_tax'];
-            $shippin_tax = $shipping_price_with_tax - $shipping_price_without_tax;
 
-            if ($shipping_price_with_tax > 0) {
+            if (isset($delivery_option_data['price_with_tax']) && $delivery_option_data['price_with_tax'] > 0) {
                 $shipping_price_with_tax = $delivery_option_data['price_with_tax'];
                 $shipping_price_without_tax = $delivery_option_data['price_without_tax'];
-                $shippin_tax = $shipping_price_with_tax - $shipping_price_without_tax;
 
-                if(version_compare(_PS_VERSION_,'1.7','>=')) {
+                if (version_compare(_PS_VERSION_,'1.7','>=')) {
                     $priceFormatter = new PrestaShop\PrestaShop\Adapter\Product\PriceFormatter();
                     $taxConfiguration = new TaxConfiguration();
                     $getTemplateVars = $this->context->smarty->getTemplateVars();

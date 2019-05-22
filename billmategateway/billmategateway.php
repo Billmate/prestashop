@@ -336,7 +336,7 @@
 			return true;
 		}
 
-		public function uninstall(){
+		public function uninstall() {
 			if (!parent::uninstall())
 				return false;
 
@@ -442,22 +442,49 @@
                     $is_billmate_checkout_page = 'yes';
 
                     if (version_compare(_PS_VERSION_,'1.7','>=')) {
-                        $this->context->controller->registerStylesheet('module-billmategateway', 'modules/billmategateway/views/css/checkout/checkout.css', ['media' => 'all', 'priority' => 150]);
+                        $this->context->controller
+                            ->registerStylesheet(
+                                'module-billmategateway',
+                                'modules/billmategateway/views/css/checkout/checkout.css',
+                                ['media' => 'all', 'priority' => 150]
+                            );
                     } else {
                         $this->context->controller->addCSS($css_file, 'all');
                     }
                 }
 
                 if (version_compare(_PS_VERSION_,'1.7','>=')) {
-                    $this->context->controller->registerJavascript('module-billmategateway', 'modules/billmategateway/views/js/checkout/checkout.js', ['position' => 'bottom', 'priority' => 150]);
+                    $this->context->controller->registerJavascript(
+                        'module-billmategateway',
+                        'modules/billmategateway/views/js/checkout/checkout.js',
+                        ['position' => 'bottom', 'priority' => 150]
+                    );
                 } else {
                     $this->context->controller->addJS($js_file);
                 }
 
                 Media::addJsDef(array('billmate_checkout_url' =>
                     $this->context->link->getModuleLink('billmategateway', 'billmatecheckout', array(), true)));
-
                 Media::addJsDef(array('is_billmate_checkout_page' => $is_billmate_checkout_page));
+            }
+
+            if ((bool)Configuration::get('BILLMATE_GETADDRESS')) {
+                Media::addJsDef([
+                    'getaddressurl' => $this->context->link
+                        ->getModuleLink('billmategateway','getaddress', ['ajax'=> 0], true),
+                    'errormessage' => $this->l('We couldnt find your address, please enter manually'),
+                ]);
+                if (version_compare(_PS_VERSION_,'1.7','>=')) {
+                    $this->context->controller->registerJavascript(
+                        'module-billmategateway',
+                        'modules/billmategateway/views/js/checkout/get_bm_address.js',
+                        ['position' => 'bottom',
+                         'priority' => 250]
+                    );
+                } else {
+                    $this->context->controller->addJS(__DIR__ . '/views/js/checkout/get_bm_address.js');
+                }
+
             }
         }
 
@@ -639,16 +666,13 @@
 
 		public function hookDisplayCustomerAccountFormTop($params)
 		{
-
             if (Configuration::get('BILLMATE_GETADDRESS') AND Dispatcher::getInstance()->getController() == 'orderopc') {
                 /** Get address is active and customer is on checkout page */
-
 				$this->smarty->assign('pno', (isset($this->context->cookie->billmatepno)) ? $this->context->cookie->billmatepno : '');
 				return $this->display(__FILE__, 'getaddress.tpl');
 			}
-			else
-				return;
 		}
+
 		/**
 		 * This hook displays our invoice Fee in Admin Orders below the client information
 		 *

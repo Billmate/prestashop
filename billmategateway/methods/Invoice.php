@@ -155,30 +155,30 @@ class BillmateMethodInvoice extends BillmateGateway {
 
 		}
 
+        /**
+         * @return array
+         */
 		public function getFee()
 		{
 			$feeArray        = array();
 			$feeArray['fee'] = (Configuration::get('BINVOICE_FEE') > 0) ? Configuration::get('BINVOICE_FEE') : 0;
-			if ($feeArray['fee'] > 0)
-			{
+            $feeArray['fee_incl_tax'] = 0;
+            $feeArray['fee_incl_formatted'] = 0;
+			if ($feeArray['fee'] > 0) {
 				$tax           = new Tax(Configuration::get('BINVOICE_FEE_TAX'));
 				$taxCalculator = new TaxCalculator(array($tax));
 
-				$taxAmount                = $taxCalculator->getTaxesAmount($feeArray['fee']);
+				$taxAmount = $taxCalculator->getTaxesAmount($feeArray['fee']);
 				$currency = new Currency($this->context->currency->id);
-
-
 
 				$feeArray['fee_tax'] = $taxAmount;
 
 				$fee = $taxCalculator->addTaxes($feeArray['fee']);
 
-				if($fee > 0) {
+				if ($fee > 0) {
 					$feeArray['fee_incl_tax'] = Tools::convertPriceFull($fee,null,$currency);
-				} else {
-					$feeArray['fee_incl_tax'] = 0;
+					$feeArray['fee_incl_formatted'] = Tools::displayPrice($fee, $currency);
 				}
-
 				return $feeArray;
 			}
 
