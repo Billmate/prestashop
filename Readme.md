@@ -47,7 +47,7 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
-### 3.3.6 (2019-05-09)
+### 3.3.6 (2019-05-16)
 * Fix - invoice approved without checking accept terms.
 * Fix - Invoice fee shows more clearly in the checkout.
 * Fix - Additional check for shipping options.
