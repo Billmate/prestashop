@@ -78,6 +78,7 @@ $_MODULE['<{billmategateway}prestashop>orderconfirmation_75fbf512d744977d62599cc
 $_MODULE['<{billmategateway}prestashop>orderconfirmation_e6dc7945b557a1cd949bea92dd58963e'] = 'Er order skickas inom kort.';
 $_MODULE['<{billmategateway}prestashop>orderconfirmation_0db71da7150c27142eef9d22b843b4a9'] = 'För ytterligare frågor och mer information, vänligen kontakta vår';
 $_MODULE['<{billmategateway}prestashop>orderconfirmation_64430ad2835be8ad60c59e7d44e4b0b1'] = 'kundtjänst';
+$_MODULE['<{billmategateway}prestashop>use-regular-checkout_eb18dd00e86aff4b5b5d15e938382b49'] = 'Välj en Annan betalningsmetod';
 $_MODULE['<{billmategateway}prestashop>admin_c9cc8cce247e49bae79f15173ce97354'] = 'Spara';
 $_MODULE['<{billmategateway}prestashop>invoicefeepdf_2c2e385ee12076f630a9bf42e27ffde7'] = 'Fakturaavgift inkl moms';
 $_MODULE['<{billmategateway}prestashop>invoicefeepdf_f223cf88d65317f82865ce50272867dd'] = 'Fakturaavgift moms';

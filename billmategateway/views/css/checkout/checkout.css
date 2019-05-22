@@ -876,3 +876,12 @@
     display: none !important;
   }
 }
+
+.switch-bm-checkout{
+  float: right;
+}
+
+.switch-bm-checkout a{
+  text-decoration: underline;
+  font-weight: bold;
+}
