@@ -39,6 +39,8 @@ require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
 		 */
 		public function getPaymentInfo($cart)
 		{
+			if (Configuration::get('BCARDPAY_ENABLED') == 0)
+				return false;
 			if ($this->min_value > $this->context->cart->getOrderTotal())
 				return false;
 			if ($this->max_value < $this->context->cart->getOrderTotal())
@@ -65,6 +67,17 @@ require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
 			$statuses_array = array();
 			foreach ($statuses as $status)
 				$statuses_array[$status['id_order_state']] = $status['name'];
+
+
+			$settings['activated'] = array(
+				'name'     => 'cardpayActivated',
+				'required' => false,
+				'type'     => 'checkbox',
+				'label'    => $this->module->l('Enabled','cardpay'),
+				'desc'     => $this->module->l('Enable Billmate Card','cardpay'),
+				'value'    => (Tools::safeOutput(Configuration::get('BCARDPAY_ENABLED'))) ? 1 : 0,
+
+			);
 
 			$settings['testmode'] = array(
 				'name'     => 'cardpayTestmode',

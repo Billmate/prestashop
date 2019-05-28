@@ -40,7 +40,7 @@ require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
 		public function getPaymentInfo($cart)
 		{
 			pClasses::checkPclasses($this->billmate_merchant_id,$this->billmate_secret,'se',Language::getIsoById($cart->id_lang),'SEK');
-			if (!pClasses::hasPclasses(Language::getIsoById($cart->id_lang)))
+			if (!pClasses::hasPclasses(Language::getIsoById($cart->id_lang)) || Configuration::get('BPARTPAY_ENABLED') == 0)
 				return false;
 
 			if ($this->min_value > $this->context->cart->getOrderTotal())
@@ -79,6 +79,16 @@ require_once(_PS_MODULE_DIR_.'billmategateway/billmategateway.php');
 			$statuses_array = array();
 			foreach ($statuses as $status)
 				$statuses_array[$status['id_order_state']] = $status['name'];
+
+			$settings['activated'] = array(
+				'name'     => 'partpayActivated',
+				'required' => true,
+				'type'     => 'checkbox',
+				'label'    => $this->module->l('Enabled','partpay'),
+				'desc'     => $this->module->l('Enable Billmate Part payment','partpay'),
+				'value'    => (Tools::safeOutput(Configuration::get('BPARTPAY_ENABLED'))) ? 1 : 0,
+
+			);
 
 			$settings['testmode'] = array(
 				'name'     => 'partpayTestmode',

@@ -171,6 +171,7 @@ class BillmateGateway extends PaymentModule {
 			Configuration::updateValue('BILLMATE_LOGO',Tools::getValue('logo'));
 
 			// Bankpay Settings
+			Configuration::updateValue('BBANKPAY_ENABLED', (Tools::getIsset('bankpayActivated')) ? 1 : 0);
 			Configuration::updateValue('BBANKPAY_MOD', (Tools::getIsset('bankpayTestmode')) ? 1 : 0);
 			//Configuration::updateValue('BBANKPAY_AUTHORIZATION_METHOD', Tools::getValue('bankpayAuthorization'));
 			Configuration::updateValue('BBANKPAY_ORDER_STATUS', Tools::getValue('bankpayBillmateOrderStatus'));
@@ -179,6 +180,7 @@ class BillmateGateway extends PaymentModule {
 			Configuration::updateValue('BBANKPAY_SORTORDER', Tools::getValue('bankpayBillmateSortOrder'));
 
 			// Cardpay Settings
+			Configuration::updateValue('BCARDPAY_ENABLED', (Tools::getIsset('cardpayActivated')) ? 1 : 0);
 			Configuration::updateValue('BCARDPAY_MOD', (Tools::getIsset('cardpayTestmode')) ? 1 : 0);
 			Configuration::updateValue('BCARDPAY_ORDER_STATUS', Tools::getValue('cardpayBillmateOrderStatus'));
 			Configuration::updateValue('BCARDPAY_AUTHORIZATION_METHOD', Tools::getValue('cardpayAuthorization'));
@@ -187,6 +189,7 @@ class BillmateGateway extends PaymentModule {
 			Configuration::updateValue('BCARDPAY_SORTORDER', Tools::getValue('cardpayBillmateSortOrder'));
 
 			// Invoice Settings
+			Configuration::updateValue('BINVOICE_ENABLED', (Tools::getIsset('invoiceActivated')) ? 1 : 0);
 			Configuration::updateValue('BINVOICE_MOD', (Tools::getIsset('invoiceTestmode')) ? 1 : 0);
 			Configuration::updateValue('BINVOICE_FEE', Tools::getValue('invoiceFee'));
 			Configuration::updateValue('BINVOICE_FEE_TAX', Tools::getValue('invoiceFeeTax'));
@@ -196,6 +199,7 @@ class BillmateGateway extends PaymentModule {
 			Configuration::updateValue('BINVOICE_SORTORDER', Tools::getValue('invoiceBillmateSortOrder'));
 
 			// Invoice Service Settings
+			Configuration::updateValue('BINVOICESERVICE_ENABLED', (Tools::getIsset('invoiceserviceActivated')) ? 1 : 0);
 			Configuration::updateValue('BINVOICESERVICE_MOD', (Tools::getIsset('invoiceserviceTestmode')) ? 1 : 0);
 			Configuration::updateValue('BINVOICESERVICE_FEE', Tools::getValue('invoiceserviceFee'));
 			Configuration::updateValue('BINVOICESERVICE_FEE_TAX', Tools::getValue('invoiceserviceFeeTax'));
@@ -206,7 +210,7 @@ class BillmateGateway extends PaymentModule {
 			Configuration::updateValue('BINVOICESERVICE_FALLBACK',Tools::getIsset('fallbackWhenDifferentAddress') ? 1 : 0);
 
 			// partpay Settings
-
+			Configuration::updateValue('BPARTPAY_ENABLED', (Tools::getIsset('partpayActivated')) ? 1 : 0);
 			Configuration::updateValue('BPARTPAY_MOD', (Tools::getIsset('partpayTestmode')) ? 1 : 0);
 			Configuration::updateValue('BPARTPAY_ORDER_STATUS', Tools::getValue('partpayBillmateOrderStatus'));
 			Configuration::updateValue('BPARTPAY_MAX_VALUE', Tools::getValue('partpayBillmateMaximumValue'));
@@ -230,7 +234,7 @@ class BillmateGateway extends PaymentModule {
             Configuration::updateValue('BILLMATE_CHECKOUT_PRIVACY_POLICY', Tools::getValue('billmate_checkout_privacy_policy'));
 
 			Configuration::updateValue('BSWISH_ORDER_STATUS', Tools::getValue('swishBillmateOrderStatus'));
-			if ($credentialvalidated) {
+			if (Configuration::get('BPARTPAY_ENABLED') && $credentialvalidated) {
 				$pclasses  = new pClasses();
 				$languages = Language::getLanguages();
 				foreach ($languages as $language)
@@ -641,59 +645,24 @@ class BillmateGateway extends PaymentModule {
 			}
 		}
 
+        /**
+         * @return array
+         */
 		public function getAvailableMethods()
 		{
 			if($this->billmate_merchant_id && $this->billmate_secret) {
-				$billmate = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, false);
-				$result = $billmate->getAccountinfo(array('time' => time()));
-
 				$mapCodeToMethod = array(
 					1 => 'invoice',
 					2 => 'invoiceservice',
 					4 => 'partpay',
 					8 => 'cardpay',
-					16 => 'bankpay'
+					16 => 'bankpay',
+                    'checkout' => 'checkout'
 				);
-				$paymentOptions = array();
-				$logfile   = _PS_CACHE_DIR_.'Billmate.log';
-				file_put_contents($logfile, print_r($result['paymentoptions'],true),FILE_APPEND);
-				foreach ($result['paymentoptions'] as $option) {
-
-                    /**
-                     * When invoice is unavailable and invoice service is available, use invoice service as invoice
-                     */
-                    if ($option['method'] == '2' AND !isset($paymentOptions['1'])) {
-                        $mapCodeToMethod['2'] = 'invoice';
-                    }
-
-					if(isset($mapCodeToMethod[$option['method']]) AND !in_array($mapCodeToMethod[$option['method']], $paymentOptions)) {
-						$paymentOptions[$option['method']] = $mapCodeToMethod[$option['method']];
-					} else
-						continue;
-				}
-
-                // Add checkout as payment option if available
-                if (isset($result['checkout']) AND $result['checkout']) {
-                    $paymentOptions['checkout'] = 'checkout';
-                }
-
-                /**
-                 * @param int 1|2 The mehtod that will be used in addPayment request when customer pay with invoice
-                 * Method 1 = Invoice , 2 = Invoice service
-                 * Is affected by available payment methods in result from getaccountinfo
-                 * - Default method 1
-                 * - Invoice available, use method 1
-                 * - Invoice and invoiceservice available, use method 1
-                 * - Invoice service availavble and invoice unavailable, use method 2
-                 */
-                $invoiceMethod = (!isset($paymentOptions[1]) && isset($paymentOptions[2])) ? 2 : 1;
-                Configuration::updateValue('BINVOICESERVICE_METHOD', $invoiceMethod);
-
-				return $paymentOptions;
-			} else {
-				return array();
+				return $mapCodeToMethod;
 			}
 
+            return [];
 		}
 		public function hookDisplayBackOfficeHeader()
 		{

@@ -1,6 +1,8 @@
 <?php
 class PaymentConfigValidator
 {
+    const CHECKOUT_IDENTIFIER = 'bm_checkout';
+
     /**
      * @var array
      */
@@ -30,6 +32,10 @@ class PaymentConfigValidator
 
         if (isset($accountInfo['paymentoptions'])) {
             $preparedOptions = $this->prepareAccountOptions($accountInfo['paymentoptions']);
+            if($accountInfo['checkout']) {
+                $preparedOptions[self::CHECKOUT_IDENTIFIER] = true;
+            }
+
             foreach ($methodsConfigMap as $paymentCode => $option) {
                 if ( isset($preparedOptions[$paymentCode])
                     || Configuration::get($option['config_code'])
@@ -56,19 +62,23 @@ class PaymentConfigValidator
             ],
             4 => [
                 'config_code' => 'BPARTPAY_MOD',
-                'error_message' => $this->l('The Partpay method not available for you Billmate account')
+                'error_message' => $this->l('The Partpay method not available for you Billmate account in live mode')
             ],
             8 => [
                 'config_code' => 'BCARDPAY_MOD',
-                'error_message' => $this->l('The Cardpay method not available for you Billmate account')
+                'error_message' => $this->l('The Cardpay method not available for you Billmate account in live mode')
             ],
             16 => [
                 'config_code' => 'BBANKPAY_MOD',
-                'error_message' => $this->l('The Bankpay method not available for you Billmate account')
+                'error_message' => $this->l('The Bankpay method not available for you Billmate account in live mode')
             ],
             32 => [
                 'config_code' => 'BINVOICESERVICE_MOD',
-                'error_message' => $this->l('The InvoiceService method not available for you Billmate account')
+                'error_message' => $this->l('The InvoiceService method not available for you Billmate account in live mode')
+            ],
+            self::CHECKOUT_IDENTIFIER => [
+                'config_code' => 'BILLMATE_CHECKOUT_TESTMODE',
+                'error_message' => $this->l('The Billmate Checkout method not available for you Billmate account in live mode')
             ]
         ];
 
