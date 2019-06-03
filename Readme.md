@@ -47,6 +47,10 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.3.7 (2019-06-03)
+* Enhancement - Add  switch to carry out payment both with Billmate Checkout and standard Prestashop checkout page.
+* Fix - Add better support for Show order comments on checkout page.
+
 ### 3.3.6 (2019-05-16)
 * Fix - invoice approved without checking accept terms.
 * Fix - Invoice fee shows more clearly in the checkout.
