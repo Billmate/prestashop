@@ -1029,7 +1029,6 @@
 
 		public function hookActionOrderStatusUpdate($params)
 		{
-		    file_put_contents("gunk.log", "test 1\n", FILE_APPEND);
 			$orderStatus = Configuration::get('BILLMATE_ACTIVATE_STATUS');
 			$cancelStatus = Configuration::get('BILLMATE_CANCEL_STATUS');
 			$activate    = Configuration::get('BILLMATE_ACTIVATE');
@@ -1038,11 +1037,9 @@
             $makuleraStatus = Configuration::get('BILLMATE_MAKULERA_STATUS');
             $makuleraStatus = unserialize($makuleraStatus);
             $makuleraStatus = is_array($makuleraStatus) ? $makuleraStatus : array($makuleraStatus);
-            file_put_contents("gunk.log", "test 2\n", FILE_APPEND);
 
 			if ($activate && $orderStatus)
 			{
-                file_put_contents("gunk.log", "test 3\n", FILE_APPEND);
 				$order_id = $params['id_order'];
 
 				$id_status = $params['newOrderStatus']->id;
@@ -1060,18 +1057,9 @@
                     'billmateinvoiceservice',
                     'billmatepartpay'
                 );
-				ob_start();
-				var_dump($order->module);
-				var_dump($modules);
-				var_dump($id_status);
-				var_dump($orderStatus);
-                var_dump($cancelStatus);
-                var_dump($makuleraStatus);
-				var_dump($this->getMethodInfo($order->module, 'authorization_method', false));
-                file_put_contents("gunk.log", "test 4 ".ob_get_clean()."\n", FILE_APPEND);
+
 				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus) && $this->getMethodInfo($order->module, 'authorization_method', false) != 'sale')
 				{
-                    file_put_contents("gunk.log", "test 5\n", FILE_APPEND);
 
 					$testMode      = $this->getMethodInfo($order->module, 'testMode', false);
 					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
@@ -1079,7 +1067,6 @@
 					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
 					if ($payment_status == 'created')
 					{
-                        file_put_contents("gunk.log", "test 6\n", FILE_APPEND);
 
 
 						$total      = $payment_info['Cart']['Total']['withtax'] / 100;
@@ -1089,31 +1076,25 @@
 						$diff       = abs($diff);
 						if ($diff < 1)
 						{
-                            file_put_contents("gunk.log", "test 7\n", FILE_APPEND);
 							$result = $billmate->activatePayment(array('PaymentData' => array('number' => $payment[0]->transaction_id)));
 
 							if (isset($result['code']))
 							{
-                                file_put_contents("gunk.log", "test 8\n", FILE_APPEND);
 								$this->context->cookie->error        = (isset($result['message'])) ? utf8_encode(utf8_decode($result['message'])) : utf8_encode($result);
 								$this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
 							} else {
-                                file_put_contents("gunk.log", "test 9\n", FILE_APPEND);
 								$this->context->cookie->confirmation = !isset($this->context->cookie->confirmation_orders) ? sprintf($this->l('Order %s has been activated through Billmate.'), $order_id) . ' (<a target="_blank" href="http://online.billmate.se/faktura">' . $this->l('Open Billmate Online') . '</>)' : sprintf($this->l('The following orders has been activated through Billmate: %s'), $this->context->cookie->confirmation_orders . ', ' . $order_id) . ' (<a target="_blank" href="http://online.billmate.se">' . $this->l('Open Billmate Online') . '</a>)';
 								$this->context->cookie->confirmation_orders = isset($this->context->cookie->confirmation_orders) ? $this->context->cookie->confirmation_orders . ', ' . $order_id : $order_id;
 							}
 						}
 						elseif (isset($payment_info['code']))
 						{
-                            file_put_contents("gunk.log", "test 10\n", FILE_APPEND);
 							if ($payment_info['code'] == 5220)
 							{
-                                file_put_contents("gunk.log", "test 11\n", FILE_APPEND);
 								$mode                             = $testMode ? 'test' : 'live';
 								$this->context->cookie->api_error = !isset($this->context->cookie->api_error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The order does not exist in Billmate Online. The order exists in (%s) mode however. Try changing the mode in the modules settings.'), $order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The orders does not exist in Billmate Online. The orders exists in (%s) mode however. Try changing the mode in the modules settings.'), $this->context->cookie->api_error_orders, '. '.$order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 							}
 							else {
-                                file_put_contents("gunk.log", "test 12\n", FILE_APPEND);
                                 $this->context->cookie->api_error = $payment_info['message'];
                             }
 
@@ -1122,26 +1103,22 @@
 						}
 						else
 						{
-                            file_put_contents("gunk.log", "test 13\n", FILE_APPEND);
 							$this->context->cookie->diff        = !isset($this->context->cookie->diff_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The amounts don\'t match: %s, %s. Activate manually in Billmate Online.'), $order_id, $orderTotal, $total).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The amounts don\'t match. Activate manually in Billmate Online.'), $this->context->cookie->diff_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 							$this->context->cookie->diff_orders = isset($this->context->cookie->diff_orders) ? $this->context->cookie->diff_orders.', '.$order_id : $order_id;
 						}
 					}
 					elseif ($payment_status == 'paid' || $payment_status == 'factoring' || $payment_status == 'partpayment' || $payment_status == 'handling')
 					{
-                        file_put_contents("gunk.log", "test 14\n", FILE_APPEND);
 						$this->context->cookie->information        = !isset($this->context->cookie->information_orders) ? sprintf($this->l('Order %s is already activated through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders has already been activated through Billmate: %s'), $this->context->cookie->information_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 						$this->context->cookie->information_orders = isset($this->context->cookie->information_orders) ? $this->context->cookie->information_orders.', '.$order_id : $order_id;
 					}
 					else
 					{
-                        file_put_contents("gunk.log", "test 15\n", FILE_APPEND);
 						$this->context->cookie->error        = !isset($this->context->cookie->error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s.'), $this->context->cookie->error_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 						$this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
 					}
 				}
 				elseif(in_array($order->module, $modules) && in_array($id_status, $cancelStatus)){
-                    file_put_contents("gunk.log", "test 16\n", FILE_APPEND);
 					$testMode      = $this->getMethodInfo($order->module, 'testMode', false);
 					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
 
@@ -1149,26 +1126,21 @@
 					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
 
 					if($payment_status == 'paid' || $payment_status == 'factoring' || $payment_status == 'partpayment' || $payment_status == 'handling'){
-                        file_put_contents("gunk.log", "test 17\n", FILE_APPEND);
 						$creditResult = $billmate->creditPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id,'partcredit' => false)));
 						if(isset($creditResult['code']))
 						{
-                            file_put_contents("gunk.log", "test 18\n", FILE_APPEND);
 							$this->context->cookie->error_credit        = !isset($this->context->cookie->credit_orders) ? sprintf($this->l('Order %s failed to credit through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to credit through Billmate: %s.'), $this->context->cookie->credit_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 
 							$this->context->cookie->credit_orders = isset($this->context->cookie->credit_orders) ? $this->context->cookie->credit_orders.', '.$order_id : $order_id;
 						} else {
-                            file_put_contents("gunk.log", "test 19\n", FILE_APPEND);
 							$this->context->cookie->credit_confirmation        = !isset($this->context->cookie->credit_confirmation_orders) ? sprintf($this->l('Order %s has been credited through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been credited through Billmate: %s'), $this->context->cookie->credit_confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 							$this->context->cookie->credit_confirmation_orders = isset($this->context->cookie->credit_confirmation_orders) ? $this->context->cookie->credit_confirmation_orders.', '.$order_id : $order_id;
 						}
 					} else {
-                        file_put_contents("gunk.log", "test 20\n", FILE_APPEND);
                         $this->context->cookie->error_credit = sprintf($this->l('Can not refund Order %s, it has not been processed', $order_id));
 					}
 				}
 				elseif(in_array($order->module, $modules) && in_array($id_status, $makuleraStatus)){
-                    file_put_contents("gunk.log", "test 21\n", FILE_APPEND);
                     $testMode      = $this->getMethodInfo($order->module, 'testMode', false);
                     $billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
 
@@ -1176,22 +1148,18 @@
                     $payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
 
                     if($payment_status == 'paid' || $payment_status == 'factoring' || $payment_status == 'partpayment' || $payment_status == 'handling'){
-                        file_put_contents("gunk.log", "test 22\n", FILE_APPEND);
                         $this->context->cookie->error_credit = sprintf($this->l('Can not cancel Order %s, it has been processed', $order_id));
                     }
                     else {
-                        file_put_contents("gunk.log", "test 23\n", FILE_APPEND);
                         $cancelResult = $billmate->cancelPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id)));
 
                         if(isset($cancelResult['code'])){
-                            file_put_contents("gunk.log", "test 24\n", FILE_APPEND);
-                            $this->context->cookie->error_credit        = !isset($this->context->cookie->credit_orders) ? sprintf($this->l('Order %s failed to credit through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to credit through Billmate: %s.'), $this->context->cookie->credit_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+                            $this->context->cookie->error_credit        = !isset($this->context->cookie->credit_orders) ? sprintf($this->l('Order %s failed to cancel through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to credit through Billmate: %s.'), $this->context->cookie->credit_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 
                             $this->context->cookie->credit_orders = isset($this->context->cookie->credit_orders) ? $this->context->cookie->credit_orders.', '.$order_id : $order_id;
 
                         } else {
-                            file_put_contents("gunk.log", "test 25\n", FILE_APPEND);
-                            $this->context->cookie->credit_confirmation        = !isset($this->context->cookie->credit_confirmation_orders) ? sprintf($this->l('Order %s has been credited through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been credited through Billmate: %s'), $this->context->cookie->credit_confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+                            $this->context->cookie->credit_confirmation        = !isset($this->context->cookie->credit_confirmation_orders) ? sprintf($this->l('Order %s has been cancelled through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been credited through Billmate: %s'), $this->context->cookie->credit_confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
                             $this->context->cookie->credit_confirmation_orders = isset($this->context->cookie->credit_confirmation_orders) ? $this->context->cookie->credit_confirmation_orders.', '.$order_id : $order_id;
                         }
                     }
