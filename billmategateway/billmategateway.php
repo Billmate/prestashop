@@ -160,8 +160,8 @@
 
 			Configuration::updateValue('BILLMATE_CANCEL', Tools::getIsset('credit') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_CANCEL_STATUS', serialize(Tools::getValue('creditStatuses')));
-            Configuration::updateValue('BILLMATE_MAKULERA', Tools::getIsset('credit') ? 1 : 0);
-            Configuration::updateValue('BILLMATE_MAKULERA_STATUS', serialize(Tools::getValue('creditStatuses')));
+            Configuration::updateValue('BILLMATE_MAKULERA', Tools::getIsset('makulera') ? 1 : 0);
+            Configuration::updateValue('BILLMATE_MAKULERA_STATUS', serialize(Tools::getValue('makuleraStatuses')));
 
 			Configuration::updateValue('BILLMATE_MESSAGE', Tools::getIsset('message') ? 1 : 0);
 
