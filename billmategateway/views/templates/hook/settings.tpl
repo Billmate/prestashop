@@ -126,7 +126,7 @@
                 $('#activation_options').hide();
             }
 
-        })
+        });
 
         $('input[name="credit"]').change(function (event) {
             if(jQuery(event.target).is(":checked")){
@@ -135,6 +135,20 @@
                 $('#credit_options').hide();
             }
 
-        })
+        });
+
+        if(jQuery('input[name="makulera"]').is(":checked")){
+            $('#makulera_options').show();
+        } else {
+            $('#makulera_options').hide();
+        }
+        $('input[name="makulera"]').change(function (event) {
+            if(jQuery(event.target).is(":checked")){
+                $('#makulera_options').show();
+            } else {
+                $('#makulera_options').hide();
+            }
+
+        });
     });
 </script>
