@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.3.8 (2019-06-24)
+* Fix - Billmate Payment Module does not send out order confirmations
+
 ### 3.3.7 (2019-06-03)
 * Enhancement - Add  switch to carry out payment both with Billmate Checkout and standard Prestashop checkout page.
 * Fix - Add better support for Show order comments on checkout page.

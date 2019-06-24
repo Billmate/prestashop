@@ -1,0 +1,81 @@
+<?php
+class BillmateInvoiceFee
+{
+    const INVOICE_FEE_REFERENCE = 'billmate_invoice_fee';
+
+    const PRODUCT_FEE_QTY = 999999;
+
+    protected $module;
+
+    public function __construct()
+    {
+        $this->module = new BillmateGateway();
+    }
+
+    /**
+     * @param $fee
+     *
+     * @return ProductCore
+     */
+    public function getProduct($fee)
+    {
+        $feeProductId = $this->isExistFeeProduct();
+        if (!$feeProductId) {
+            $product = $this->createFeeProduct();
+        } else {
+            $product = new Product($feeProductId);
+        }
+        StockAvailable::setQuantity($product->id, 0, self::PRODUCT_FEE_QTY);
+
+        if ($product->price != $fee) {
+            $product->price = $fee;
+            $product->update();
+        }
+
+        return $product;
+    }
+
+    /**
+     * @return Product
+     */
+    protected function createFeeProduct()
+    {
+        $product = new Product();
+        $product->reference = self::INVOICE_FEE_REFERENCE;
+        $product->name = [
+            (int)Configuration::get('PS_LANG_DEFAULT') =>  $this->module->l('Billmate invoice fee')
+        ];
+        $product->link_rewrite = [
+            (int)Configuration::get('PS_LANG_DEFAULT') =>  'bm-invoice-fee'
+        ];
+        $product->redirect_type = '404';
+        $product->price = 1;
+        $product->quantity = self::PRODUCT_FEE_QTY;
+        $product->minimal_quantity = 1;
+        $product->advanced_stock_management = 0;
+        $product->show_price = 1;
+        $product->on_sale = 0;
+        $product->online_only = 1;
+        $product->meta_keywords = 'billmate_fee';
+        $product->is_virtual=1;
+        $product->add();
+        return $product;
+    }
+
+    /***
+     * @return bool | int
+     */
+    public function isExistFeeProduct()
+    {
+        $row = Db::getInstance()->getRow('
+            SELECT `id_product`
+            FROM `'._DB_PREFIX_.'product` p
+            WHERE p.reference = "'.pSQL(self::INVOICE_FEE_REFERENCE).'"');
+
+        if (isset($row['id_product'])) {
+            return $row['id_product'];
+        };
+
+        return false;
+    }
+}
