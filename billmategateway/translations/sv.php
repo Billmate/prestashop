@@ -44,6 +44,9 @@ $_MODULE['<{billmategateway}prestashop>billmategateway_4b534e271a8f95a880f2717a4
 $_MODULE['<{billmategateway}prestashop>billmategateway_ff8bbbeeeaef46e2fb7217ef43b6681b'] = 'Kreditfakturor';
 $_MODULE['<{billmategateway}prestashop>billmategateway_bbca05cdad7a4859adb6a148d0fbeac0'] = ' Kreditfaktura skapas i Billmate Online när ordern får vald status';
 $_MODULE['<{billmategateway}prestashop>billmategateway_950560c63a1dd4f293f3086db0803df0'] = 'Order status för automatisk kreditering i Billmate Online';
+$_MODULE['<{billmategateway}prestashop>billmategateway_7ead37659a803cb3667f2a074fcaf15e'] = 'Makulera Fakturor';
+$_MODULE['<{billmategateway}prestashop>billmategateway_7e72261b870f280501793419c56f7de2'] = 'Makulerad Faktura skapas i Billmate Online när ordern får vald status';
+$_MODULE['<{billmategateway}prestashop>billmategateway_cdf6426575cf6b1085d4f14de81a7faf'] = 'Order status för automatisk markulering i Billmate Online';
 $_MODULE['<{billmategateway}prestashop>billmategateway_3f90ab86b59f564abc8492f7df7e5f34'] = 'Aktivera Hämta adress';
 $_MODULE['<{billmategateway}prestashop>billmategateway_e051d71ac1233d6f587825c65adacfa8'] = 'Aktivera hämta adress via personnummer för att förenkla flödet i kassan.';
 $_MODULE['<{billmategateway}prestashop>billmategateway_905ae24c6ba1e71e49b11af888a7c935'] = 'Visa ordernoteringar';
