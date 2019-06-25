@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.9.0 (2019-06-25)
+* Enhancement - Cancel invoice from store.
+
 ### 3.3.8 (2019-06-24)
 * Fix - Billmate Payment Module does not send out order confirmations
 
