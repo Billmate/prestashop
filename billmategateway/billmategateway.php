@@ -160,7 +160,8 @@
 
 			Configuration::updateValue('BILLMATE_CANCEL', Tools::getIsset('credit') ? 1 : 0);
 			Configuration::updateValue('BILLMATE_CANCEL_STATUS', serialize(Tools::getValue('creditStatuses')));
-
+            Configuration::updateValue('BILLMATE_MAKULERA', Tools::getIsset('makulera') ? 1 : 0);
+            Configuration::updateValue('BILLMATE_MAKULERA_STATUS', serialize(Tools::getValue('makuleraStatuses')));
 
 			Configuration::updateValue('BILLMATE_MESSAGE', Tools::getIsset('message') ? 1 : 0);
 
@@ -1033,6 +1034,9 @@
 			$activate    = Configuration::get('BILLMATE_ACTIVATE');
 			$cancelStatus = unserialize($cancelStatus);
 			$cancelStatus = is_array($cancelStatus) ? $cancelStatus : array($cancelStatus);
+            $makuleraStatus = Configuration::get('BILLMATE_MAKULERA_STATUS');
+            $makuleraStatus = unserialize($makuleraStatus);
+            $makuleraStatus = is_array($makuleraStatus) ? $makuleraStatus : array($makuleraStatus);
 
 			if ($activate && $orderStatus)
 			{
@@ -1054,11 +1058,15 @@
                     'billmatepartpay'
                 );
 
-
 				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus) && $this->getMethodInfo($order->module, 'authorization_method', false) != 'sale')
 				{
 
-					$testMode      = $this->getMethodInfo($order->module, 'testMode', false);
+                    if (strpos(strtolower($order->payment), 'checkout') !== false) {
+                        $testMode = $this->getMethodInfo('billmatecheckout', 'testMode', false);
+                    }
+                    else {
+                        $testMode = $this->getMethodInfo($order->module, 'testMode', false);
+                    }
 					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
 					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
 					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
@@ -1091,9 +1099,9 @@
 								$mode                             = $testMode ? 'test' : 'live';
 								$this->context->cookie->api_error = !isset($this->context->cookie->api_error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate. The order does not exist in Billmate Online. The order exists in (%s) mode however. Try changing the mode in the modules settings.'), $order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s. The orders does not exist in Billmate Online. The orders exists in (%s) mode however. Try changing the mode in the modules settings.'), $this->context->cookie->api_error_orders, '. '.$order_id, $mode).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 							}
-							else
-								$this->context->cookie->api_error = $payment_info['message'];
-
+							else {
+                                $this->context->cookie->api_error = $payment_info['message'];
+                            }
 
 							$this->context->cookie->api_error_orders = isset($this->context->cookie->api_error_orders) ? $this->context->cookie->api_error_orders.', '.$order_id : $order_id;
 
@@ -1114,8 +1122,14 @@
 						$this->context->cookie->error        = !isset($this->context->cookie->error_orders) ? sprintf($this->l('Order %s failed to activate through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to activate through Billmate: %s.'), $this->context->cookie->error_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
 						$this->context->cookie->error_orders = isset($this->context->cookie->error_orders) ? $this->context->cookie->error_orders.', '.$order_id : $order_id;
 					}
-				} elseif(in_array($order->module, $modules) && in_array($id_status, $cancelStatus)){
-					$testMode      = $this->getMethodInfo($order->module, 'testMode', false);
+				}
+				elseif(in_array($order->module, $modules) && in_array($id_status, $cancelStatus)){
+                    if (strpos(strtolower($order->payment), 'checkout') !== false) {
+                        $testMode = $this->getMethodInfo('billmatecheckout', 'testMode', false);
+                    }
+                    else {
+                        $testMode = $this->getMethodInfo($order->module, 'testMode', false);
+                    }
 					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
 
 					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
@@ -1133,19 +1147,38 @@
 							$this->context->cookie->credit_confirmation_orders = isset($this->context->cookie->credit_confirmation_orders) ? $this->context->cookie->credit_confirmation_orders.', '.$order_id : $order_id;
 						}
 					} else {
-						$cancelResult = $billmate->cancelPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id)));
-
-						if(isset($cancelResult['code'])){
-							$this->context->cookie->error_credit        = !isset($this->context->cookie->credit_orders) ? sprintf($this->l('Order %s failed to credit through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to credit through Billmate: %s.'), $this->context->cookie->credit_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
-
-							$this->context->cookie->credit_orders = isset($this->context->cookie->credit_orders) ? $this->context->cookie->credit_orders.', '.$order_id : $order_id;
-
-						} else {
-							$this->context->cookie->credit_confirmation        = !isset($this->context->cookie->credit_confirmation_orders) ? sprintf($this->l('Order %s has been credited through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been credited through Billmate: %s'), $this->context->cookie->credit_confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
-							$this->context->cookie->credit_confirmation_orders = isset($this->context->cookie->credit_confirmation_orders) ? $this->context->cookie->credit_confirmation_orders.', '.$order_id : $order_id;
-						}
+                        $this->context->cookie->error_credit = sprintf($this->l('Can not refund Order %s, it has not been processed', $order_id));
 					}
 				}
+				elseif(in_array($order->module, $modules) && in_array($id_status, $makuleraStatus)){
+                    if (strpos(strtolower($order->payment), 'checkout') !== false) {
+                        $testMode = $this->getMethodInfo('billmatecheckout', 'testMode', false);
+                    }
+                    else {
+                        $testMode = $this->getMethodInfo($order->module, 'testMode', false);
+                    }
+                    $billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
+                    $payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+                    $payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
+
+                    if($payment_status == 'paid' || $payment_status == 'factoring' || $payment_status == 'partpayment' || $payment_status == 'handling'){
+                        $this->context->cookie->error_credit = sprintf($this->l('Can not cancel Order %s, it has been processed'), $order_id);
+                        return;
+                    }
+                    else {
+                        $cancelResult = $billmate->cancelPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id)));
+
+                        if(isset($cancelResult['code'])){
+                            $this->context->cookie->error_credit        = !isset($this->context->cookie->credit_orders) ? sprintf($this->l('Order %s failed to cancel through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)' : sprintf($this->l('The following orders failed to credit through Billmate: %s.'), $this->context->cookie->credit_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+
+                            $this->context->cookie->credit_orders = isset($this->context->cookie->credit_orders) ? $this->context->cookie->credit_orders.', '.$order_id : $order_id;
+
+                        } else {
+                            $this->context->cookie->credit_confirmation        = !isset($this->context->cookie->credit_confirmation_orders) ? sprintf($this->l('Order %s has been cancelled through Billmate.'), $order_id).' (<a target="_blank" href="http://online.billmate.se/faktura">'.$this->l('Open Billmate Online').'</>)' : sprintf($this->l('The following orders has been credited through Billmate: %s'), $this->context->cookie->credit_confirmation_orders.', '.$order_id).' (<a target="_blank" href="http://online.billmate.se">'.$this->l('Open Billmate Online').'</a>)';
+                            $this->context->cookie->credit_confirmation_orders = isset($this->context->cookie->credit_confirmation_orders) ? $this->context->cookie->credit_confirmation_orders.', '.$order_id : $order_id;
+                        }
+                    }
+                }
 
 			}
 			else
@@ -1460,6 +1493,26 @@
 					'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_CANCEL_STATUS'))) ? unserialize(Configuration::get('BILLMATE_CANCEL_STATUS')) : 0,
 					'options'  => $statuses_array
 			);
+            $makulera_status      = Configuration::get('BILLMATE_MAKULERA');
+            $settings['makulera'] = array(
+                'name'     => 'makulera',
+                'required' => true,
+                'type'     => 'checkbox',
+                'label'    => $this->l('Cancel Invoices'),
+                'desc'     => $this->l('Cancel Invoices with a certain status in Billmate Online'),
+                'value'    => $makulera_status
+            );
+
+            $settings['makuleraStatuses'] = array(
+                'name'     => 'makuleraStatuses[]',
+                'id'       => 'makulera_options',
+                'required' => true,
+                'type'     => 'multiselect',
+                'label'    => $this->l('Order statuses for automatic order cancellation in Billmate Online'),
+                'desc'     => '',
+                'value'    => (Tools::safeOutput(Configuration::get('BILLMATE_MAKULERA_STATUS'))) ? unserialize(Configuration::get('BILLMATE_MAKULERA_STATUS')) : 0,
+                'options'  => $statuses_array
+            );
 			$settings['getaddress'] = array(
 				'name' => 'getaddress',
 				'type' => 'checkbox',
