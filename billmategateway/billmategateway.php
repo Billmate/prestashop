@@ -1143,12 +1143,16 @@
 				elseif(in_array($order->module, $modules) && in_array($id_status, $makuleraStatus)){
                     $testMode      = $this->getMethodInfo($order->module, 'testMode', false);
                     $billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
-
+                    ob_start();
+                    var_dump($order->module);
+                    var_dump($testMode);
+                    file_put_contents("gunk.log", ob_get_clean());
                     $payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
                     $payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
 
                     if($payment_status == 'paid' || $payment_status == 'factoring' || $payment_status == 'partpayment' || $payment_status == 'handling'){
-                        $this->context->cookie->error_credit = sprintf($this->l('Can not cancel Order %s, it has been processed', $order_id));
+                        $this->context->cookie->error_credit = sprintf($this->l('Can not cancel Order %s, it has been processed'), $order_id);
+                        return;
                     }
                     else {
                         $cancelResult = $billmate->cancelPayment(array('PaymentData' => array('number' => $payment[0]->transaction_id)));
