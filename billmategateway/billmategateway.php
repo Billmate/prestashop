@@ -1061,7 +1061,12 @@
 				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus) && $this->getMethodInfo($order->module, 'authorization_method', false) != 'sale')
 				{
 
-					$testMode      = $this->getMethodInfo($order->module, 'testMode', false);
+                    if (strpos(strtolower($order->payment), 'checkout') !== false) {
+                        $testMode = $this->getMethodInfo('billmatecheckout', 'testMode', false);
+                    }
+                    else {
+                        $testMode = $this->getMethodInfo($order->module, 'testMode', false);
+                    }
 					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
 					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
 					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
@@ -1119,7 +1124,12 @@
 					}
 				}
 				elseif(in_array($order->module, $modules) && in_array($id_status, $cancelStatus)){
-					$testMode      = $this->getMethodInfo($order->module, 'testMode', false);
+                    if (strpos(strtolower($order->payment), 'checkout') !== false) {
+                        $testMode = $this->getMethodInfo('billmatecheckout', 'testMode', false);
+                    }
+                    else {
+                        $testMode = $this->getMethodInfo($order->module, 'testMode', false);
+                    }
 					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
 
 					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
@@ -1141,12 +1151,13 @@
 					}
 				}
 				elseif(in_array($order->module, $modules) && in_array($id_status, $makuleraStatus)){
-                    $testMode      = $this->getMethodInfo($order->module, 'testMode', false);
+                    if (strpos(strtolower($order->payment), 'checkout') !== false) {
+                        $testMode = $this->getMethodInfo('billmatecheckout', 'testMode', false);
+                    }
+                    else {
+                        $testMode = $this->getMethodInfo($order->module, 'testMode', false);
+                    }
                     $billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
-                    ob_start();
-                    var_dump($order->module);
-                    var_dump($testMode);
-                    file_put_contents("gunk.log", ob_get_clean());
                     $payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
                     $payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
 
