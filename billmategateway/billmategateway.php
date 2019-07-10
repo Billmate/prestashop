@@ -64,6 +64,9 @@
 				$this->update();
 
 			$this->context->smarty->assign('base_dir', __PS_BASE_URI__);
+            $this->context->smarty->assign(array(
+                'PS_VERSION' => _PS_VERSION_
+            ));
 		}
 
         public function dummyTranslations()
