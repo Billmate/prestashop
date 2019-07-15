@@ -25,6 +25,7 @@ class BillmateInvoiceFee
         } else {
             $product = new Product($feeProductId);
         }
+        $fee = $fee / (1+($product->getTaxesRate()/100));
         StockAvailable::setQuantity($product->id, 0, self::PRODUCT_FEE_QTY);
 
         if ($product->price != $fee) {
