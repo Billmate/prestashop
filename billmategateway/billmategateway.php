@@ -9,6 +9,7 @@
 
 	require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
 	require_once(_PS_MODULE_DIR_.'/billmategateway/library/pclasses.php');
+	require_once(_PS_MODULE_DIR_.'/billmategateway/classes/BillmateInvoiceFee.php');
 
 	class BillmateGateway extends PaymentModule {
 
@@ -196,6 +197,10 @@
 			Configuration::updateValue('BINVOICE_ENABLED', (Tools::getIsset('invoiceActivated')) ? 1 : 0);
 			Configuration::updateValue('BINVOICE_MOD', (Tools::getIsset('invoiceTestmode')) ? 1 : 0);
 			Configuration::updateValue('BINVOICE_FEE', Tools::getValue('invoiceFee'));
+			if (Tools::getValue('invoiceFee') !== null && is_numeric(Tools::getValue('invoiceFee'))){
+                $invoiceFee = new BillmateInvoiceFee();
+			    $invoiceFee->getProduct(Tools::getValue('invoiceFee'));
+            }
 			Configuration::updateValue('BINVOICE_FEE_TAX', Tools::getValue('invoiceFeeTax'));
 			Configuration::updateValue('BINVOICE_ORDER_STATUS', Tools::getValue('invoiceBillmateOrderStatus'));
 			Configuration::updateValue('BINVOICE_MIN_VALUE', Tools::getValue('invoiceBillmateMinimumValue'));
