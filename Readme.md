@@ -49,6 +49,8 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 ### 3.4.1 (2019-07-10)
 * Enhancement - Removed switch to change Billmate Checkout and standard Prestashop checkout page in the cart page
 * Fix Billmate invoice fee is created as a product in Prestashop.
+* Fix - Prestashop back office uses Billmate's new logo
+
 
 ### 3.4.0 (2019-06-25)
 * Enhancement - Cancel invoice from store.
