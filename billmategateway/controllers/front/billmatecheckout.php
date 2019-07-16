@@ -1439,8 +1439,8 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         $payment_data['PaymentData'] = array(
             'method'        => 93,
             'currency'      => Tools::strtoupper($this->context->currency->iso_code),
-            'language'      => Tools::strtolower($this->context->language->iso_code),
-            'country'       => Tools::strtoupper($this->context->country->iso_code),
+            'language' => 'sv',
+            'country' => 'SE',
             'orderid'       => Tools::substr($this->context->cart->id.'-'.time(), 0, 10),
             'logo' 			=> (Configuration::get('BILLMATE_LOGO')) ? Configuration::get('BILLMATE_LOGO') : '',
 
