@@ -1066,7 +1066,7 @@
                     'billmatepartpay'
                 );
 
-				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus) && $this->getMethodInfo($order->module, 'authorization_method', false) != 'sale')
+				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus))
 				{
 
                     if (strpos(strtolower($order->payment), 'checkout') !== false) {
