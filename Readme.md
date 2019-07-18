@@ -46,11 +46,12 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 We support Prestashops built-in checkout in 1-step and 5-step settings. We also supports One Page Checkout for Prestashop Module (http://addons.prestashop.com/en/6841-one-page-checkout-for-prestashop.html)
 
 ## Changelog
-### 3.4.1 (2019-07-10)
+
+### 3.4.1 (2019-07-18)
 * Enhancement - Removed switch to change Billmate Checkout and standard Prestashop checkout page in the cart page
 * Fix Billmate invoice fee is created as a product in Prestashop.
 * Fix - Prestashop back office uses Billmate's new logo
-
+* Enhancement autoaktivering med kortbetalning with Billmate Checkout
 
 ### 3.4.0 (2019-06-25)
 * Enhancement - Cancel invoice from store.
