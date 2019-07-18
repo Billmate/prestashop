@@ -9,6 +9,7 @@
 
 	require_once(_PS_MODULE_DIR_.'/billmategateway/library/Common.php');
 	require_once(_PS_MODULE_DIR_.'/billmategateway/library/pclasses.php');
+	require_once(_PS_MODULE_DIR_.'/billmategateway/classes/BillmateInvoiceFee.php');
 
 	class BillmateGateway extends PaymentModule {
 
@@ -64,6 +65,9 @@
 				$this->update();
 
 			$this->context->smarty->assign('base_dir', __PS_BASE_URI__);
+            $this->context->smarty->assign(array(
+                'PS_VERSION' => _PS_VERSION_
+            ));
 		}
 
         public function dummyTranslations()
@@ -193,6 +197,10 @@
 			Configuration::updateValue('BINVOICE_ENABLED', (Tools::getIsset('invoiceActivated')) ? 1 : 0);
 			Configuration::updateValue('BINVOICE_MOD', (Tools::getIsset('invoiceTestmode')) ? 1 : 0);
 			Configuration::updateValue('BINVOICE_FEE', Tools::getValue('invoiceFee'));
+			if (Tools::getValue('invoiceFee') !== null && is_numeric(Tools::getValue('invoiceFee'))){
+                $invoiceFee = new BillmateInvoiceFee();
+			    $invoiceFee->getProduct(Tools::getValue('invoiceFee'));
+            }
 			Configuration::updateValue('BINVOICE_FEE_TAX', Tools::getValue('invoiceFeeTax'));
 			Configuration::updateValue('BINVOICE_ORDER_STATUS', Tools::getValue('invoiceBillmateOrderStatus'));
 			Configuration::updateValue('BINVOICE_MIN_VALUE', Tools::getValue('invoiceBillmateMinimumValue'));
@@ -1058,7 +1066,7 @@
                     'billmatepartpay'
                 );
 
-				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus) && $this->getMethodInfo($order->module, 'authorization_method', false) != 'sale')
+				if (in_array($order->module, $modules) && in_array($id_status, $orderStatus))
 				{
 
                     if (strpos(strtolower($order->payment), 'checkout') !== false) {

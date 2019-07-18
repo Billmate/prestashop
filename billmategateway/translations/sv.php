@@ -170,3 +170,4 @@ $_MODULE['<{billmategateway}prestashop>settings_4994a8ffeba4ac3140beb89e8d41f174
 $_MODULE['<{billmategateway}prestashop>settings_386c339d37e737a436499d423a77df0c'] = 'Valuta';
 $_MODULE['<{billmategateway}prestashop>settings_dcb8ec6b6c6f305cbcf58c69f505d403'] = 'Inga Betalplaner hittade, vänligen spara inställningarna';
 $_MODULE['<{billmategateway}prestashop>use-regular-checkout_eb18dd00e86aff4b5b5d15e938382b49'] = 'Välj en Annan betalningsmetod';
+$_MODULE['<{billmategateway}prestashop>use-regular-checkout_fd32837e70cdbf6d483844892e663101'] = 'Betala med Billmate Checkout';

@@ -461,8 +461,7 @@
 					'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->module->currentOrderReference : $this->module->currentOrder
 				);
 				$this->billmate->updatePayment($values);
-
-				if ($this->module->authorization_method == 'sale' && $this->method == 'cardpay')
+                if ($this->module->authorization_method == 'sale' && ($this->method == 'cardpay'))
 				{
 
 					$values['PaymentData'] = array(
