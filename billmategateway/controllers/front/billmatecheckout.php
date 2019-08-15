@@ -1102,6 +1102,8 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
     public function initCheckout()
     {
+        $invoiceFee = new BillmateInvoiceFee();
+        $invoiceFee->getProduct(Configuration::get('BINVOICE_FEE'));
         $billmate = $this->getBillmate();
         $orderValues = array();
         // TODO all articles and stuff.
@@ -1115,7 +1117,6 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         }
 
         $orderValues['Cart'] = $this->prepareTotals();
-
         $result = $billmate->initCheckout($orderValues);
         if(!isset($result['code'])){
             $hash = $this->getHashFromUrl($result['url']);
