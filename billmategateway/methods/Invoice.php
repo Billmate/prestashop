@@ -84,7 +84,7 @@ class BillmateMethodInvoice extends BillmateGateway {
 				'name'     => 'invoiceActivated',
 				'required' => true,
 				'type'     => 'checkbox',
-				'label'    => $this->module->l('Enabled','invoice','invoice'),
+				'label'    => $this->module->l('Enabled','invoice'),
 				'desc'     => $this->module->l('Enable Billmate invoice','invoice'),
 				'value'    => (Tools::safeOutput(Configuration::get('BINVOICE_ENABLED'))) ? 1 : 0,
 
