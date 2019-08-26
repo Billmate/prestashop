@@ -30,8 +30,16 @@ $(document).ready(function() {
                         $('input[name="address1"]').trigger('change');
                         $('input[name="city"]').val(response.data.city);
                         $('input[name="city"]').trigger('change');
-                        $('input[name="postcode"]').val(response.data.zip);
-                        $('input[name="postcode"]').trigger('change');
+                        if (response.data.zip.match('/[0-9]{3} [0-9]{2}/g')) {
+                            $('input[name="postcode"]').val(response.data.zip);
+                            $('input[name="postcode"]').trigger('change');
+                        }
+                        else {
+                            var zip = response.data.zip.replace(' ', '');
+                            zip = zip.slice(0,3) + " " + zip.slice(3);
+                            $('input[name="postcode"]').val(zip);
+                            $('input[name="postcode"]').trigger('change');
+                        }
                         $('input[name="id_country"]').val(response.data.id_country);
                         $('input[name="id_country"]').trigger('change');
                         $('input[name="email"]').val(response.data.email);
