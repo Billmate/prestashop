@@ -182,7 +182,7 @@
 				'company'   => mb_convert_encoding($billing_address->company,'UTF-8','auto'),
 				'street'    => mb_convert_encoding($billing_address->address1,'UTF-8','auto'),
 				'street2'   => mb_convert_encoding($billing_address->address2,'UTF-8','auto'),
-				'zip'       => mb_convert_encoding($billing_address->postcode,'UTF-8','auto'),
+				'zip'       => mb_convert_encoding(str_replace(' ','',$billing_address->postcode),'UTF-8','auto'),
 				'city'      => mb_convert_encoding($billing_address->city,'UTF-8','auto'),
 				'country'   => mb_convert_encoding(Country::getIsoById($billing_address->id_country),'UTF-8','auto'),
 				'phone'     => mb_convert_encoding($billing_address->phone,'UTF-8','auto'),
@@ -194,7 +194,7 @@
 				'company'   => mb_convert_encoding($shipping_address->company,'UTF-8','auto'),
 				'street'    => mb_convert_encoding($shipping_address->address1,'UTF-8','auto'),
 				'street2'   => mb_convert_encoding($shipping_address->address2,'UTF-8','auto'),
-				'zip'       => mb_convert_encoding($shipping_address->postcode,'UTF-8','auto'),
+				'zip'       => mb_convert_encoding(str_replace(' ','',$shipping_address->postcode),'UTF-8','auto'),
 				'city'      => mb_convert_encoding($shipping_address->city,'UTF-8','auto'),
 				'country'   => mb_convert_encoding(Country::getIsoById($shipping_address->id_country),'UTF-8','auto'),
 				'phone'     => mb_convert_encoding($shipping_address->phone,'UTF-8','auto'),
@@ -463,7 +463,6 @@
 			}
 			foreach ($address as $key => $value)
 				$address[$key] = mb_convert_encoding($value,'UTF-8','auto');
-
 			$billing  = new Address($this->context->cart->id_address_invoice);
 			$shipping = new Address($this->context->cart->id_address_delivery);
 
@@ -481,7 +480,7 @@
 				$matched_last = array_intersect($last_arr, $apilast);
 
 				//$api_matched_name = ((count($matched_first) == count($apifirst)) && (count($matched_last) == count($apilast)));
-				$api_matched_name = Common::matchstr($shipping->firstname,$address['lastname']) && Common::matchstr($shipping->lastname,$address['lastname']);
+				$api_matched_name = Common::matchstr($shipping->firstname,$address['firstname']) && Common::matchstr($shipping->lastname,$address['lastname']);
 
 			}
 			else
@@ -498,7 +497,7 @@
 			if (!(
 				$api_matched_name
 				&& Common::matchstr($shipping->address1, $address['street'])
-				&& Common::matchstr($shipping->postcode, $address['zip'])
+				&& Common::matchstr(str_replace(' ','',$shipping->postcode), $address['zip'])
 				&& Common::matchstr($shipping->city, $address['city'])
 				&& Common::matchstr($address['country'], Country::getIsoById($shipping->id_country))
 				&& $address_same
@@ -596,7 +595,6 @@
 					$this->context->cart->id_address_invoice  = (int)$matched_address_id;
 					$this->context->cart->id_address_delivery = (int)$matched_address_id;
 					if(version_compare(_PS_VERSION_,'1.7','>=')) {
-
 						$billing = new Address($this->context->cart->id_address_invoice);
 						$shipping = new Address($this->context->cart->id_address_delivery);
 						$billing->update();
@@ -666,8 +664,9 @@
 
 				return $return;
 			}
-			else
-				return true;
+			else {
+			    return true;
+            }
 
 		}
 
