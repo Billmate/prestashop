@@ -205,11 +205,13 @@ class BillmateMethodInvoice extends BillmateGateway {
         protected function processAddingInvoiceFee($id_cart)
         {
             $bmInvoiceFee = $this->getFee();
-            if ($bmInvoiceFee['fee_tax']) {
-                $product = $this->getBmFeeProduct();
-                $cart = new Cart($id_cart);
-                $cart->updateQty(1, $product->id);
-                $cart->getPackageList(true);
+            if (array_key_exists('fee_tax', $bmInvoiceFee)) {
+                if ($bmInvoiceFee['fee_tax']) {
+                    $product = $this->getBmFeeProduct();
+                    $cart = new Cart($id_cart);
+                    $cart->updateQty(1, $product->id);
+                    $cart->getPackageList(true);
+                }
             }
         }
 
