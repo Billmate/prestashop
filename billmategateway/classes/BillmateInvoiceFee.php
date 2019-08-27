@@ -19,7 +19,6 @@ class BillmateInvoiceFee
      */
     public function getProduct($fee)
     {
-        global $cookie;
         $feeProductId = $this->isExistFeeProduct();
         if (!$feeProductId) {
             $product = $this->createFeeProduct();
@@ -28,26 +27,29 @@ class BillmateInvoiceFee
         }
         $fee = $fee / (1+($product->getTaxesRate()/100));
         StockAvailable::setQuantity($product->id, 0, self::PRODUCT_FEE_QTY);
-
-        $names = array();
-        foreach ($product->name as $name){
-            if ($name == ""){
-                array_push($names, $this->module->l('Billmate invoice fee'));
+        if (is_array($product->name)) {
+            $names = array();
+            foreach ($product->name as $name) {
+                if ($name == "") {
+                    array_push($names, $this->module->l('Billmate invoice fee'));
+                } else {
+                    array_push($names, $name);
+                }
             }
-            else {
-                array_push($names, $name);
+            if (!empty($names)) {
+                $product->name = $names;
+                $product->update();
             }
         }
-        if (!empty($names)){
-            $product->name = $names;
-            $product->update();
+        else {
+            if ($product->name == ""){
+                $product->name = $this->module->l('Billmate invoice fee');
+            }
         }
-
         if ($product->price != $fee) {
             $product->price = $fee;
             $product->update();
         }
-
         return $product;
     }
 
@@ -58,9 +60,7 @@ class BillmateInvoiceFee
     {
         $product = new Product();
         $product->reference = self::INVOICE_FEE_REFERENCE;
-        $product->name = [
-            (int)Configuration::get('PS_LANG_DEFAULT') =>  $this->module->l('Billmate invoice fee')
-        ];
+        $product->name = $this->module->l('Billmate invoice fee');
         $product->link_rewrite = [
             (int)Configuration::get('PS_LANG_DEFAULT') =>  'bm-invoice-fee'
         ];
