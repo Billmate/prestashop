@@ -27,12 +27,11 @@ class BillmateInvoiceFee
         }
         $fee = $fee / (1+($product->getTaxesRate()/100));
         StockAvailable::setQuantity($product->id, 0, self::PRODUCT_FEE_QTY);
-
+        $product->name = $this->module->l('Billmate invoice fee');
         if ($product->price != $fee) {
             $product->price = $fee;
-            $product->update();
         }
-
+        $product->update();
         return $product;
     }
 
@@ -43,9 +42,7 @@ class BillmateInvoiceFee
     {
         $product = new Product();
         $product->reference = self::INVOICE_FEE_REFERENCE;
-        $product->name = [
-            (int)Configuration::get('PS_LANG_DEFAULT') =>  $this->module->l('Billmate invoice fee')
-        ];
+        $product->name = $this->module->l('Billmate invoice fee');
         $product->link_rewrite = [
             (int)Configuration::get('PS_LANG_DEFAULT') =>  'bm-invoice-fee'
         ];

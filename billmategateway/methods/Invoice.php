@@ -84,7 +84,7 @@ class BillmateMethodInvoice extends BillmateGateway {
 				'name'     => 'invoiceActivated',
 				'required' => true,
 				'type'     => 'checkbox',
-				'label'    => $this->module->l('Enabled','invoice','invoice'),
+				'label'    => $this->module->l('Enabled','invoice'),
 				'desc'     => $this->module->l('Enable Billmate invoice','invoice'),
 				'value'    => (Tools::safeOutput(Configuration::get('BINVOICE_ENABLED'))) ? 1 : 0,
 
@@ -205,11 +205,13 @@ class BillmateMethodInvoice extends BillmateGateway {
         protected function processAddingInvoiceFee($id_cart)
         {
             $bmInvoiceFee = $this->getFee();
-            if ($bmInvoiceFee['fee_tax']) {
-                $product = $this->getBmFeeProduct();
-                $cart = new Cart($id_cart);
-                $cart->updateQty(1, $product->id);
-                $cart->getPackageList(true);
+            if (array_key_exists('fee_tax', $bmInvoiceFee)) {
+                if ($bmInvoiceFee['fee_tax']) {
+                    $product = $this->getBmFeeProduct();
+                    $cart = new Cart($id_cart);
+                    $cart->updateQty(1, $product->id);
+                    $cart->getPackageList(true);
+                }
             }
         }
 
