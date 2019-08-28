@@ -26,7 +26,7 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 1.5.3.1 - 1.7.5.1
 
 ## Checkout Compatibility
-* PrestaShop default checkout 1.5.3.1 - 1.7.5.1
+* PrestaShop default checkout 1.5.3.1 - 1.7.6.0
 * One page checkout for Prestashop Module 2.3.6 - 2.3.10
   http://addons.prestashop.com/en/6841-one-page-checkout-for-prestashop.html
 
@@ -46,6 +46,12 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 We support Prestashops built-in checkout in 1-step and 5-step settings. We also supports One Page Checkout for Prestashop Module (http://addons.prestashop.com/en/6841-one-page-checkout-for-prestashop.html)
 
 ## Changelog
+
+### 3.4.3 (2019-08-28)
+** Fix - Support for Prestashop v1.7.6.0.
+
+### 3.4.2 (2019-08-15)
+** Enhancement - invoice fee from store.
 
 ### 3.4.2 (2019-08-15)
 * Enhancement - invoice fee from store.
