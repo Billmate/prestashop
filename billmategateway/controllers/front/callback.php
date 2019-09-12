@@ -70,6 +70,10 @@
                 $paymentInfo = $this->billmate->getPaymentinfo(array('number' => $data['number']));
             }
 
+            ob_start();
+            var_dump($paymentInfo);
+            file_put_contents("paymentinfo.log", ob_get_clean() . "\n", FILE_APPEND);
+
             $displayName = $this->module->displayName;
             if ($this->method == 'checkout') {
                 /** When checkout, check for selected payment method found in $paymentInfo.PaymentData.method_name */
@@ -142,11 +146,20 @@
                     || $this->context->cart->id_address_invoice  == 0
                     || $this->context->cart->id_address_delivery == 0
                 ) {
-                    $result     = $this->fetchCheckout();
-                    $customer   = $result['Customer'];
-                    $address    = $customer['Billing'];
-                    $country    = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
-                    $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
+                    if (array_key_exists('Customer', $paymentInfo)){
+                        $customer   = $paymentInfo['Customer'];
+                        $address    = $customer['Billing'];
+                        $country    = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
+                        $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
+                    }
+                    else {
+                        $result     = $this->fetchCheckout();
+                        //TODO: check if array key customer exists in result otherwise return error to callback
+                        $customer   = $result['Customer'];
+                        $address    = $customer['Billing'];
+                        $country    = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
+                        $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
+                    }
                 }
 
                 /** Create customer when missing */
