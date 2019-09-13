@@ -41,12 +41,12 @@
 			$ssl          = true;
 			$debug        = false;
 			require_once(_PS_MODULE_DIR_.'billmategateway/methods/'.Tools::ucfirst($this->method).'.php');
-
+            $logfile = 'billmate.log';
 			$class        = "BillmateMethod".Tools::ucfirst($this->method);
 			$this->module = new $class;
 			$this->coremodule = new BillmateGateway();
 			$testmode = $this->module->testMode;
-
+            file_put_contents($logfile, date("Y-m-d H:i:s") . " Recived callback\n", FILE_APPEND);
 			$this->billmate = Common::getBillmate($eid, $secret, $testmode, $ssl, $debug);
 
             $input = Tools::file_get_contents('php://input');
@@ -67,11 +67,13 @@
 
             $paymentInfo = array();
             if (!isset($data['code']) && !isset($data['error'])) {
+                file_put_contents($logfile, date("Y-m-d H:i:s") . " hash verified number: " . $data['number'] . "\n", FILE_APPEND);
                 $paymentInfo = $this->billmate->getPaymentinfo(array('number' => $data['number']));
             }
 
             $displayName = $this->module->displayName;
             if ($this->method == 'checkout') {
+                file_put_contents($logfile, date("Y-m-d H:i:s") . " method checkout number: " . $data['number'] . "\n", FILE_APPEND);
                 /** When checkout, check for selected payment method found in $paymentInfo.PaymentData.method_name */
                 if (isset($paymentInfo['PaymentData']['method_name']) AND $paymentInfo['PaymentData']['method_name'] != '') {
                     $displayName = $displayName.' ('.$paymentInfo['PaymentData']['method_name'].')';
@@ -109,6 +111,7 @@
 				$this->cart_id = $order[0];
 				$this->context->cart = new Cart($this->cart_id);
 				if ($this->context->cart->orderExists() || $processing){
+                    file_put_contents($logfile, date("Y-m-d H:i:s") . " order exists number: " . $data['number'] . "\n", FILE_APPEND);
 					error_log('order_exists');
 
 					if ($processing)
@@ -142,15 +145,33 @@
                     || $this->context->cart->id_address_invoice  == 0
                     || $this->context->cart->id_address_delivery == 0
                 ) {
-                    $result     = $this->fetchCheckout();
-                    $customer   = $result['Customer'];
-                    $address    = $customer['Billing'];
-                    $country    = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
-                    $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
+                    file_put_contents($logfile, date("Y-m-d H:i:s") . " new customer number: " . $data['number'] . "\n", FILE_APPEND);
+                    if (array_key_exists('Customer', $paymentInfo)){
+                        file_put_contents($logfile, date("Y-m-d H:i:s") . " customer exists in paymentinfo number: " . $data['number'] . "\n", FILE_APPEND);
+                        $customer   = $paymentInfo['Customer'];
+                        $address    = $customer['Billing'];
+                        $country    = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
+                        $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
+                    }
+                    else {
+                        $result     = $this->fetchCheckout();
+                        if (array_key_exists('Customer', $result)) {
+                            file_put_contents($logfile, date("Y-m-d H:i:s") . " customer exists in getcheckout number: " . $data['number'] . "\n", FILE_APPEND);
+                            $customer = $result['Customer'];
+                            $address = $customer['Billing'];
+                            $country = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
+                            $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
+                        }
+                        else {
+                            file_put_contents($logfile, date("Y-m-d H:i:s") . " customer does not exist in billmate number: " . $data['number'] . "\n", FILE_APPEND);
+                            throw new Exception('Missing Customer Information');
+                        }
+                    }
                 }
 
                 /** Create customer when missing */
                 if ($this->context->cart->id_customer == 0) {
+                    file_put_contents($logfile, date("Y-m-d H:i:s") . " customer is not set in prestashop number: " . $data['number'] . "\n", FILE_APPEND);
                     $customerObject = new Customer();
                     $password = Tools::passwdGen(8);
                     $customerObject->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
@@ -169,7 +190,7 @@
 
                 /** Create billing/shipping address when missing */
                 if ($this->context->cart->id_address_invoice  == 0 || $this->context->cart->id_address_delivery == 0) {
-
+                    file_put_contents($logfile, date("Y-m-d H:i:s") . " creating billing and shipping adresses number: " . $data['number'] . "\n", FILE_APPEND);
                     $_customer = new Customer($this->context->cart->id_customer);
                     $customer_addresses = $_customer->getAddresses($this->context->language->id);
 
