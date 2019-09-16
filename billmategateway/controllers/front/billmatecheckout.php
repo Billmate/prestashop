@@ -1209,6 +1209,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
         return $articles_arr;
     }
+
     public function prepareDiscounts()
     {
         if (!isset($this->coremodule) || !is_object($this->coremodule)) {
@@ -1283,6 +1284,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
         return $discounts;
     }
+
     /**
      * Returns the Cart Object with Totals for Handling, Shipping and Total
      * @return array
