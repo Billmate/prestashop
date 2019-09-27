@@ -18,7 +18,11 @@ class Link extends LinkCore
      */
     protected function isBMCheckoutEnabled($controller)
     {
-        return $this->getBmModule()->isBmCheckoutEnabled($controller);
+        $bmModule = $this->getBmModule();
+        if (is_object($bmModule) && method_exists($bmModule, 'isBmCheckoutEnabled')){
+            return $bmModule->isBmCheckoutEnabled($controller);
+        }
+        return false;
     }
 
     /**
