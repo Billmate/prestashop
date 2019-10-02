@@ -27,7 +27,14 @@ class BillmateInvoiceFee
         }
         $fee = $fee / (1+($product->getTaxesRate()/100));
         StockAvailable::setQuantity($product->id, 0, self::PRODUCT_FEE_QTY);
-        $product->name = $this->module->l('Billmate invoice fee');
+        if (!is_array($product->name)){
+            $product->name = $this->module->l('Billmate invoice fee');
+        }
+        else {
+            foreach ($product->name as $key => $val){
+                $product->name[$key] = $this->module->l('Billmate invoice fee');
+            }
+        }
         if ($product->price != $fee) {
             $product->price = $fee;
         }

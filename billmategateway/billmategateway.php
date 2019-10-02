@@ -608,9 +608,13 @@
                     $id_product = $product->getId();
             } else {
                 if (is_object($product)) {
-                    $id_product = $product->id_product;
+                    if (property_exists($product, 'id_product')) {
+                        $id_product = $product->id_product;
+                    }
                 } elseif (is_array($product)) {
-                    $id_product = $product['id_product'];
+                    if (array_key_exists('id_product', $product)) {
+                        $id_product = $product['id_product'];
+                    }
                 }
             }
 
