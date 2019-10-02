@@ -47,17 +47,17 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 ### 3.4.4 (2019-10-02)
-** Enhancement - Check if is object and method exists before run isBmCheckoutEnabled
-** Enhancement   Better support for receiving callbacks
+* Enhancement - Check if is object and method exists before run isBmCheckoutEnabled
+* Enhancement   Better support for receiving callbacks
 
 ### 3.4.3 (2019-08-28)
-** Fix - Support for Prestashop v1.7.6.0.
+* Fix - Support for Prestashop v1.7.6.0.
 
 ### 3.4.2 (2019-08-15)
-** Enhancement - invoice fee from store.
+* Enhancement - invoice fee from store.
 
 ### 3.4.2 (2019-08-15)
-** Enhancement - invoice fee from store.
+* Enhancement - invoice fee from store.
 
 ### 3.4.1 (2019-07-18)
 * Enhancement - Removed switch to change Billmate Checkout and standard Prestashop checkout page in the cart page
