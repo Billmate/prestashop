@@ -23,7 +23,7 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 * Please let the decimals for currencies be 2 decimals, to prevent rounding issues.
 
 ## COMPATIBILITY PrestaShop versions
-1.5.3.1 - 1.7.5.1
+1.5.3.1 - 1.7.6.0
 
 ## Checkout Compatibility
 * PrestaShop default checkout 1.5.3.1 - 1.7.6.0
