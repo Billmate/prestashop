@@ -46,6 +46,10 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 We support Prestashops built-in checkout in 1-step and 5-step settings. We also supports One Page Checkout for Prestashop Module (http://addons.prestashop.com/en/6841-one-page-checkout-for-prestashop.html)
 
 ## Changelog
+
+### 3.4.5 (2019-10-07)
+* Enhancement -  Better support for handling discount codes
+
 ### 3.4.4 (2019-10-02)
 * Enhancement - Check if is object and method exists before run isBmCheckoutEnabled
 * Enhancement -  Better support for receiving callbacks

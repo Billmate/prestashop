@@ -827,6 +827,14 @@ jQuery(document).ready(function(){
             var selectedMethod = e.target.value;
             window.b_iframe.updateShippingMethod(selectedMethod, true);
         });
+
+        $('body').on('click', 'button[type="submit"][class="btn btn-primary"]', function(e) {
+            location.reload();
+        });
+
+        $('body').on('click', 'i[class="material-icons"]', function(e) {
+            location.reload();
+        });
     }
 
     if (is_billmate_checkout_page == 'yes') {
