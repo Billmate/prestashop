@@ -20,13 +20,18 @@
 		protected $coremodule;
 
 
-		private function checkOrder($cart_id)
+		private function checkOrder($cart_id, $attempt = 0)
 		{
+            /*STOP THIS FROM LOCKING INTO AN ENDLESS LOOP*/
+            $attempt++;
+            if (3 == $attempt) {
+                die('OK');
+            }
 			$order = Order::getOrderByCartId($cart_id);
 			if (!$order)
 			{
 				sleep(1);
-				$this->checkOrder($cart_id);
+				$this->checkOrder($cart_id, $attempt);
 			}
 			else
 				return $order;
