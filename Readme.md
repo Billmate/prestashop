@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.4.6 (2019-10-12)
+* Enhancement -  Performance improvment for handling ordercheck
+
 ### 3.4.5 (2019-10-07)
 * Enhancement -  Better support for handling discount codes
 
