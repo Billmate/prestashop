@@ -14,7 +14,7 @@
 	require_once 'Billmate.php';
 	require_once 'Encoding.php';
 	require_once 'Utf8.php';
-        define('BILLMATE_PLUGIN_VERSION','3.4.5');
+        define('BILLMATE_PLUGIN_VERSION','3.4.6');
 	class Common {
 
 		public static function getBillmate($eid, $secret, $testmode, $ssl = true, $debug = false)
