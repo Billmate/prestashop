@@ -51,6 +51,8 @@ class BillmateMethodCheckout extends BillmateGateway {
                 $cms_pages[$cms_file['id_cms']] = $cms_file['meta_title'];
             }
 
+            $checkoutModes = array($this->module->l('Consumer','checkout'), $this->module->l('Company','checkout'));
+
             $activate_status      = Configuration::get('BILLMATE_CHECKOUT_ACTIVATE');
             $settings['billmate_checkout_active'] = array(
                 'name'     => 'billmate_checkout_active',
@@ -89,6 +91,16 @@ class BillmateMethodCheckout extends BillmateGateway {
                 'type' => 'select',
                 'options' => $cms_pages,
                 'value'    => ((Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_PRIVACY_POLICY'))) ? Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_PRIVACY_POLICY')) : 0),
+                'cast' => 'intval'
+            );
+
+            $settings['billmate_checkout_mode'] = array(
+                'name' => 'billmate_checkout_mode',
+                'label' => $this->module->l('Checkout mode', 'checkout'),
+                'desc' => $this->module->l('Choose whether you want to emphasize shopping as a company or consumer first in Billmate Checkout.', 'checkout'),
+                'type' => 'select',
+                'options' => $checkoutModes,
+                'value'    => ((Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_MODE'))) ? Tools::safeOutput(Configuration::get('BILLMATE_CHECKOUT_MODE')) : 0),
                 'cast' => 'intval'
             );
 
