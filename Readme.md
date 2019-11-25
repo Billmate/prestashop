@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.5.0 (2019-11-25)
+* Feature - Support for choosing Billmate Checkout to act as a company or individual to prompt first
+
 ### 3.4.6 (2019-11-12)
 * Enhancement -  Performance improvment for handling ordercheck
 
