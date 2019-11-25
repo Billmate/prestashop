@@ -46,7 +46,10 @@ class BillmateInvoiceFee
         if ($product->price != $fee) {
             $product->price = $fee;
         }
-        $product->update();
+        try {
+            $product->update();
+        }
+        catch (Exception $e){}
         return $product;
     }
 
