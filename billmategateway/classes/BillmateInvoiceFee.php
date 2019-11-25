@@ -35,10 +35,21 @@ class BillmateInvoiceFee
                 $product->name[$key] = $this->module->l('Billmate invoice fee');
             }
         }
+        if (!is_array($product->link_rewrite)){
+            foreach ($product->link_rewrite as $key => $val){
+                $product->link_rewrite = 'bm-invoice-fee';
+            }
+        }
+        else {
+            $product->link_rewrite = 'bm_invoice_fee';
+        }
         if ($product->price != $fee) {
             $product->price = $fee;
         }
-        $product->update();
+        try {
+            $product->update();
+        }
+        catch (Exception $e){}
         return $product;
     }
 
