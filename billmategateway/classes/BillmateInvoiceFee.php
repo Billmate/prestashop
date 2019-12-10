@@ -36,12 +36,12 @@ class BillmateInvoiceFee
             }
         }
         if (!is_array($product->link_rewrite)){
+            $product->link_rewrite = 'bm_invoice_fee';
+        }
+        else {
             foreach ($product->link_rewrite as $key => $val){
                 $product->link_rewrite = 'bm-invoice-fee';
             }
-        }
-        else {
-            $product->link_rewrite = 'bm_invoice_fee';
         }
         if ($product->price != $fee) {
             $product->price = $fee;
