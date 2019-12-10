@@ -1,0 +1,15 @@
+{
+  "description": "Billmate Payment Gateway for Prestashop",
+  "authors": [
+    {
+      "name": "Billmate AB",
+      "email": "support@billmate.se>"
+    }
+  ],
+  "config": {
+    "preferred-install": "dist",
+    "prepend-autoloader": false
+  },
+  "type": "prestashop-module",
+  "license": "GPL-3.0-or-later"
+}
