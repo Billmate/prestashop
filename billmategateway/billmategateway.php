@@ -239,6 +239,7 @@
             Configuration::updateValue('BILLMATE_CHECKOUT_TESTMODE',Tools::getIsset('billmate_checkout_testmode') ? 1 : 0);
             Configuration::updateValue('BILLMATE_CHECKOUT_ORDER_STATUS', Tools::getValue('billmate_checkout_order_status'));
             Configuration::updateValue('BILLMATE_CHECKOUT_PRIVACY_POLICY', Tools::getValue('billmate_checkout_privacy_policy'));
+            Configuration::updateValue('BILLMATE_CHECKOUT_MODE', Tools::getValue('billmate_checkout_mode'));
 
 			Configuration::updateValue('BSWISH_ORDER_STATUS', Tools::getValue('swishBillmateOrderStatus'));
 			if (Configuration::get('BPARTPAY_ENABLED') == 1 && $credentialvalidated)

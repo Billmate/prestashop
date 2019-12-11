@@ -1453,12 +1453,23 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             'returnmethod' => (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == "on") ?'POST' : 'GET'
         );
 
-        $payment_data['CheckoutData'] = array(
-            'terms'             => $termsPage,
-            'windowmode'        => 'iframe',
-            'sendreciept'       => 'yes',
-            'redirectOnSuccess' => 'true'
-        );
+        if (Configuration::get('BILLMATE_CHECKOUT_MODE') > 0) {
+            $payment_data['CheckoutData'] = array(
+                'terms' => $termsPage,
+                'windowmode' => 'iframe',
+                'sendreciept' => 'yes',
+                'redirectOnSuccess' => 'true',
+                'companyView' => 'true'
+            );
+        }
+        else {
+            $payment_data['CheckoutData'] = array(
+                'terms' => $termsPage,
+                'windowmode' => 'iframe',
+                'sendreciept' => 'yes',
+                'redirectOnSuccess' => 'true'
+            );
+        }
 
         // When available Add store Privacy Policy page
         $config_billmate_checkout_privacy_policy_page_id = (int)Configuration::get('BILLMATE_CHECKOUT_PRIVACY_POLICY');
