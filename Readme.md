@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.5.1 (2020-01-14)
+* Fix - Prestashop V1.6 Support switch to carry out payment both with Billmate Checkout and standard Prestashop checkout page.
+
 ### 3.5.0 (2019-12-10)
 * Feature - Support for choosing Billmate Checkout to act as a company or individual to prompt first
 * Fix - Billmate Unable to install for prestashop 1.6.1.17.
