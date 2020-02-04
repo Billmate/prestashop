@@ -382,6 +382,7 @@
             }
             catch (Exception $e){
                 PrestaShopLogger::addLog("order creation error: " . $e->getMessage(), 4);
+                throw new Exception('callback order creation error: ' . $e->getMessage());
             }
 		}
 
