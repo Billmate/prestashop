@@ -126,7 +126,7 @@
                         if ($orderObject->current_state == Configuration::get('BILLMATE_PAYMENT_PENDING') && $data['status'] != 'Pending') {
                             $orderHistory = new OrderHistory();
                             $orderHistory->id_order = (int)$orderObject->id;
-
+                            $orderHistory->id_order_state = $orderObject->current_state;
                             $status = Configuration::get('B' . strtoupper($this->method) . '_ORDER_STATUS');
                             $status = ($data['status'] == 'Cancelled') ? Configuration::get('PS_OS_CANCELED') : $status;
                             $orderHistory->changeIdOrderState($status, $order_id, true);
