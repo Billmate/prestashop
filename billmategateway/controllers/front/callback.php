@@ -85,7 +85,6 @@
                 }
 
                 if (!isset($data['code']) && !isset($data['error'])) {
-                    $paymentInfo = $this->billmate->getPaymentinfo(array('number' => $data['number']));
                     if (!isset($paymentInfo['code']) AND $this->method != 'checkout') {
                         switch ($paymentInfo['PaymentData']['method']) {
                             case '4':

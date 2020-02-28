@@ -187,7 +187,6 @@
 
 
                         $return = array();
-                        $paymentInfo = $this->billmate->getPaymentinfo(array('number' => $data['number']));
                         $result = $paymentInfo;
 
                         if (!isset($result['code']) && (isset($result['PaymentData']['order']['number']) && is_numeric($result['PaymentData']['order']['number']) && $result['PaymentData']['order']['number'] > 0)) {
