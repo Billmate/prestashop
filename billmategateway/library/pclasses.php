@@ -72,6 +72,7 @@
 						$row['interestrate'] = $row['interestrate'] / 100;
 						$row['minamount'] = $row['minamount'] / 100;
 						$row['maxamount'] = $row['maxamount'] / 100;
+						unset($row['totalfee']);
 						Db::getInstance()->insert('billmate_payment_pclasses', $row);
 
 					}
