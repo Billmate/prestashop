@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.6.0 (2020-03-11)
+* Feature - Refactoring callback handeling
+
 ### 3.5.2 (2020-03-09)
 * Fix - Billmate part payment information is stored correctly
 
