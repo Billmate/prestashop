@@ -460,12 +460,8 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                             array('billmate_hash' => Common::getCartCheckoutHash())
                         );
 
-                        /*$url = 'order-confirmation&id_cart=' . (int)$this->context->cart->id .
-                            '&id_module=' . (int)$this->getmoduleId('billmate' . $this->method) .
-                            '&id_order=' . (int)$orderId .
-                            '&key=' . $customer->secure_key;*/
                         $return['success'] = true;
-                        $return['redirect'] = $url; //$this->context->link->getPageLink($url, true);
+                        $return['redirect'] = $url;
                         if (isset($this->context->cookie->billmatepno))
                             unset($this->context->cookie->billmatepno);
                         Common::unsetCartCheckoutHash();
@@ -475,7 +471,6 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                                 die(Tools::jsonEncode($result));
                             }
                         }
-                        //Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
                         $_message = (isset($result['message'])) ? $result['message'] : '';
                         $return = array('success' => false, 'content' => utf8_encode($_message));
                     }
@@ -490,7 +485,6 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                             header('Location: ' . $result['url']);
                         }
                     } else {
-                        //Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
                         $return = array('success' => false, 'content' => utf8_encode($result['message']));
                     }
 

@@ -156,7 +156,7 @@
                         if (isset($this->context->cookie->billmatepno))
                             unset($this->context->cookie->billmatepno);
 
-                        if ('' != Common::getCartCheckoutHash()) {
+                        if (Common::getCartCheckoutHash() !=  '') {
                             $hash = Common::getCartCheckoutHash();
                             Common::unsetCartCheckoutHash();
                             $url = $this->context->link->getModuleLink(
@@ -176,7 +176,7 @@
                     } else {
 
 
-                        if ($paymentInfo['PaymentData']['method'] == '1' OR '2' == $paymentInfo['PaymentData']['method']) {
+                        if ($paymentInfo['PaymentData']['method'] == '1' || '2' == $paymentInfo['PaymentData']['method']) {
                             /** Paid with invoice */
                             $this->paymentClass = 'invoice';
                             $class_file = _PS_MODULE_DIR_ . 'billmategateway/methods/' . Tools::ucfirst($this->paymentClass) . '.php';
@@ -235,10 +235,10 @@
                         } else {
                             if (isset($result['code']) AND in_array($result['code'], array(2401, 2402, 2403, 2404, 2405))) {
                                 if (is_array($result)) {
+                                    // Handle error message
                                     // die(Tools::jsonEncode($result));
                                 }
                             }
-                            //Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
                             $_message = (isset($result['message'])) ? $result['message'] : '';
                             $return = array('success' => false, 'content' => utf8_encode($_message));
                         }

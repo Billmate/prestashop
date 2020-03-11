@@ -115,10 +115,11 @@
                     if ($this->context->cart->orderExists() || $processing) {
                         error_log('order_exists');
 
-                        if ($processing)
+                        if ($processing) {
                             $order_id = $this->checkOrder($this->cart_id);
-                        else
+                        } else {
                             $order_id = Order::getOrderByCartId($this->cart_id);
+                        }
 
                         $orderObject = new Order($order_id);
 
