@@ -334,6 +334,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         }
         if( $this->ajax = Tools::getValue( "ajax" ) && Tools::getValue('action') == 'validateOrder') {
             $checkout = $this->fetchCheckout();
+            PrestaShopLogger::addLog("javascript success order id: " . $checkout['data']['PaymentData']['order']['order-id']);
             $this->ajax = true;
             $result = $this->sendResponse($checkout);
             
@@ -409,93 +410,90 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
 
         require_once(_PS_MODULE_DIR_.'billmategateway/methods/'.Tools::ucfirst($this->method).'.php');
 
+        try {
 
+            $class = "BillmateMethod" . Tools::ucfirst($this->method);
+            $this->module = new $class;
+            switch ($this->method) {
+                case 'invoice':
+                case 'partpay':
+                case 'invoiceservice':
+                    if (!isset($result['code']) && (isset($result['PaymentData']['order']['number']) && is_numeric($result['PaymentData']['order']['number']) && $result['PaymentData']['order']['number'] > 0)) {
 
-        $class        = "BillmateMethod".Tools::ucfirst($this->method);
-        $this->module = new $class;
-        switch ($this->method) {
-            case 'invoice':
-            case 'partpay':
-            case 'invoiceservice':
-                if (!isset($result['code']) && (isset($result['PaymentData']['order']['number']) && is_numeric($result['PaymentData']['order']['number']) && $result['PaymentData']['order']['number'] > 0)) {
+                        $status = ($this->method == 'invoice') ? Configuration::get('BINVOICE_ORDER_STATUS') : Configuration::get('BPARTPAY_ORDER_STATUS');
+                        $status = ($this->method == 'invoiceservice') ? Configuration::get('BINVOICESERVICE_ORDER_STATUS') : $status;
+                        $status = ($result['PaymentData']['order']['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
 
-                    $status = ($this->method == 'invoice') ? Configuration::get('BINVOICE_ORDER_STATUS') : Configuration::get('BPARTPAY_ORDER_STATUS');
-                    $status = ($this->method == 'invoiceservice') ? Configuration::get('BINVOICESERVICE_ORDER_STATUS') : $status;
-                    $status = ($result['PaymentData']['order']['status'] == 'Pending') ? Configuration::get('BILLMATE_PAYMENT_PENDING') : $status;
+                        if (Validate::isLoadedObject($this->context->cart) && $this->context->cart->OrderExists() == false) {
+                            $extra = array('transaction_id' => $result['PaymentData']['order']['number']);
+                            $total = $this->context->cart->getOrderTotal();
+                            $total = $result['Cart']['Total']['withtax'];
+                            $total = $total / 100;
+                            $customer = new Customer((int)$this->context->cart->id_customer);
+                            $orderId = 0;
+                            if ($this->method == 'partpay') {
+                                $this->module->validateOrder((int)$this->context->cart->id,
+                                    $status,
+                                    $total,
+                                    $this->module->displayName,
+                                    null, $extra, null, false, $customer->secure_key);
+                                $orderId = $this->module->currentOrder;
+                            } else {
+                                $this->module->validateOrder((int)$this->context->cart->id,
+                                    $status,
+                                    $total,
+                                    $this->module->displayName,
+                                    null, $extra, null, false, $customer->secure_key);
+                                $orderId = $this->module->currentOrder;
+                            }
+                            $values = array();
+                            $values['PaymentData'] = array(
+                                'number' => $result['PaymentData']['order']['number'],
+                                'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->module->currentOrderReference : $this->module->currentOrder
+                            );
 
-                    if(Validate::isLoadedObject($this->context->cart) && $this->context->cart->OrderExists() == false) {
-                        $extra = array('transaction_id' => $result['PaymentData']['order']['number']);
-                        $total = $this->context->cart->getOrderTotal();
-                        $total = $result['Cart']['Total']['withtax'];
-                        $total = $total/100;
-                        $customer = new Customer((int)$this->context->cart->id_customer);
-                        $orderId = 0;
-                        if ($this->method == 'partpay') {
-                            $this->module->validateOrder((int)$this->context->cart->id,
-                                $status,
-                                $total,
-                                $this->module->displayName,
-                                null, $extra, null, false, $customer->secure_key);
-                            $orderId = $this->module->currentOrder;
-                        } else {
-                            $this->module->validateOrder((int)$this->context->cart->id,
-                                $status,
-                                $total,
-                                $this->module->displayName,
-                                null, $extra, null, false, $customer->secure_key);
-                            $orderId = $this->module->currentOrder;
+                            $billmate->updatePayment($values);
                         }
-                        $values = array();
-                        $values['PaymentData'] = array(
-                            'number' => $result['PaymentData']['order']['number'],
-                            'orderid' => (Configuration::get('BILLMATE_SEND_REFERENCE') == 'reference') ? $this->module->currentOrderReference : $this->module->currentOrder
+                        $url = $this->context->link->getModuleLink(
+                            'billmategateway',
+                            'thankyou',
+                            array('billmate_hash' => Common::getCartCheckoutHash())
                         );
 
-                        $billmate->updatePayment($values);
-                    }
-                    $url = $this->context->link->getModuleLink(
-                        'billmategateway',
-                        'thankyou',
-                        array('billmate_hash' => Common::getCartCheckoutHash())
-                    );
-
-                    /*$url = 'order-confirmation&id_cart=' . (int)$this->context->cart->id .
-                        '&id_module=' . (int)$this->getmoduleId('billmate' . $this->method) .
-                        '&id_order=' . (int)$orderId .
-                        '&key=' . $customer->secure_key;*/
-                    $return['success'] = true;
-                    $return['redirect'] = $url; //$this->context->link->getPageLink($url, true);
-                    if (isset($this->context->cookie->billmatepno))
-                        unset($this->context->cookie->billmatepno);
-                    Common::unsetCartCheckoutHash();
-                } else {
-                    if (isset($result['code']) AND in_array($result['code'], array(2401, 2402, 2403, 2404, 2405))) {
-                        if (is_array($result)) {
-                            die(Tools::jsonEncode($result));
-                        }
-                    }
-                    //Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
-                    $_message = (isset($result['message'])) ? $result['message'] : '';
-                    $return = array('success' => false, 'content' => utf8_encode($_message));
-                }
-
-                break;
-            case 'bankpay':
-            case 'cardpay':
-                if (!isset($result['code'])) {
-                    if ($this->ajax) {
-                        $return = array('success' => true, 'redirect' => $result['url']);
+                        $return['success'] = true;
+                        $return['redirect'] = $url;
+                        if (isset($this->context->cookie->billmatepno))
+                            unset($this->context->cookie->billmatepno);
+                        Common::unsetCartCheckoutHash();
                     } else {
-                        header('Location: ' . $result['url']);
+                        if (isset($result['code']) AND in_array($result['code'], array(2401, 2402, 2403, 2404, 2405))) {
+                            if (is_array($result)) {
+                                die(Tools::jsonEncode($result));
+                            }
+                        }
+                        $_message = (isset($result['message'])) ? $result['message'] : '';
+                        $return = array('success' => false, 'content' => utf8_encode($_message));
                     }
-                }
-                else {
-                    //Logger::addLog($result['message'], 1, $result['code'], 'Cart', $this->context->cart->id);
-                    $return = array('success' => false, 'content' => utf8_encode($result['message']));
-                }
+
+                    break;
+                case 'bankpay':
+                case 'cardpay':
+                    if (!isset($result['code'])) {
+                        if ($this->ajax) {
+                            $return = array('success' => true, 'redirect' => $result['url']);
+                        } else {
+                            header('Location: ' . $result['url']);
+                        }
+                    } else {
+                        $return = array('success' => false, 'content' => utf8_encode($result['message']));
+                    }
 
 
-                break;
+                    break;
+            }
+        }
+        catch (Exception $e){
+            PrestaShopLogger::addLog("order creation error: " . $e->getMessage(), 4);
         }
         return $return;//die(Tools::JsonEncode($return));
     }
