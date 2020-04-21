@@ -47,6 +47,10 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.6.1 (2020-04-21)
+* Fix - Purchases makes several API calls.
+* Fix - API callbacks sometimes includes an error in respons.
+
 ### 3.6.0 (2020-03-11)
 * Feature - Refactoring callback handeling
 
