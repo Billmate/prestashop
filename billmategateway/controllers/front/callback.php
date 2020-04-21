@@ -74,6 +74,10 @@
             if (!isset($data['code']) && !isset($data['error'])) {
                 $paymentInfo = $this->billmate->getPaymentinfo(array('number' => $data['number']));
             }
+            else {
+                http_response_code(400);
+                die("Invalid Request");
+            }
             PrestaShopLogger::addLog("callback order id: " . $paymentInfo['PaymentData']['orderid']);
             $displayName = $this->module->displayName;
             try {
