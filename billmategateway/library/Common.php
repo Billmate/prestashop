@@ -1,21 +1,13 @@
 <?php
-	/**
-	 * Created by PhpStorm.* User: jesper* Date: 15-03-17 * Time: 15:09
-	 *
-	 * @author    Jesper Johansson jesper@boxedlogistics.se
-	 * @copyright Billmate AB 2015
-	 * @license   OpenSource
-	 */
-
-	/*
-	 * Class for Common Billmate stuff
-	 */
-
 	require_once 'Billmate.php';
 	require_once 'Encoding.php';
 	require_once 'Utf8.php';
-        define('BILLMATE_PLUGIN_VERSION','3.6.0');
-	class Common {
+    define('BILLMATE_PLUGIN_VERSION', '3.6.1');
+
+    /**
+     * Class for Common Billmate related tasks
+     */
+    class Common {
 
 		public static function getBillmate($eid, $secret, $testmode, $ssl = true, $debug = false)
 		{
