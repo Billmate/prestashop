@@ -154,6 +154,7 @@
                         $result = $this->fetchCheckout();
                         if (!$result) {
                             $this->unlockProcess($data['orderid']);
+                            http_response_code(400);
                             die('Checkout does not exist. Wait for complete ordering.');
                         }
                         $customer = $result['Customer'];
