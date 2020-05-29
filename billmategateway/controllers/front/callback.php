@@ -110,8 +110,7 @@
                     require_once($class_file);
                     $class = "BillmateMethod" . Tools::ucfirst($this->method);
                     $this->module = new $class;
-                    $lockfile = _PS_CACHE_DIR_ . $data['orderid'];
-                    $processing = file_exists($lockfile);
+                    $processing = $this->isProcessing($data['orderid']);
                     $order = $data['orderid'];
                     $order = explode('-', $order);
                     $this->cart_id = $order[0];
@@ -139,11 +138,12 @@
                         die('OK');
                     }
 
-                    if ($data['status'] == 'Cancelled')
+                    if ($data['status'] == 'Cancelled') {
                         die('OK');
-                    file_put_contents($lockfile, 1);
+                    }
 
 
+                    $this->lockProcess($data['orderid']);
                     $cart_delivery_option = $this->context->cart->getDeliveryOption();
 
                     if (
@@ -152,6 +152,10 @@
                         || $this->context->cart->id_address_delivery == 0
                     ) {
                         $result = $this->fetchCheckout();
+                        if (!$result) {
+                            $this->unlockProcess($data['orderid']);
+                            die('Checkout does not exist. Wait for complete ordering.');
+                        }
                         $customer = $result['Customer'];
                         $address = $customer['Billing'];
                         $country = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
@@ -374,7 +378,7 @@
                         );
                         $this->billmate->activatePayment($values);
                     }
-                    unlink($lockfile);
+                    $this->unlockProcess($data['orderid']);
                     exit('finalize');
                 }
                 else
@@ -386,6 +390,9 @@
             }
             catch (Exception $e){
                 PrestaShopLogger::addLog("order creation error: " . $e->getMessage(), 4);
+                if (isset($data['orderid'])) {
+                    $this->unlockProcess($data['orderid']);
+                }
                 throw new Exception('callback order creation error: ' . $e->getMessage());
             }
 		}
@@ -514,4 +521,44 @@
             return true;
         }
 
+        /**
+         * @param $orderId
+         */
+        protected function lockProcess($orderId)
+        {
+            $lockfile = $this->getLockFilename($orderId);
+            file_put_contents($lockfile, 1);
+        }
+
+        /**
+         * @param $orderId
+         */
+        protected function unlockProcess($orderId)
+        {
+            if ($this->isProcessing($orderId)) {
+                $lockfile = $this->getLockFilename($orderId);
+                unlink($lockfile);
+            }
+        }
+
+        /**
+         * @param $orderId
+         *
+         * @return bool
+         */
+        protected function isProcessing($orderId)
+        {
+            $lockfile = $this->getLockFilename($orderId);
+            return file_exists($lockfile);
+        }
+
+        /**
+         * @param $orderId
+         *
+         * @return string
+         */
+        protected function getLockFilename($orderId)
+        {
+            return _PS_CACHE_DIR_ . $orderId;
+        }
     }
