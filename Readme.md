@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.6.2 (2020-06-01)
+* Fix - Orders is created in PrestaShop by callback 
+
 ### 3.6.1 (2020-04-21)
 * Fix - Purchases makes several API calls.
 * Fix - API callbacks sometimes includes an error in response
