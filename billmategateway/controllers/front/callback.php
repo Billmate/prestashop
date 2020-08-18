@@ -154,6 +154,23 @@
                         $result = $this->fetchCheckout();
                         if (!$result) {
                             $this->unlockProcess($data['orderid']);
+
+                            // Create the Customer, before die. This is so that a local Order can be created in shop
+                            $customerObject = new Customer();
+                            $password = Tools::passwdGen(8);
+                            $customerObject->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
+                            $customerObject->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
+                            $customerObject->company = isset($address['company']) ? $address['company'] : '';
+                            $customerObject->passwd = $password;
+                            $customerObject->id_default_group = (int)(Configuration::get('PS_CUSTOMER_GROUP', null, $this->context->cart->id_shop));
+
+                            $customerObject->email = $address['email'];
+                            $customerObject->active = true;
+                            $customerObject->add();
+                            $this->context->customer = $customerObject;
+                            $this->context->cart->secure_key = $customerObject->secure_key;
+                            $this->context->cart->id_customer = $customerObject->id;
+
                             http_response_code(400);
                             die('Checkout does not exist. Wait for complete ordering.');
                         }
