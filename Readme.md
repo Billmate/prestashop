@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.6.3 (2020-08-)
+* Fix - When die on callback store cant use fallback code when order data is missing
+
 ### 3.6.2 (2020-06-01)
 * Fix - Orders is created in PrestaShop by callback 
 
