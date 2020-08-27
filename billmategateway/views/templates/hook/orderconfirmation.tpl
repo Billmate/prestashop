@@ -17,5 +17,7 @@
    <p ><strong>{l s='Your order will be sent very soon.' mod='billmategateway'}  {$additional_order_info_html}</p>
    <hr>
    <p> {l s='For any questions or for further information, please contact our' mod='billmategateway'} </p>
-   <button  class="btn btn-info"  href="{$link->getPageLink('contact-form', true)}">{l s='customer support' mod='billmategateway'}</button >
+   <a class="btn btn-info btn-md active" role="button" href="{$link->getPageLink('contact-form', true)}">{l s='customer support' mod='billmategateway'}</a>
+  <hr>
+   <a class="btn btn-primary btn-md active" role="button" href="{$link->getPageLink('', true)}">{l s='continue shopping' mod='billmategateway'}</a>
 </div>
