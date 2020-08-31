@@ -1581,11 +1581,11 @@
                 if (property_exists($customer, 'email') AND $customer->email != '') {
 
                     if ($order->module == 'billmateinvoice' || $order->module == 'billmateinvoiceservice') {
-                        $additional_order_info_html = '<br />'.sprintf($this->l('You have selected to pay with invoice. The invoice will be sent from Billmate to you through email, %s, or your billing address.'), $customer->email);
+                        $additional_order_info_html = ''.sprintf($this->l('You have selected to pay with invoice. The invoice will be sent from Billmate to you through email, %s, or your billing address.'), $customer->email);
                     }
 
                     if ($order->module == 'billmatepartpay') {
-                        $additional_order_info_html = '<br />'.sprintf($this->l('You have selected to pay with part payment. Information regarding the part payment will be sent from Billmate to your billing address.'), $customer->email);
+                        $additional_order_info_html = ''.sprintf($this->l('You have selected to pay with part payment. Information regarding the part payment will be sent from Billmate to your billing address.'), $customer->email);
                     }
                 }
             }
