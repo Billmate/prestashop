@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.6.6 (2020-09-02)
+* Fix - Add check for if Customer exists in BillmatgatewayAcceptModuleFrontController
+
 ### 3.6.5 (2020-09-02)
 * Feature - Remove restrictions for countries
 
