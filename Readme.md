@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.6.5 (2020-09-02)
+* Feature - Remove restrictions for countries
+
 ### 3.6.4 (2020-08-31)
 * Feature - Improve Thank you page
 
