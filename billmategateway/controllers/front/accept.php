@@ -254,10 +254,12 @@
                         || $this->context->cart->id_address_delivery == 0
                     ) {
                         $result = $this->fetchCheckout();
-                        $customer = $result['Customer'];
-                        $address = $customer['Billing'];
-                        $country = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
-                        $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
+                        if (isset($result['Customer'])) {
+                            $customer = $result['Customer'];
+                            $address = $customer['Billing'];
+                            $country = isset($customer['Billing']['country']) ? $customer['Billing']['country'] : 'SE';
+                            $bill_phone = isset($customer['Billing']['phone']) ? $customer['Billing']['phone'] : '';
+                        }
                     }
 
                     /** Create customer when missing */
