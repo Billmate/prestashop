@@ -360,6 +360,8 @@
                     $this->context->cart->save();
 
                     $customer = new Customer($this->context->cart->id_customer);
+                    $customer->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
+                    $customer->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
                     $total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
                     $extra = array('transaction_id' => $data['number']);
 
