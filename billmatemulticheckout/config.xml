@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>billmatemulticheckout</name>
+    <displayName><![CDATA[Billmate multi store checkout enable]]></displayName>
+    <version><![CDATA[3.1.5]]></version>
+    <description><![CDATA[This module adds Billmate multi store billmate checkout enable.]]></description>
+    <author><![CDATA[Billmate AB]]></author>
+    <tab><![CDATA[pricing_promotion]]></tab>
+    <confirmUninstall><![CDATA[Are you sure you want to uninstall?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+    <limited_countries></limited_countries>
+</module>
