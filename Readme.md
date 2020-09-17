@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.7.0 (2020-09-17)
+* Feature - Add support for Multistore
+
 ### 3.6.7 (2020-09-17)
 * Fix - Add check for if firstname and lastname are set in Callback
 
