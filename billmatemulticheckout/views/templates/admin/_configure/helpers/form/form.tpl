@@ -2,7 +2,6 @@
 
 {block name="label"}
     {if $input.type == 'topform'}
-
         <div class="panel ">
             <div class="panel-heading">
                 <i class="icon-cogs"></i>     
