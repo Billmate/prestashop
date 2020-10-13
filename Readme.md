@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.7.2 (2020-10-13)
+* Revert - Remove custom Billmate thank you page and use Prestashop standard thank you page
+
 ### 3.7.1 (2020-10-13)
 * Fix - Remove custom Billmate thank you page and use Prestashop standard thank you page
 
