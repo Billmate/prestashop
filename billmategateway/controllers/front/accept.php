@@ -153,20 +153,26 @@
                             $orderHistory->changeIdOrderState($status, (int)$orderObject->id, true);
                             $orderHistory->add();
                         }
-
-                        if (isset($this->context->cookie->billmatepno)) {
+                        if (isset($this->context->cookie->billmatepno))
                             unset($this->context->cookie->billmatepno);
+
+                        if (Common::getCartCheckoutHash() !=  '') {
+                            $hash = Common::getCartCheckoutHash();
+                            Common::unsetCartCheckoutHash();
+                            $url = $this->context->link->getModuleLink(
+                                'billmategateway',
+                                'thankyou',
+                                array('billmate_hash' => $hash));
+                            Tools::redirectLink($url);
+                            die;
+                        } else {
+
+
+                            Tools::redirectLink(__PS_BASE_URI__ . 'order-confirmation.php?key=' . $customer->secure_key .
+                                '&id_cart=' . (int)$this->context->cart->id . '&id_module=' . (int)$this->getmoduleId('billmate' . $this->method) .
+                                '&id_order=' . (int)$order_id);
+                            die;
                         }
-
-                        $realModuleId = Module::getModuleIdByName($this->module->name);
-
-                        Tools::redirect('index.php?controller=order-confirmation' .
-                            '&id_cart=' . (int)$this->cart_id .
-                            '&id_module=' . (int)$realModuleId .
-                            '&id_order='. $this->module->currentOrder .
-                            '&key='.$customer->secure_key
-                        );
-                        die;
                     } else {
 
 
@@ -267,17 +273,8 @@
                         $customerObject->id_default_group = (int)(Configuration::get('PS_CUSTOMER_GROUP', null, $this->context->cart->id_shop));
 
                         $customerObject->email = $address['email'];
-                        $customerObject->is_guest = true;
                         $customerObject->active = true;
                         $customerObject->add();
-
-                        $this->context->cookie->logged = 1;
-                        $this->context->cookie->id_customer = (int)$customerObject->id;
-                        $this->context->cookie->customer_lastname = $customerObject->lastname;
-                        $this->context->cookie->customer_firstname = $customerObject->firstname;
-                        $this->context->cookie->passwd = $customerObject->passwd;
-                        $this->context->cookie->email = $customerObject->email;
-
                         $this->context->customer = $customerObject;
                         $this->context->cart->secure_key = $customerObject->secure_key;
                         $this->context->cart->id_customer = $customerObject->id;
@@ -478,20 +475,28 @@
                         $this->billmate->activatePayment($values);
                     }
                     unlink($lockfile);
-
-                    if (isset($this->context->cookie->billmatepno)) {
+                    if (isset($this->context->cookie->billmatepno))
                         unset($this->context->cookie->billmatepno);
+
+                    if ('' != Common::getCartCheckoutHash()) {
+                        $hash = Common::getCartCheckoutHash();
+                        Common::unsetCartCheckoutHash();
+                        $url = $this->context->link->getModuleLink(
+                            'billmategateway',
+                            'thankyou',
+                            array('billmate_hash' => $hash));
+                        Tools::redirectLink($url);
+                        die;
+                    } else {
+
+
+                        Tools::redirectLink(__PS_BASE_URI__ . 'order-confirmation.php?key=' . $customer->secure_key .
+                            '&id_cart=' . (int)$this->context->cart->id . '&id_module=' . (int)$this->getmoduleId('billmate' . $this->method) .
+                            '&id_order=' . (int)$this->module->currentOrder);
+                        die;
                     }
 
-                    $realModuleId = Module::getModuleIdByName($this->module->name);
 
-                    Tools::redirect('index.php?controller=order-confirmation' .
-                        '&id_cart=' . (int)$cart->id .
-                        '&id_module=' . (int)$realModuleId .
-                        '&id_order='. $this->module->currentOrder .
-                        '&key='.$customer->secure_key
-                    );
-                    die;
                 } else {
                     $order = $data['orderid'];
                     $order = explode('-', $order);
