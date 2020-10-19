@@ -1,71 +1,76 @@
 <?php
-	/**
-	 * Created by PhpStorm.* User: jesper* Date: 15-03-17 * Time: 15:09
-	 *
-	 * @author    Jesper Johansson jesper@boxedlogistics.se
-	 * @copyright Billmate AB 2015
-	 * @license   OpenSource
-	 */
+    /**
+     * Created by PhpStorm.* User: jesper* Date: 15-03-17 * Time: 15:09
+     *
+     * @author    Jesper Johansson jesper@boxedlogistics.se
+     * @copyright Billmate AB 2015
+     * @license   OpenSource
+     */
 
-	/*
-	 * The controller for accept payment
-	 */
+    /*
+     * The controller for accept payment
+     */
 
-	class BillmategatewayAcceptModuleFrontController extends ModuleFrontController {
+    class BillmategatewayAcceptModuleFrontController extends ModuleFrontController {
 
-		public $module;
-		protected $method;
-		protected $billmate;
-		protected $cart_id;
-		protected $coremodule;
+        public $module;
+        protected $method;
+        protected $billmate;
+        protected $cart_id;
+        protected $coremodule;
 
-		/**
-		 * A recursive method which delays order-confirmation until order is processed
-		 *
-		 * @param $cart_id Cart Id
-		 *
-		 * @return integer OrderId
-		 */
+        /**
+         * A recursive method which delays order-confirmation until order is processed
+         *
+         * @param $cart_id Cart Id
+         *
+         * @return integer OrderId
+         */
 
-		private function checkOrder($cart_id, $attempt = 0)
-		{
+        private function checkOrder($cart_id, $attempt = 0)
+        {
             /*STOP THIS FROM LOCKING INTO AN ENDLESS LOOP*/
             $attempt++;
             if (3 == $attempt) {
                 die('OK');
             }
-			$order = Order::getOrderByCartId($cart_id);
-			if (!$order)
-			{
-				sleep(1);
-				$this->checkOrder($cart_id, $attempt);
-			}
-			else
-				return $order;
+            $order = Order::getOrderByCartId($cart_id);
+            if (!$order)
+            {
+                sleep(1);
+                $this->checkOrder($cart_id, $attempt);
+            }
+            else
+                return $order;
 
-		}
+        }
 
-		public function getmoduleId($method)
-		{
-			$id2name = array();
-			$sql = 'SELECT `id_module`, `name` FROM `'._DB_PREFIX_.'module`';
-			if ($results = Db::getInstance()->executeS($sql)) {
-				foreach ($results as $row) {
-					$id2name[$row['name']] = $row['id_module'];
-				}
-			}
+        public function getmoduleId($method)
+        {
+            $id2name = array();
+            $sql = 'SELECT `id_module`, `name` FROM `'._DB_PREFIX_.'module`';
+            if ($results = Db::getInstance()->executeS($sql)) {
+                foreach ($results as $row) {
+                    $id2name[$row['name']] = $row['id_module'];
+                }
+            }
 
-			return $id2name[$method];
-		}
+            return $id2name[$method];
+        }
 
-		public function postProcess()
-		{
-		    try {
+        public function postProcess()
+        {
+            try {
                 $this->method = Tools::getValue('method');
                 $eid = Configuration::get('BILLMATE_ID');
                 $secret = Configuration::get('BILLMATE_SECRET');
                 $ssl = true;
                 $debug = false;
+
+                // Make sure guest checkout is active when using Billmate Checkout
+                if ($this->method == 'checkout' && !Configuration::get('PS_GUEST_CHECKOUT_ENABLED')) {
+                    Configuration::updateGlobalValue('PS_GUEST_CHECKOUT_ENABLED', 1);
+                }
 
                 $class_file = _PS_MODULE_DIR_ . 'billmategateway/methods/' . Tools::ucfirst($this->method) . '.php';
                 require_once($class_file);
@@ -153,26 +158,21 @@
                             $orderHistory->changeIdOrderState($status, (int)$orderObject->id, true);
                             $orderHistory->add();
                         }
-                        if (isset($this->context->cookie->billmatepno))
+
+                        if (isset($this->context->cookie->billmatepno)) {
                             unset($this->context->cookie->billmatepno);
-
-                        if (Common::getCartCheckoutHash() !=  '') {
-                            $hash = Common::getCartCheckoutHash();
-                            Common::unsetCartCheckoutHash();
-                            $url = $this->context->link->getModuleLink(
-                                'billmategateway',
-                                'thankyou',
-                                array('billmate_hash' => $hash));
-                            Tools::redirectLink($url);
-                            die;
-                        } else {
-
-
-                            Tools::redirectLink(__PS_BASE_URI__ . 'order-confirmation.php?key=' . $customer->secure_key .
-                                '&id_cart=' . (int)$this->context->cart->id . '&id_module=' . (int)$this->getmoduleId('billmate' . $this->method) .
-                                '&id_order=' . (int)$order_id);
-                            die;
                         }
+
+                        $realModuleId = Module::getModuleIdByName($this->module->name);
+
+                         Tools::redirect('index.php?controller=order-confirmation' .
+                            '&id_cart=' . (int)$this->context->cart->id .
+                            '&id_module=' . (int)$realModuleId .
+                            '&id_order=' . (int)$order_id .
+                            '&key=' . $customer->secure_key .
+                            '&token=1'
+                        );
+                        die;
                     } else {
 
 
@@ -223,11 +223,15 @@
 
                                 $billmate->updatePayment($values);
                             }
-                            $url = $this->context->link->getModuleLink(
-                                'billmatecheckout',
-                                'thankyou',
-                                array('BillmateHash' => Common::getCartCheckoutHash())
-                            );
+
+                            $realModuleId = Module::getModuleIdByName($this->module->name);
+
+                            $url = 'index.php?controller=order-confirmation' .
+                                '&id_cart=' . (int)$this->context->cart->id .
+                                '&id_module=' . (int)$realModuleId .
+                                '&id_order=' . $this->module->currentOrder .
+                                '&key=' . $customer->secure_key .
+                                '&token=2';
 
                             $return['success'] = true;
                             $return['redirect'] = $url;
@@ -269,15 +273,43 @@
                         $customerObject->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
                         $customerObject->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
                         $customerObject->company = isset($address['company']) ? $address['company'] : '';
-                        $customerObject->passwd = $password;
-                        $customerObject->id_default_group = (int)(Configuration::get('PS_CUSTOMER_GROUP', null, $this->context->cart->id_shop));
-
                         $customerObject->email = $address['email'];
-                        $customerObject->active = true;
+                        $customerObject->passwd = Tools::encrypt($password);
+                        $customerObject->id_default_group = (int)(Configuration::get('PS_GUEST_GROUP', null, $this->context->cart->id_shop));
+                        $customerObject->id_gender = 9;
+                        $customerObject->newsletter = 0;
+                        $customerObject->optin = 0;
+                        $customerObject->is_guest = 1;
+                        $customerObject->active = 1;
                         $customerObject->add();
+
+                        if (version_compare(_PS_VERSION_, '1.7.0.0', '>')) {
+                            $this->context->cookie->id_customer = (int)$customerObject->id;
+                            $this->context->cookie->customer_lastname = $customerObject->lastname;
+                            $this->context->cookie->customer_firstname = $customerObject->firstname;
+                            $this->context->cookie->passwd = $customerObject->passwd;
+                            $this->context->cookie->email = $customerObject->email;
+                        }
+
                         $this->context->customer = $customerObject;
-                        $this->context->cart->secure_key = $customerObject->secure_key;
+
                         $this->context->cart->id_customer = $customerObject->id;
+                        $this->context->cart->secure_key = $customerObject->secure_key;
+                        $this->context->cart->save();
+
+                        try {
+                            $query = sprintf(
+                                'UPDATE %s_cart SET id_customer = "%s", secure_key = "%s" WHERE id_cart= ""',
+                                _DB_PREFIX_,
+                                $customerObject->id,
+                                $customerObject->secure_key,
+                                $this->context->cart->id
+                            );
+
+                            Db::getInstance()->execute($query);
+                        } catch (Exception $e) {
+                            // Ignore
+                        }
                     }
 
                     /** Create billing/shipping address when missing */
@@ -475,28 +507,23 @@
                         $this->billmate->activatePayment($values);
                     }
                     unlink($lockfile);
-                    if (isset($this->context->cookie->billmatepno))
+
+                    if (isset($this->context->cookie->billmatepno)) {
                         unset($this->context->cookie->billmatepno);
-
-                    if ('' != Common::getCartCheckoutHash()) {
-                        $hash = Common::getCartCheckoutHash();
-                        Common::unsetCartCheckoutHash();
-                        $url = $this->context->link->getModuleLink(
-                            'billmategateway',
-                            'thankyou',
-                            array('billmate_hash' => $hash));
-                        Tools::redirectLink($url);
-                        die;
-                    } else {
-
-
-                        Tools::redirectLink(__PS_BASE_URI__ . 'order-confirmation.php?key=' . $customer->secure_key .
-                            '&id_cart=' . (int)$this->context->cart->id . '&id_module=' . (int)$this->getmoduleId('billmate' . $this->method) .
-                            '&id_order=' . (int)$this->module->currentOrder);
-                        die;
                     }
 
+                    $realModuleId = Module::getModuleIdByName($this->module->name);
+                    $realOrder = new Order((int)$this->module->currentOrder);
+                    $realCustomerId = $realOrder->id_customer;
+                    $realCustomer = new Customer((int)$realCustomerId);
 
+                    Tools::redirect('index.php?controller=order-confirmation' .
+                        '&id_cart=' . (int)$this->context->cart->id .
+                        '&id_module=' . (int)$realModuleId .
+                        '&key=' . $realCustomer->secure_key .
+                        '&token=3'
+                    );
+                    die;
                 } else {
                     $order = $data['orderid'];
                     $order = explode('-', $order);
@@ -506,7 +533,7 @@
             catch (Exception $e){
                 PrestaShopLogger::addLog("order creation error: " . $e->getMessage(), 4);
             }
-		}
+        }
 
         public function fetchCheckout()
         {
