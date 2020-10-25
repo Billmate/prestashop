@@ -78,7 +78,47 @@
                 http_response_code(400);
                 die("Invalid Request");
             }
-            PrestaShopLogger::addLog("callback order id: " . $paymentInfo['PaymentData']['orderid']);
+
+            PrestaShopLogger::addLog("Callback for order #" . $paymentInfo['PaymentData']['orderid']);
+
+            if (!empty($data['number']) && !empty($data['orderid'])) {
+                $cartId = explode('-', $data['orderid']);
+                $cartId = isset($cartId[0]) ? $cartId[0] : $cartId;
+                $transactionId = $data['number'];
+
+                if ($order = Order::getOrderByCartId($cartId)) {
+                    $payment = OrderPayment::getByOrderReference($order->reference);
+
+                    if (!empty($payment->transaction_id) && $payment->transaction_id != $transactionId) {
+                        PrestaShopLogger::addLog(
+                            sprintf('An order (ID %s) with a different transaction already exists for this cart (ID %s)', $order->id_order, $cartId)
+                        );
+
+                        $response = $this->billmate->cancelPayment(array('number' => $transactionId));
+
+                        if (!empty($response['code']) && !empty($response['error'])) {
+                            PrestaShopLogger::addLog(
+                                sprintf('Failed to cancel payment (ID %s), %s', $response['error'])
+                            );
+                        } elseif (empty($response['data']) && empty($response['data']['status'])) {
+                            PrestaShopLogger::addLog(
+                                sprintf('Failed to cancel payment (ID %s), incorrect data was received', $transactionId)
+                            );
+                        } elseif ($response['data']['status'] !== 'Cancelled') {
+                            PrestaShopLogger::addLog(
+                                sprintf('Failed to cancel payment (ID %s), incorrect status was received', $transactionId)
+                            );
+                        } else {
+                            PrestaShopLogger::addLog(
+                                sprintf('Cancelled payment (ID %s) because an order already exists', $transactionId)
+                            );
+                        }
+
+                        die('OK');
+                    }
+                }
+            }
+
             $displayName = $this->module->displayName;
             try {
                 if ($this->method == 'checkout') {
