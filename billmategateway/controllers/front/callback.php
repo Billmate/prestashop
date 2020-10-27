@@ -81,13 +81,28 @@
 
             PrestaShopLogger::addLog("Callback for order #" . $paymentInfo['PaymentData']['orderid']);
 
-            if (!empty($data['number']) && !empty($data['orderid'])) {
+            /* Here we'll make sure the cart id hasn't been used yet.
+               First we'll check if the status is created or paid.
+               Then we'll check if an order already exists for the given cart id.
+               If an order exists, we'll compare the transaction id's.
+               If the transactions id's don't match, we'll cancel the given
+               payment since it's most likely a duplicated order/payment.
+            */
+            if (!empty($data['number']) && !empty($data['orderid']) && !empty($data['status'])) {
                 $cartId = explode('-', $data['orderid']);
                 $cartId = isset($cartId[0]) ? $cartId[0] : $cartId;
                 $transactionId = $data['number'];
 
-                if ($order = Order::getOrderByCartId($cartId)) {
-                    $payment = OrderPayment::getByOrderReference($order->reference);
+                if (version_compare(_PS_VERSION_, '1.7.0.0', '>')) {
+                    $order = Order::getByCartId($cartId);
+                } else {
+                    $orderId = Order::getOrderByCartId($cartId);
+                    $order = new Order($orderId);
+                }
+
+                if (in_array($data['status'], ['Created', 'Paid']) && !empty($order)) {
+                    $payments = OrderPayment::getByOrderReference($order->reference);
+                    $payment = isset($payments[0]) ? $payments[0] : null;
 
                     if (!empty($payment->transaction_id) && $payment->transaction_id != $transactionId) {
                         PrestaShopLogger::addLog(
@@ -100,11 +115,11 @@
                             PrestaShopLogger::addLog(
                                 sprintf('Failed to cancel payment (ID %s), %s', $response['error'])
                             );
-                        } elseif (empty($response['data']) && empty($response['data']['status'])) {
+                        } elseif (empty($response['number']) && empty($response['status'])) {
                             PrestaShopLogger::addLog(
                                 sprintf('Failed to cancel payment (ID %s), incorrect data was received', $transactionId)
                             );
-                        } elseif ($response['data']['status'] !== 'Cancelled') {
+                        } elseif ($response['status'] !== 'Cancelled') {
                             PrestaShopLogger::addLog(
                                 sprintf('Failed to cancel payment (ID %s), incorrect status was received', $transactionId)
                             );
