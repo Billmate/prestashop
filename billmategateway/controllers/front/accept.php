@@ -97,8 +97,57 @@
                 if (!isset($data['code']) && !isset($data['error'])) {
                     $paymentInfo = $this->billmate->getPaymentinfo(array('number' => $data['number']));
                 }
-                PrestaShopLogger::addLog("accept url order id: " . $paymentInfo['PaymentData']['orderid']);
 
+                PrestaShopLogger::addLog("Accept for order #" . $paymentInfo['PaymentData']['orderid']);
+
+                /* Here we'll make sure the cart id hasn't been used yet.
+                   First we'll check if an order already exists for the given cart id.
+                   If an order exists, we'll compare the transaction id's.
+                   If the transactions id's don't match, redirect user to
+                   confirmation page for the existing order.
+                */
+                if (!empty($data['number']) && !empty($data['orderid'])) {
+                    $cartId = explode('-', $data['orderid']);
+                    $cartId = isset($cartId[0]) ? $cartId[0] : $cartId;
+                    $transactionId = $data['number'];
+
+                    if (version_compare(_PS_VERSION_, '1.7.0.0', '>')) {
+                        $order = Order::getByCartId($cartId);
+                    } else {
+                        $orderId = Order::getOrderByCartId($cartId);
+                        $order = new Order($orderId);
+                    }
+
+                    if (!empty($order)) {
+                        $payments = OrderPayment::getByOrderReference($order->reference);
+                        $payment = isset($payments[0]) ? $payments[0] : null;
+
+                        if (!empty($payment->transaction_id) && $payment->transaction_id != $transactionId) {
+                            $realModuleId = Module::getModuleIdByName($this->module->name);
+
+                            $customer = new Customer($order->id_customer);
+
+                            if (version_compare(_PS_VERSION_, '1.7.0.0', '>')) {
+                                $this->context->cookie->id_customer = (int)$customer->id;
+                                $this->context->cookie->customer_lastname = $customer->lastname;
+                                $this->context->cookie->customer_firstname = $customer->firstname;
+                                $this->context->cookie->passwd = $customer->passwd;
+                                $this->context->cookie->email = $customer->email;
+                            }
+
+                            $this->context->customer = $customer;
+
+                             Tools::redirect('index.php?controller=order-confirmation' .
+                                '&id_cart=' . (int)$cartId .
+                                '&id_module=' . (int)$realModuleId .
+                                '&id_order=' . (int)$order->id .
+                                '&key=' . $customer->secure_key .
+                                '&token=0'
+                            );
+                            die;
+                        }
+                    }
+                }
 
                 $displayName = $this->module->displayName;
                 if ($this->method == 'checkout') {
