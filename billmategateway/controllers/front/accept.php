@@ -322,7 +322,7 @@
                         $customerObject->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
                         $customerObject->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
                         $customerObject->company = isset($address['company']) ? $address['company'] : '';
-                        $customerObject->email = $address['email'];
+                        $customerObject->email = isset($address['email']) ? $address['email'] : '';
                         $customerObject->passwd = Tools::encrypt($password);
                         $customerObject->id_default_group = (int)(Configuration::get('PS_GUEST_GROUP', null, $this->context->cart->id_shop));
                         $customerObject->id_gender = 9;
