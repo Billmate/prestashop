@@ -219,7 +219,7 @@
                             $customerObject->passwd = $password;
                             $customerObject->id_default_group = (int)(Configuration::get('PS_CUSTOMER_GROUP', null, $this->context->cart->id_shop));
 
-                            $customerObject->email = $address['email'];
+                            $customerObject->email = isset($address['email']) ? $address['email'] : '';
                             $customerObject->active = true;
                             $customerObject->add();
                             $this->context->customer = $customerObject;
