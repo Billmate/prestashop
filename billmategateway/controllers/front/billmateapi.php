@@ -179,9 +179,9 @@
 			$customer['Billing']  = array(
 				'firstname' => mb_convert_encoding($billing_address->firstname,'UTF-8','auto'),
 				'lastname'  => mb_convert_encoding($billing_address->lastname,'UTF-8','auto'),
-				'company'   => mb_convert_encoding($billing_address->company,'UTF-8','auto'),
+				'company'   => !empty($billing_address->company) ? mb_convert_encoding($billing_address->company,'UTF-8','auto') : null,
 				'street'    => mb_convert_encoding($billing_address->address1,'UTF-8','auto'),
-				'street2'   => mb_convert_encoding($billing_address->address2,'UTF-8','auto'),
+				'street2'   => !empty($billing_address->address2) ? mb_convert_encoding($billing_address->address2,'UTF-8','auto') : null,
 				'zip'       => mb_convert_encoding(str_replace(' ','',$billing_address->postcode),'UTF-8','auto'),
 				'city'      => mb_convert_encoding($billing_address->city,'UTF-8','auto'),
 				'country'   => mb_convert_encoding(Country::getIsoById($billing_address->id_country),'UTF-8','auto'),
@@ -191,9 +191,9 @@
 			$customer['Shipping'] = array(
 				'firstname' => mb_convert_encoding($shipping_address->firstname,'UTF-8','auto'),
 				'lastname'  => mb_convert_encoding($shipping_address->lastname,'UTF-8','auto'),
-				'company'   => mb_convert_encoding($shipping_address->company,'UTF-8','auto'),
+				'company'   => !empty($shipping_address->company) ? mb_convert_encoding($shipping_address->company,'UTF-8','auto') : null,
 				'street'    => mb_convert_encoding($shipping_address->address1,'UTF-8','auto'),
-				'street2'   => mb_convert_encoding($shipping_address->address2,'UTF-8','auto'),
+				'street2'   => !empty($shipping_address->address2) ? mb_convert_encoding($shipping_address->address2,'UTF-8','auto') : null,
 				'zip'       => mb_convert_encoding(str_replace(' ','',$shipping_address->postcode),'UTF-8','auto'),
 				'city'      => mb_convert_encoding($shipping_address->city,'UTF-8','auto'),
 				'country'   => mb_convert_encoding(Country::getIsoById($shipping_address->id_country),'UTF-8','auto'),
@@ -466,8 +466,13 @@
 			$billing  = new Address($this->context->cart->id_address_invoice);
 			$shipping = new Address($this->context->cart->id_address_delivery);
 
-			$user_ship = $shipping->firstname.' '.$shipping->lastname.' '.$shipping->company;
-			$user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+            $user_ship = !empty($billing->company) ?
+                $shipping->firstname . ' ' . $shipping->lastname . ' ' . $shipping->company :
+                $shipping->firstname . ' ' . $shipping->lastname;
+
+            $user_bill = !empty($billing->company) ?
+                $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company :
+                $billing->firstname . ' ' . $billing->lastname;
 
 			$first_arr = explode(' ', $shipping->firstname);
 			$last_arr  = explode(' ', $shipping->lastname);
@@ -523,7 +528,10 @@
 						{
 							$billing  = new Address($customer_address['id_address']);
 
-							$user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+				            $user_bill = !empty($billing->company) ?
+				                $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company :
+				                $billing->firstname . ' ' . $billing->lastname;
+
 							$company = isset($address['company']) ? $address['company'] : '';
 							$api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
 
@@ -540,7 +548,10 @@
 							{
 								$billing  = new Address($c_address['id_address']);
 
-								$user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+					            $user_bill = !empty($billing->company) ?
+					                $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company :
+					                $billing->firstname . ' ' . $billing->lastname;
+
 								$company = isset($address['company']) ? $address['company'] : '';
 								$api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
 
@@ -562,7 +573,7 @@
 
 						$addressnew->firstname = !empty($address['firstname']) ? $address['firstname'] : $billing->firstname;
 						$addressnew->lastname  = !empty($address['lastname']) ? $address['lastname'] : $billing->lastname;
-						$addressnew->company   = isset($address['company']) ? $address['company'] : '';
+						$addressnew->company   = !empty($address['company']) ? $address['company'] : '';
 
 						$addressnew->phone        = $billing->phone;
 						$addressnew->phone_mobile = $billing->phone_mobile;
@@ -768,7 +779,7 @@
 								null, $extra, null, false, $customer->secure_key);
 							$orderId = $this->module->currentOrder;
 						}
-						else 
+						else
 						{
 							$this->module->validateOrder((int)$this->context->cart->id,
 								$status,

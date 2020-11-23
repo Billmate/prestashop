@@ -50,7 +50,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $password = Tools::passwdGen(8);
             $customerObject->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
             $customerObject->lastname  = !empty($address['lastname']) ? $address['lastname'] : '';
-            $customerObject->company   = isset($address['company']) ? $address['company'] : '';
+            $customerObject->company   = !empty($address['company']) ? $address['company'] : '';
             $customerObject->passwd = $password;
             $customerObject->id_default_group = (int) (Configuration::get('PS_CUSTOMER_GROUP', null, $this->context->cart->id_shop));
             $customerObject->email = $address['email'];
@@ -76,7 +76,10 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             {
                 $billing  = new Address($customer_address['id_address']);
 
-                $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+                $user_bill = !empty($billing->company) ?
+                    $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company :
+                    $billing->firstname . ' ' . $billing->lastname;
+
                 $company = isset($address['company']) ? $address['company'] : '';
                 $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
 
@@ -93,7 +96,10 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                 {
                     $billing  = new Address($c_address['id_address']);
 
-                    $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+                    $user_bill = !empty($billing->company) ?
+                        $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company :
+                        $billing->firstname . ' ' . $billing->lastname;
+
                     $company = isset($address['company']) ? $address['company'] : '';
                     $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
 
@@ -114,7 +120,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $addressnew->id_customer = (int)$this->context->cart->id_customer;
             $addressnew->firstname = !empty($address['firstname']) ? $address['firstname'] : $billing->firstname;
             $addressnew->lastname  = !empty($address['lastname']) ? $address['lastname'] : $billing->lastname;
-            $addressnew->company   = isset($address['company']) ? $address['company'] : '';
+            $addressnew->company   = !empty($address['company']) ? $address['company'] : '';
             $addressnew->phone        = $address['phone'];
             $addressnew->phone_mobile = $address['phone'];
             $addressnew->address1 = $address['street'];
@@ -151,7 +157,11 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                 if (isset($customer_address['address1']))
                 {
                     $billing  = new Address($customer_address['id_address']);
-                    $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+
+                    $user_bill = !empty($billing->company) ?
+                        $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company :
+                        $billing->firstname . ' ' . $billing->lastname;
+
                     $company = isset($address['company']) ? $address['company'] : '';
                     $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
                     if (Common::matchstr($user_bill,$api_name) && Common::matchstr($customer_address['address1'], $address['street']) &&
@@ -165,7 +175,11 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                     foreach ($customer_address as $c_address)
                     {
                         $billing  = new Address($c_address['id_address']);
-                        $user_bill = $billing->firstname.' '.$billing->lastname.' '.$billing->company;
+
+                        $user_bill = !empty($billing->company) ?
+                            $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company :
+                            $billing->firstname . ' ' . $billing->lastname;
+
                         $company = isset($address['company']) ? $address['company'] : '';
                         $api_name = $address['firstname']. ' '. $address['lastname'].' '.$company;
                         if (Common::matchstr($user_bill,$api_name) &&  Common::matchstr($c_address['address1'], $address['street']) &&
@@ -184,7 +198,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                 $addressshipping->id_customer = (int)$this->context->cart->id_customer;
                 $addressshipping->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
                 $addressshipping->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
-                $addressshipping->company = isset($address['company']) ? $address['company'] : '';
+                $addressshipping->company = !empty($address['company']) ? $address['company'] : '';
                 $addressshipping->phone = isset($address['phone']) ? $address['phone'] : $bill_phone;
                 $addressshipping->phone_mobile = isset($address['phone']) ? $address['phone'] : $bill_phone;
                 $addressshipping->address1 = $address['street'];
@@ -276,7 +290,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $result['success'] = true;
             echo Tools::jsonEncode($result);
             die;
-            
+
         }
 
         if($this->ajax = Tools::getValue('ajax') && Tools::getValue('action') == 'addComment'){
@@ -337,10 +351,10 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             PrestaShopLogger::addLog("javascript success order id: " . $checkout['data']['PaymentData']['order']['order-id']);
             $this->ajax = true;
             $result = $this->sendResponse($checkout);
-            
+
             echo Tools::jsonEncode($result);
             die();
-        
+
         }
     }
 

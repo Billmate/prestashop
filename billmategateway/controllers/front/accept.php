@@ -321,8 +321,8 @@
                         $password = Tools::passwdGen(8);
                         $customerObject->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
                         $customerObject->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
-                        $customerObject->company = isset($address['company']) ? $address['company'] : '';
-                        $customerObject->email = isset($address['email']) ? $address['email'] : '';
+                        $customerObject->company = !empty($address['company']) ? $address['company'] : '';
+                        $customerObject->email = !empty($address['email']) ? $address['email'] : '';
                         $customerObject->passwd = Tools::encrypt($password);
                         $customerObject->id_default_group = (int)(Configuration::get('PS_GUEST_GROUP', null, $this->context->cart->id_shop));
                         $customerObject->id_gender = 9;
@@ -376,7 +376,10 @@
                             if (isset($customer_address['address1'])) {
                                 $billing = new Address($customer_address['id_address']);
 
-                                $user_bill = $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company;
+                                $user_bill = !empty($billing->company) ?
+                                    $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company :
+                                    $billing->firstname . ' ' . $billing->lastname;
+
                                 $company = isset($address['company']) ? $address['company'] : '';
                                 $api_name = $address['firstname'] . ' ' . $address['lastname'] . ' ' . $company;
 
@@ -390,7 +393,10 @@
                                 foreach ($customer_address as $c_address) {
                                     $billing = new Address($c_address['id_address']);
 
-                                    $user_bill = $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company;
+                                    $user_bill = !empty($billing->company) ?
+                                        $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company :
+                                        $billing->firstname . ' ' . $billing->lastname;
+
                                     $company = isset($address['company']) ? $address['company'] : '';
                                     $api_name = $address['firstname'] . ' ' . $address['lastname'] . ' ' . $company;
 
@@ -413,7 +419,7 @@
 
                             $addressnew->firstname = !empty($address['firstname']) ? $address['firstname'] : $billing->firstname;
                             $addressnew->lastname = !empty($address['lastname']) ? $address['lastname'] : $billing->lastname;
-                            $addressnew->company = isset($address['company']) ? $address['company'] : '';
+                            $addressnew->company = !empty($address['company']) ? $address['company'] : '';
 
                             $addressnew->phone = $address['phone'];
                             $addressnew->phone_mobile = $address['phone'];
@@ -455,7 +461,10 @@
                                 if (isset($customer_address['address1'])) {
                                     $billing = new Address($customer_address['id_address']);
 
-                                    $user_bill = $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company;
+                                    $user_bill = !empty($billing->company) ?
+                                        $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company :
+                                        $billing->firstname . ' ' . $billing->lastname;
+
                                     $company = isset($address['company']) ? $address['company'] : '';
                                     $api_name = $address['firstname'] . ' ' . $address['lastname'] . ' ' . $company;
 
@@ -469,7 +478,10 @@
                                     foreach ($customer_address as $c_address) {
                                         $billing = new Address($c_address['id_address']);
 
-                                        $user_bill = $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company;
+                                        $user_bill = !empty($billing->company) ?
+                                            $billing->firstname . ' ' . $billing->lastname . ' ' . $billing->company :
+                                            $billing->firstname . ' ' . $billing->lastname;
+
                                         $company = isset($address['company']) ? $address['company'] : '';
                                         $api_name = $address['firstname'] . ' ' . $address['lastname'] . ' ' . $company;
 
@@ -492,7 +504,7 @@
 
                                 $addressshipping->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
                                 $addressshipping->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
-                                $addressshipping->company = isset($address['company']) ? $address['company'] : '';
+                                $addressshipping->company = !empty($address['company']) ? $address['company'] : '';
 
                                 $addressshipping->phone = isset($address['phone']) ? $address['phone'] : $bill_phone;
                                 $addressshipping->phone_mobile = isset($address['phone']) ? $address['phone'] : $bill_phone;

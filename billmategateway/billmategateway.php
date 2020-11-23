@@ -938,7 +938,7 @@
 				$values['Customer']['Billing']  = array(
 						'firstname' => mb_convert_encoding($billing_address->firstname,'UTF-8','auto'),
 						'lastname'  => mb_convert_encoding($billing_address->lastname,'UTF-8','auto'),
-						'company'   => mb_convert_encoding($billing_address->company,'UTF-8','auto'),
+						'company'   => !empty($billing_address->company) ? mb_convert_encoding($billing_address->company,'UTF-8','auto') : null,
 						'street'    => mb_convert_encoding($billing_address->address1,'UTF-8','auto'),
 						'street2'   => '',
 						'zip'       => mb_convert_encoding($billing_address->postcode,'UTF-8','auto'),
@@ -950,7 +950,7 @@
 				$values['Customer']['Shipping'] = array(
 						'firstname' => mb_convert_encoding($shipping_address->firstname,'UTF-8','auto'),
 						'lastname'  => mb_convert_encoding($shipping_address->lastname,'UTF-8','auto'),
-						'company'   => mb_convert_encoding($shipping_address->company,'UTF-8','auto'),
+						'company'   => !empty($shipping_address->company) ? mb_convert_encoding($shipping_address->company,'UTF-8','auto') : null,
 						'street'    => mb_convert_encoding($shipping_address->address1,'UTF-8','auto'),
 						'street2'   => '',
 						'zip'       => mb_convert_encoding($shipping_address->postcode,'UTF-8','auto'),
@@ -1590,7 +1590,7 @@
             $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
             $this->smarty->assign('additional_order_info_html', $additional_order_info_html);
             return $this->display(__FILE__, '/orderconfirmation.tpl');
-            
+
         }
 
         /**
