@@ -59,22 +59,28 @@ class BillmateInvoiceFee
     protected function createFeeProduct()
     {
         $product = new Product();
+
+        $name = $this->module->l('Billmate invoice fee');
+        $description = $this->module->l('Billmate invoice fee');
+
         $product->reference = self::INVOICE_FEE_REFERENCE;
-        $product->name = $this->module->l('Billmate invoice fee');
-        $product->link_rewrite = [
-            (int)Configuration::get('PS_LANG_DEFAULT') =>  'bm-invoice-fee'
-        ];
+        $product->name =  array((int)(Configuration::get('PS_LANG_DEFAULT')) => $name);
+        $product->link_rewrite = array((int)Configuration::get('PS_LANG_DEFAULT') =>  Tools::str2url('bm-invoice-fee'));
+        $product->description_short = array((int)(Configuration::get('PS_LANG_DEFAULT')) => $description);
+        $product->description = array((int)(Configuration::get('PS_LANG_DEFAULT')) => $description);
+        $product->meta_keywords = 'billmate_fee';
         $product->redirect_type = '404';
+        $product->online_only = 1;
+        $product->is_virtual = 1;
         $product->price = 1;
+        $product->show_price = 1;
+        $product->on_sale = 0;
         $product->quantity = self::PRODUCT_FEE_QTY;
         $product->minimal_quantity = 1;
         $product->advanced_stock_management = 0;
-        $product->show_price = 1;
-        $product->on_sale = 0;
-        $product->online_only = 1;
-        $product->meta_keywords = 'billmate_fee';
-        $product->is_virtual=1;
+
         $product->add();
+
         return $product;
     }
 

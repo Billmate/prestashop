@@ -321,8 +321,10 @@
                         $password = Tools::passwdGen(8);
                         $customerObject->firstname = !empty($address['firstname']) ? $address['firstname'] : '';
                         $customerObject->lastname = !empty($address['lastname']) ? $address['lastname'] : '';
+
                         $customerObject->company = !empty($address['company']) ? $address['company'] : '';
                         $customerObject->email = !empty($address['email']) ? $address['email'] : '';
+
                         $customerObject->passwd = Tools::encrypt($password);
                         $customerObject->id_default_group = (int)(Configuration::get('PS_GUEST_GROUP', null, $this->context->cart->id_shop));
                         $customerObject->id_gender = 9;

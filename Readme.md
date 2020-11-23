@@ -47,6 +47,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.7.5 (2020-11-20)
+* Fix - Invoice fee for products on PrestaShop 1.6
+
 ### 3.7.4 (2020-10-28)
 * Fix - Cancel payment if order already payed for
 * Fix - Display order confirmation page for existing order
