@@ -43,7 +43,7 @@ class Client
         return true;
     }
 
-    private function verifyPaymentData()
+    public function verifyPaymentData()
     {
         $this->payment = $this->billmate->getPaymentinfo([
             'number' => $this->data->data->number,
