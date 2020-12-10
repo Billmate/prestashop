@@ -15,6 +15,8 @@ class CustomerHelper
     }
     private function updateCustomer(Customer $customer, array $data)
     {
+        $data = $data['Billing'];
+
         $customer->firstname = !empty($data['firstname']) ? $data['firstname'] : '';
         $customer->lastname = !empty($data['lastname']) ? $data['lastname'] : '';
         $customer->company = !empty($data['company']) ? $data['company'] : '';
@@ -30,8 +32,10 @@ class CustomerHelper
         return $customer;
     }
 
-    private function createAddress(Customer $customer, array $data)
+    private function createAddress(Customer $customer, array $data, $useShipping = false)
     {
+        $data = ($useShipping && !empty($data['Shipping'])) ? $data['Shipping'] : $data['Billing'];
+
         $address = new Address();
         $address->id_customer = $customer->id;
         $address->firstname = !empty($data['firstname']) ? $data['firstname'] : '';

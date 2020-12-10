@@ -1,82 +1,41 @@
 <?php
 
-require_once(_PS_MODULE_DIR_ . 'billmategateway/library/Client.php');
-require_once(_PS_MODULE_DIR_ . 'billmategateway/library/ModuleHandler.php');
+require_once(_PS_MODULE_DIR_ . 'billmategateway/library/abstracts/CallbackController.php');
 
-class BillmategatewayAcceptModuleFrontController extends ModuleFrontController
+class BillmategatewayAcceptModuleFrontController extends CallbackController
 {
-    public $module;
-
-    private $client;
-    private $moduleHandler;
-    private $method;
+    public $request = 'accept';
 
     public function __construct()
     {
-        $this->method = Tools::getValue('method');
-        $this->client = new Client;
-        $this->moduleHandler = new ModuleHandler;
-
         parent::__construct();
     }
 
     public function postProcess()
     {
-        if (!$this->module = $this->moduleHandler->getPaymentModule()) {
-            $this->logEvent('Payment module was not valid');
+         // Get cart with id from Billmate
+        $cartId = $this->client->getCartId();
 
-            return $this->respondWithError(1);
+        // Get cart or fail
+        if (!$cart = $this->cartHelper->getCart($cartId)) {
+            return $this->respondWithError();
         }
 
-        if (!$this->client->verifyPayload()) {
-            $this->logEvent('Payload data from Billmate not valid');
-
-            return $this->respondWithError(2);
-        }
-
-        if (!$this->client->verifyPaymentData()) {
-            $this->logEvent('Payment data from Billmate not valid');
-
-            return $this->respondWithError(3);
-        }
-
-        if (!$this->client->getCartId()) {
-            $this->logEvent('Cart id from Billmate is missing');
-
-            return $this->respondWithError(4);
-        }
-
-        if (!$this->client->getOrderId()) {
-            $this->logEvent('Order id from Billmate is missing');
-
-            return $this->respondWithError(5);
-        }
-
-        $this->logEvent('Recieved accept request for order #%s', $this->client->getOrderId());
-
-        $cart = new Cart(
-            $this->client->getCartId()
-        );
-
+        // Show success page
         return $this->respondWithSuccess();
     }
 
-    private function logEvent(...$args)
+    protected function respondWithError()
     {
-        PrestaShopLogger::addLog(
-            sprintf($args)
+        die($this->context->link->getModuleLink('billmategateway', 'failed', ['id' => 123]));
+        Tools::redirect(
+            $this->context->link->getModuleLink('billmategateway', 'failed', ['id' => 123])
         );
     }
 
-    private function respondWithError($index = null)
+    protected function respondWithSuccess()
     {
-        die('ERROR #' . $index);
-        Tools::redirect('index.php?controller=billmate-order-failed');
-    }
-
-    private function respondWithSuccess()
-    {
-        die('SUCCESS');
+        die($this->context->link->getModuleLink('billmategateway', 'failed', ['id' => 123]));
         Tools::redirect('index.php?controller=billmate-order-confirmation');
     }
 }

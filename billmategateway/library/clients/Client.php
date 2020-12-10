@@ -9,6 +9,7 @@ class Client
 
     private $billmate;
     private $data;
+    private $payment;
 
     public function __construct()
     {
@@ -25,17 +26,22 @@ class Client
     {
         $postData = $this->getJsonPostRequest();
 
+        // @todo: try/catch...
         $this->data = $this->billmate->verify_hash(
             !empty($postData) ?$postData : $_GET
         );
 
-        if (!is_object($this->data)) {
+        if (is_object($this->data)) {
+            $this->data = json_decode(json_encode($this->data), true);
+        }
+
+        if (!is_array($this->data)) {
             // @todo: log...
             return false;
-        } elseif (!empty($this->data->code) || !empty($this->data->error)) {
+        } elseif (!empty($this->data['code']) || !empty($this->data['error'])) {
             // @todo: log...
             return false;
-        } elseif (empty($this->data->data->number) || empty($this->data->data->orderid)) {
+        } elseif (empty($this->data['data']['number']) || empty($this->data['data']['orderid'])) {
             // @todo: log...
             return false;
         }
@@ -45,8 +51,9 @@ class Client
 
     public function verifyPaymentData()
     {
+        // @todo: try/catch...
         $this->payment = $this->billmate->getPaymentinfo([
-            'number' => $this->data->data->number,
+            'number' => $this->data['data']['number'],
         ]);
 
         return true;
@@ -54,6 +61,7 @@ class Client
 
     public function updatePayment($orderReference)
     {
+        // @todo: try/catch...
         $this->billmate->updatePayment([
             'number'  => $this->getTransactionId(),
             'orderid' => $orderReference,
@@ -69,8 +77,8 @@ class Client
 
     public function getCustomer()
     {
-        return !empty($this->data['customer']) ?
-            $this->data['customer'] :
+        return !empty($this->payment['Customer']) ?
+            $this->payment['Customer'] :
             null;
     }
 
@@ -88,29 +96,29 @@ class Client
 
     public function getOrderId()
     {
-        return !empty($this->data['orderid']) ?
-            $this->data['orderid'] :
+        return !empty($this->data['data']['orderid']) ?
+            $this->data['data']['orderid'] :
             null;
     }
 
     public function getStatus()
     {
-        return !empty($this->payment['status']) ?
-            $this->payment['status'] :
+        return !empty($this->payment['PaymentData']['status']) ?
+            $this->payment['PaymentData']['status'] :
             null;
     }
 
     public function getTotalSum()
     {
-        return !empty($this->data['Cart']['Total']['withtax']) ?
-            ($this->data['Cart']['Total']['withtax'] / 100) :
+        return !empty($this->payment['Cart']['Total']['withtax']) ?
+            ($this->payment['Cart']['Total']['withtax'] / 100) :
             null;
     }
 
     public function getTransactionId()
     {
-        return !empty($this->payment['PaymentData']['order']['number']) ?
-            $this->payment['PaymentData']['order']['number'] :
+        return !empty($this->payment['PaymentData']['number']) ?
+            $this->payment['PaymentData']['number'] :
             null;
     }
 
@@ -125,6 +133,7 @@ class Client
             return $_POST;
         }
 
+        // @todo: try/catch...
         $json = file_get_contents('php://input');
 
         return json_decode($json, false);
