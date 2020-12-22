@@ -1,6 +1,8 @@
 <?php
 
-class BillmategatewayAcceptModuleFrontController extends CallbackController
+require_once(_PS_MODULE_DIR_ . 'billmategateway/library/abstracts/CallbackController.php');
+
+class BillmategatewayCallbackModuleFrontController extends CallbackController
 {
     public $request = 'callback';
 
@@ -13,6 +15,11 @@ class BillmategatewayAcceptModuleFrontController extends CallbackController
     {
         if ($this->method == 'checkout' && !Configuration::get('PS_GUEST_CHECKOUT_ENABLED')) {
             Configuration::updateGlobalValue('PS_GUEST_CHECKOUT_ENABLED', 1);
+        }
+
+        // Check if payment data is valid
+        if (!$this->client->verifyPaymentData()) {
+            return $this->respondWithError();
         }
 
         // Get cart with id from Billmate
@@ -61,7 +68,7 @@ class BillmategatewayAcceptModuleFrontController extends CallbackController
         $cart->id_address_invoice = $billingAddress->id;
         $cart->id_address_delivery = $shippingAddress->id;
 
-        // @todo: add shipping...
+        // @todo: recalculate shipping base on shipping address...
 
         $cart->update();
         $cart->save();
@@ -72,23 +79,23 @@ class BillmategatewayAcceptModuleFrontController extends CallbackController
         }
 
         // Send order reference to Billmate
-        $this->updatePaymentStatus();
+        if (!$this->updatePaymentStatus()) {
+            return $this->respondWithError();
+        }
 
         // Show success page
         return $this->respondWithSuccess();
     }
 
-    protected function respondWithError()
+    protected function respondWithError(...$arguments)
     {
-        die($this->context->link->getModuleLink('billmategateway', 'failed', ['id' => 123]));
-        Tools::redirect(
-            $this->context->link->getModuleLink('billmategateway', 'failed', ['id' => 123])
-        );
+        header('HTTP/1.1 500 Internal Server Error');
+        exit();
     }
 
-    protected function respondWithSuccess()
+    protected function respondWithSuccess(...$arguments)
     {
-        die($this->context->link->getModuleLink('billmategateway', 'failed', ['id' => 123]));
-        Tools::redirect('index.php?controller=billmate-order-confirmation');
+        header('HTTP/1.1 200 OK');
+        exit();
     }
 }

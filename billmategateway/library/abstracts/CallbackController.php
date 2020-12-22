@@ -57,24 +57,31 @@ abstract class CallbackController extends ModuleFrontController
     protected function createOrderFromCart(Cart $cart)
     {
         try {
-            $cartId = $cart->id;
             $orderTotal = $this->client->getTotalSum();
             $methodName = $this->getPaymentMethodName();
-            $extraData = ['transaction_id' => $this->client->getTransactionId()];
 
-            $order = $this->module->validateOrder($cartId, $orderTotal, $methodName, null, $extraData, null, false);
+            $orderStatus = $this->orderHelper->convertOrderStatus(
+                $this->method,
+                $this->client->getStatus()
+            );
+
+            $extraData = [
+                'transaction_id' => $this->client->getTransactionId()
+            ];
+
+            $order = $this->module->validateOrder($cart->id, $orderStatus, $orderTotal, $methodName, null, $extraData, null, false);
 
             // @todo: log...
 
         } catch (Exception $e) {
-            // @todo: log...
+            die($e->getMessage());
             return null;
         }
 
         return $order;
     }
 
-    protected function updateOrderStatus(Order $order)
+    protected function updateOrderStatus(OrderCore $order)
     {
         if (!$this->orderHelper->shouldUpdateOrder($order)) {
             return false;
@@ -85,16 +92,26 @@ abstract class CallbackController extends ModuleFrontController
             $this->client->getStatus()
         );
 
-        // @todo: try/catch...
-        $this->orderHelper->updateOrderStatus($order, $orderStatus);
+        try {
+            $this->orderHelper->updateOrderStatus($order, $orderStatus);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function updatePaymentStatus()
     {
-        // @todo: try/catch...
-        $this->client->updatePayment(
-            $this->getOrderReference()
-        );
+        try {
+            $this->client->updatePayment(
+                $this->getOrderReference()
+            );
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 
     private function getPaymentMethodName()
@@ -115,21 +132,28 @@ abstract class CallbackController extends ModuleFrontController
             $this->module->currentOrder;
     }
 
-    protected function respondWithError()
+    protected function respondWithError(...$arguments)
     {
-        die('Error');
+        header('HTTP/1.1 500 Internal Server Error');
+        exit();
     }
 
-    protected function respondWithSuccess()
+    protected function respondWithSuccess(...$arguments)
     {
-        die('Success');
+        header('HTTP/1.1 200 OK');
+        exit();
     }
 
     protected function logEvent(...$args)
     {
-        // @todo: try/catch...
-        PrestaShopLogger::addLog(
-            sprintf($args)
-        );
+        try {
+            PrestaShopLogger::addLog(
+                sprintf($args)
+            );
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 }

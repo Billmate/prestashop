@@ -6,6 +6,8 @@ class OrderHelper
     {
         if ($status == 'Cancelled') {
             return Configuration::get('PS_OS_CANCELED');
+        } elseif ($status == 'Pending') {
+            return Configuration::get('BILLMATE_PAYMENT_PENDING');
         } elseif ($method == 'checkout') {
             return Configuration::get('BILLMATE_CHECKOUT_ORDER_STATUS');
         }
@@ -21,6 +23,17 @@ class OrderHelper
 
         return new Order(
             Order::getOrderByCartId($cart->id)
+        );
+    }
+
+    public function getOrderByReference(string $reference)
+    {
+        if (version_compare(_PS_VERSION_, '1.7.0.0', '>')) {
+            return Order::getByReference($reference);
+        }
+
+        return new Order(
+            Order::getByReference($reference)
         );
     }
 

@@ -13,29 +13,47 @@ class BillmategatewayAcceptModuleFrontController extends CallbackController
 
     public function postProcess()
     {
-         // Get cart with id from Billmate
-        $cartId = $this->client->getCartId();
-
-        // Get cart or fail
-        if (!$cart = $this->cartHelper->getCart($cartId)) {
-            return $this->respondWithError();
+        // If payment data is invalid, show default confirm page
+        if (!$this->client->verifyPaymentData()) {
+            return $this->respondWithSuccess();
         }
 
-        // Show success page
-        return $this->respondWithSuccess();
+        // If payment is not payed, show default confirm page
+        if (!$this->client->isPayed()) {
+            return $this->respondWithSuccess();
+        }
+
+        // If no order id is set, show default confirm page
+        if (!$orderId = $this->client->getOrderId()) {
+            return $this->respondWithSuccess();
+        }
+
+        // If no order is found, show default confirm page
+        if (!$order = $this->orderHelper->getOrderByReference($orderId)) {
+            return $this->respondWithSuccess();
+        }
+
+        // Show confirm page with order data
+        return $this->respondWithSuccess([
+            'oid' => $order->id,
+        ]);
     }
 
-    protected function respondWithError()
+    protected function respondWithError(...$arguments)
     {
-        die($this->context->link->getModuleLink('billmategateway', 'failed', ['id' => 123]));
+        if (version_compare(_PS_VERSION_, '1.7.0.0', '>')) {
+            $this->errors[] = $this->l('Det uppstod ett problem, var vänlig försök igen eller prova ett annat betalsätt.');
+            $this->redirectWithNotifications('index.php?controller=order');
+        }
+
+        $this->errors[] = Tools::displayError('Det uppstod ett problem, var vänlig försök igen eller prova ett annat betalsätt.');
+        Tools::redirect('index.php?controller=order');
+    }
+
+    protected function respondWithSuccess(...$arguments)
+    {
         Tools::redirect(
-            $this->context->link->getModuleLink('billmategateway', 'failed', ['id' => 123])
+            $this->context->link->getModuleLink('billmategateway', 'confirm', $arguments)
         );
-    }
-
-    protected function respondWithSuccess()
-    {
-        die($this->context->link->getModuleLink('billmategateway', 'failed', ['id' => 123]));
-        Tools::redirect('index.php?controller=billmate-order-confirmation');
     }
 }

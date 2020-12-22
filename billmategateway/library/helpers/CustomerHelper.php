@@ -4,16 +4,26 @@ class CustomerHelper
 {
     public function getOrCreateCustomer(Cart $cart)
     {
-        if (!Customer::customerIdExistsStatic($cart->id_customer)) {
-            $customer = new Customer();
-            $customer->add();
-        } else {
-            $customer = new Customer($cart->id_customer);
+        try {
+            if (Customer::customerIdExistsStatic($cart->id_customer)) {
+                $customer = new Customer($cart->id_customer);
+            } else {
+                $customer = new Customer();
+                $customer->firstname = 'NoName';
+                $customer->lastname = 'NoName';
+                $customer->email = 'missing@email.com';
+                $customer->passwd = 'nopass';
+                $customer->add();
+            }
+        } catch (Exception $e) {
+            die($e->getMessage());
+            return null;
         }
 
         return $customer;
     }
-    private function updateCustomer(Customer $customer, array $data)
+
+    public function updateCustomer(Customer $customer, array $data)
     {
         $data = $data['Billing'];
 
@@ -27,17 +37,23 @@ class CustomerHelper
         $customer->is_guest = 1;
         $customer->active = 1;
 
-        $customer->update();
+        try {
+            $customer->update();
+        } catch (Exception $e) {
+            die($e->getMessage());
+            return null;
+        }
 
         return $customer;
     }
 
-    private function createAddress(Customer $customer, array $data, $useShipping = false)
+    public function createAddress(Customer $customer, array $data, $useShipping = false)
     {
         $data = ($useShipping && !empty($data['Shipping'])) ? $data['Shipping'] : $data['Billing'];
 
         $address = new Address();
         $address->id_customer = $customer->id;
+        $address->alias = ($useShipping) ? 'Shipping' : 'Billing';
         $address->firstname = !empty($data['firstname']) ? $data['firstname'] : '';
         $address->lastname = !empty($data['lastname']) ? $data['lastname'] : '';
         $address->company = !empty($data['company']) ? $data['company'] : '';
@@ -52,7 +68,12 @@ class CustomerHelper
             $address->id_country = Country::getByIso($address->country);
         }
 
-        $address->save();
+        try {
+            $address->save();
+        } catch (Exception $e) {
+            die($e->getMessage());
+            return null;
+        }
 
         return $address;
     }

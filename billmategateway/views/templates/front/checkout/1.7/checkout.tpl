@@ -1,8 +1,8 @@
 {extends file=$layout}
+
 {block name='content'}
 <div class="container billmate-checkout">
     <div class="row">
-
         <div class="col-md-6 col-md-push-6 col-sm-12 col-sm-push-0">
             {block name='cart_summary'}
                 {include file='checkout/_partials/cart-summary.tpl' cart = $cart}
@@ -16,7 +16,6 @@
                 {hook h='displayReassurance'}
             </div>
         </div>
-
         <div class="col-md-6 col-md-pull-6 col-sm-12 col-sm-pull-0">
             <section class="card">
                 <div class="card-block">
@@ -29,7 +28,6 @@
                 {hook h='displayReassurance'}
             </div>
         </div>
-
     </div>
 </div>
 {/block}

@@ -19,20 +19,14 @@ class Payload
             return false;
         }
 
-        if (!$this->client->verifyPaymentData()) {
-            $this->logEvent('Payment data from Billmate not valid');
+        if (!$this->client->getOrderId()) {
+            $this->logEvent('Order id from Billmate is missing');
 
             return false;
         }
 
         if (!$this->client->getCartId()) {
             $this->logEvent('Cart id from Billmate is missing');
-
-            return false;
-        }
-
-        if (!$this->client->getOrderId()) {
-            $this->logEvent('Order id from Billmate is missing');
 
             return false;
         }
@@ -47,9 +41,14 @@ class Payload
 
     private function logEvent(...$args)
     {
-        // @todo: try/catch...
-        PrestaShopLogger::addLog(
-            sprintf($args)
-        );
+        try {
+            PrestaShopLogger::addLog(
+                sprintf($args)
+            );
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 }

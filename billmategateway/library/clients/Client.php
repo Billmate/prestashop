@@ -24,15 +24,28 @@ class Client
 
     public function verifyPayload()
     {
-        $postData = $this->getJsonPostRequest();
+        if (!$postData = $this->getJsonPostRequest()) {
+            return false;
+        }
 
-        // @todo: try/catch...
-        $this->data = $this->billmate->verify_hash(
-            !empty($postData) ?$postData : $_GET
-        );
+        if (is_object($postData)) {
+            $postData = json_decode(json_encode($postData), true);
+        }
 
-        if (is_object($this->data)) {
-            $this->data = json_decode(json_encode($this->data), true);
+        if (is_array($postData)) {
+            $postData['credentials'] = !empty($postData['credentials']) ? $postData['credentials'] : null;
+
+            if (is_string($postData['credentials'])) {
+                $postData['credentials'] = json_decode($postData['credentials'], true);
+            }
+
+            $postData['data'] = !empty($postData['data']) ? $postData['data'] : null;
+
+            if (is_string($postData['data'])) {
+                $postData['data'] = json_decode($postData['data'], true);
+            }
+
+            $this->data = $postData;
         }
 
         if (!is_array($this->data)) {
@@ -51,10 +64,13 @@ class Client
 
     public function verifyPaymentData()
     {
-        // @todo: try/catch...
-        $this->payment = $this->billmate->getPaymentinfo([
-            'number' => $this->data['data']['number'],
-        ]);
+        try {
+            $this->payment = $this->billmate->getPaymentinfo([
+                'number' => $this->data['data']['number'],
+            ]);
+        } catch (Exception $e) {
+            return false;
+        }
 
         return true;
     }
@@ -70,6 +86,10 @@ class Client
 
     public function getCartId()
     {
+        if (strrpos($this->getOrderId(), '-') === false) {
+            return null;
+        }
+
         $parts = explode('-', $this->getOrderId());
 
         return !empty($parts[0]) ? $parts[0] : null;
@@ -87,6 +107,13 @@ class Client
         return $this->data;
     }
 
+    public function getHash()
+    {
+        return !empty($this->data['credentials']['hash']) ?
+            $this->data['credentials']['hash'] :
+            null;
+    }
+
     public function getMethodName()
     {
         return !empty($this->payment['PaymentData']['method_name']) ?
@@ -99,6 +126,11 @@ class Client
         return !empty($this->data['data']['orderid']) ?
             $this->data['data']['orderid'] :
             null;
+    }
+
+    public function getPaymentData()
+    {
+        return $this->payment;
     }
 
     public function getStatus()
@@ -122,9 +154,23 @@ class Client
             null;
     }
 
+    public function getPaymentUrl()
+    {
+        file_put_contents('data-payment.log', print_r($this->payment,1));
+        return !empty($this->data['data']['url']) ?
+            $this->data['data']['url'] :
+            null;
+    }
+
+    public function isPayed()
+    {
+        return in_array($this->getStatus(), ['Paid', 'Factoring', 'Service', 'Pending']) &&
+            (strrpos($this->getOrderId(), '-') === false) ? true : false;
+    }
+
     public function isPending()
     {
-        return ($this->client->getStatus() == 'Pending') ? true : false;
+        return ($this->getStatus() == 'Pending') ? true : false;
     }
 
     public function getJsonPostRequest()
@@ -133,8 +179,11 @@ class Client
             return $_POST;
         }
 
-        // @todo: try/catch...
-        $json = file_get_contents('php://input');
+        try {
+            $json = file_get_contents('php://input');
+        } catch (Exception $e) {
+            return null;
+        }
 
         return json_decode($json, false);
     }
