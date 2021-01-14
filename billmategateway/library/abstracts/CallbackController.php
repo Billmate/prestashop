@@ -3,7 +3,6 @@
 require_once(_PS_MODULE_DIR_ . 'billmategateway/library/services/Payload.php');
 require_once(_PS_MODULE_DIR_ . 'billmategateway/library/services/Resolver.php');
 
-require_once(_PS_MODULE_DIR_ . 'billmategateway/library/helpers/CartHelper.php');
 require_once(_PS_MODULE_DIR_ . 'billmategateway/library/helpers/CustomerHelper.php');
 require_once(_PS_MODULE_DIR_ . 'billmategateway/library/helpers/OrderHelper.php');
 
@@ -16,7 +15,6 @@ abstract class CallbackController extends ModuleFrontController
 
     protected $payload;
     protected $resolver;
-    protected $cartHelper;
     protected $customerHelper;
     protected $orderHelper;
 
@@ -27,7 +25,6 @@ abstract class CallbackController extends ModuleFrontController
         $this->payload = new Payload;
         $this->resolver = new Resolver;
 
-        $this->cartHelper = new CartHelper;
         $this->customerHelper = new CustomerHelper;
         $this->orderHelper = new OrderHelper;
 
@@ -68,6 +65,10 @@ abstract class CallbackController extends ModuleFrontController
             $extraData = [
                 'transaction_id' => $this->client->getTransactionId()
             ];
+
+            if (in_array($this->client->getMethod(), [1, 2])) {
+                $this->module = $this->resolver->getInvoiceMethod();
+            }
 
             $order = $this->module->validateOrder($cart->id, $orderStatus, $orderTotal, $methodName, null, $extraData, null, false);
 

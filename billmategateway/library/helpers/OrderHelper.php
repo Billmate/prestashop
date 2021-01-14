@@ -37,14 +37,14 @@ class OrderHelper
         );
     }
 
-    public function updateOrderStatus(Order $order, string $orderStatus)
+    public function updateOrderStatus(OrderCore $order, string $orderStatus)
     {
         $this->createOrderHistory($order, $orderStatus);
 
         return true;
     }
 
-    public function createOrderHistory(Order $order, string $status)
+    public function createOrderHistory(OrderCore $order, string $status)
     {
         $orderHistory = new OrderHistory();
 
@@ -59,7 +59,7 @@ class OrderHelper
         return $orderHistory;
     }
 
-    public function shouldUpdateOrder(Order $order)
+    public function shouldUpdateOrder(OrderCore $order)
     {
         return ($order->current_state == Configuration::get('BILLMATE_PAYMENT_PENDING') && !$this->client->isPending()) ? true : false;
     }

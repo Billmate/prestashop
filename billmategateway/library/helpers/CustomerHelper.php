@@ -2,22 +2,23 @@
 
 class CustomerHelper
 {
-    public function getOrCreateCustomer(Cart $cart)
+    public function createCustomer(Cart $cart)
     {
-        try {
-            if (Customer::customerIdExistsStatic($cart->id_customer)) {
-                $customer = new Customer($cart->id_customer);
-            } else {
-                $customer = new Customer();
-                $customer->firstname = 'NoName';
-                $customer->lastname = 'NoName';
-                $customer->email = 'missing@email.com';
-                $customer->passwd = 'nopass';
-                $customer->add();
-            }
-        } catch (Exception $e) {
-            die($e->getMessage());
-            return null;
+        if (Customer::customerIdExistsStatic($cart->id_customer)) {
+            $customer = new Customer($cart->id_customer);
+        } else {
+            $customer = new Customer();
+            $customer->firstname = 'NoName';
+            $customer->lastname = 'NoName';
+            $customer->email = 'missing@email.com';
+
+            $customer->newsletter = 0;
+            $customer->optin = 0;
+            $customer->is_guest = 1;
+            $customer->active = 1;
+            $customer->passwd = Tools::passwdGen(8);
+
+            $customer->add();
         }
 
         return $customer;
@@ -25,17 +26,13 @@ class CustomerHelper
 
     public function updateCustomer(Customer $customer, array $data)
     {
-        $data = $data['Billing'];
+        $data = array_map('utf8_decode', $data['Billing']);
 
         $customer->firstname = !empty($data['firstname']) ? $data['firstname'] : '';
         $customer->lastname = !empty($data['lastname']) ? $data['lastname'] : '';
         $customer->company = !empty($data['company']) ? $data['company'] : '';
         $customer->email = !empty($data['email']) ? $data['email'] : '';
-
-        $customer->newsletter = 0;
-        $customer->optin = 0;
-        $customer->is_guest = 1;
-        $customer->active = 1;
+        $customer->phone = !empty($data['phone']) ? $data['phone'] : '';
 
         try {
             $customer->update();
@@ -47,13 +44,28 @@ class CustomerHelper
         return $customer;
     }
 
-    public function createAddress(Customer $customer, array $data, $useShipping = false)
+    public function createBillingAddress(Customer $customer, array $data)
     {
-        $data = ($useShipping && !empty($data['Shipping'])) ? $data['Shipping'] : $data['Billing'];
+        $data = array_map('utf8_decode', $data['Billing']);
 
+        return $this->createAddress($customer, $data, 'Billing');
+    }
+
+    public function createShippingAddress(Customer $customer, array $data)
+    {
+        $data = !empty($data['Shipping']) ? $data['Shipping'] : $data['Billing'];
+        $data = array_map('utf8_decode', $data);
+
+        return $this->createAddress($customer, $data, 'Shipping');
+    }
+
+    public function createAddress(Customer $customer, array $data, string $alias = 'Billing')
+    {
         $address = new Address();
+
         $address->id_customer = $customer->id;
-        $address->alias = ($useShipping) ? 'Shipping' : 'Billing';
+        $address->alias = $alias;
+
         $address->firstname = !empty($data['firstname']) ? $data['firstname'] : '';
         $address->lastname = !empty($data['lastname']) ? $data['lastname'] : '';
         $address->company = !empty($data['company']) ? $data['company'] : '';
@@ -72,6 +84,7 @@ class CustomerHelper
             $address->save();
         } catch (Exception $e) {
             die($e->getMessage());
+            // @todo: log...
             return null;
         }
 

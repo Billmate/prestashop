@@ -35,6 +35,11 @@ class Resolver
         return $this->module;
     }
 
+    public function getInvoiceMethod()
+    {
+        return $this->resolve('Invoice.php', BillmateMethodInvoice::class);
+    }
+
     private function getValidMethods()
     {
         return [

@@ -75,6 +75,27 @@ class Client
         return true;
     }
 
+    public function verifyCustomerData()
+    {
+        if (!$customer = $this->getCustomer()) {
+            return false;
+        }
+
+        if (empty($customer['Billing'])) {
+            return false;
+        }
+
+        if (empty($customer['Billing']['email'])) {
+            return false;
+        }
+
+        if (empty($customer['Billing']['phone'])) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function updatePayment($orderReference)
     {
         // @todo: try/catch...
@@ -107,10 +128,22 @@ class Client
         return $this->data;
     }
 
+    public function getDeliveryOption()
+    {
+        return $this->billmate->getDeliveryOption();
+    }
+
     public function getHash()
     {
         return !empty($this->data['credentials']['hash']) ?
             $this->data['credentials']['hash'] :
+            null;
+    }
+
+    public function getMethod()
+    {
+        return !empty($this->payment['PaymentData']['method']) ?
+            $this->payment['PaymentData']['method'] :
             null;
     }
 

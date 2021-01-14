@@ -13,6 +13,18 @@ class BillmategatewayAcceptModuleFrontController extends CallbackController
 
     public function postProcess()
     {
+        if ($this->method == 'checkout') {
+            $this->context->cart = null;
+
+            $checkoutOrderId = Common::getCartCheckoutHash();
+
+            if ($checkoutOrderId) {
+                return $this->respondWithSuccess([
+                    'hash' => urlencode($checkoutOrderId),
+                ]);
+            }
+        }
+
         // If payment data is invalid, show default confirm page
         if (!$this->client->verifyPaymentData()) {
             return $this->respondWithSuccess();
@@ -52,8 +64,10 @@ class BillmategatewayAcceptModuleFrontController extends CallbackController
 
     protected function respondWithSuccess(...$arguments)
     {
+        $query = !empty($arguments[0]) ? $arguments[0] : array();
+
         Tools::redirect(
-            $this->context->link->getModuleLink('billmategateway', 'confirm', $arguments)
+            $this->context->link->getModuleLink('billmategateway', 'confirm', $query, true)
         );
     }
 }
