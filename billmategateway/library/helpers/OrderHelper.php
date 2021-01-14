@@ -53,7 +53,9 @@ class OrderHelper
             $orderHistory->changeIdOrderState($status, $order->id, true);
             $orderHistory->add();
         } catch (Exception $e) {
-            // @todo Log..
+            $this->logEvent('Failed to add order history in helper: '. $e->getMessage());
+
+            return false;
         }
 
         return $orderHistory;
@@ -62,5 +64,16 @@ class OrderHelper
     public function shouldUpdateOrder(OrderCore $order)
     {
         return ($order->current_state == Configuration::get('BILLMATE_PAYMENT_PENDING') && !$this->client->isPending()) ? true : false;
+    }
+
+    private function logEvent($message)
+    {
+        try {
+            PrestaShopLogger::addLog(sprintf('[BILLMATE] %s', $message), 1);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 }

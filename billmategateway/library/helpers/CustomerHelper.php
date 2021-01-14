@@ -37,7 +37,8 @@ class CustomerHelper
         try {
             $customer->update();
         } catch (Exception $e) {
-            die($e->getMessage());
+            $this->logEvent('Failed to update customer in helper: '. $e->getMessage());
+
             return null;
         }
 
@@ -83,11 +84,22 @@ class CustomerHelper
         try {
             $address->save();
         } catch (Exception $e) {
-            die($e->getMessage());
-            // @todo: log...
+            $this->logEvent('Failed to save address in helper: '. $e->getMessage());
+
             return null;
         }
 
         return $address;
+    }
+
+    private function logEvent($message)
+    {
+        try {
+            PrestaShopLogger::addLog(sprintf('[BILLMATE] %s', $message), 1);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 }

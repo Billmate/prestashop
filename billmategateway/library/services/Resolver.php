@@ -13,12 +13,14 @@ class Resolver
     public function verify()
     {
         if (!in_array($this->method, $this->getValidMethods())) {
-            // @todo: log...
+            $this->logEvent('Resolver failed to verify method');
+
             return false;
         }
 
         if (!$this->module = $this->getPaymentModule()) {
-            // @todo: log...
+            $this->logEvent('Resolver failed to verify module');
+
             return false;
         }
 
@@ -79,22 +81,36 @@ class Resolver
         $filePath = str_replace('//', '/', sprintf('%s/billmategateway/methods/%s', _PS_MODULE_DIR_, $fileName));
 
         if (!file_exists($filePath)) {
-            // @todo: log...
+            $this->logEvent('Resolver failed to locate class file');
+
             return null;
         }
 
         if (class_exists($className)) {
-            // @todo: log...
+            $this->logEvent('Resolver failed because class already loaded');
+
             return null;
         }
 
         try {
             include_once($filePath);
         } catch (Exception $e) {
-            // @todo: log...
+            $this->logEvent('Resolver failed load class file: '. $e->getMessage());
+
             return null;
         }
 
         return new $className;
+    }
+
+    private function logEvent($message)
+    {
+        try {
+            PrestaShopLogger::addLog(sprintf('[BILLMATE] %s', $message), 1);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -51,7 +51,7 @@ abstract class CallbackController extends ModuleFrontController
         return true;
     }
 
-    protected function createOrderFromCart(Cart $cart)
+    protected function createOrderFromCart()
     {
         try {
             $orderTotal = $this->client->getTotalSum();
@@ -70,12 +70,13 @@ abstract class CallbackController extends ModuleFrontController
                 $this->module = $this->resolver->getInvoiceMethod();
             }
 
-            $order = $this->module->validateOrder($cart->id, $orderStatus, $orderTotal, $methodName, null, $extraData, null, false);
+            $order = $this->module->validateOrder($this->context->cart->id, $orderStatus, $orderTotal, $methodName, null, $extraData, null, false);
 
             // @todo: log...
 
         } catch (Exception $e) {
-            die($e->getMessage());
+            $this->logEvent('Failed to create order from cart: ' . $e->getMessage());
+
             return null;
         }
 
@@ -96,6 +97,8 @@ abstract class CallbackController extends ModuleFrontController
         try {
             $this->orderHelper->updateOrderStatus($order, $orderStatus);
         } catch (Exception $e) {
+            $this->logEvent('Failed to update order status: ' . $e->getMessage());
+
             return false;
         }
 
@@ -109,6 +112,8 @@ abstract class CallbackController extends ModuleFrontController
                 $this->getOrderReference()
             );
         } catch (Exception $e) {
+            $this->logEvent('Failed to update payment status: ' . $e->getMessage());
+
             return false;
         }
 
@@ -145,13 +150,11 @@ abstract class CallbackController extends ModuleFrontController
         exit();
     }
 
-    protected function logEvent(...$args)
+    private function logEvent($message)
     {
         try {
-            PrestaShopLogger::addLog(
-                sprintf($args)
-            );
-        } catch (Exception $e) {
+            PrestaShopLogger::addLog(sprintf('[BILLMATE] %s', $message), 1);
+        } catch (Exception $e) {
             return false;
         }
 

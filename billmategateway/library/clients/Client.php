@@ -25,6 +25,8 @@ class Client
     public function verifyPayload()
     {
         if (!$postData = $this->getJsonPostRequest()) {
+            $this->logEvent('Failed to get post data in client: '. $e->getMessage());
+
             return false;
         }
 
@@ -49,13 +51,16 @@ class Client
         }
 
         if (!is_array($this->data)) {
-            // @todo: log...
+            $this->logEvent('Failed to verify payload: Must be of type array');
+
             return false;
         } elseif (!empty($this->data['code']) || !empty($this->data['error'])) {
-            // @todo: log...
+            $this->logEvent('Failed to verify payload: ' . $this->data['code'] . ':' . $this->data['error']);
+
             return false;
         } elseif (empty($this->data['data']['number']) || empty($this->data['data']['orderid'])) {
-            // @todo: log...
+            $this->logEvent('Failed to verify payload: Number or OrderId is missing');
+
             return false;
         }
 
@@ -69,6 +74,8 @@ class Client
                 'number' => $this->data['data']['number'],
             ]);
         } catch (Exception $e) {
+            $this->logEvent('Failed to verify payment data: '. $e->getMessage());
+
             return false;
         }
 
@@ -78,18 +85,26 @@ class Client
     public function verifyCustomerData()
     {
         if (!$customer = $this->getCustomer()) {
+            $this->logEvent('Failed to verify customer data: Data is empty');
+
             return false;
         }
 
         if (empty($customer['Billing'])) {
+            $this->logEvent('Failed to verify customer data: Billing data is empty');
+
             return false;
         }
 
         if (empty($customer['Billing']['email'])) {
+            $this->logEvent('Failed to verify customer data: E-mail is empty');
+
             return false;
         }
 
         if (empty($customer['Billing']['phone'])) {
+            $this->logEvent('Failed to verify customer data: Phone is empty');
+
             return false;
         }
 
@@ -98,17 +113,24 @@ class Client
 
     public function updatePayment($orderReference)
     {
-        // @todo: try/catch...
-        $this->billmate->updatePayment([
-            'number'  => $this->getTransactionId(),
-            'orderid' => $orderReference,
-        ]);
+        try {
+            $this->billmate->updatePayment([
+                'number'  => $this->getTransactionId(),
+                'orderid' => $orderReference,
+            ]);
+        } catch (Exception $e) {
+            $this->logEvent('Failed to update payment in client: '. $e->getMessage());
+
+            return false;
+        }
+
+        return true;
     }
 
     public function getCartId()
     {
         if (strrpos($this->getOrderId(), '-') === false) {
-            return null;
+            return $this->getOrderId();
         }
 
         $parts = explode('-', $this->getOrderId());
@@ -219,5 +241,16 @@ class Client
         }
 
         return json_decode($json, false);
+    }
+
+    private function logEvent($message)
+    {
+        try {
+            PrestaShopLogger::addLog(sprintf('[BILLMATE] %s', $message), 1);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 }

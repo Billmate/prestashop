@@ -13,27 +13,19 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
 
     public function postProcess()
     {
-        $batch = date('YmdHis');
-
-        file_put_contents("_{$batch}_callback_data.log", print_r($this->client->getData(),1));
-
         if ($this->method == 'checkout' && !Configuration::get('PS_GUEST_CHECKOUT_ENABLED')) {
             Configuration::updateGlobalValue('PS_GUEST_CHECKOUT_ENABLED', 1);
         }
 
         // Check if payment data is valid
         if (!$this->client->verifyPaymentData()) {
-            return $this->respondWithError(01);
+            return $this->respondWithError('Verifying payment data failed');
         }
-
-        file_put_contents("_{$batch}_callback_payment.log", print_r($this->client->getPaymentData(),1));
 
         // Check if payment data is valid
         if (!$this->client->verifyCustomerData()) {
-            return $this->respondWithError(02);
+            return $this->respondWithError('Verifying customer data failed');
         }
-
-        file_put_contents("_{$batch}_callback_customer.log", print_r($this->client->getCustomer(),1));
 
         // Get cart with id from Billmate
         $this->cart_id = $this->client->getCartId();
@@ -41,16 +33,16 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
         $this->context->cart = new Cart($this->cart_id);
 
         // Get cart_delivery_option options
-        //$cartDeliveryOption = $this->context->cart->getDeliveryOption();
+        $cartDeliveryOption = $this->context->cart->getDeliveryOption();
 
         // Get cart or fail
         if (!$this->context->cart) {
-            return $this->respondWithError(03);
+            return $this->respondWithError('Loading cart failed');
         }
 
         // Get customer or fail
         if (!$customer = $this->customerHelper->createCustomer($this->context->cart)) {
-            return $this->respondWithError(04);
+            return $this->respondWithError('Loading customer failed');
         }
 
         $this->context->customer = $customer;
@@ -86,89 +78,47 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
         $this->context->cart->id_address_invoice = (int)$billingAddress->id;
         $this->context->cart->id_address_delivery = (int)$shippingAddress->id;
 
-        //if (is_array($cartDeliveryOption)) {
-        //    $cartDeliveryOption = current($cartDeliveryOption);
-        //}
+        if (is_array($cartDeliveryOption)) {
+            $carrierId = intval(current($cartDeliveryOption));
+        } else {
+            $carrierId = intval($cartDeliveryOption);
+        }
 
-        //$this->actionSetShipping($cartDeliveryOption);
+        $this->context->cart->id_carrier = $carrierId;
+
+        $cartDeliveryOption = array();
+        $cartDeliveryOption[$this->context->cart->id_address_delivery] = sprintf('%s,', $this->context->cart->id_carrier);
+
+        $this->context->cart->getOrderTotal(true, Cart::BOTH);
+        $this->context->cart->setDeliveryOption($cartDeliveryOption);
 
         $this->context->cart->update();
         $this->context->cart->save();
 
         // Create new order or fail
-        if (!$order = $this->createOrderFromCart($this->context->cart)) {
-             return $this->respondWithError(05);
+        if (!$order = $this->createOrderFromCart()) {
+             return $this->respondWithError('Creating order from cart failed');
         }
 
         // Send order reference to Billmate
         if (!$this->updatePaymentStatus()) {
-            return $this->respondWithError(06);
+            return $this->respondWithError('Updating payment failed');
         }
 
         // Show success page
         return $this->respondWithSuccess();
     }
 
-    public function actionSetShipping($cartDeliveryOption)
-    {
-        try {
-            if (!is_array($cartDeliveryOption)) {
-                $cartDeliveryOption = array(
-                    $this->context->cart->id_address_delivery => $cartDeliveryOption
-                );
-            }
-
-            $validateOptionResult = $this->validateDeliveryOption($cartDeliveryOption);
-
-            if ($validateOptionResult) {
-                if (version_compare(_PS_VERSION_,'1.7','>=') && !(version_compare(_PS_VERSION_,'1.7.5','>='))) {
-                    $deliveryOption =  $cartDeliveryOption;
-                    $realOption = array();
-
-                    foreach ($deliveryOption as $key => $value){
-                        $realOption[$key] = Cart::desintifier($value);
-                    }
-
-                    $this->context->cart->setDeliveryOption($realOption);
-                } else {
-                    $this->context->cart->setDeliveryOption($cartDeliveryOption);
-                }
-            }
-
-            $this->context->cart->update();
-            $this->context->cart->save();
-
-            CartRule::autoRemoveFromCart($this->context);
-            CartRule::autoAddToCart($this->context);
-        } catch(Exception $e){
-            die($e->getMessage());
-            return false;
-        }
-
-        return true;
-    }
-
-    protected function validateDeliveryOption($cartDeliveryOption)
-    {
-        if (!is_array($cartDeliveryOption)) {
-            return false;
-        }
-
-        foreach ($cartDeliveryOption as $option) {
-            if (!preg_match('/(\d+,)?\d+/', $option)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     protected function respondWithError(...$arguments)
     {
         $message = !empty($arguments[0]) ? $arguments[0] : null;
 
+        if (!empty($message)) {
+            $this->logEvent('Callback failed: ' . $message);
+        }
+
         header('HTTP/1.1 500 Internal Server Error');
-        die($message);
+        die('Error: ' . $message);
     }
 
     protected function respondWithSuccess(...$arguments)

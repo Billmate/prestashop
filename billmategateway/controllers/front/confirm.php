@@ -26,10 +26,12 @@ class BillmategatewayConfirmModuleFrontController extends ModuleFrontController
                     $this->getCheckoutTemplatePath()
                 );
 
+                $this->context->cart = new Cart;
+                $this->context->cookie->id_cart = null;
+
                 return;
             }
         }
-
 
         $orderId = Tools::getValue('oid');
 
@@ -49,6 +51,9 @@ class BillmategatewayConfirmModuleFrontController extends ModuleFrontController
             'HOOK_HEADER' => Hook::exec('displayHeader'),
             'order' => $order,
         ));
+
+        $this->context->cart = new Cart;
+        $this->context->cookie->id_cart = null;
     }
 
     private function getDefaultTemplatePath()

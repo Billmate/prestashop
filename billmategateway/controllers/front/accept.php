@@ -14,8 +14,6 @@ class BillmategatewayAcceptModuleFrontController extends CallbackController
     public function postProcess()
     {
         if ($this->method == 'checkout') {
-            $this->context->cart = null;
-
             $checkoutOrderId = Common::getCartCheckoutHash();
 
             if ($checkoutOrderId) {
