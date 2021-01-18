@@ -11,15 +11,6 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
         parent::__construct();
     }
 
-    public function getInvoiceProductId()
-    {
-        $productId = Db::getInstance()->getValue(
-            'SELECT id_product FROM '._DB_PREFIX_.'product WHERE reference = "billmate_invoice_fee"'
-        );
-
-        return $productId;
-    }
-
     public function postProcess()
     {
         if ($this->method == 'checkout' && !Configuration::get('PS_GUEST_CHECKOUT_ENABLED')) {
@@ -39,28 +30,13 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
         // Get cart with id from Billmate
         $this->cart_id = $this->client->getCartId();
 
+        // Load cart
         $this->context->cart = new Cart($this->cart_id);
-
-        // Get cart_delivery_option options
-        //$cartDeliveryOption = $this->context->cart->getDeliveryOption();
 
         // Get cart or fail
         if (!$this->context->cart) {
             return $this->respondWithError('Loading cart failed');
         }
-
-        /*if (Configuration::get('BINVOICE_FEE') > 0) {
-            $productId = $this->getInvoiceProductId();
-
-            $product = new Product($productId);
-            $product->price = Configuration::get('BINVOICE_FEE');
-            $product->update();
-
-            if (!empty($productId) && !$this->context->cart->containsProduct($productId)) {
-                $this->context->cart->updateQty(1, $productId);
-                $this->context->cart->getPackageList(true);
-            }
-        }*/
 
         // Get customer or fail
         if (!$customer = $this->customerHelper->createCustomer($this->context->cart->id_customer)) {
