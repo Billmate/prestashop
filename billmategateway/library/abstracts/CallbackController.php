@@ -70,10 +70,7 @@ abstract class CallbackController extends ModuleFrontController
                 $this->module = $this->resolver->getInvoiceMethod();
             }
 
-            $order = $this->module->validateOrder($this->context->cart->id, $orderStatus, $orderTotal, $methodName, null, $extraData, null, false);
-
-            // @todo: log...
-
+            $order = $this->module->validateOrder($this->context->cart->id, $orderStatus, $orderTotal, $methodName, null, $extraData, null, false, $this->context->customer->secure_key);
         } catch (Exception $e) {
             $this->logEvent('Failed to create order from cart: ' . $e->getMessage());
 
@@ -150,7 +147,7 @@ abstract class CallbackController extends ModuleFrontController
         exit();
     }
 
-    private function logEvent($message)
+    protected function logEvent($message)
     {
         try {
             PrestaShopLogger::addLog(sprintf('[BILLMATE] %s', $message), 1);

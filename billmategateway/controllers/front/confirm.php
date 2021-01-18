@@ -56,6 +56,24 @@ class BillmategatewayConfirmModuleFrontController extends ModuleFrontController
         $this->context->cookie->id_cart = null;
     }
 
+    public function setMedia()
+    {
+        parent::setMedia();
+
+        if (version_compare(_PS_VERSION_,'1.7','>=')) {
+            $this->registerStylesheet(
+                'module-billmategateway-style',
+                'modules/billmategateway/views/css/checkout/reset.css',
+                [
+                  'media' => 'all',
+                  'priority' => 200,
+                ]
+            );
+        } else {
+            $this->context->controller->addCSS($this->_path . 'modules/billmategateway/views/css/checkout/reset.css', 'all');
+        }
+    }
+
     private function getDefaultTemplatePath()
     {
         return (version_compare(_PS_VERSION_,'1.7','>=')) ?

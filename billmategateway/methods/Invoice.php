@@ -209,8 +209,11 @@ class BillmateMethodInvoice extends BillmateGateway {
                 if ($bmInvoiceFee['fee_tax']) {
                     $product = $this->getBmFeeProduct();
                     $cart = new Cart($id_cart);
-                    $cart->updateQty(1, $product->id);
-                    $cart->getPackageList(true);
+
+                    if (!$cart->containsProduct($product->id)) {
+	                    $cart->updateQty(1, $product->id);
+	                    $cart->getPackageList(true);
+                    }
                 }
             }
         }

@@ -76,7 +76,7 @@ class Resolver
         }
     }
 
-    private function resolve(string $fileName, string $className)
+    private function resolve($fileName, $className)
     {
         $filePath = str_replace('//', '/', sprintf('%s/billmategateway/methods/%s', _PS_MODULE_DIR_, $fileName));
 

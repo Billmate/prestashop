@@ -2,7 +2,7 @@
 
 class OrderHelper
 {
-    public function convertOrderStatus(string $method, string $status)
+    public function convertOrderStatus($method, $status)
     {
         if ($status == 'Cancelled') {
             return Configuration::get('PS_OS_CANCELED');
@@ -21,30 +21,30 @@ class OrderHelper
             return Order::getByCartId($cart->id);
         }
 
-        return new Order(
-            Order::getOrderByCartId($cart->id)
-        );
+        $orderId = Order::getOrderByCartId($cart->id);
+
+        return ($orderId) ? new Order($orderId) : null;
     }
 
-    public function getOrderByReference(string $reference)
+    public function getOrderByReference($reference)
     {
         if (version_compare(_PS_VERSION_, '1.7.0.0', '>')) {
             return Order::getByReference($reference);
         }
 
-        return new Order(
-            Order::getByReference($reference)
-        );
+        $orderId = Order::getByReference($reference);
+
+        return ($orderId) ? new Order($orderId) : null;
     }
 
-    public function updateOrderStatus(OrderCore $order, string $orderStatus)
+    public function updateOrderStatus(OrderCore $order, $orderStatus)
     {
         $this->createOrderHistory($order, $orderStatus);
 
         return true;
     }
 
-    public function createOrderHistory(OrderCore $order, string $status)
+    public function createOrderHistory(OrderCore $order, $status)
     {
         $orderHistory = new OrderHistory();
 

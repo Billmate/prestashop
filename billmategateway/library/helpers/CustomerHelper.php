@@ -2,10 +2,10 @@
 
 class CustomerHelper
 {
-    public function createCustomer(Cart $cart)
+    public function createCustomer($customerId)
     {
-        if (Customer::customerIdExistsStatic($cart->id_customer)) {
-            $customer = new Customer($cart->id_customer);
+        if (Customer::customerIdExistsStatic($customerId)) {
+            $customer = new Customer($customerId);
         } else {
             $customer = new Customer();
             $customer->firstname = 'NoName';
@@ -16,7 +16,7 @@ class CustomerHelper
             $customer->optin = 0;
             $customer->is_guest = 1;
             $customer->active = 1;
-            $customer->passwd = Tools::passwdGen(8);
+            $customer->passwd = Tools::encrypt(Tools::passwdGen(8));
 
             $customer->add();
         }
@@ -24,7 +24,7 @@ class CustomerHelper
         return $customer;
     }
 
-    public function updateCustomer(Customer $customer, array $data)
+    public function updateCustomer(Customer $customer, array $data = [])
     {
         $data = array_map('utf8_decode', $data['Billing']);
 
@@ -45,14 +45,14 @@ class CustomerHelper
         return $customer;
     }
 
-    public function createBillingAddress(Customer $customer, array $data)
+    public function createBillingAddress(Customer $customer, array $data = [])
     {
         $data = array_map('utf8_decode', $data['Billing']);
 
         return $this->createAddress($customer, $data, 'Billing');
     }
 
-    public function createShippingAddress(Customer $customer, array $data)
+    public function createShippingAddress(Customer $customer, array $data = [])
     {
         $data = !empty($data['Shipping']) ? $data['Shipping'] : $data['Billing'];
         $data = array_map('utf8_decode', $data);
@@ -60,19 +60,19 @@ class CustomerHelper
         return $this->createAddress($customer, $data, 'Shipping');
     }
 
-    public function createAddress(Customer $customer, array $data, string $alias = 'Billing')
+    public function createAddress(Customer $customer, array $data = [], $alias = null)
     {
         $address = new Address();
 
         $address->id_customer = $customer->id;
-        $address->alias = $alias;
+        $address->alias = !is_null($alias) ? $alias : 'Billing';
 
         $address->firstname = !empty($data['firstname']) ? $data['firstname'] : '';
         $address->lastname = !empty($data['lastname']) ? $data['lastname'] : '';
         $address->company = !empty($data['company']) ? $data['company'] : '';
         $address->phone = !empty($data['phone']) ? $data['phone'] : '';
+        $address->phone_mobile = !empty($data['phone']) ? $data['phone'] : '';
         $address->address1 = !empty($data['street']) ? $data['street'] : '';
-        $address->address2 = !empty($data['street2']) ? $data['street2'] : '';
         $address->postcode = !empty($data['zip']) ? $data['zip'] : '';
         $address->city = !empty($data['city']) ? $data['city'] : '';
         $address->country = !empty($data['country']) ? $data['country'] : '';
