@@ -25,7 +25,7 @@ class Client
     public function verifyPayload()
     {
         if (!$postData = $this->getJsonPostRequest()) {
-            $this->logEvent('Failed to get post data in client: '. $e->getMessage());
+            $this->logEvent('Failed to get post data');
 
             return false;
         }
