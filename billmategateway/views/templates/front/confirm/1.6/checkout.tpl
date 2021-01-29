@@ -9,9 +9,9 @@
                 </div>
             </section>
         </div>
-        <div class="col-sm-12 text-xs-center" style="margin:2.5rem 0 3rem 0;">
-            <a class="btn btn-primary btn-md" role="button" href="{$link->getPageLink('index')}">
-                {l s='Fortsätt handla'}
+        <div class="col-sm-12" style="margin:2.5rem 0 3rem 0; text-align:center;">
+            <a class="btn btn-default button button-small" role="button" href="{$link->getPageLink('index')}">
+                <span>{l s='Fortsätt handla'}</span>
             </a>
         </div>
     </div>
