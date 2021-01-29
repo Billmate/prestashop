@@ -20,7 +20,7 @@ class BillmategatewayConfirmModuleFrontController extends ModuleFrontController
             ));
 
             if (!empty($result['PaymentData']['url'])) {
-                $this->context->smarty->assign('billmatecheckouturl', $result['PaymentData']['url']);
+                $this->context->smarty->assign('billmate_checkout_url', $result['PaymentData']['url']);
 
                 $this->setTemplate(
                     $this->getCheckoutTemplatePath()
