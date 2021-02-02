@@ -48,7 +48,28 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
 
         // If order exists, update it and show success page
         if ($order = $this->orderHelper->getOrderByCart($this->context->cart)) {
-            $this->updateOrderStatus($order);
+
+            $payment = OrderPayment::getByOrderReference($order->reference);
+
+            if (is_array($payment)) {
+                $payment = $payment[0];
+            }
+
+            $paymentNumber = $this->client->getNumber();
+
+            if (!empty($payment->transaction_id) && $payment->transaction_id != $paymentNumber) {
+                PrestaShopLogger::addLog(
+                    sprintf('Trying to cancel payment (%s) because an order already exists.', $paymentNumber)
+                );
+
+                $logMessage = ($this->client->cancelPayment()) ?
+                    sprintf('Cancellation for payment (%s) was successful.', $paymentNumber) :
+                    sprintf('Cancellation for payment (%s) failed.', $paymentNumber);
+
+                PrestaShopLogger::addLog($logMessage);
+            } else {
+                $this->updateOrderStatus($order);
+            }
 
             // Show success page
             return $this->respondWithSuccess();
@@ -73,12 +94,6 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
         $this->context->cart->id_address_invoice = (int)$billingAddress->id;
         $this->context->cart->id_address_delivery = (int)$billingAddress->id;
         $this->context->cart->update();
-
-        if (is_array($cartDeliveryOption)) {
-            $carrierId = intval(current($cartDeliveryOption));
-        } else {
-            $carrierId = intval($cartDeliveryOption);
-        }
 
         $cartDeliveryOption = array(
             $this->context->cart->id_address_delivery => $this->context->cart->id_carrier . ',',

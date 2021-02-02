@@ -63,7 +63,7 @@ abstract class CallbackController extends ModuleFrontController
             );
 
             $extraData = [
-                'transaction_id' => $this->client->getTransactionId()
+                'transaction_id' => $this->client->getNumber()
             ];
 
             if (in_array($this->client->getMethod(), [1, 2])) {

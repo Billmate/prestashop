@@ -115,8 +115,27 @@ class Client
     {
         try {
             $this->billmate->updatePayment([
-                'number'  => $this->getTransactionId(),
-                'orderid' => $orderReference,
+                'PaymentData' => [
+                    'number'  => $this->getNumber(),
+                    'orderid' => $orderReference,
+                ]
+            ]);
+        } catch (Exception $e) {
+            $this->logEvent('Failed to update payment in client: '. $e->getMessage());
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public function cancelPayment()
+    {
+        try {
+            $this->billmate->cancelPayment([
+                'PaymentData' => [
+                    'number' => $this->getNumber(),
+                ],
             ]);
         } catch (Exception $e) {
             $this->logEvent('Failed to update payment in client: '. $e->getMessage());
@@ -183,6 +202,13 @@ class Client
             null;
     }
 
+    public function getNumber()
+    {
+        return !empty($this->data['data']['number']) ?
+            $this->data['data']['number'] :
+            null;
+    }
+
     public function getPaymentData()
     {
         return $this->payment;
@@ -211,7 +237,6 @@ class Client
 
     public function getPaymentUrl()
     {
-        file_put_contents('data-payment.log', print_r($this->payment,1));
         return !empty($this->data['data']['url']) ?
             $this->data['data']['url'] :
             null;
