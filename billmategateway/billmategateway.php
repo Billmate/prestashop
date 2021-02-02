@@ -1073,11 +1073,14 @@
                     }
 					$billmate      = Common::getBillmate($this->billmate_merchant_id, $this->billmate_secret, $testMode);
 					$payment_info   = $billmate->getPaymentinfo(array('number' => $payment[0]->transaction_id));
+
+					if (empty($payment_info['PaymentData'])) {
+						return false;
+					}
+
 					$payment_status = Tools::strtolower($payment_info['PaymentData']['status']);
 					if ($payment_status == 'created')
 					{
-
-
 						$total      = $payment_info['Cart']['Total']['withtax'] / 100;
 
 						$orderTotal = $order->getTotalPaid();
@@ -1590,7 +1593,7 @@
             $this->smarty->assign('shop_name', Configuration::get('PS_SHOP_NAME'));
             $this->smarty->assign('additional_order_info_html', $additional_order_info_html);
             return $this->display(__FILE__, '/orderconfirmation.tpl');
-            
+
         }
 
         /**
