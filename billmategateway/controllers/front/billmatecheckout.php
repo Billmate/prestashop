@@ -143,8 +143,6 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                 $customer['Shipping']['city'] != ''
         ) {
             $address = $customer['Shipping'];
-            file_put_contents($logfile, 'shippingAddress:'.print_r($address,true),FILE_APPEND);
-            file_put_contents($logfile, 'customerAddress:'.print_r($customer_addresses,true),FILE_APPEND);
             $matched_address_id = false;
             foreach ($customer_addresses as $customer_address)
             {
@@ -276,7 +274,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             $result['success'] = true;
             echo Tools::jsonEncode($result);
             die;
-            
+
         }
 
         if($this->ajax = Tools::getValue('ajax') && Tools::getValue('action') == 'addComment'){
@@ -337,10 +335,10 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             PrestaShopLogger::addLog("javascript success order id: " . $checkout['data']['PaymentData']['order']['order-id']);
             $this->ajax = true;
             $result = $this->sendResponse($checkout);
-            
+
             echo Tools::jsonEncode($result);
             die();
-        
+
         }
     }
 
@@ -503,10 +501,9 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         parent::initContent();
         if($this->context->cart->nbProducts() == 0){
             if(version_compare(_PS_VERSION_,'1.7','>=')){
-                $this->setTemplate('module:billmategateway/views/templates/front/checkout/checkout-empty17.tpl');
-
+                $this->setTemplate('module:billmategateway/views/templates/front/checkout/1.7/empty.tpl');
             } else {
-                $this->setTemplate('checkout/checkout-empty.tpl');
+                $this->setTemplate('checkout/checkout/1.6/empty.tpl');
             }
         } else {
             CartRule::autoRemoveFromCart($this->context);
@@ -581,9 +578,9 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             }
 
             if(version_compare(_PS_VERSION_,'1.7','>=')){
-                $this->setTemplate('module:billmategateway/views/templates/front/checkout/checkout17.tpl');
+                $this->setTemplate('module:billmategateway/views/templates/front/checkout/1.7/checkout.tpl');
             } else {
-                $this->setTemplate('checkout/checkout.tpl');
+                $this->setTemplate('checkout/1.6/checkout.tpl');
             }
         }
     }
