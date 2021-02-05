@@ -46,7 +46,7 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
-### 3.9.0 (2021-02-08)
+### 3.8.0 (2021-02-08)
 * Fix - Rebuilt how callbacks and redirects to the thank you page are handled
 
 ### 3.7.5 (2020-11-20)
