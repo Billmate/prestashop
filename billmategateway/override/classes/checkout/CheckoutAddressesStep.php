@@ -4,7 +4,7 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
     /**
      * @var string
      */
-    protected $bmTemplate = 'module:billmategateway/views/templates/front/checkout/_partials/steps/addresses.tpl';
+    protected $bmTemplate = 'module:billmategateway/views/templates/front/checkout/common/addresses.tpl';
 
     /**
      * @return string
@@ -23,6 +23,7 @@ class CheckoutAddressesStep extends CheckoutAddressesStepCore
     public function getTemplateParameters()
     {
         $templateParams = parent::getTemplateParameters();
+
         if ($this->isGetAddressEnabled()) {
             $templateParams['pno'] = (isset($this->context->cookie->billmatepno)) ?$this->context->cookie->billmatepno : '';
         }

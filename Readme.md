@@ -2,11 +2,11 @@
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
 ## Documentation
-Note: Documentation is outdated and a new and improved documentation is being worked on at the moment.
+Note: Documentation is outdated and a new and improved documentation are being worked on at the moment.
 
-[Installation manual in English](http://billmate.se/plugins/manual/Installation_Manual_Prestashop_Billmate.pdf)
+[Custom Pay Documentation in Swedish](https://support.billmate.se/hc/sv/sections/360002286098-PrestaShop-Billmate-CustomPay)
 
-[Installation manual in Swedish](http://billmate.se/plugins/manual/Installationsmanual_Prestashop_Billmate.pdf)
+[Checkout Documentation in Swedish](https://support.billmate.se/hc/sv/sections/360001532697-Prestashop-Billmate-Checkout)
 
 ## Description
 Billmate Gateway is a plugin that extends Prestashop, allowing your customers to get their products first and pay by invoice to Billmate later (http://www.billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
@@ -16,10 +16,9 @@ When the order is passed to Billmate a credit record of the customer is made. If
 Billmate is a great payment alternative for merchants and customers in Sweden.
 
 ## Important Notes
-* This plugin does not currently support campaigns.
 * The automatic order activation on status change is supported from PrestaShop version 1.5 and above.
 * This module doesnt support 1.4 anymore.
-* Part credit seems to be an issue before prestashop 1.6
+* Part credit /refund seems to be an issue before prestashop 1.6
 * Please let the decimals for currencies be 2 decimals, to prevent rounding issues.
 
 ## COMPATIBILITY PrestaShop versions
@@ -46,6 +45,9 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 We support Prestashops built-in checkout in 1-step and 5-step settings. We also supports One Page Checkout for Prestashop Module (http://addons.prestashop.com/en/6841-one-page-checkout-for-prestashop.html)
 
 ## Changelog
+
+### 3.8.0 (2021-02-08)
+* Fix - Rebuilt how callbacks and redirects to the thank you page are handled
 
 ### 3.7.5 (2020-11-20)
 * Fix - Invoice fee for products on PrestaShop 1.6
