@@ -24,7 +24,7 @@ class CustomerHelper
         return $customer;
     }
 
-    public function updateCustomer(Customer $customer, array $data = [])
+    public function updateCustomer(Customer $customer, $data = array())
     {
         $data = array_map('utf8_decode', $data['Billing']);
 
@@ -45,14 +45,14 @@ class CustomerHelper
         return $customer;
     }
 
-    public function createBillingAddress(Customer $customer, array $data = [])
+    public function createBillingAddress(Customer $customer, $data = array())
     {
         $data = array_map('utf8_decode', $data['Billing']);
 
         return $this->createAddress($customer, $data, 'Billing');
     }
 
-    public function createShippingAddress(Customer $customer, array $data = [])
+    public function createShippingAddress(Customer $customer, $data = array())
     {
         $data = !empty($data['Shipping']) ? $data['Shipping'] : $data['Billing'];
         $data = array_map('utf8_decode', $data);
@@ -60,7 +60,7 @@ class CustomerHelper
         return $this->createAddress($customer, $data, 'Shipping');
     }
 
-    public function createAddress(Customer $customer, array $data = [], $alias = null)
+    public function createAddress(Customer $customer, $data = array(), $alias = null)
     {
         $address = new Address();
 

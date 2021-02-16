@@ -121,11 +121,11 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
         return $this->respondWithSuccess();
     }
 
-    protected function respondWithError(...$arguments)
+    protected function respondWithError($value)
     {
-        $message = !empty($arguments[0]) ? $arguments[0] : null;
+        $message = !empty($value) ? $value : null;
 
-        if (!empty($message)) {
+        if (!empty($message) && is_string($message)) {
             $this->logEvent('Callback failed: ' . $message);
         }
 
@@ -133,7 +133,7 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
         die('Error: ' . $message);
     }
 
-    protected function respondWithSuccess(...$arguments)
+    protected function respondWithSuccess($value)
     {
         header('HTTP/1.1 200 OK');
         die;

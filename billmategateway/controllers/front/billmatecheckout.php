@@ -503,7 +503,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             if(version_compare(_PS_VERSION_,'1.7','>=')){
                 $this->setTemplate('module:billmategateway/views/templates/front/checkout/1.7/empty.tpl');
             } else {
-                $this->setTemplate('checkout/checkout/1.6/empty.tpl');
+                $this->setTemplate('checkout/1.6/empty.tpl');
             }
         } else {
             CartRule::autoRemoveFromCart($this->context);
