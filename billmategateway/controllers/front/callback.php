@@ -72,7 +72,7 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
             }
 
             // Show success page
-            return $this->respondWithSuccess();
+            return $this->respondWithSuccess(true);
         }
 
         // Update customer with data from Billmate
@@ -118,7 +118,7 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
         }
 
         // Show success page
-        return $this->respondWithSuccess();
+        return $this->respondWithSuccess(true);
     }
 
     protected function respondWithError($value)

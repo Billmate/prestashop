@@ -25,22 +25,22 @@ class BillmategatewayAcceptModuleFrontController extends CallbackController
 
         // If payment data is invalid, show default confirm page
         if (!$this->client->verifyPaymentData()) {
-            return $this->respondWithSuccess();
+            return $this->respondWithSuccess(true);
         }
 
         // If payment is not payed, show default confirm page
         if (!$this->client->isPayed()) {
-            return $this->respondWithSuccess();
+            return $this->respondWithSuccess(true);
         }
 
         // If no order id is set, show default confirm page
         if (!$orderId = $this->client->getOrderId()) {
-            return $this->respondWithSuccess();
+            return $this->respondWithSuccess(true);
         }
 
         // If no order is found, show default confirm page
         if (!$order = $this->orderHelper->getOrderByReference($orderId)) {
-            return $this->respondWithSuccess();
+            return $this->respondWithSuccess(true);
         }
 
         // Show confirm page with order data
