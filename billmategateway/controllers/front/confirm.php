@@ -70,7 +70,7 @@ class BillmategatewayConfirmModuleFrontController extends ModuleFrontController
                 )
             );
         } else {
-            $this->context->controller->addCSS('modules/billmategateway/views/css/checkout/reset.css', 'all');
+            $this->context->controller->addCSS(__PS_BASE_URI__ . 'modules/billmategateway/views/css/checkout/reset.css', 'all');
         }
     }
 
