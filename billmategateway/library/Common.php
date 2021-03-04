@@ -2,7 +2,7 @@
 	require_once 'Billmate.php';
 	require_once 'Encoding.php';
 	require_once 'Utf8.php';
-    define('BILLMATE_PLUGIN_VERSION', '3.8.0');
+    define('BILLMATE_PLUGIN_VERSION', '3.8.1');
 
     /**
      * Class for Common Billmate related tasks
