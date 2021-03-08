@@ -17,39 +17,39 @@ class BillmategatewayAcceptModuleFrontController extends CallbackController
             $checkoutOrderId = Common::getCartCheckoutHash();
 
             if ($checkoutOrderId) {
-                return $this->respondWithSuccess([
+                return $this->respondWithSuccess(array(
                     'hash' => urlencode($checkoutOrderId),
-                ]);
+                ));
             }
         }
 
         // If payment data is invalid, show default confirm page
         if (!$this->client->verifyPaymentData()) {
-            return $this->respondWithSuccess();
+            return $this->respondWithSuccess(true);
         }
 
         // If payment is not payed, show default confirm page
         if (!$this->client->isPayed()) {
-            return $this->respondWithSuccess();
+            return $this->respondWithSuccess(true);
         }
 
         // If no order id is set, show default confirm page
         if (!$orderId = $this->client->getOrderId()) {
-            return $this->respondWithSuccess();
+            return $this->respondWithSuccess(true);
         }
 
         // If no order is found, show default confirm page
         if (!$order = $this->orderHelper->getOrderByReference($orderId)) {
-            return $this->respondWithSuccess();
+            return $this->respondWithSuccess(true);
         }
 
         // Show confirm page with order data
-        return $this->respondWithSuccess([
+        return $this->respondWithSuccess(array(
             'oid' => $order->id,
-        ]);
+        ));
     }
 
-    protected function respondWithError(...$arguments)
+    protected function respondWithError($value)
     {
         if (version_compare(_PS_VERSION_, '1.7.0.0', '>')) {
             $this->errors[] = $this->l('Det uppstod ett problem, var vänlig försök igen eller prova ett annat betalsätt.');
@@ -60,9 +60,9 @@ class BillmategatewayAcceptModuleFrontController extends CallbackController
         Tools::redirect('index.php?controller=order');
     }
 
-    protected function respondWithSuccess(...$arguments)
+    protected function respondWithSuccess($value)
     {
-        $query = !empty($arguments[0]) ? $arguments[0] : array();
+        $query = (!empty($value) && is_array($value)) ? $value : array();
 
         Tools::redirect(
             $this->context->link->getModuleLink('billmategateway', 'confirm', $query, true)

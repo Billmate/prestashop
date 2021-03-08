@@ -62,11 +62,11 @@ abstract class CallbackController extends ModuleFrontController
                 $this->client->getStatus()
             );
 
-            $extraData = [
+            $extraData = array(
                 'transaction_id' => $this->client->getNumber()
-            ];
+            );
 
-            if (in_array($this->client->getMethod(), [1, 2])) {
+            if (in_array($this->client->getMethod(), array(1, 2))) {
                 $this->module = $this->resolver->getInvoiceMethod();
             }
 
@@ -120,9 +120,10 @@ abstract class CallbackController extends ModuleFrontController
     private function getPaymentMethodName()
     {
         $name = $this->module->displayName;
+        $method = $this->client->getMethodName();
 
-        if ($this->method == 'checkout' && !empty($this->client->getMethodName())) {
-            $name = sprintf('%s (%s)', $name, $this->client->getMethodName());
+        if ($this->method == 'checkout' && !empty($method)) {
+            $name = sprintf('%s (%s)', $name, $method);
         }
 
         return $name;
@@ -135,13 +136,13 @@ abstract class CallbackController extends ModuleFrontController
             $this->module->currentOrder;
     }
 
-    protected function respondWithError(...$arguments)
+    protected function respondWithError($value)
     {
         header('HTTP/1.1 500 Internal Server Error');
         exit();
     }
 
-    protected function respondWithSuccess(...$arguments)
+    protected function respondWithSuccess($value)
     {
         header('HTTP/1.1 200 OK');
         exit();

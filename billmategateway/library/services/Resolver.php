@@ -39,37 +39,37 @@ class Resolver
 
     public function getInvoiceMethod()
     {
-        return $this->resolve('Invoice.php', BillmateMethodInvoice::class);
+        return $this->resolve('Invoice.php', 'BillmateMethodInvoice');
     }
 
     private function getValidMethods()
     {
-        return [
+        return array(
             'bankpay',
             'cardpay',
             'checkout',
             'invoice',
             'partpay',
-        ];
+        );
     }
 
     private function getPaymentModule()
     {
         switch ($this->method) {
             case 'bankpay':
-                return $this->resolve('Bankpay.php', BillmateMethodBankpay::class);
+                return $this->resolve('Bankpay.php', 'BillmateMethodBankpay');
 
             case 'cardpay':
-                return $this->resolve('Cardpay.php', BillmateMethodCardpay::class);
+                return $this->resolve('Cardpay.php', 'BillmateMethodCardpay');
 
             case 'checkout':
-                return $this->resolve('Checkout.php', BillmateMethodCheckout::class);
+                return $this->resolve('Checkout.php', 'BillmateMethodCheckout');
 
             case 'invoice':
-                return $this->resolve('Invoice.php', BillmateMethodInvoice::class);
+                return $this->resolve('Invoice.php', 'BillmateMethodInvoice');
 
             case 'partpay':
-                return $this->resolve('Partpay.php', BillmateMethodPartpay::class);
+                return $this->resolve('Partpay.php', 'BillmateMethodPartpay');
 
             default:
                 return null;

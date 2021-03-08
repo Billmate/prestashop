@@ -64,13 +64,13 @@ class BillmategatewayConfirmModuleFrontController extends ModuleFrontController
             $this->registerStylesheet(
                 'module-billmategateway-style',
                 'modules/billmategateway/views/css/checkout/reset.css',
-                [
+                array(
                   'media' => 'all',
                   'priority' => 200,
-                ]
+                )
             );
         } else {
-            $this->context->controller->addCSS($this->_path . 'modules/billmategateway/views/css/checkout/reset.css', 'all');
+            $this->context->controller->addCSS(__PS_BASE_URI__ . 'modules/billmategateway/views/css/checkout/reset.css', 'all');
         }
     }
 

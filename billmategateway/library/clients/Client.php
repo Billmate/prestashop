@@ -70,9 +70,9 @@ class Client
     public function verifyPaymentData()
     {
         try {
-            $this->payment = $this->billmate->getPaymentinfo([
+            $this->payment = $this->billmate->getPaymentinfo(array(
                 'number' => $this->data['data']['number'],
-            ]);
+            ));
         } catch (Exception $e) {
             $this->logEvent('Failed to verify payment data: '. $e->getMessage());
 
@@ -114,12 +114,12 @@ class Client
     public function updatePayment($orderReference)
     {
         try {
-            $this->billmate->updatePayment([
-                'PaymentData' => [
+            $this->billmate->updatePayment(array(
+                'PaymentData' => array(
                     'number'  => $this->getNumber(),
                     'orderid' => $orderReference,
-                ]
-            ]);
+                )
+            ));
         } catch (Exception $e) {
             $this->logEvent('Failed to update payment in client: '. $e->getMessage());
 
@@ -132,11 +132,11 @@ class Client
     public function cancelPayment()
     {
         try {
-            $this->billmate->cancelPayment([
-                'PaymentData' => [
+            $this->billmate->cancelPayment(array(
+                'PaymentData' => array(
                     'number' => $this->getNumber(),
-                ],
-            ]);
+                ),
+            ));
         } catch (Exception $e) {
             $this->logEvent('Failed to update payment in client: '. $e->getMessage());
 
@@ -244,7 +244,7 @@ class Client
 
     public function isPayed()
     {
-        return in_array($this->getStatus(), ['Paid', 'Factoring', 'Service', 'Pending']) &&
+        return in_array($this->getStatus(), array('Paid', 'Factoring', 'Service', 'Pending')) &&
             (strrpos($this->getOrderId(), '-') === false) ? true : false;
     }
 
