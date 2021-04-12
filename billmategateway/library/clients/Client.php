@@ -102,12 +102,6 @@ class Client
             return false;
         }
 
-        if (empty($customer['Billing']['phone'])) {
-            $this->logEvent('Failed to verify customer data: Phone is empty');
-
-            return false;
-        }
-
         return true;
     }
 
