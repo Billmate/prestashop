@@ -22,7 +22,7 @@ class BillmategatewayCallbackModuleFrontController extends CallbackController
             return $this->respondWithError('Verifying payment data failed');
         }
 
-        // Check if payment data is valid
+        // Check if customer data is valid
         if (!$this->client->verifyCustomerData()) {
             return $this->respondWithError('Verifying customer data failed');
         }

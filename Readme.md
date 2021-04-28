@@ -46,6 +46,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 3.8.2 (2021-04-12)
+* Fix - Remove phone number as mandatory when creating orders
+
 ### 3.8.1 (2021-03-04)
 * Fix - Add support for PHP 5.4 and 5.5
 
