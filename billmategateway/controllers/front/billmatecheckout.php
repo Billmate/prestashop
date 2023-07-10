@@ -1409,6 +1409,11 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
         }
 
         $rounding         = round($order_total * 100) - round($this->tax + $this->totals);
+        if($rounding > 50) {
+            $rounding -= 100;
+        } elseif($rounding <= -50) {
+            $rounding += 100;
+        }
         $totals['Total']  = array(
             'withouttax' => round($this->totals),
             'tax'        => round($this->tax),
