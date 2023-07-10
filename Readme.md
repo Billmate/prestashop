@@ -1,3 +1,11 @@
+# <span style="color: red">*** This module is no longer supported by Qvickly ***</span>
+No major updates or substantial fixes will be made.
+
+---
+<br>
+<br>
+<br>
+
 # Billmate Payment Gateway for Prestashop
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
@@ -45,6 +53,10 @@ Our plugin is tested with [Browserstack](http://www.browserstack.com)
 We support Prestashops built-in checkout in 1-step and 5-step settings. We also supports One Page Checkout for Prestashop Module (http://addons.prestashop.com/en/6841-one-page-checkout-for-prestashop.html)
 
 ## Changelog
+
+### 3.8.4 (2023-07-10)
+* Fixed rounding to not just "floor" the value
+* Added notice about withdrawn support the prestashop module.
 
 ### 3.8.3 (2021-10-12)
 * Update PEM certificate
