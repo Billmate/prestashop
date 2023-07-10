@@ -1,10 +1,6 @@
-# <span style="color: red">*** This module is no longer supported by Qvickly ***</span>
-No major updates or substantial fixes will be made.
+## NO LONGER UPDATED / SUPPORTED
+### Billmate no longer updates or offers support for this payment module.
 
----
-<br>
-<br>
-<br>
 
 # Billmate Payment Gateway for Prestashop
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
