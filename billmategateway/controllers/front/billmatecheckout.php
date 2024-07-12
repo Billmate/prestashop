@@ -695,7 +695,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             'currencyFormat' => $this->context->currency->format,
             'currencyBlank' => $this->context->currency->blank,
             'show_option_allow_separate_package' => $show_option_allow_separate_package,
-            'smallSize' => Image::getSize(ImageType::getFormatedName('small')),
+            'smallSize' => Image::getSize(ImageType::getFormattedName('small')), // Fixed on 06/06/2024
 
         ));
 
@@ -995,7 +995,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
             ))
         );
 
-        Cart::addExtraCarriers($vars);
+        // Cart::addExtraCarriers($vars); // Fixed on 06/06/2024
 
         $this->context->smarty->assign($vars);
         if(version_compare(_PS_VERSION_,'1.7','>=')){
@@ -1019,7 +1019,7 @@ class BillmategatewayBillmatecheckoutModuleFrontController extends ModuleFrontCo
                 'carrier_block' => $carrierblock
             );
 
-            Cart::addExtraCarriers($result);
+            // Cart::addExtraCarriers($result);  // Fixed on 06/06/2024
             return $result;
         }
         if (count($this->errors)) {
