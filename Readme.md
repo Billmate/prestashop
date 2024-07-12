@@ -52,6 +52,9 @@ We support Prestashops built-in checkout in 1-step and 5-step settings. We also 
 
 ## Changelog
 
+### 8.0.0 (2024-07-12)
+* Module updated to support PrestaShop version 8
+
 ### 3.8.4 (2023-07-10)
 * Fixed rounding to not just "floor" the value
 * Added notice about withdrawn support the prestashop module.
