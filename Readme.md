@@ -1,5 +1,7 @@
-## NO LONGER UPDATED / SUPPORTED
-### Billmate no longer updates or offers support for this payment module.
+## SUPPORT BY Prestashopsupport.se
+### Billmate again offer support and update on this module
+For support create a support ticket at https://prestashopsupport.se/createticket
+
 
 
 # Billmate Payment Gateway for Prestashop
