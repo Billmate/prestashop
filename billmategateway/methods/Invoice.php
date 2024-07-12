@@ -189,10 +189,11 @@ class BillmateMethodInvoice extends BillmateGateway {
 
 		}
 
-		public function validateOrder($id_cart, $id_order_state, $amount_paid, $payment_method = 'Unknown',
+		/*public function validateOrder($id_cart, $id_order_state, $amount_paid, $payment_method = 'Unknown',
                                       $message = null, $extra_vars = array(), $currency_special = null, $dont_touch_amount = false,
-                                      $secure_key = false, Shop $shop = null)
-        {
+                                      $secure_key = false, Shop $shop = null)*/
+    public function validateOrder($id_cart, $id_order_state, $amount_paid, $payment_method = 'Unknown', $message = null, $extra_vars = [], $currency_special = null, $dont_touch_amount = false, $secure_key = false, ?Shop $shop = null, ?string $order_reference = null) // Fixed on 06/06/2024
+    {
             $this->processAddingInvoiceFee($id_cart);
 
             return parent::validateOrder($id_cart, $id_order_state,
